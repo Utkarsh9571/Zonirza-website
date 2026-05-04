@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+:root {
+  /* Exact Colors from Reference Image */
+  --brand-bg: #f9f5f0;          /* Light cream/beige */
+  --brand-text: #332d29;        /* Warm deep brown */
+  --brand-gold: #bca07e;        /* Soft muted gold */
+  --brand-accent: #f2ede4;      /* Slightly darker beige for sections */
+  --brand-white: #ffffff;
+  
+  --background: var(--brand-bg);
+  --foreground: var(--brand-text);
+}
+
+@theme inline {
+  --color-brand-bg: var(--brand-bg);
+  --color-brand-text: var(--brand-text);
+  --color-brand-gold: var(--brand-gold);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-white: var(--brand-white);
+  
+  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-geist-sans);
+  
+  --radius-card: 2.5rem;
+  --radius-pill: 100px;
+  
+  --shadow-soft: 0 4px 20px rgba(51, 45, 41, 0.05);
+  --shadow-premium: 0 20px 50px rgba(51, 45, 41, 0.08);
+}
+
+/* Base Styles */
+@layer base {
+  body {
+    background-color: var(--brand-bg);
+    color: var(--brand-text);
+    @apply font-sans antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif tracking-tight text-brand-text;
+  }
+}
+
+/* Reusable Components/Classes */
+@layer components {
+  .section-container {
+    @apply max-w-[1280px] mx-auto px-6 py-20;
+  }
+  
+  .glass-card {
+    @apply bg-white/10 backdrop-blur-xl border border-white/20 shadow-premium;
+  }
+  
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-8 py-4 rounded-full 
+           bg-brand-text text-white font-medium text-sm tracking-wider
+           transition-all duration-300 hover:bg-brand-gold active:scale-95;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center px-8 py-4 rounded-full 
+           border border-brand-text/20 text-brand-text font-medium text-sm tracking-wider
+           transition-all duration-300 hover:border-brand-gold hover:text-brand-gold
+           active:scale-95;
+  }
+}

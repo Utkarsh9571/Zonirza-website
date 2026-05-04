@@ -1,0 +1,50 @@
+import Image from 'next/image';
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
+
+interface ProductCardProps {
+  name: string;
+  price: string;
+  image: string;
+  slug: string;
+  oldPrice?: string;
+  className?: string;
+}
+
+export const ProductCard = ({ name, price, image, slug, oldPrice, className }: ProductCardProps) => {
+  return (
+    <Link 
+      href={`/product/${slug}`} 
+      className={cn('group block w-full', className)}
+    >
+      <div className="relative aspect-[4/5] w-full rounded-[40px] overflow-hidden bg-white border border-brand-text/5 shadow-soft transition-all duration-1000 group-hover:shadow-premium group-hover:-translate-y-3">
+        <Image
+          src={image}
+          alt={name}
+          fill
+          className="object-cover p-10 transition-transform duration-1000 group-hover:scale-110"
+        />
+        <div className="absolute top-6 right-6 opacity-0 translate-x-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-x-0">
+          <div className="w-10 h-10 rounded-full bg-brand-bg/80 backdrop-blur-md flex items-center justify-center border border-white/50 text-brand-gold">
+            <span className="text-xl font-light">+</span>
+          </div>
+        </div>
+      </div>
+      
+      <div className="mt-8 text-center space-y-2">
+        <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-brand-gold italic opacity-0 -translate-y-2 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+          Essential Luxury
+        </p>
+        <h3 className="text-[14px] md:text-[16px] font-serif font-medium text-brand-text/90 group-hover:text-brand-gold transition-colors">
+          {name}
+        </h3>
+        <div className="flex items-center justify-center space-x-3">
+          <span className="text-brand-gold text-[13px] font-bold tracking-widest">{price}</span>
+          {oldPrice && (
+            <span className="text-brand-text/20 text-[11px] line-through font-medium">{oldPrice}</span>
+          )}
+        </div>
+      </div>
+    </Link>
+  );
+};
