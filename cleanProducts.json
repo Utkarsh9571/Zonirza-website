@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Elegant Gold Ring",
+    "slug": "elegant-gold-ring",
+    "price": 240,
+    "description": "A beautiful 18K gold ring.",
+    "images": [
+      "image1.jpg",
+      "image2.jpg"
+    ],
+    "category_id": 1,
+    "tags": [
+      "women",
+      "ring",
+      "featured",
+      "trending"
+    ]
+  },
+  {
+    "name": "Diamond Necklace",
+    "slug": "diamond-necklace",
+    "price": 850.5,
+    "description": "Exquisite diamond necklace.",
+    "images": [
+      "necklace1.jpg",
+      "necklace2.jpg"
+    ],
+    "category_id": 2,
+    "tags": [
+      "women",
+      "necklace"
+    ]
+  },
+  {
+    "name": "Men's Silver Bracelet",
+    "slug": "mens-silver-bracelet",
+    "price": 120,
+    "description": "Solid silver bracelet.",
+    "images": [
+      "bracelet.jpg"
+    ],
+    "category_id": 3,
+    "tags": [
+      "men",
+      "bracelet",
+      "trending"
+    ]
+  },
+  {
+    "name": "Unisex Watch",
+    "slug": "unisex-watch",
+    "price": 500,
+    "description": "Classic timepiece.",
+    "images": ["https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=800"],
+    "category_id": 4,
+    "tags": [
+      "unisex",
+      "watch",
+      "featured"
+    ]
+  }
+]

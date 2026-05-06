@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { PLACEHOLDER_IMAGE, getValidImageUrl } from '@/lib/constants';
 
 interface ProductCardProps {
   name: string;
@@ -19,7 +20,7 @@ export const ProductCard = ({ name, price, image, slug, oldPrice, className }: P
     >
       <div className="relative aspect-[4/5] w-full rounded-[40px] overflow-hidden bg-white border border-brand-text/5 shadow-soft transition-all duration-1000 group-hover:shadow-premium group-hover:-translate-y-3">
         <Image
-          src={image}
+          src={getValidImageUrl(image)}
           alt={name}
           fill
           className="object-cover p-10 transition-transform duration-1000 group-hover:scale-110"

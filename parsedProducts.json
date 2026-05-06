@@ -1,0 +1,54 @@
+[
+  {
+    "product_title": "Elegant Gold Ring",
+    "product_slug": "elegant-gold-ring",
+    "price": 240,
+    "description": "A beautiful 18K gold ring.",
+    "category_id": 1,
+    "subcategory_id": 10,
+    "gallery": "image1.jpg,image2.jpg",
+    "gender": 2,
+    "product_type": "Ring",
+    "feature": 1,
+    "topselling": 1
+  },
+  {
+    "product_title": "Diamond Necklace",
+    "product_slug": "diamond-necklace",
+    "price": 850.5,
+    "description": "Exquisite diamond necklace.",
+    "category_id": 2,
+    "subcategory_id": 20,
+    "gallery": "[\"necklace1.jpg\", \"necklace2.jpg\"]",
+    "gender": 2,
+    "product_type": "Necklace",
+    "feature": 0,
+    "topselling": 0
+  },
+  {
+    "product_title": "Men's Silver Bracelet",
+    "product_slug": "mens-silver-bracelet",
+    "price": 120,
+    "description": "Solid silver bracelet.",
+    "category_id": 3,
+    "subcategory_id": 30,
+    "gallery": "bracelet.jpg",
+    "gender": 1,
+    "product_type": "Bracelet",
+    "feature": 0,
+    "topselling": 1
+  },
+  {
+    "product_title": "Unisex Watch",
+    "product_slug": "unisex-watch",
+    "price": 500,
+    "description": "Classic timepiece.",
+    "category_id": 4,
+    "subcategory_id": 40,
+    "gallery": "",
+    "gender": "Unisex",
+    "product_type": "Watch",
+    "feature": 1,
+    "topselling": 0
+  }
+]

@@ -24,10 +24,10 @@ const PlaceholderImage = ({ title }: { title: string }) => (
 const CategoryList = ({ title, links }: { title: string; links: { name: string; href: string }[] }) => (
   <div className="mb-8">
     <h4 className="text-[11px] uppercase tracking-widest font-bold text-brand-text mb-4 pb-2 border-b border-brand-text/5 inline-block">{title}</h4>
-    <ul className="space-y-3">
+    <ul className="space-y-1">
       {links.map((link, idx) => (
         <li key={idx}>
-          <Link href={link.href} className="text-sm text-brand-text/70 hover:text-brand-gold transition-colors block">
+          <Link href={link.href} className="text-sm text-brand-text/70 hover:text-brand-gold transition-colors block py-2 md:py-0.5">
             {link.name}
           </Link>
         </li>

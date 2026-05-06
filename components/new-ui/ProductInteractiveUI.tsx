@@ -7,6 +7,7 @@ import { useCartStore } from '@/store/cartStore';
 import { Button } from './Button';
 import { Section } from './Section';
 import { cn } from '@/lib/utils';
+import { PLACEHOLDER_IMAGE, getValidImageUrl } from '@/lib/constants';
 
 export function ProductInteractiveUI({ product }: { product: any }) {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -50,7 +51,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
             <div className="relative aspect-[4/5] w-full rounded-[40px] overflow-hidden bg-white border border-brand-text/5 shadow-soft group">
               <Image
                 key={selectedImage} // forces remount for smooth transition
-                src={product.images[selectedImage]}
+                src={getValidImageUrl(product.images?.[selectedImage])}
                 alt={product.name}
                 fill
                 className="object-cover p-12 transition-transform duration-[2s] group-hover:scale-110 animate-in fade-in zoom-in-95 duration-500"
@@ -79,7 +80,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                       selectedImage === i ? "border-brand-gold" : "border-transparent bg-white hover:border-brand-text/20"
                     )}
                   >
-                    <Image src={img} alt={`${product.name} ${i}`} fill className="object-cover p-2" />
+                    <Image src={getValidImageUrl(img)} alt={`${product.name} ${i}`} fill className="object-cover p-2" />
                   </button>
                 ))}
               </div>

@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { ProductCard } from '@/components/new-ui/ProductCard';
 import { Section } from '@/components/new-ui/Section';
 import { IProduct } from '@/models/Product';
+import { PLACEHOLDER_IMAGE, getValidImageUrl } from '@/lib/constants';
 
 async function getProducts(category: string) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products?category=${category}`, {
@@ -60,7 +61,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                 key={product.slug}
                 name={product.name}
                 price={`$ ${product.specs instanceof Map ? product.specs.get('price') : (product.specs as any).price || '0.00'}`}
-                image={product.images[0]}
+                image={getValidImageUrl(product.images?.[0])}
                 slug={product.slug}
                 className="animate-in fade-in slide-in-from-bottom-12 duration-1000"
               />

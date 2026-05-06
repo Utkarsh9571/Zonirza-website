@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { PLACEHOLDER_IMAGE, getValidImageUrl } from '@/lib/constants';
 import { IProduct } from '@/models/Product';
 import { ArrowRight, Star, ShieldCheck, Diamond, Heart, CheckCircle2, Video, Store, Gift, RotateCcw } from 'lucide-react';
 import HeroSlider from '@/components/HeroSlider';
@@ -230,15 +231,15 @@ export default async function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-auto md:h-[500px]">
             {/* Top Left / Bottom Left equivalent (Grid split) */}
             <div className="grid grid-rows-2 gap-4 h-full">
-              <div className="relative rounded-xl overflow-hidden shadow-soft group">
+              <div className="relative rounded-2xl overflow-hidden shadow-soft group">
                 <Image src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=800" alt="World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               </div>
-              <div className="relative rounded-xl overflow-hidden shadow-soft group">
+              <div className="relative rounded-2xl overflow-hidden shadow-soft group">
                 <Image src="https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&q=80&w=800" alt="World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               </div>
             </div>
             {/* Right Side (One Large) */}
-            <div className="relative rounded-xl overflow-hidden shadow-soft group h-full min-h-[400px]">
+            <div className="relative rounded-2xl overflow-hidden shadow-soft group h-full min-h-[400px]">
               <Image src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=1000" alt="World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               <div className="absolute inset-0 bg-brand-text/20 flex flex-col items-center justify-center text-center p-8">
                 <h3 className="text-5xl font-serif text-white mb-4 italic">The Heritage</h3>
@@ -252,7 +253,7 @@ export default async function Home() {
       {/* 6. NEW ARRIVALS */}
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
-          <div className="w-full bg-[#B3A99B] overflow-hidden flex flex-col lg:flex-row shadow-soft">
+          <div className="w-full bg-[#B3A99B] rounded-3xl overflow-hidden flex flex-col lg:flex-row shadow-soft">
             <div className="w-full lg:w-1/3 text-white p-6 sm:p-10 flex flex-col justify-center space-y-4">
               <h2 className="text-3xl sm:text-4xl font-serif">New Arrivals</h2>
               <p className="text-white/80 text-[10px] sm:text-xs leading-relaxed max-w-[250px]">
@@ -261,8 +262,8 @@ export default async function Home() {
             </div>
             <div className="w-full lg:w-2/3 grid grid-cols-2 p-4 gap-4">
               {products.slice(0, 2).map((prod: any, i: number) => (
-                <div key={i} className="flex-1 bg-white border-[6px] border-white shadow-md relative group aspect-[4/5] overflow-hidden cursor-pointer">
-                  <Image src={prod.images[0]} alt={prod.name} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover transition-transform duration-1000 group-hover:scale-105" />
+                <div key={i} className="flex-1 bg-white border-[6px] border-white rounded-2xl shadow-md relative group aspect-[4/5] overflow-hidden cursor-pointer">
+                  <Image src={getValidImageUrl(prod.images?.[0])} alt={prod.name} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover transition-transform duration-1000 group-hover:scale-105" />
                   <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-sm px-3 py-1 text-[10px] text-white tracking-widest uppercase">{prod.name}</div>
                 </div>
               ))}
@@ -286,7 +287,7 @@ export default async function Home() {
               { img: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=600', text: 'Kids Jewellery' }
             ].map((store, i) => (
               <div key={i} className="group cursor-pointer flex flex-col items-center">
-                <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden mb-4 shadow-soft">
+                <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-4 shadow-soft hover:shadow-premium transition-all">
                 <Image src={store.img} alt={store.text} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                 </div>
                 <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/70">{store.text}</h4>
@@ -417,7 +418,7 @@ export default async function Home() {
             <p className="text-[10px] sm:text-sm text-brand-text/60 uppercase tracking-widest">Find a Boutique or Book a Consultation</p>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 border border-brand-text/10 rounded-xl overflow-hidden shadow-soft">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             {[
               { img: 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&q=80&w=600', text: 'VISIT OUR STORE' },
               { img: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600', text: 'BOOK AN APPOINTMENT' },
@@ -426,7 +427,7 @@ export default async function Home() {
               { img: 'https://images.unsplash.com/photo-1588444837495-c6bfcceebce7?auto=format&fit=crop&q=80&w=600', text: 'BLOGS' },
               { img: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=600', text: 'JEWELLERY GUIDE' }
             ].map((store, i) => (
-              <div key={i} className="group cursor-pointer bg-white border border-brand-text/5 flex flex-col">
+              <div key={i} className="group cursor-pointer bg-white border border-brand-text/5 flex flex-col rounded-2xl overflow-hidden shadow-soft hover:shadow-premium transition-all">
                 <div className="relative aspect-square overflow-hidden">
                   <Image src={store.img} alt={store.text} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
                 </div>
