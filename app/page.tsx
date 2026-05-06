@@ -1,19 +1,18 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { IProduct } from '@/models/Product';
-import { ICategory } from '@/models/Category';
-import { Play, ArrowRight, Star, Truck, Award, Package, Diamond, Heart, Share2 } from 'lucide-react';
+import { ArrowRight, Star, ShieldCheck, Diamond, Heart, CheckCircle2, Video, Store, Gift, RotateCcw } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 async function getData() {
   const [pRes, cRes] = await Promise.all([
-    fetch(`${API_URL}/api/products`, { next: { revalidate: 60 } }),
-    fetch(`${API_URL}/api/categories`, { next: { revalidate: 60 } })
+    fetch(`${API_URL}/api/products`, { next: { revalidate: 60 } }).catch(() => null),
+    fetch(`${API_URL}/api/categories`, { next: { revalidate: 60 } }).catch(() => null)
   ]);
   
-  const products = pRes.ok ? (await pRes.json()).data : [];
-  const categories = cRes.ok ? (await cRes.json()).data : [];
+  const products = (pRes && pRes.ok) ? (await pRes.json()).data : [];
+  const categories = (cRes && cRes.ok) ? (await cRes.json()).data : [];
   
   return { products, categories };
 }
@@ -24,9 +23,14 @@ export default async function Home() {
   // Fallback for UI demonstration
   if (categories.length === 0) {
     categories = [
-      { name: 'Ring', slug: 'ring', image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e' },
-      { name: 'Necklace', slug: 'necklace', image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f' },
-      { name: 'Bracelet', slug: 'bracelet', image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a' }
+      { name: 'Rings', slug: 'ring', image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e' },
+      { name: 'Earrings', slug: 'earring', image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908' },
+      { name: 'Pendants', slug: 'pendant', image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f' },
+      { name: 'Bracelets', slug: 'bracelet', image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a' },
+      { name: 'Mangalsutras', slug: 'mangalsutra', image: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e' },
+      { name: 'Necklaces', slug: 'necklace', image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338' },
+      { name: 'Chains', slug: 'chain', image: 'https://images.unsplash.com/photo-1588444837495-c6bfcceebce7' },
+      { name: 'Nose Pins', slug: 'nose-pin', image: 'https://images.unsplash.com/photo-1629224316810-9d8805b95e76' }
     ] as any;
   }
   
@@ -42,10 +46,8 @@ export default async function Home() {
   return (
     <div className="flex flex-col bg-brand-bg min-h-screen overflow-x-hidden">
 
-
-      {/* 1. HERO SECTION */}
+      {/* 1. HERO SECTION (Unchanged) */}
       <section className="relative h-screen min-h-[900px] w-full flex items-center justify-center p-6 md:p-12 overflow-hidden">
-        {/* Background Image */}
         <div className="absolute inset-0 w-full h-full">
           <Image
             src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=2000"
@@ -54,14 +56,11 @@ export default async function Home() {
             className="object-cover"
             priority
           />
-
           <div className="absolute inset-0 bg-brand-text/10"></div>
         </div>
         
-        {/* Main Glass Container */}
         <div className="relative z-10 w-full max-w-[1400px] h-full max-h-[800px] bg-white/10 backdrop-blur-2xl border border-white/20 rounded-[60px] shadow-premium overflow-hidden flex flex-col md:flex-row items-center justify-between p-12 md:p-24 animate-in fade-in zoom-in duration-1000">
           
-          {/* Left Content */}
           <div className="flex flex-col items-start space-y-12 max-w-2xl">
             <div className="space-y-4">
               <h1 className="text-7xl md:text-[110px] font-serif text-white leading-[0.85] tracking-tighter">
@@ -88,9 +87,7 @@ export default async function Home() {
             </div>
           </div>
 
-          {/* Right Floating Elements */}
           <div className="relative flex flex-col items-end space-y-16 mt-20 md:mt-0">
-            {/* Happy Clients Pill */}
             <div className="bg-white/90 backdrop-blur-md p-4 pr-10 rounded-full shadow-premium flex items-center space-x-6 animate-in slide-in-from-right-12 duration-1000 delay-300">
               <div className="flex -space-x-4">
                 {[1, 2, 3].map(i => (
@@ -108,7 +105,6 @@ export default async function Home() {
               </div>
             </div>
 
-            {/* Detail Horizontal Card */}
             <div className="bg-white p-6 rounded-[35px] shadow-premium flex items-center space-x-6 w-full max-w-[420px] animate-in slide-in-from-bottom-12 duration-1000 delay-500">
               <div className="w-28 h-20 relative rounded-2xl overflow-hidden bg-brand-accent shadow-soft">
                 <Image src={products[0]?.images[0] || "https://images.unsplash.com/photo-1605100804763-247f67b3557e"} alt="Product" fill className="object-cover" />
@@ -127,203 +123,229 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* --- NEW TANISHQ-INSPIRED SECTIONS BEGIN HERE --- */}
 
-      {/* 2. FEATURE ROW - Trust Badges */}
-      <section className="py-36 bg-brand-accent/15">
-        <div className="section-container !max-w-[1500px]">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-20 lg:gap-y-0">
-            {[
-              { icon: Truck, title: 'Free Shipping', sub: 'On all orders above $500' },
-              { icon: Diamond, title: 'Exclusive Design', sub: 'Handcrafted by masters' },
-              { icon: Package, title: 'Good Packaging', sub: 'Eco-friendly luxury' },
-              { icon: Award, title: 'Highest Quality', sub: 'BIS Hallmarked Purity' },
-            ].map((item, i) => (
-              <div key={i} className={`flex flex-col items-center text-center px-12 lg:px-16 ${i < 3 ? 'lg:border-r border-brand-text/5' : ''}`}>
-                <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-10 shadow-soft text-brand-gold group hover:scale-110 transition-transform duration-500">
-                  <item.icon size={30} strokeWidth={1.5} />
+      {/* 2. SHOP BY COLLECTION */}
+      <section className="py-8 sm:py-12">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
+          <div className="text-center mb-8 sm:mb-10 space-y-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Shop by Collection</h2>
+            <div className="w-16 h-[1px] bg-brand-gold mx-auto"></div>
+          </div>
+
+          <div className="flex flex-col lg:flex-row gap-4">
+            {/* Left Main Collection */}
+            <div className="w-full lg:w-2/3 relative aspect-[4/5] md:aspect-auto md:h-[500px] rounded-xl overflow-hidden group shadow-soft">
+              <Image 
+                src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=1200" 
+                alt="Bridal Collection" 
+                fill 
+                className="object-cover transition-transform duration-[3s] group-hover:scale-105" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-text/80 via-transparent to-transparent"></div>
+              <div className="absolute bottom-6 left-6 text-white space-y-2">
+                <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-brand-gold">Signature</p>
+                <h3 className="text-3xl font-serif">Bridal Collection</h3>
+                <Link href="/category/bridal" className="inline-flex items-center space-x-2 text-sm uppercase tracking-widest font-bold hover:text-brand-gold transition-colors pt-2">
+                  <span>Explore</span>
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Stacked Collections */}
+            <div className="w-full lg:w-1/3 grid grid-cols-2 lg:flex lg:flex-col gap-4">
+              <div className="relative w-full aspect-[4/5] md:h-full rounded-xl overflow-hidden group shadow-soft">
+                <Image 
+                  src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=600" 
+                  alt="Everyday Wear" 
+                  fill 
+                  className="object-cover transition-transform duration-[3s] group-hover:scale-105" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-text/80 via-transparent to-transparent"></div>
+                <div className="absolute bottom-6 left-6 text-white space-y-1">
+                  <h3 className="text-xl sm:text-2xl font-serif">Everyday Wear</h3>
+                  <Link href="/category/everyday" className="inline-flex items-center space-x-2 text-[8px] sm:text-[10px] uppercase tracking-widest hover:text-brand-gold transition-colors pt-1">
+                    <span>Explore</span> <ArrowRight size={12} />
+                  </Link>
                 </div>
-                <h4 className="text-base uppercase tracking-[0.3em] font-medium text-[#332D29] mb-4">{item.title}</h4>
-                <p className="text-[#6B6B65] text-sm leading-relaxed max-w-[220px] font-medium">{item.sub}</p>
+              </div>
+              <div className="relative w-full aspect-[4/5] md:h-full rounded-xl overflow-hidden group shadow-soft">
+                <Image 
+                  src="https://images.unsplash.com/photo-1588444837495-c6bfcceebce7?auto=format&fit=crop&q=80&w=600" 
+                  alt="Men's Edit" 
+                  fill 
+                  className="object-cover transition-transform duration-[3s] group-hover:scale-105" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-text/80 via-transparent to-transparent"></div>
+                <div className="absolute bottom-6 left-6 text-white space-y-1">
+                  <h3 className="text-xl sm:text-2xl font-serif">Men's Edit</h3>
+                  <Link href="/category/men" className="inline-flex items-center space-x-2 text-[8px] sm:text-[10px] uppercase tracking-widest hover:text-brand-gold transition-colors pt-1">
+                    <span>Explore</span> <ArrowRight size={12} />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. FIND YOUR PERFECT MATCH */}
+      <section className="py-8 sm:py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
+          <div className="text-center mb-8 sm:mb-10 space-y-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Find Your Perfect Match</h2>
+            <div className="w-16 h-[1px] bg-brand-gold mx-auto"></div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+            {categories.slice(0, 8).map((cat: any, i: number) => (
+              <Link href={`/category/${cat.slug}`} key={i} className="group flex flex-col items-center text-center space-y-4">
+                <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden shadow-soft border border-brand-text/5 bg-brand-bg group-hover:shadow-premium transition-all">
+                  <Image 
+                    src={cat.image} 
+                    alt={cat.name} 
+                    fill 
+                    className="object-cover transition-transform duration-700 group-hover:scale-105" 
+                  />
+                </div>
+                <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold text-brand-text group-hover:text-brand-gold transition-colors">
+                  {cat.name}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 4. TRENDING NOW */}
+      <section className="py-8 sm:py-12 bg-[#F9F6F0]">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
+          <div className="text-center mb-8 sm:mb-10 space-y-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Trending Now</h2>
+            <div className="w-16 h-[1px] bg-brand-gold mx-auto"></div>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+            {[
+              { title: 'The Solitaire Promise', img: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e' },
+              { title: 'Vintage Heirloom', img: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f' },
+              { title: 'Modern Minimalism', img: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a' }
+            ].map((trend, i) => (
+              <div key={i} className="group relative aspect-[3/4] rounded-xl overflow-hidden shadow-soft cursor-pointer">
+                <Image src={trend.img} alt={trend.title} fill className="object-cover transition-transform duration-1000 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-text/90 via-transparent to-transparent"></div>
+                <h3 className="absolute bottom-6 w-full text-center text-white font-serif text-xl px-4">{trend.title}</h3>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 3. SPLIT FEATURE SECTION - Radiant Refinement */}
-      <section className="py-48 bg-[#FAF9F6]">
-        <div className="section-container !max-w-[1600px]">
-          <div className="flex flex-col lg:flex-row items-center gap-24 lg:gap-40">
-            {/* Left Image - Massive & Dominant */}
-            <div className="relative w-full lg:w-[45%] aspect-[4/5] rounded-[80px] overflow-hidden shadow-premium group animate-in fade-in slide-in-from-left-12 duration-1000">
-              <Image src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=1200" alt="Style" fill className="object-cover transition-transform duration-[3s] group-hover:scale-110" />
-              <div className="absolute top-10 left-10 bg-white/90 backdrop-blur-md px-6 py-3 rounded-full flex items-center space-x-3 shadow-soft">
-                <div className="flex text-brand-gold">
-                  {[1,2,3,4,5].map(i => <Star key={i} size={12} fill="currentColor" />)}
+      {/* 5. ZONIRAZ WORLD */}
+      <section className="py-8 sm:py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
+          <div className="text-center mb-8 sm:mb-10 space-y-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Zoniraz World</h2>
+            <div className="w-16 h-[1px] bg-brand-gold mx-auto"></div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-auto md:h-[500px]">
+            {/* Top Left / Bottom Left equivalent (Grid split) */}
+            <div className="grid grid-rows-2 gap-4 h-full">
+              <div className="relative rounded-xl overflow-hidden shadow-soft group">
+                <Image src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=800" alt="World" fill className="object-cover transition-transform group-hover:scale-105 duration-1000" />
+              </div>
+              <div className="relative rounded-xl overflow-hidden shadow-soft group">
+                <Image src="https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&q=80&w=800" alt="World" fill className="object-cover transition-transform group-hover:scale-105 duration-1000" />
+              </div>
+            </div>
+            {/* Right Side (One Large) */}
+            <div className="relative rounded-xl overflow-hidden shadow-soft group h-full min-h-[400px]">
+              <Image src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=1000" alt="World" fill className="object-cover transition-transform group-hover:scale-105 duration-1000" />
+              <div className="absolute inset-0 bg-brand-text/20 flex flex-col items-center justify-center text-center p-8">
+                <h3 className="text-5xl font-serif text-white mb-4 italic">The Heritage</h3>
+                <p className="text-white/90 text-sm max-w-sm uppercase tracking-widest">Crafting brilliance for generations.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. NEW ARRIVALS */}
+      <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
+          <div className="w-full bg-[#B3A99B] overflow-hidden flex flex-col lg:flex-row shadow-soft">
+            <div className="w-full lg:w-1/3 text-white p-6 sm:p-10 flex flex-col justify-center space-y-4">
+              <h2 className="text-3xl sm:text-4xl font-serif">New Arrivals</h2>
+              <p className="text-white/80 text-[10px] sm:text-xs leading-relaxed max-w-[250px]">
+                New Arrivals Dropping Daily, Monday through Friday. Explore the Latest Launches Now!
+              </p>
+            </div>
+            <div className="w-full lg:w-2/3 grid grid-cols-2 p-4 gap-4">
+              {products.slice(0, 2).map((prod: any, i: number) => (
+                <div key={i} className="flex-1 bg-white border-[6px] border-white shadow-md relative group aspect-[4/5] overflow-hidden cursor-pointer">
+                  <Image src={prod.images[0]} alt={prod.name} fill className="object-cover transition-transform duration-1000 group-hover:scale-105" />
+                  <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-sm px-3 py-1 text-[10px] text-white tracking-widest uppercase">{prod.name}</div>
                 </div>
-                <span className="text-xs font-bold text-brand-text tracking-widest">(5/5)</span>
-              </div>
-            </div>
-
-            {/* Middle Text Content - Spacious & Elegant */}
-            <div className="w-full lg:w-1/3 space-y-14">
-              <h2 className="text-6xl md:text-[85px] font-serif text-[#332D29] leading-[0.95] tracking-tighter">
-                The Art Of Radiant Refinement
-              </h2>
-              <p className="text-[#6B6B65] text-lg md:text-xl leading-relaxed max-w-md italic">
-                Discover a world where every piece tells a story of elegance and superior craftsmanship. Our collections are designed for those who appreciate the finer details of life.
-              </p>
-              <button className="btn-outline !px-16 !py-7 rounded-full text-[11px] uppercase tracking-[0.4em] font-bold shadow-soft hover:bg-[#332D29] hover:text-white transition-all">
-                Learn More
-              </button>
-            </div>
-
-            {/* Right Small Image - Balanced */}
-            <div className="hidden lg:block lg:w-1/4">
-              <div className="relative aspect-[4/5] rounded-[60px] overflow-hidden shadow-premium group animate-in fade-in slide-in-from-right-12 duration-1000 delay-500">
-                 <Image 
-                    src={products[2]?.images[0] || "https://images.unsplash.com/photo-1605100804763-247f67b3557e"} 
-                    alt="Product Detail" 
-                    fill 
-                    className="object-cover transition-transform duration-[3s] group-hover:scale-110" 
-                 />
-                 <div className="absolute inset-0 bg-brand-text/5 group-hover:opacity-0 transition-opacity"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. BRAND STORY SECTION */}
-      <section className="py-48 bg-white overflow-hidden">
-        <div className="section-container !max-w-[1500px]">
-          <div className="flex flex-col lg:flex-row gap-24 lg:gap-40 items-center">
-            {/* Left Image - Workshop/Atmospheric */}
-            <div className="relative w-full lg:w-1/2 aspect-[4/3] rounded-[60px] overflow-hidden shadow-premium group">
-              <Image 
-                src="https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&q=80&w=1200" 
-                alt="Our Workshop" 
-                fill 
-                className="object-cover transition-transform duration-[4s] group-hover:scale-110" 
-              />
-              <div className="absolute inset-0 bg-[#332D29]/5"></div>
-            </div>
-
-            {/* Right Content */}
-            <div className="w-full lg:w-1/2 space-y-12 animate-in fade-in slide-in-from-right-12 duration-1000">
-              <div className="space-y-6">
-                <p className="text-brand-gold text-xs uppercase tracking-[0.5em] font-bold">Heritage & Craft</p>
-                <h2 className="text-6xl md:text-[90px] font-serif text-[#332D29] leading-[1] tracking-tighter">
-                  Our Craft, <br /> Our Story
-                </h2>
-              </div>
-              <p className="text-[#6B6B65] text-xl md:text-2xl leading-relaxed max-w-xl italic font-medium">
-                For over three decades, Zoniraz has been a sanctuary of timeless elegance. Every piece is a testament to the master artisans who pour their soul into the gold and diamonds, preserving the ancient traditions of jewelry making while embracing the silhouettes of the modern world.
-              </p>
-              <div className="pt-6">
-                <div className="w-24 h-[1px] bg-brand-gold/40"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-      {/* 5. COLLECTION SECTION */}
-      <section className="py-48 bg-[#FDFBF7] rounded-[100px] mx-6 md:mx-12">
-        <div className="section-container !max-w-[1500px]">
-          <div className="flex flex-col lg:flex-row gap-20 lg:gap-32 items-start">
-            <div className="lg:w-1/4 space-y-12">
-              <h2 className="text-6xl md:text-[85px] font-serif text-brand-text leading-[1.1] italic">Our Collection</h2>
-              <p className="text-brand-text/50 text-base md:text-lg leading-relaxed max-w-sm uppercase tracking-widest">
-                Explore our curated edit of timeless jewelry, meticulously crafted in the heart of our workshops.
-              </p>
-              <button className="btn-outline !px-14 !py-6 text-[11px] uppercase tracking-[0.4em] font-bold shadow-soft hover:shadow-premium transition-all">
-                See More
-              </button>
-            </div>
-
-            <div className="lg:w-3/4 grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
-              {products.slice(0, 3).map((product: IProduct) => (
-                <Link href={`/product/${product.slug}`} key={product.slug} className="group block">
-                  <div className="bg-white/40 backdrop-blur-sm p-8 rounded-[60px] shadow-soft transition-all duration-700 group-hover:shadow-premium group-hover:bg-white group-hover:-translate-y-5 border border-white/50">
-                    <div className="relative aspect-[1/1] rounded-[45px] overflow-hidden mb-10 shadow-inner">
-                      <Image 
-                        src={product.images[0]} 
-                        alt={product.name} 
-                        fill 
-                        className="object-cover transition-transform duration-1000 group-hover:scale-110" 
-                      />
-                      <div className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white text-brand-text flex items-center justify-center shadow-soft opacity-0 translate-y-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
-                        <Package size={18} />
-                      </div>
-                    </div>
-                    <div className="space-y-4 px-2">
-                      <h3 className="text-brand-text font-serif text-2xl md:text-3xl leading-tight">{product.name}</h3>
-                      <div className="flex items-center justify-between">
-                        <p className="text-brand-gold text-sm font-bold tracking-[0.2em] uppercase opacity-80">
-                          $ {product.specs instanceof Map ? product.specs.get('price') : (product.specs as any).price || '240.00'}
-                        </p>
-                        <div className="w-8 h-[1px] bg-brand-gold/30"></div>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
               ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* 6. MEDIA / VIDEO SECTION - Refined Choose Type */}
-      <section className="py-80 bg-[#F5F1EB]">
-        <div className="section-container !max-w-[1600px]">
-          <div className="flex flex-col lg:flex-row gap-40 lg:gap-52 items-center">
-            {/* Left Video Block - Increased Scale & Rounded Corners */}
-            <div className="relative w-full lg:w-[65%] h-[600px] md:h-[800px] rounded-[150px] overflow-hidden group shadow-premium animate-in fade-in slide-in-from-left-12 duration-1000">
-              <Image 
-                src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=1600" 
-                alt="Brand Story" 
-                fill 
-                className="object-cover transition-transform duration-[3s] group-hover:scale-105" 
-              />
-              <div className="absolute inset-0 bg-brand-text/5 transition-opacity group-hover:opacity-0"></div>
-              <button className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-white flex items-center justify-center text-brand-text shadow-premium transition-all hover:scale-110 active:scale-95 group/play">
-                <Play size={40} fill="currentColor" className="ml-2 group-hover/play:text-brand-gold transition-colors" />
-              </button>
+      {/* 7. CURATED FOR YOU */}
+      <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
+          <div className="text-center mb-8 sm:mb-10 space-y-2">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Curated For You</h2>
+            <p className="text-[10px] sm:text-sm text-brand-text/60 uppercase tracking-widest">Shop By Gender</p>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+            {[
+              { img: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&q=80&w=600', text: 'Women Jewellery' },
+              { img: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600', text: 'Men Jewellery' },
+              { img: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=600', text: 'Kids Jewellery' }
+            ].map((store, i) => (
+              <div key={i} className="group cursor-pointer flex flex-col items-center">
+                <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden mb-4 shadow-soft">
+                  <Image src={store.img} alt={store.text} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                </div>
+                <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/70">{store.text}</h4>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 8. STYLING 101 WITH DIAMONDS */}
+      <section className="py-16 bg-white overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
+          <div className="text-center mb-12 sm:mb-16 space-y-2">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Styling 101 With Diamonds</h2>
+            <p className="text-[10px] sm:text-sm text-brand-text/60 uppercase tracking-widest">Trendsetting diamond jewellery suited for every occasion</p>
+          </div>
+
+          <div className="relative flex justify-center items-center h-[500px] max-w-4xl mx-auto">
+            {/* Background overlapping cards (simulated fan effect) */}
+            <div className="hidden md:block absolute w-[250px] aspect-[9/16] bg-brand-text rounded-xl shadow-xl -translate-x-48 scale-75 opacity-60 z-0"></div>
+            <div className="hidden md:block absolute w-[250px] aspect-[9/16] bg-[#539E99] rounded-xl shadow-xl -translate-x-24 scale-90 opacity-80 z-10"></div>
+            
+            <div className="hidden md:block absolute w-[250px] aspect-[9/16] bg-[#2A2B2E] rounded-xl shadow-xl translate-x-48 scale-75 opacity-60 z-0 overflow-hidden">
+              <Image src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908" alt="Diamond bg" fill className="object-cover opacity-50" />
+            </div>
+            <div className="hidden md:block absolute w-[250px] aspect-[9/16] bg-[#162933] rounded-xl shadow-xl translate-x-24 scale-90 opacity-80 z-10 overflow-hidden">
+              <Image src="https://images.unsplash.com/photo-1588444837495-c6bfcceebce7" alt="Diamond bg" fill className="object-cover opacity-50" />
             </div>
 
-            {/* Right Category Selector - Spacious Content */}
-            <div className="w-full lg:w-[35%] space-y-20 animate-in fade-in slide-in-from-right-12 duration-1000 delay-300">
-              <div className="space-y-10">
-                <h2 className="text-7xl md:text-[100px] font-serif text-[#332D29] leading-[0.85] tracking-tighter">
-                  Choose The Type!
-                </h2>
-                <p className="text-[#6B6B65] text-xl md:text-2xl leading-relaxed max-w-lg">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.
-                </p>
-              </div>
-              
-              <div className="flex items-center space-x-16">
-                {categories.slice(0, 3).map((cat: ICategory) => (
-                  <Link href={`/category/${cat.slug}`} key={cat.slug} className="group flex flex-col items-center space-y-8">
-                    <div className="w-56 h-80 rounded-[110px] overflow-hidden border border-white/50 bg-[#f9f7f4] shadow-xl p-2 transition-all duration-700 group-hover:shadow-premium group-hover:-translate-y-6">
-                      <div className="w-full h-[55%] relative rounded-[90px] overflow-hidden bg-brand-accent mt-3 mx-auto w-[92%] flex items-center justify-center">
-                        <Image 
-                          src={cat.image} 
-                          alt={cat.name} 
-                          fill 
-                          className="object-cover transition-transform duration-1000 group-hover:scale-110" 
-                        />
-                      </div>
-                      <div className="flex flex-col items-center justify-center h-[45%] space-y-4">
-                        <span className="text-sm md:text-base uppercase tracking-[0.4em] font-bold text-[#6B6B65] group-hover:text-brand-gold transition-colors">{cat.name}</span>
-                        <div className="w-10 h-10 rounded-full border border-brand-text/10 flex items-center justify-center mx-auto transition-all group-hover:border-brand-gold group-hover:bg-brand-gold group-hover:text-white">
-                          <ArrowRight size={14} />
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
+            {/* Center Active Card */}
+            <div className="relative w-[280px] sm:w-[300px] aspect-[9/16] bg-[#1E4D8C] rounded-xl shadow-2xl z-20 overflow-hidden p-2">
+              <div className="grid grid-cols-2 grid-rows-3 gap-2 h-full">
+                {[1, 2, 3, 4, 5, 6].map(i => (
+                  <div key={i} className="relative rounded-md overflow-hidden bg-black/10">
+                    <Image src="https://images.unsplash.com/photo-1605100804763-247f67b3557e" alt="Diamond item" fill className="object-cover" />
+                  </div>
                 ))}
               </div>
             </div>
@@ -331,52 +353,131 @@ export default async function Home() {
         </div>
       </section>
 
-
-
-      {/* 7. TESTIMONIAL SECTION */}
-      <section className="py-48 bg-brand-accent/20">
-        <div className="section-container !max-w-[1500px] text-center">
-          <h2 className="text-6xl md:text-7xl font-serif text-[#332D29] italic mb-24">What Our Clients Say</h2>
+      {/* 9. ZONIRAZ ASSURANCE & EXCHANGE */}
+      <section className="py-16 bg-white border-y border-brand-text/5">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
+          {/* Top Strip */}
+          <div className="flex flex-col md:flex-row items-center justify-between py-8 border-b border-brand-text/5 gap-8">
+            <div className="text-center md:text-left">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Zoniraz <span className="text-[#8B2332]">Assurance</span></h2>
+              <p className="text-xs sm:text-sm text-brand-text/50 mt-2">Crafted by experts, cherished by you</p>
+            </div>
+            <div className="flex flex-wrap justify-center items-center gap-6 md:gap-16">
+              <div className="flex flex-col items-center text-center">
+                <Diamond size={24} className="text-brand-gold mb-2" />
+                <span className="text-[10px] uppercase font-bold text-brand-text">Quality<br/>Craftsmanship</span>
+              </div>
+              <div className="flex flex-col items-center text-center">
+                <Heart size={24} className="text-brand-gold mb-2" />
+                <span className="text-[10px] uppercase font-bold text-brand-text">Ethically<br/>Sourced</span>
+              </div>
+              <div className="flex flex-col items-center text-center">
+                <ShieldCheck size={24} className="text-brand-gold mb-2" />
+                <span className="text-[10px] uppercase font-bold text-brand-text">100%<br/>Transparency</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Strip (Exchange Program) */}
+          <div className="flex flex-col items-center py-16 text-center space-y-8">
+            <div>
+              <h2 className="text-3xl font-serif text-brand-text tracking-tight mb-2">Exchange Program</h2>
+              <p className="text-sm text-brand-text/50">Trusted by 2.8M+ families</p>
+            </div>
+            
+            <button className="w-full sm:w-auto px-8 py-3 border border-[#8B2332]/30 rounded-full text-[10px] uppercase tracking-widest font-bold text-brand-text hover:bg-brand-bg transition-colors flex items-center justify-center space-x-2">
+              <span>Explore Now</span>
+              <ArrowRight size={12} />
+            </button>
+
+            <div className="w-full flex items-center justify-center space-x-4">
+              <div className="h-[1px] w-full max-w-[200px] bg-brand-text/10"></div>
+              <p className="text-xs text-brand-text/40 italic">Trust us to be part of your precious moments and to deliver jewellery that you'll cherish forever.</p>
+              <div className="h-[1px] w-full max-w-[200px] bg-brand-text/10"></div>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-12 mt-8">
+              {[
+                { icon: RotateCcw, title: 'Zoniraz Exchange' },
+                { icon: Diamond, title: 'The Purity Guarantee' },
+                { icon: ShieldCheck, title: 'Complete Transparency and Trust' },
+                { icon: Store, title: 'Lifetime Maintenance' },
+              ].map((item, i) => (
+                <div key={i} className="flex flex-col items-center max-w-[120px]">
+                  <item.icon size={32} className="text-brand-gold mb-4" strokeWidth={1.5} />
+                  <span className="text-[10px] uppercase font-bold text-brand-text leading-tight">{item.title}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 10. GIFTING & OLD GOLD */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          {/* Gift Card */}
+          <div className="relative aspect-square md:aspect-auto md:h-[400px] rounded-3xl overflow-hidden bg-[#F6EDEB] group p-10 flex flex-col items-center justify-center text-center">
+            {/* Simulated ribbons */}
+            <div className="absolute top-0 bottom-0 left-12 w-8 bg-[#8B2332]"></div>
+            <div className="absolute left-0 right-0 bottom-12 h-8 bg-[#8B2332]"></div>
+            {/* Bow center */}
+            <div className="absolute left-12 bottom-12 w-12 h-12 bg-[#701C28] rounded-full transform -translate-x-2 translate-y-2"></div>
+            
+            <div className="relative z-10 space-y-4 sm:ml-12 sm:mb-12 bg-white/80 backdrop-blur-sm p-6 rounded-2xl w-full max-w-[280px]">
+              <h3 className="text-2xl sm:text-4xl font-serif text-[#8B2332]">#GiftOfChoice</h3>
+              <p className="text-brand-text/70 text-[10px] sm:text-xs leading-relaxed max-w-[200px] mx-auto">Breathtaking gifts for your loved one's</p>
+              <p className="text-[#8B2332] text-[9px] sm:text-[10px] font-bold uppercase tracking-widest">Starting at $10,000</p>
+              <button className="w-full mt-4 px-6 py-2 border border-[#8B2332]/20 bg-white rounded-full text-[10px] uppercase tracking-widest font-bold text-brand-text hover:bg-[#8B2332] hover:text-white transition-all flex items-center justify-center space-x-2">
+                <span>Explore Now</span>
+                <ArrowRight size={10} />
+              </button>
+            </div>
+          </div>
+
+          {/* Exchange Gold Card */}
+          <div className="relative aspect-square md:aspect-auto md:h-[400px] rounded-3xl overflow-hidden bg-[#FFFBF0] group p-12 flex flex-col justify-center border-[12px] border-white shadow-sm">
+            <div className="space-y-6">
+              <div className="w-16 h-16 border border-brand-gold rounded-t-full flex items-center justify-center mb-6">
+                <RotateCcw size={24} className="text-brand-gold" />
+              </div>
+              <h3 className="text-4xl font-serif text-brand-text max-w-[250px] leading-tight">Exchange your Old Gold for 100% Value!</h3>
+              <p className="text-brand-text/60 text-xs leading-relaxed max-w-[250px]">Unlock full value for your old gold today with our <span className="font-bold text-brand-text">Exchange Program!</span></p>
+              <button className="w-full sm:w-max px-6 py-3 border border-brand-gold bg-white rounded-full text-[10px] uppercase tracking-widest font-bold text-brand-text hover:bg-brand-gold hover:text-white transition-all flex items-center justify-center space-x-2">
+                <span>Know more</span>
+                <ArrowRight size={10} />
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 11. ZONIRAZ EXPERIENCE */}
+      <section className="py-8 sm:py-16 bg-white border-t border-brand-text/5">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
+          <div className="text-center mb-8 sm:mb-10 space-y-2">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Zoniraz Experience</h2>
+            <p className="text-[10px] sm:text-sm text-brand-text/60 uppercase tracking-widest">Find a Boutique or Book a Consultation</p>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 border border-brand-text/10 rounded-xl overflow-hidden shadow-soft">
             {[
-              {
-                name: "Sarah Mitchell",
-                role: "Verified Buyer",
-                text: "The craftsmanship is simply unparalleled. My engagement ring is a masterpiece that I'll cherish forever.",
-                avatar: "https://i.pravatar.cc/150?u=sarah"
-              },
-              {
-                name: "James Wilson",
-                role: "Luxury Enthusiast",
-                text: "Exceptional service and exquisite designs. The attention to detail in every piece is truly remarkable.",
-                avatar: "https://i.pravatar.cc/150?u=james"
-              },
-              {
-                name: "Elena Rodriguez",
-                role: "Collector",
-                text: "Zoniraz jewelry isn't just an accessory; it's a statement of elegance. I'm absolutely in love with my necklace.",
-                avatar: "https://i.pravatar.cc/150?u=elena"
-              }
-            ].map((testimonial, i) => (
-              <div key={i} className="bg-white p-12 rounded-[60px] shadow-soft border border-white/50 text-left space-y-8 flex flex-col justify-between transition-all duration-500 hover:shadow-premium hover:-translate-y-4 group">
-                <div className="space-y-6">
-                  <div className="flex text-brand-gold gap-1">
-                    {[1, 2, 3, 4, 5].map(star => <Star key={star} size={16} fill="currentColor" />)}
-                  </div>
-                  <p className="text-[#6B6B65] text-lg md:text-xl leading-relaxed italic">
-                    "{testimonial.text}"
-                  </p>
+              { img: 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&q=80&w=600', text: 'VISIT OUR STORE' },
+              { img: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600', text: 'BOOK AN APPOINTMENT' },
+              { img: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&q=80&w=600', text: 'TALK TO AN EXPERT' },
+              { img: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=600', text: 'DIGI GOLD' },
+              { img: 'https://images.unsplash.com/photo-1588444837495-c6bfcceebce7?auto=format&fit=crop&q=80&w=600', text: 'BLOGS' },
+              { img: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=600', text: 'JEWELLERY GUIDE' }
+            ].map((store, i) => (
+              <div key={i} className="group cursor-pointer bg-white border border-brand-text/5 flex flex-col">
+                <div className="relative aspect-square overflow-hidden">
+                  <Image src={store.img} alt={store.text} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
                 </div>
-                
-                <div className="flex items-center gap-6 pt-8 border-t border-brand-text/5">
-                  <div className="w-14 h-14 rounded-full overflow-hidden shadow-soft transition-transform group-hover:scale-110">
-                    <Image src={testimonial.avatar} alt={testimonial.name} width={56} height={56} className="object-cover" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[#332D29] font-bold tracking-tight">{testimonial.name}</span>
-                    <span className="text-[#6B6B65] text-xs uppercase tracking-widest">{testimonial.role}</span>
-                  </div>
+                <div className="p-4 text-center">
+                  <h4 className="text-[10px] uppercase tracking-widest font-bold text-brand-text group-hover:text-brand-gold transition-colors">{store.text}</h4>
                 </div>
               </div>
             ))}
@@ -384,29 +485,6 @@ export default async function Home() {
         </div>
       </section>
 
-
-      {/* 8. CALL‑TO‑ACTION SECTION */}
-      <section className="py-48 bg-[#F5F1EB]">
-        <div className="section-container !max-w-[1500px] text-center">
-          <h2 className="text-6xl md:text-[90px] font-serif text-[#332D29] mb-12">Find Your Signature Piece</h2>
-          <button className="px-12 py-6 rounded-full bg-brand-gold text-white font-medium text-[18px] uppercase tracking-wider hover:bg-brand-gold/80 transition-colors shadow-soft hover:shadow-premium">
-            Shop Now
-          </button>
-        </div>
-      </section>
-
-      <section className="py-24 border-t border-brand-text/5 bg-brand-accent/20">
-        <div className="section-container">
-          <div className="flex flex-wrap justify-between items-center gap-12 opacity-30 grayscale mix-blend-multiply">
-            {['logoipsum', 'logoipsum', 'logoipsum', 'logoipsum', 'logoipsum'].map((logo, i) => (
-              <div key={i} className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-brand-text rounded-md rotate-45"></div>
-                <span className="text-2xl font-bold tracking-tighter">{logo}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

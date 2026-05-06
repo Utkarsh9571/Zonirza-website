@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import Link from "next/link";
+import { MapPin, Mail, Phone } from "lucide-react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,105 +27,104 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-full flex flex-col font-sans">
         <Navbar />
         <main className="flex-grow">{children}</main>
-        {/* Premium Footer */}
-        <footer className="bg-[#F5F1EB] text-[#332D29] pt-20 pb-10 border-t border-[#EAE1D5]">
-          <div className="section-container !max-w-[1500px]">
-            {/* TOP SECTION: 5 Columns */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8 mb-16">
+        
+        {/* NEW TANISHQ-INSPIRED DARK FOOTER */}
+        <footer className="bg-[#3A1C16] text-[#EAE1D5] pt-20 pb-10 mt-10 rounded-t-[40px] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] relative z-20">
+          <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-12 border-b border-[#EAE1D5]/10 pb-12">
               
-              {/* 1. Brand Info */}
-              <div className="lg:col-span-1">
-                <div className="flex items-center space-x-3 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-[#332D29] text-white flex items-center justify-center shrink-0">
-                    <span className="text-xl font-serif">Z</span>
-                  </div>
-                  <span className="font-serif text-2xl tracking-wide">Zoniraz</span>
+              {/* 1. App Download & Brand (Left Column) */}
+              <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-6">
+                <div className="font-serif text-4xl tracking-widest text-[#EAE1D5] mb-2">
+                  Zoniraz
                 </div>
-                <p className="text-sm text-[#6B6B65] leading-relaxed">
-                  Crafting timeless elegance and preserving heritage through exquisite fine jewelry since 1994.
+                <p className="text-xs text-[#EAE1D5]/90 font-light tracking-wide">
+                  Download the Zoniraz App Now
                 </p>
+                <div className="flex flex-col items-center md:items-start space-y-4">
+                  <div className="w-32 h-32 bg-white rounded-xl p-2 shadow-xl overflow-hidden border border-white/20">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://zoniraz.com" alt="QR Code" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <button className="bg-transparent border border-[#EAE1D5]/30 rounded px-3 py-1.5 text-[8px] uppercase tracking-widest hover:bg-[#EAE1D5]/10 transition-colors flex items-center space-x-1">
+                      <Image src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" width={60} height={20} alt="Play Store" className="invert grayscale brightness-200" />
+                    </button>
+                    <button className="bg-transparent border border-[#EAE1D5]/30 rounded px-3 py-1.5 text-[8px] uppercase tracking-widest hover:bg-[#EAE1D5]/10 transition-colors flex items-center space-x-1">
+                      <Image src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" width={60} height={20} alt="App Store" className="invert grayscale brightness-200" />
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              {/* 2. Shop Categories */}
-              <div>
-                <h4 className="font-medium text-sm uppercase tracking-widest mb-6">Shop</h4>
-                <ul className="space-y-4 text-sm text-[#6B6B65]">
-                  <li><Link href="/category/ring" className="hover:text-brand-gold transition-colors">Rings</Link></li>
-                  <li><Link href="/category/earring" className="hover:text-brand-gold transition-colors">Earrings</Link></li>
-                  <li><Link href="/category/pendant" className="hover:text-brand-gold transition-colors">Pendants</Link></li>
-                  <li><Link href="/category/necklace" className="hover:text-brand-gold transition-colors">Necklaces</Link></li>
+              {/* 2. Useful Links */}
+              <div className="pl-0 lg:pl-12">
+                <h4 className="font-serif text-lg mb-6 text-[#EAE1D5]">Useful Links</h4>
+                <ul className="space-y-3 text-xs font-light text-[#EAE1D5]/70">
+                  <li><Link href="/delivery" className="hover:text-white transition-colors">Delivery Information</Link></li>
+                  <li><Link href="/international" className="hover:text-white transition-colors">International Shipping</Link></li>
+                  <li><Link href="/payment" className="hover:text-white transition-colors">Payment Options</Link></li>
+                  <li><Link href="/track" className="hover:text-white transition-colors">Track your Order</Link></li>
+                  <li><Link href="/returns" className="hover:text-white transition-colors">Returns</Link></li>
+                  <li><Link href="/find-store" className="hover:text-white transition-colors">Find a Store</Link></li>
                 </ul>
               </div>
 
-              {/* 3. Company */}
+              {/* 3. Information */}
               <div>
-                <h4 className="font-medium text-sm uppercase tracking-widest mb-6">Company</h4>
-                <ul className="space-y-4 text-sm text-[#6B6B65]">
-                  <li><Link href="/about" className="hover:text-brand-gold transition-colors">About Us</Link></li>
-                  <li><Link href="/contact" className="hover:text-brand-gold transition-colors">Contact</Link></li>
-                  <li><Link href="/collections" className="hover:text-brand-gold transition-colors">Our Collections</Link></li>
+                <h4 className="font-serif text-lg mb-6 text-[#EAE1D5]">Information</h4>
+                <ul className="space-y-3 text-xs font-light text-[#EAE1D5]/70">
+                  <li><Link href="/careers" className="hover:text-white transition-colors">Careers</Link></li>
+                  <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
+                  <li><Link href="/offers" className="hover:text-white transition-colors">Offers & Contest Details</Link></li>
+                  <li><Link href="/help" className="hover:text-white transition-colors">Help & FAQs</Link></li>
+                  <li><Link href="/about" className="hover:text-white transition-colors">About Zoniraz</Link></li>
                 </ul>
               </div>
 
-              {/* 4. Policies */}
+              {/* 4. Contact Us */}
               <div>
-                <h4 className="font-medium text-sm uppercase tracking-widest mb-6">Policies</h4>
-                <ul className="space-y-4 text-sm text-[#6B6B65]">
-                  <li><Link href="/privacy" className="hover:text-brand-gold transition-colors">Privacy Policy</Link></li>
-                  <li><Link href="/shipping" className="hover:text-brand-gold transition-colors">Shipping Policy</Link></li>
-                  <li><Link href="/refunds" className="hover:text-brand-gold transition-colors">Refund Policy</Link></li>
-                </ul>
-              </div>
-
-              {/* 5. Newsletter */}
-              <div className="lg:col-span-1">
-                <h4 className="font-medium text-sm uppercase tracking-widest mb-6">Newsletter</h4>
-                <p className="text-sm text-[#6B6B65] mb-4 leading-relaxed">
-                  Subscribe to receive updates on new collections and special offers.
-                </p>
-                <form className="flex flex-col space-y-3" action="#">
-                  <input 
-                    type="email" 
-                    placeholder="Your email address" 
-                    className="w-full bg-transparent border-b border-[#C1B7A9] py-2 text-sm text-[#332D29] placeholder-[#6B6B65] focus:outline-none focus:border-[#332D29] transition-colors"
-                  />
-                  <button 
-                    type="submit" 
-                    className="self-start text-xs font-medium uppercase tracking-widest text-[#332D29] hover:text-brand-gold transition-colors mt-2"
-                  >
-                    Subscribe
-                  </button>
-                </form>
+                <h4 className="font-serif text-lg mb-6 text-[#EAE1D5]">Contact Us</h4>
+                <div className="space-y-6 text-xs font-light text-[#EAE1D5]/70">
+                  <div className="space-y-1">
+                    <p className="flex items-center space-x-2"><Phone size={14} className="text-[#EAE1D5]" /> <span>1800-266-0123</span></p>
+                  </div>
+                  <div className="space-y-3">
+                    <p className="font-serif text-lg text-[#EAE1D5]">Chat With Us</p>
+                    <div className="flex items-center space-x-4">
+                      <Link href="#" className="hover:text-white transition-colors border border-[#EAE1D5]/30 rounded-full p-2"><Mail size={16} /></Link>
+                      <Link href="#" className="hover:text-white transition-colors border border-[#EAE1D5]/30 rounded-full p-2"><Phone size={16} /></Link>
+                    </div>
+                  </div>
+                </div>
               </div>
 
             </div>
 
-            {/* BOTTOM SECTION */}
-            <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-[#EAE1D5] gap-6">
+            {/* BOTTOM SECTION: Social & Legal */}
+            <div className="flex flex-col space-y-6">
+              <div className="flex items-center space-x-4 border-b border-[#EAE1D5]/10 pb-6">
+                <span className="font-serif text-[#EAE1D5]">Social</span>
+                <Link href="#" className="w-6 h-6 rounded-full border border-[#EAE1D5]/30 flex items-center justify-center hover:bg-white/10 transition-colors text-[10px] font-bold">in</Link>
+                <Link href="#" className="w-6 h-6 rounded-full border border-[#EAE1D5]/30 flex items-center justify-center hover:bg-white/10 transition-colors text-[10px] font-bold">X</Link>
+                <Link href="#" className="w-6 h-6 rounded-full border border-[#EAE1D5]/30 flex items-center justify-center hover:bg-white/10 transition-colors text-[10px] font-bold">f</Link>
+                <Link href="#" className="w-6 h-6 rounded-full border border-[#EAE1D5]/30 flex items-center justify-center hover:bg-white/10 transition-colors text-[10px] font-bold">yt</Link>
+              </div>
               
-              {/* Copyright */}
-              <p className="text-xs text-[#6B6B65] uppercase tracking-wider order-3 md:order-1">
-                © {new Date().getFullYear()} Zoniraz Jewellery. All rights reserved.
-              </p>
-
-              {/* Payment Icons */}
-              <div className="flex items-center space-x-4 order-2 text-[#6B6B65]">
-                 <div className="w-10 h-6 border border-[#EAE1D5] rounded flex items-center justify-center text-[10px] font-bold">VISA</div>
-                 <div className="w-10 h-6 border border-[#EAE1D5] rounded flex items-center justify-center text-[10px] font-bold">MC</div>
-                 <div className="w-10 h-6 border border-[#EAE1D5] rounded flex items-center justify-center text-[10px] font-bold">AMEX</div>
-                 <div className="w-10 h-6 border border-[#EAE1D5] rounded flex items-center justify-center text-[10px] font-bold">PAYTM</div>
+              <div className="flex flex-col md:flex-row justify-between items-center text-[9px] font-light text-[#EAE1D5]/50 space-y-4 md:space-y-0">
+                <span>© 2026 Zoniraz Limited. All Rights Reserved.</span>
+                <div className="flex space-x-4">
+                  <Link href="/security" className="hover:text-white transition-colors">Cyber Security Policy</Link>
+                  <Link href="/terms" className="hover:text-white transition-colors">Terms & Conditions</Link>
+                  <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+                  <Link href="/disclaimer" className="hover:text-white transition-colors">Disclaimer</Link>
+                </div>
               </div>
-
-              {/* Social Icons */}
-              <div className="flex items-center space-x-6 order-1 md:order-3 text-sm">
-                <a href="#" className="text-[#332D29] hover:text-brand-gold transition-colors font-medium">Instagram</a>
-                <a href="#" className="text-[#332D29] hover:text-brand-gold transition-colors font-medium">Pinterest</a>
-                <a href="#" className="text-[#332D29] hover:text-brand-gold transition-colors font-medium">Facebook</a>
-              </div>
-
             </div>
+
           </div>
         </footer>
+
       </body>
     </html>
   );

@@ -1,120 +1,195 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Menu, X, ChevronDown, Diamond } from 'lucide-react';
-
+import { Menu, X, ChevronDown, Search, ShoppingCart } from 'lucide-react';
+import { MegaMenu } from './MegaMenu';
 import { cn } from '@/lib/utils';
+import { useCartStore } from '@/store/cartStore';
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); // Mobile menu toggle
+  const [isMegaMenuHovered, setIsMegaMenuHovered] = useState(false);
+  const [isMegaMenuPinned, setIsMegaMenuPinned] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
+  const cartItems = useCartStore((state) => state.items);
+  const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  const isMegaMenuOpen = isMegaMenuHovered || isMegaMenuPinned;
+  const navRef = useRef<HTMLElement>(null);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    setIsMegaMenuHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    hoverTimeoutRef.current = setTimeout(() => {
+      setIsMegaMenuHovered(false);
+    }, 200); // 200ms delay to allow crossing the gap
+  };
+
+  // Close mega menu when clicking outside
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+    setIsMounted(true);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setIsMegaMenuPinned(false);
+        setIsMegaMenuHovered(false);
+      }
     };
+    const handleScroll = () => {
+      setIsMegaMenuPinned(false);
+      setIsMegaMenuHovered(false);
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
-  const navLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'About Us', href: '/about' },
-    { name: 'Collections', href: '/category/all', hasDropdown: true },
-    { name: 'Pages', href: '#', hasDropdown: true },
-  ];
-
   return (
-    <nav 
-      className={cn(
-        "fixed top-0 w-full z-50 transition-all duration-700 px-6 md:px-16",
-        isScrolled ? "py-4 bg-brand-bg/90 backdrop-blur-xl shadow-soft" : "py-10 bg-transparent"
-      )}
-    >
-      <div className="max-w-[1440px] mx-auto flex justify-between items-center">
-        {/* Logo - Diamond Style */}
-        <Link href="/" className="flex items-center space-x-4 group">
-          <div className="relative w-12 h-12 flex items-center justify-center">
-             <div className="absolute inset-0 bg-white/20 backdrop-blur-md rounded-full border border-white/30 rotate-45 group-hover:rotate-90 transition-transform duration-700"></div>
-             <Diamond size={24} className="text-white relative z-10 drop-shadow-md" fill="currentColor" />
-          </div>
-          <span className="text-3xl font-serif font-bold tracking-tight text-white drop-shadow-lg">
-            Zoniraz
-          </span>
-        </Link>
+    <nav ref={navRef} className={cn(
+      "fixed w-full z-[100] flex justify-between items-center transition-all duration-500",
+      isScrolled 
+        ? "top-0 py-4 px-6 md:px-12 bg-white/60 backdrop-blur-md shadow-sm border-b border-white/20" 
+        : "top-6 px-6 md:px-12"
+    )}>
+      
+      {/* 1. LEFT: Floating Logo */}
+      <Link href="/" className="flex items-center space-x-3 group">
+        <div className="w-10 h-10 flex items-center justify-center bg-brand-gold rounded-full text-white shadow-soft">
+          <span className="font-serif font-bold text-xl">Z</span>
+        </div>
+        <span className="text-3xl font-serif font-bold tracking-widest text-brand-text uppercase drop-shadow-md hidden sm:block">Zoniraz</span>
+      </Link>
 
-        {/* Unified Navbar Pill */}
-        <div className={cn(
-          "hidden md:flex items-center rounded-full pl-10 pr-2 py-2 transition-all duration-700",
-          isScrolled 
-            ? "bg-white shadow-premium border border-brand-text/5" 
-            : "bg-white shadow-soft border border-white/20"
-        )}>
-          <div className="flex items-center space-x-10 mr-8">
-            {navLinks.map((link) => (
-              <Link 
-                key={link.name} 
-                href={link.href}
-                className={cn(
-                  "text-[10px] uppercase tracking-[0.2em] font-bold transition-all hover:text-brand-gold",
-                  "text-brand-text/60"
-                )}
-              >
-                {link.name}
-              </Link>
-            ))}
-          </div>
-          
-          <Link 
-            href="/contact"
-            className="bg-brand-text text-white px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-brand-gold transition-colors shadow-soft"
+      {/* 2. RIGHT: Floating Pill Navbar */}
+      <div className="hidden md:flex items-center bg-white/95 backdrop-blur-md rounded-full shadow-premium border border-white/40 pl-8 pr-3 py-3 relative">
+        
+        {/* Navigation Links inside Pill */}
+        <div className="flex items-center space-x-8 mr-8">
+          <div 
+            className="flex items-center space-x-1 cursor-pointer group py-2"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsMegaMenuPinned(!isMegaMenuPinned);
+            }}
           >
-            Contact Us
-          </Link>
+            <span className="text-[11px] uppercase tracking-widest font-bold text-brand-text group-hover:text-brand-gold transition-colors">Shop</span>
+            <ChevronDown size={14} className={cn("text-brand-text transition-transform", isMegaMenuOpen ? "rotate-180" : "")} />
+          </div>
+          <Link href="/new-arrivals" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 hover:text-brand-gold transition-colors">New Arrivals</Link>
+          <Link href="/ready-to-ship" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 hover:text-brand-gold transition-colors">Ready to Ship</Link>
+          <Link href="/offers" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 hover:text-brand-gold transition-colors">Offers</Link>
         </div>
 
-        {/* Mobile Toggle */}
-        <button 
-          className={cn(
-            "md:hidden p-2 transition-colors",
-            isScrolled ? "text-brand-text" : "text-white"
-          )}
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        {/* User Actions inside Pill */}
+        <div className="flex items-center space-x-6 border-l border-brand-text/10 pl-6">
+          <div className="flex items-center space-x-3 text-[10px] uppercase tracking-widest font-bold text-brand-text/70">
+            <Link href="/login" className="hover:text-brand-gold transition-colors">Login</Link>
+            <span className="text-brand-text/30">|</span>
+            <Link href="/signup" className="hover:text-brand-gold transition-colors">Sign Up</Link>
+          </div>
+          
+          <div className="flex items-center space-x-1 cursor-pointer">
+            <span className="text-[10px] uppercase tracking-widest font-bold text-brand-text">IND</span>
+            <ChevronDown size={12} className="text-brand-text" />
+          </div>
+
+          <div className="flex items-center space-x-3 pl-2">
+            <button className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-bg text-brand-text hover:bg-brand-gold hover:text-white transition-colors">
+              <Search size={16} />
+            </button>
+            <Link href="/cart" className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-text text-white hover:bg-brand-gold transition-colors relative shadow-soft">
+              <ShoppingCart size={16} />
+              {isMounted && totalQuantity > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-brand-gold text-white text-[8px] flex items-center justify-center font-bold">
+                  {totalQuantity}
+                </span>
+              )}
+            </Link>
+          </div>
+        </div>
+
       </div>
 
-
-      {/* Mobile Menu */}
-      <div 
-        className={cn(
-          "fixed inset-0 bg-brand-bg z-40 transition-all duration-700 md:hidden flex flex-col items-center justify-center space-y-10 px-6",
-          isOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
-        )}
-      >
-        <button className="absolute top-8 right-8 text-brand-text" onClick={() => setIsOpen(false)}>
-          <X size={32} />
-        </button>
-        {navLinks.map((link) => (
-          <Link 
-            key={link.name} 
-            href={link.href}
-            onClick={() => setIsOpen(false)}
-            className="text-4xl font-serif text-brand-text hover:text-brand-gold transition-colors"
-          >
-            {link.name}
-          </Link>
-        ))}
-        <Link 
-          href="/contact"
-          onClick={() => setIsOpen(false)}
-          className="bg-brand-text text-white px-12 py-5 rounded-full text-xs uppercase tracking-widest font-bold"
+      {/* 3. MEGA MENU INTEGRATION (Full Width) */}
+      {isMegaMenuOpen && (
+        <div 
+          className="absolute top-full left-0 w-full pt-4 flex justify-center px-6"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
-          Contact Us
-        </Link>
-      </div>
+          <div className="w-full max-w-[1500px] shadow-premium rounded-[40px]">
+            <MegaMenu 
+              isOpen={isMegaMenuOpen} 
+              onMouseEnter={() => setIsMegaMenuHovered(true)} 
+              onMouseLeave={() => setIsMegaMenuHovered(false)}
+              onClose={() => {
+                setIsMegaMenuPinned(false);
+                setIsMegaMenuHovered(false);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Menu Toggle */}
+      <button className="md:hidden w-12 h-12 flex items-center justify-center bg-white/90 backdrop-blur-md rounded-full shadow-premium text-brand-text border border-white/40" onClick={() => setIsOpen(!isOpen)}>
+        {isOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+
+      {/* MOBILE ACCORDION MENU */}
+      {isOpen && (
+        <div className="md:hidden absolute top-24 left-6 right-6 bg-white/95 backdrop-blur-md rounded-[30px] border border-white/40 shadow-premium z-40 max-h-[80vh] overflow-y-auto">
+          <div className="flex flex-col py-6 px-8 space-y-4">
+            <div className="flex flex-col space-y-2 pb-4 border-b border-brand-text/5">
+              <div 
+                className="flex items-center justify-between text-sm uppercase tracking-widest font-bold text-brand-text py-2"
+                onClick={() => setIsMegaMenuPinned(!isMegaMenuPinned)}
+              >
+                <span>Shop Categories</span>
+                <ChevronDown size={16} className={cn("transition-transform", isMegaMenuOpen ? "rotate-180" : "")} />
+              </div>
+              
+              {/* Mobile Mega Menu Accordion Content */}
+              {isMegaMenuOpen && (
+                <div className="pl-4 flex flex-col space-y-4 py-4 bg-brand-bg rounded-2xl">
+                  {['Diamond', 'Solitaire', 'Gemstone', 'Plain Gold', 'Gift', 'Rings', 'Earrings', 'Pendants', 'Bracelets'].map(cat => (
+                    <Link key={cat} href={`/category/${cat.toLowerCase()}`} className="text-[11px] font-bold uppercase tracking-widest text-brand-text/70 hover:text-brand-gold">
+                      {cat}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <Link href="/new-arrivals" className="text-sm uppercase tracking-widest font-bold text-brand-text py-2">New Arrivals</Link>
+            <Link href="/ready-to-ship" className="text-sm uppercase tracking-widest font-bold text-brand-text py-2">Ready to Ship</Link>
+            <Link href="/offers" className="text-sm uppercase tracking-widest font-bold text-brand-text py-2 border-b border-brand-text/5 pb-6">Offers</Link>
+            
+            <div className="flex items-center space-x-4 pt-4">
+              <Link href="/login" className="text-xs uppercase tracking-widest font-bold text-brand-text hover:text-brand-gold">Login</Link>
+              <span className="text-brand-text/20">|</span>
+              <Link href="/signup" className="text-xs uppercase tracking-widest font-bold text-brand-text hover:text-brand-gold">Sign Up</Link>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };
