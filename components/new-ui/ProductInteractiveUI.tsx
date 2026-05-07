@@ -18,7 +18,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
   const addItem = useCartStore((state) => state.addItem);
   
   const specs = product.specs instanceof Map ? Object.fromEntries(product.specs) : product.specs;
-  const price = specs?.price ? parseFloat(specs.price.replace(/,/g, '')) : 0;
+  const price = product.price || 0;
 
   const handleAddToCart = () => {
     addItem({

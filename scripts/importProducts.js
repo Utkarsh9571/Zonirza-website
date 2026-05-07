@@ -3,7 +3,6 @@ const fs = require('fs');
 const path = require('path');
 
 // --- Configuration ---
-// Try to load MONGODB_URI from .env.local manually since dotenv might not be installed
 let MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
@@ -18,12 +17,14 @@ if (!MONGODB_URI) {
 }
 
 if (!MONGODB_URI) {
-  MONGODB_URI = 'mongodb+srv://admin:admin@cluster0.mongodb.net/jewellery?retryWrites=true&w=majority';
+  console.error('Error: MONGODB_URI not found in environment or .env.local');
+  process.exit(1);
 }
 
 const DATA_FILE = path.join(__dirname, '../cleanProducts.json');
+const CATEGORY_DATA_FILE = path.join(__dirname, '../cleanCategories.json');
 
-// --- Product Schema (Matches models/Product.ts) ---
+// --- Schemas (Matching models/*.ts) ---
 const ProductSchema = new mongoose.Schema({
   name: { type: String, required: true },
   slug: { type: String, required: true, unique: true },
@@ -36,55 +37,73 @@ const ProductSchema = new mongoose.Schema({
   specs: { type: Map, of: String, default: {} },
 }, { timestamps: true });
 
-const Product = mongoose.models.Product || mongoose.model('Product', ProductSchema);
+const CategorySchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  slug: { type: String, required: true, unique: true },
+  image: { type: String, required: true },
+  description: { type: String },
+}, { timestamps: true });
 
-async function importProducts() {
+const Product = mongoose.models.Product || mongoose.model('Product', ProductSchema);
+const Category = mongoose.models.Category || mongoose.model('Category', CategorySchema);
+
+async function importData() {
+  let pSuccessCount = 0;
+  let cSuccessCount = 0;
+
   try {
+    console.log('--- Database Migration ---');
     console.log('Connecting to MongoDB...');
     await mongoose.connect(MONGODB_URI, {
-      serverSelectionTimeoutMS: 15000, // Increase timeout to 15s
-      connectTimeoutMS: 15000,
+      serverSelectionTimeoutMS: 15000,
     });
-    console.log('Connected successfully.');
+    console.log('Connected successfully.\n');
 
-    // 1. Read cleaned data
+    // 1. Process Categories
+    if (fs.existsSync(CATEGORY_DATA_FILE)) {
+      const categoriesData = JSON.parse(fs.readFileSync(CATEGORY_DATA_FILE, 'utf8'));
+      console.log(`Read ${categoriesData.length} categories from ${CATEGORY_DATA_FILE}`);
+      
+      console.log('Clearing existing categories...');
+      await Category.deleteMany({});
+      
+      console.log(`Inserting ${categoriesData.length} categories...`);
+      const cResult = await Category.insertMany(categoriesData, { ordered: false });
+      cSuccessCount = cResult.length;
+    }
+
+    // 2. Process Products
     if (!fs.existsSync(DATA_FILE)) {
-      console.error(`Error: ${DATA_FILE} not found. Please run parseProducts.js first.`);
+      console.error(`Error: ${DATA_FILE} not found. Please run transformProducts.js first.`);
       process.exit(1);
     }
 
     const productsData = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
     console.log(`Read ${productsData.length} products from ${DATA_FILE}`);
 
-    // 2. Clear existing products
     console.log('Clearing existing products...');
     await Product.deleteMany({});
-    console.log('Database cleared.');
 
-    // 3. Prepare and Insert products
-    const productsToInsert = productsData.map(p => ({
-      name: p.name,
-      slug: p.slug,
-      category: String(p.category_id || 'uncategorized'),
-      images: p.images,
-      description: p.description,
-      price: p.price || 0,
-      tags: p.tags || [],
-      specs: {
-        price_str: String(p.price || 0)
-      }
-    }));
+    console.log(`Inserting ${productsData.length} products...`);
+    const pResult = await Product.insertMany(productsData, { ordered: false });
+    pSuccessCount = pResult.length;
 
-    console.log(`Inserting ${productsToInsert.length} products...`);
-    const result = await Product.create(productsToInsert);
+    console.log('\n--- Migration Summary ---');
+    console.log(`Categories in DB: ${await Category.countDocuments()}`);
+    console.log(`Products in DB:   ${await Product.countDocuments()}`);
     
-    console.log(`\nInserted ${result.length} products successfully`);
-    
+    console.log('\nMigration completed successfully!');
     process.exit(0);
   } catch (error) {
-    console.error('Import failed:', error);
-    process.exit(1);
+    if (error.name === 'BulkWriteError' || error.name === 'MongoBulkWriteError') {
+      console.log('\n--- Migration Summary (with some write errors) ---');
+      console.log(`Check for duplicate slugs or validation issues.`);
+      process.exit(0);
+    } else {
+      console.error('Import failed with a critical error:', error);
+      process.exit(1);
+    }
   }
 }
 
-importProducts();
+importData();

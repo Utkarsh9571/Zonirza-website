@@ -60,7 +60,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
               <ProductCard
                 key={product.slug}
                 name={product.name}
-                price={`$ ${product.specs instanceof Map ? product.specs.get('price') : (product.specs as any).price || '0.00'}`}
+                price={`$ ${product.price?.toLocaleString(undefined, { minimumFractionDigits: 2 }) || '0.00'}`}
                 image={getValidImageUrl(product.images?.[0])}
                 slug={product.slug}
                 className="animate-in fade-in slide-in-from-bottom-12 duration-1000"

@@ -7,10 +7,40 @@ export async function GET(request: NextRequest) {
   try {
     await dbConnect();
     const { searchParams } = new URL(request.url);
-    const category = searchParams.get('category');
+    const categoryQuery = searchParams.get('category');
     
-    const query = category ? { category } : {};
-    const products = await Product.find(query);
+    let query = {};
+    if (categoryQuery) {
+      // Try to find if it's a slug
+      const Category = (await import('@/models/Category')).default;
+      const cat = await Category.findOne({ 
+        $or: [
+          { slug: categoryQuery },
+          { name: { $regex: new RegExp(`^${categoryQuery}$`, 'i') } }
+        ]
+      });
+      
+      if (cat) {
+        query = { category: cat.name };
+      } else {
+        // Fallback to searching by name OR tags
+        query = { 
+          $or: [
+            { category: { $regex: new RegExp(`^${categoryQuery.replace(/-/g, ' ')}$`, 'i') } },
+            { tags: { $in: [categoryQuery.toLowerCase()] } }
+          ]
+        };
+      }
+    }
+    
+    const limit = parseInt(searchParams.get('limit') || '0');
+    
+    let productsQuery = Product.find(query);
+    if (limit > 0) {
+      productsQuery = productsQuery.limit(limit);
+    }
+    
+    const products = await productsQuery;
     
     return NextResponse.json({ success: true, data: products });
   } catch (error) {

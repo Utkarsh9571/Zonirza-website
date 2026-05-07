@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Menu, X, ChevronDown, Search, ShoppingCart } from 'lucide-react';
+import { Menu, X, ChevronDown, Search, ShoppingCart, User, LogIn, UserPlus, Gift, MessageSquare } from 'lucide-react';
 import { MegaMenu } from './MegaMenu';
+import { AuthModal } from './auth/AuthModal';
 import { cn } from '@/lib/utils';
 import { useCartStore } from '@/store/cartStore';
+import { useAuthModalStore } from '@/store/authModalStore';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false); // Mobile menu toggle
@@ -13,6 +15,8 @@ const Navbar = () => {
     const [isMegaMenuPinned, setIsMegaMenuPinned] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const { isOpen: isAuthModalOpen, openAuthModal, closeAuthModal } = useAuthModalStore();
+    const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   
     const cartItems = useCartStore((state) => state.items);
     const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
@@ -73,6 +77,7 @@ const Navbar = () => {
     }, []);
   
     return (
+      <>
       <nav ref={navRef} className={cn(
         "fixed w-full z-[100] flex justify-between items-center transition-all duration-500",
         isScrolled 
@@ -110,10 +115,46 @@ const Navbar = () => {
   
           {/* User Actions inside Pill */}
           <div className="flex items-center space-x-6 border-l border-brand-text/10 pl-6">
-            <div className="flex items-center space-x-3 text-[10px] uppercase tracking-widest font-bold text-brand-text/70">
-              <Link href="/login" className="hover:text-brand-gold transition-colors min-h-[44px] flex items-center">Login</Link>
-              <span className="text-brand-text/30">|</span>
-              <Link href="/signup" className="hover:text-brand-gold transition-colors min-h-[44px] flex items-center">Sign Up</Link>
+            {/* 3. Account Dropdown & Trigger */}
+            <div className="relative">
+              <button 
+                onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-bg text-brand-text hover:bg-brand-gold hover:text-white transition-all shadow-soft"
+                aria-label="Account"
+              >
+                <User size={18} />
+              </button>
+
+              {/* Account Dropdown */}
+              {isUserDropdownOpen && (
+                <div className="absolute top-full right-0 mt-4 w-72 bg-white rounded-[24px] shadow-premium border border-brand-text/5 p-4 animate-in fade-in slide-in-from-top-2 duration-300 z-50">
+                   <div className="space-y-1">
+                      <button 
+                        onClick={() => {
+                          openAuthModal();
+                          setIsUserDropdownOpen(false);
+                        }}
+                        className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg text-brand-text transition-all group"
+                      >
+                         <div className="w-6 h-6 flex items-center justify-center text-brand-text/60 group-hover:text-brand-gold transition-colors">
+                            <Gift size={20} />
+                         </div>
+                         <p className="text-[12px] font-bold uppercase tracking-widest">Log in / Sign up</p>
+                      </button>
+
+                      <Link 
+                        href="/contact"
+                        className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg text-brand-text transition-all group"
+                        onClick={() => setIsUserDropdownOpen(false)}
+                      >
+                         <div className="w-6 h-6 flex items-center justify-center text-brand-text/60 group-hover:text-brand-gold transition-colors">
+                            <MessageSquare size={20} />
+                         </div>
+                         <p className="text-[12px] font-bold uppercase tracking-widest">Contact Us</p>
+                      </Link>
+                   </div>
+                </div>
+              )}
             </div>
             
             <button className="flex items-center space-x-1 cursor-pointer min-h-[44px]">
@@ -193,15 +234,27 @@ const Navbar = () => {
             <Link href="/ready-to-ship" className="text-sm uppercase tracking-widest font-bold text-brand-text py-2">Ready to Ship</Link>
             <Link href="/offers" className="text-sm uppercase tracking-widest font-bold text-brand-text py-2 border-b border-brand-text/5 pb-6">Offers</Link>
             
-            <div className="flex items-center space-x-4 pt-4">
-              <Link href="/login" className="text-xs uppercase tracking-widest font-bold text-brand-text hover:text-brand-gold">Login</Link>
-              <span className="text-brand-text/20">|</span>
-              <Link href="/signup" className="text-xs uppercase tracking-widest font-bold text-brand-text hover:text-brand-gold">Sign Up</Link>
+            <div className="pt-6 border-t border-brand-text/5">
+              <button 
+                onClick={() => {
+                  openAuthModal();
+                  setIsOpen(false);
+                }}
+                className="w-full flex items-center justify-center space-x-3 p-5 rounded-2xl bg-brand-text text-white font-bold uppercase tracking-widest text-[11px] border border-brand-text hover:bg-transparent hover:text-brand-text transition-all duration-300"
+              >
+                <User size={18} />
+                <span>Login / Sign Up</span>
+              </button>
             </div>
           </div>
         </div>
       )}
     </nav>
+    <AuthModal 
+      isOpen={isAuthModalOpen} 
+      onClose={closeAuthModal} 
+    />
+    </>
   );
 };
 

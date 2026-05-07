@@ -9,41 +9,24 @@ import StylingVideoSlider from '@/components/StylingVideoSlider';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 async function getData() {
-  const [pRes, cRes] = await Promise.all([
-    fetch(`${API_URL}/api/products`, { next: { revalidate: 60 } }).catch(() => null),
-    fetch(`${API_URL}/api/categories`, { next: { revalidate: 60 } }).catch(() => null)
-  ]);
+  try {
+    const [pRes, cRes] = await Promise.all([
+      fetch(`${API_URL}/api/products?limit=20`, { next: { revalidate: 60 } }),
+      fetch(`${API_URL}/api/categories`, { next: { revalidate: 60 } })
+    ]);
 
-  const products = (pRes && pRes.ok) ? (await pRes.json()).data : [];
-  const categories = (cRes && cRes.ok) ? (await cRes.json()).data : [];
+    const products = pRes.ok ? (await pRes.json()).data : [];
+    const categories = cRes.ok ? (await cRes.json()).data : [];
 
-  return { products, categories };
+    return { products, categories };
+  } catch (error) {
+    console.error("Failed to fetch data:", error);
+    return { products: [], categories: [] };
+  }
 }
 
 export default async function Home() {
-  let { products, categories } = await getData();
-
-  // Fallback for UI demonstration
-  if (categories.length === 0) {
-    categories = [
-      { name: 'Rings', slug: 'ring', image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e' },
-      { name: 'Earrings', slug: 'earring', image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908' },
-      { name: 'Pendants', slug: 'pendant', image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f' },
-      { name: 'Bracelets', slug: 'bracelet', image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a' },
-      { name: 'Mangalsutras', slug: 'mangalsutra', image: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e' },
-      { name: 'Necklaces', slug: 'necklace', image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338' },
-      { name: 'Chains', slug: 'chain', image: 'https://images.unsplash.com/photo-1588444837495-c6bfcceebce7' },
-      { name: 'Nose Pins', slug: 'nose-pin', image: 'https://images.unsplash.com/photo-1629224316810-9d8805b95e76' }
-    ] as any;
-  }
-
-  if (products.length === 0) {
-    products = [
-      { name: 'Elegant Gold Ring', slug: 'gold-ring', images: ['https://images.unsplash.com/photo-1605100804763-247f67b3557e'], specs: { price: '240.00' } },
-      { name: 'Diamond Necklace', slug: 'diamond-necklace', images: ['https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f'], specs: { price: '850.00' } },
-      { name: 'Pearl Bracelet', slug: 'pearl-bracelet', images: ['https://images.unsplash.com/photo-1611591437281-460bfbe1220a'], specs: { price: '420.00' } }
-    ] as any;
-  }
+  const { products, categories } = await getData();
 
 
   return (

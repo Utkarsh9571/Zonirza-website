@@ -1,0 +1,13 @@
+[
+{"type":"header","version":"5.2.2","comment":"Export to JSON plugin for PHPMyAdmin"},
+{"type":"database","name":"zoniraz_admin_zoniraznew"},
+{"type":"table","name":"metal_type","database":"zoniraz_admin_zoniraznew","data":
+[
+{"id":"1","color_name":"default","show_name":"default","color_code":"#dadada","status":"1","created_date":"2020-09-08 06:09:35","modified_date":"2023-04-29 06:26:44"},
+{"id":"2","color_name":"yellow-gold","show_name":"yellow-gold","color_code":"#eee2c2","status":"1","created_date":"2020-09-08 06:09:35","modified_date":"2023-04-29 06:26:44"},
+{"id":"3","color_name":"rose-gold","show_name":"rose-gold","color_code":"#ff9185","status":"1","created_date":"2020-09-08 06:09:35","modified_date":"2023-04-29 06:26:44"},
+{"id":"4","color_name":"white-gold","show_name":"white-gold","color_code":"#FFFFF4","status":"1","created_date":"2020-09-08 06:09:35","modified_date":"2023-04-29 06:26:44"},
+{"id":"5","color_name":"platinum","show_name":"platinum","color_code":"#E5E1E6","status":"1","created_date":"2020-09-08 06:09:35","modified_date":"2023-04-29 06:26:44"}
+]
+}
+]
