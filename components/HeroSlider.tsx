@@ -10,19 +10,19 @@ const sliderItems = [
     image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=800',
     title: 'Eternal Diamond Rings',
     subtitle: 'Classic Elegance',
-    link: '/category/ring'
+    link: '/products?category=rings'
   },
   {
     image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=800',
     title: 'Signature Necklaces',
     subtitle: 'Handcrafted Beauty',
-    link: '/category/necklace'
+    link: '/products?category=necklaces'
   },
   {
     image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=800',
     title: 'Royal Gold Bracelets',
     subtitle: 'Timeless Style',
-    link: '/category/bracelet'
+    link: '/products?category=bracelets'
   }
 ];
 

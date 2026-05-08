@@ -21,12 +21,16 @@ export const metadata: Metadata = {
   description: "Exquisite jewelry collections crafted for timeless beauty.",
 };
 
+import { Providers } from "@/components/Providers";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${playfair.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">
-        <Navbar />
-        <main className="flex-grow">{children}</main>
+        <Providers>
+          <Navbar />
+          <main className="flex-grow">{children}</main>
+        </Providers>
         
         {/* NEW TANISHQ-INSPIRED DARK FOOTER */}
         <footer className="bg-[#3A1C16] text-[#EAE1D5] pt-20 pb-10 mt-10 rounded-t-[40px] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] relative z-20">

@@ -104,7 +104,7 @@ export default async function Home() {
               <div className="absolute bottom-6 left-6 text-white space-y-2">
                 <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-brand-gold">Signature</p>
                 <h3 className="text-3xl font-serif">Bridal Collection</h3>
-                <Link href="/category/bridal" className="inline-flex items-center space-x-2 text-sm uppercase tracking-widest font-bold hover:text-brand-gold transition-colors pt-2">
+                <Link href="/products?tag=wedding&collection=bridal" className="inline-flex items-center space-x-2 text-sm uppercase tracking-widest font-bold hover:text-brand-gold transition-colors pt-2">
                   <span>Explore</span>
                   <ArrowRight size={16} />
                 </Link>
@@ -124,7 +124,7 @@ export default async function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-text/80 via-transparent to-transparent"></div>
                 <div className="absolute bottom-6 left-6 text-white space-y-1">
                   <h3 className="text-xl sm:text-2xl font-serif">Everyday Wear</h3>
-                  <Link href="/category/everyday" className="inline-flex items-center space-x-2 text-[8px] sm:text-[10px] uppercase tracking-widest hover:text-brand-gold transition-colors pt-1">
+                  <Link href="/products?tag=daily-wear" className="inline-flex items-center space-x-2 text-[8px] sm:text-[10px] uppercase tracking-widest hover:text-brand-gold transition-colors pt-1">
                     <span>Explore</span> <ArrowRight size={12} />
                   </Link>
                 </div>
@@ -140,7 +140,7 @@ export default async function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-text/80 via-transparent to-transparent"></div>
                 <div className="absolute bottom-6 left-6 text-white space-y-1">
                   <h3 className="text-xl sm:text-2xl font-serif">Men's Edit</h3>
-                  <Link href="/category/men" className="inline-flex items-center space-x-2 text-[8px] sm:text-[10px] uppercase tracking-widest hover:text-brand-gold transition-colors pt-1">
+                  <Link href="/products?gender=men" className="inline-flex items-center space-x-2 text-[8px] sm:text-[10px] uppercase tracking-widest hover:text-brand-gold transition-colors pt-1">
                     <span>Explore</span> <ArrowRight size={12} />
                   </Link>
                 </div>
@@ -160,7 +160,7 @@ export default async function Home() {
 
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             {categories.slice(0, 8).map((cat: any, i: number) => (
-              <Link href={`/category/${cat.slug}`} key={i} className="group flex flex-col items-center text-center space-y-4">
+              <Link href={`/products?category=${cat.slug}`} key={i} className="group flex flex-col items-center text-center space-y-4">
                 <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden shadow-soft border border-brand-text/5 bg-brand-bg group-hover:shadow-premium transition-all">
                   <Image
                     src={cat.image}
@@ -189,21 +189,21 @@ export default async function Home() {
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             {[
-              { title: 'The Solitaire Promise', img: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e' },
-              { title: 'Vintage Heirloom', img: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f' },
-              { title: 'Modern Minimalism', img: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a' }
+              { title: 'The Solitaire Promise', img: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e', query: 'tag=trending' },
+              { title: 'Vintage Heirloom', img: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f', query: 'style=vintage' },
+              { title: 'Modern Minimalism', img: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a', query: 'style=modern' }
             ].map((trend, i) => (
-              <div key={i} className="group relative aspect-[3/4] rounded-xl overflow-hidden shadow-soft cursor-pointer">
+              <Link href={`/products?${trend.query}`} key={i} className="group relative aspect-[3/4] rounded-xl overflow-hidden shadow-soft cursor-pointer block">
                 <Image src={trend.img} alt={trend.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-1000 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-text/90 via-transparent to-transparent"></div>
                 <h3 className="absolute bottom-6 w-full text-center text-white font-serif text-xl px-4">{trend.title}</h3>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 5. ZONIRAZ WORLD */}
+      {/* 5. ZONIRAZ WORLD (Visual Banners - can also lead to products) */}
       <section className="py-8 sm:py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
           <div className="text-center mb-8 sm:mb-10 space-y-4">
@@ -214,21 +214,21 @@ export default async function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-auto md:h-[500px]">
             {/* Top Left / Bottom Left equivalent (Grid split) */}
             <div className="grid grid-rows-2 gap-4 h-full">
-              <div className="relative rounded-2xl overflow-hidden shadow-soft group">
+              <Link href="/products?tag=featured" className="relative rounded-2xl overflow-hidden shadow-soft group block">
                 <Image src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=800" alt="World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
-              </div>
-              <div className="relative rounded-2xl overflow-hidden shadow-soft group">
+              </Link>
+              <Link href="/products?collection=heritage" className="relative rounded-2xl overflow-hidden shadow-soft group block">
                 <Image src="https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&q=80&w=800" alt="World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
-              </div>
+              </Link>
             </div>
             {/* Right Side (One Large) */}
-            <div className="relative rounded-2xl overflow-hidden shadow-soft group h-full min-h-[400px]">
+            <Link href="/products?collection=heritage" className="relative rounded-2xl overflow-hidden shadow-soft group h-full min-h-[400px] block">
               <Image src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=1000" alt="World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               <div className="absolute inset-0 bg-brand-text/20 flex flex-col items-center justify-center text-center p-8">
                 <h3 className="text-5xl font-serif text-white mb-4 italic">The Heritage</h3>
                 <p className="text-white/90 text-sm max-w-sm uppercase tracking-widest">Crafting brilliance for generations.</p>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
@@ -242,13 +242,17 @@ export default async function Home() {
               <p className="text-white/80 text-[10px] sm:text-xs leading-relaxed max-w-[250px]">
                 New Arrivals Dropping Daily, Monday through Friday. Explore the Latest Launches Now!
               </p>
+              <Link href="/products?sort=newest" className="inline-flex items-center space-x-2 text-xs uppercase tracking-widest font-bold hover:text-brand-gold transition-colors pt-4">
+                <span>Shop All New</span>
+                <ArrowRight size={14} />
+              </Link>
             </div>
             <div className="w-full lg:w-2/3 grid grid-cols-2 p-4 gap-4">
               {products.slice(0, 2).map((prod: any, i: number) => (
-                <div key={i} className="flex-1 bg-white border-[6px] border-white rounded-2xl shadow-md relative group aspect-[4/5] overflow-hidden cursor-pointer">
+                <Link href={`/product/${prod.slug}`} key={i} className="flex-1 bg-white border-[6px] border-white rounded-2xl shadow-md relative group aspect-[4/5] overflow-hidden cursor-pointer block">
                   <Image src={getValidImageUrl(prod.images?.[0])} alt={prod.name} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover transition-transform duration-1000 group-hover:scale-105" />
                   <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-sm px-3 py-1 text-[10px] text-white tracking-widest uppercase">{prod.name}</div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -265,16 +269,16 @@ export default async function Home() {
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             {[
-              { img: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&q=80&w=600', text: 'Women Jewellery' },
-              { img: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600', text: 'Men Jewellery' },
-              { img: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=600', text: 'Kids Jewellery' }
+              { img: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&q=80&w=600', text: 'Women Jewellery', href: '/products?gender=women' },
+              { img: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600', text: 'Men Jewellery', href: '/products?gender=men' },
+              { img: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=600', text: 'Kids Jewellery', href: '/products?gender=kids' }
             ].map((store, i) => (
-              <div key={i} className="group cursor-pointer flex flex-col items-center">
+              <Link href={store.href} key={i} className="group cursor-pointer flex flex-col items-center">
                 <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-4 shadow-soft hover:shadow-premium transition-all">
                 <Image src={store.img} alt={store.text} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                 </div>
-                <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/70">{store.text}</h4>
-              </div>
+                <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/70 group-hover:text-brand-gold transition-colors">{store.text}</h4>
+              </Link>
             ))}
           </div>
         </div>

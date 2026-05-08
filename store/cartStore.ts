@@ -1,63 +1,103 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+export interface Address {
+  id: string;
+  fullName: string;
+  phone: string;
+  addressLine: string;
+  city: string;
+  state: string;
+  country: string;
+  pincode: string;
+  type: 'Home' | 'Office' | 'Other';
+  isDefault?: boolean;
+}
+
 export interface CartItem {
-  _id: string;
+  cartItemId: string; // Unique ID based on productId + configuration
+  productId: string;
   name: string;
   price: number;
   image: string;
   quantity: number;
+  estimatedWeight: number;
+  configuration: {
+    metal: string;
+    purity: string;
+    size?: string;
+    stone?: string;
+    customization?: string[];
+  };
 }
 
 interface CartStore {
   items: CartItem[];
+  giftMessage: string;
+  pincode: string;
+  savedAddresses: Address[];
+  selectedAddressId: string | null;
+  
   addItem: (item: CartItem) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
+  removeItem: (cartItemId: string) => void;
+  updateQuantity: (cartItemId: string, quantity: number) => void;
+  setItems: (items: CartItem[]) => void;
   clearCart: () => void;
   getTotal: () => number;
+  
+  setGiftMessage: (message: string) => void;
+  setPincode: (pincode: string) => void;
+  addAddress: (address: Address) => void;
+  removeAddress: (id: string) => void;
+  selectAddress: (id: string) => void;
 }
 
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
+      giftMessage: '',
+      pincode: '',
+      savedAddresses: [],
+      selectedAddressId: null,
 
       addItem: (newItem) => {
         set((state) => {
-          const existingItem = state.items.find((item) => item._id === newItem._id);
+          // Check for existing item with the SAME configuration (cartItemId)
+          const existingItem = state.items.find((item) => item.cartItemId === newItem.cartItemId);
           
           if (existingItem) {
-            // Increase quantity if item already exists
             return {
               items: state.items.map((item) =>
-                item._id === newItem._id
+                item.cartItemId === newItem.cartItemId
                   ? { ...item, quantity: item.quantity + newItem.quantity }
                   : item
               ),
             };
           }
           
-          // Add new item if it doesn't exist
           return { items: [...state.items, newItem] };
         });
       },
 
-      removeItem: (id) => {
+      removeItem: (cartItemId) => {
         set((state) => ({
-          items: state.items.filter((item) => item._id !== id),
+          items: state.items.filter((item) => item.cartItemId !== cartItemId),
         }));
       },
 
-      updateQuantity: (id, quantity) => {
-        // Quantity must never go below 1
+      updateQuantity: (cartItemId, quantity) => {
         if (quantity < 1) return;
 
         set((state) => ({
           items: state.items.map((item) =>
-            item._id === id ? { ...item, quantity } : item
+            item.cartItemId === cartItemId ? { ...item, quantity } : item
           ),
         }));
+      },
+
+      setItems: (items) => {
+        set({ items });
       },
 
       clearCart: () => {
@@ -68,9 +108,24 @@ export const useCartStore = create<CartStore>()(
         const { items } = get();
         return items.reduce((total, item) => total + item.price * item.quantity, 0);
       },
+
+      setGiftMessage: (message) => set({ giftMessage: message }),
+      setPincode: (pincode) => set({ pincode }),
+      
+      addAddress: (address) => set((state) => ({ 
+        savedAddresses: [...state.savedAddresses, address],
+        selectedAddressId: state.selectedAddressId || address.id
+      })),
+      
+      removeAddress: (id) => set((state) => ({
+        savedAddresses: state.savedAddresses.filter(a => a.id !== id),
+        selectedAddressId: state.selectedAddressId === id ? null : state.selectedAddressId
+      })),
+      
+      selectAddress: (id) => set({ selectedAddressId: id }),
     }),
     {
-      name: 'zoniraz-cart', // Unique name for localStorage key
+      name: 'zoniraz-cart',
     }
   )
 );

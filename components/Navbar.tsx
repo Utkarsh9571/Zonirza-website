@@ -2,15 +2,18 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Menu, X, ChevronDown, Search, ShoppingCart, User, LogIn, UserPlus, Gift, MessageSquare } from 'lucide-react';
+import { useSession, signOut } from "next-auth/react";
+import { Menu, X, ChevronDown, Search, ShoppingCart, User, LogIn, UserPlus, Gift, MessageSquare, LogOut, Package, MapPin as MapPinIcon, UserCircle } from 'lucide-react';
 import { MegaMenu } from './MegaMenu';
 import { AuthModal } from './auth/AuthModal';
 import { cn } from '@/lib/utils';
 import { useCartStore } from '@/store/cartStore';
 import { useAuthModalStore } from '@/store/authModalStore';
+import { NAVIGATION_DATA } from '@/constants/navigation';
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false); // Mobile menu toggle
+    const { data: session, status } = useSession();
+    const [isOpen, setIsOpen] = useState(false); // Mobile menu toggle
     const [isMegaMenuHovered, setIsMegaMenuHovered] = useState(false);
     const [isMegaMenuPinned, setIsMegaMenuPinned] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
@@ -20,6 +23,8 @@ const Navbar = () => {
   
     const cartItems = useCartStore((state) => state.items);
     const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+    const isLoggedIn = status === 'authenticated';
   
     // MegaMenu is open if hovered OR pinned (clicked)
     const isMegaMenuOpen = isMegaMenuHovered || isMegaMenuPinned;
@@ -53,6 +58,7 @@ const Navbar = () => {
         if (navRef.current && !navRef.current.contains(event.target as Node)) {
           setIsMegaMenuPinned(false);
           setIsMegaMenuHovered(false);
+          setIsUserDropdownOpen(false);
         }
       };
       const handleScroll = () => {
@@ -65,6 +71,7 @@ const Navbar = () => {
         if (window.scrollY > 100) {
           setIsMegaMenuPinned(false);
           setIsMegaMenuHovered(false);
+          setIsUserDropdownOpen(false);
         }
       };
   
@@ -119,39 +126,102 @@ const Navbar = () => {
             <div className="relative">
               <button 
                 onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-bg text-brand-text hover:bg-brand-gold hover:text-white transition-all shadow-soft"
+                className={cn(
+                  "w-10 h-10 flex items-center justify-center rounded-full transition-all shadow-soft relative overflow-hidden",
+                  isLoggedIn ? "bg-brand-text text-white" : "bg-brand-bg text-brand-text hover:bg-brand-gold hover:text-white"
+                )}
                 aria-label="Account"
               >
-                <User size={18} />
+                {isLoggedIn ? <div className="text-[10px] font-bold uppercase tracking-tighter">{session.user?.name?.charAt(0) || 'U'}</div> : <User size={18} />}
               </button>
 
               {/* Account Dropdown */}
               {isUserDropdownOpen && (
-                <div className="absolute top-full right-0 mt-4 w-72 bg-white rounded-[24px] shadow-premium border border-brand-text/5 p-4 animate-in fade-in slide-in-from-top-2 duration-300 z-50">
+                <div className="absolute top-full right-0 mt-4 w-72 bg-white rounded-[32px] shadow-premium border border-brand-text/5 p-4 animate-in fade-in slide-in-from-top-2 duration-500 z-50">
                    <div className="space-y-1">
-                      <button 
-                        onClick={() => {
-                          openAuthModal();
-                          setIsUserDropdownOpen(false);
-                        }}
-                        className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg text-brand-text transition-all group"
-                      >
-                         <div className="w-6 h-6 flex items-center justify-center text-brand-text/60 group-hover:text-brand-gold transition-colors">
-                            <Gift size={20} />
-                         </div>
-                         <p className="text-[12px] font-bold uppercase tracking-widest">Log in / Sign up</p>
-                      </button>
+                      {isLoggedIn ? (
+                        <>
+                          <div className="px-4 py-6 border-b border-brand-text/5 mb-2">
+                            <p className="text-[10px] uppercase tracking-widest text-brand-text/40 font-bold mb-1">Authenticated</p>
+                            <p className="text-sm font-serif text-brand-text italic truncate">{session.user?.name || 'Valued Customer'}</p>
+                          </div>
+                          
+                          <Link 
+                            href="/account"
+                            className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg text-brand-text transition-all group"
+                            onClick={() => setIsUserDropdownOpen(false)}
+                          >
+                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-text/40 group-hover:text-brand-gold shadow-soft transition-all">
+                              <UserCircle size={18} />
+                            </div>
+                            <p className="text-[11px] font-bold uppercase tracking-widest">My Profile</p>
+                          </Link>
 
-                      <Link 
-                        href="/contact"
-                        className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg text-brand-text transition-all group"
-                        onClick={() => setIsUserDropdownOpen(false)}
-                      >
-                         <div className="w-6 h-6 flex items-center justify-center text-brand-text/60 group-hover:text-brand-gold transition-colors">
-                            <MessageSquare size={20} />
-                         </div>
-                         <p className="text-[12px] font-bold uppercase tracking-widest">Contact Us</p>
-                      </Link>
+                          <Link 
+                            href="/account?tab=orders"
+                            className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg text-brand-text transition-all group"
+                            onClick={() => setIsUserDropdownOpen(false)}
+                          >
+                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-text/40 group-hover:text-brand-gold shadow-soft transition-all">
+                              <Package size={18} />
+                            </div>
+                            <p className="text-[11px] font-bold uppercase tracking-widest">My Orders</p>
+                          </Link>
+
+                          <Link 
+                            href="/account?tab=addresses"
+                            className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg text-brand-text transition-all group"
+                            onClick={() => setIsUserDropdownOpen(false)}
+                          >
+                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-text/40 group-hover:text-brand-gold shadow-soft transition-all">
+                              <MapPinIcon size={18} />
+                            </div>
+                            <p className="text-[11px] font-bold uppercase tracking-widest">Saved Addresses</p>
+                          </Link>
+
+                          <button 
+                            onClick={() => {
+                              signOut();
+                              setIsUserDropdownOpen(false);
+                            }}
+                            className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-red-50 text-brand-text hover:text-red-600 transition-all group"
+                          >
+                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-text/40 group-hover:text-red-500 shadow-soft transition-all">
+                              <LogOut size={18} />
+                            </div>
+                            <p className="text-[11px] font-bold uppercase tracking-widest">Logout</p>
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button 
+                            onClick={() => {
+                              openAuthModal();
+                              setIsUserDropdownOpen(false);
+                            }}
+                            className="w-full flex items-center space-x-4 p-6 rounded-2xl bg-brand-bg hover:bg-brand-gold hover:text-white text-brand-text transition-all group"
+                          >
+                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-text/40 group-hover:text-brand-gold shadow-soft transition-all">
+                              <Gift size={20} />
+                            </div>
+                            <div className="text-left">
+                              <p className="text-[11px] font-bold uppercase tracking-widest">Log in / Sign up</p>
+                              <p className="text-[8px] uppercase tracking-widest text-brand-text/40 group-hover:text-white/60">Unlock Privileges</p>
+                            </div>
+                          </button>
+
+                          <Link 
+                            href="/contact"
+                            className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg text-brand-text transition-all group mt-2"
+                            onClick={() => setIsUserDropdownOpen(false)}
+                          >
+                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-text/40 group-hover:text-brand-gold shadow-soft transition-all">
+                              <MessageSquare size={18} />
+                            </div>
+                            <p className="text-[11px] font-bold uppercase tracking-widest">Contact Us</p>
+                          </Link>
+                        </>
+                      )}
                    </div>
                 </div>
               )}
@@ -220,11 +290,34 @@ const Navbar = () => {
               
               {/* Mobile Mega Menu Accordion Content */}
               {isMegaMenuOpen && (
-                <div className="pl-4 flex flex-col space-y-4 py-4 bg-brand-bg rounded-2xl">
-                  {['Diamond', 'Solitaire', 'Gemstone', 'Plain Gold', 'Gift', 'Rings', 'Earrings', 'Pendants', 'Bracelets'].map(cat => (
-                    <Link key={cat} href={`/category/${cat.toLowerCase()}`} className="text-[11px] font-bold uppercase tracking-widest text-brand-text/70 hover:text-brand-gold">
-                      {cat}
-                    </Link>
+                <div className="pl-2 flex flex-col space-y-2 py-4">
+                  {NAVIGATION_DATA.map((cat) => (
+                    <div key={cat.id} className="flex flex-col">
+                      <div className="flex items-center justify-between p-3 rounded-xl bg-brand-bg/50 border border-brand-text/5">
+                        <Link 
+                          href={cat.href}
+                          className="text-[11px] font-bold uppercase tracking-widest text-brand-text/80"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          {cat.name}
+                        </Link>
+                        {/* No nested accordion for mobile to keep it simple, or add a toggle if needed */}
+                      </div>
+                      
+                      {/* Sub-links for mobile */}
+                      <div className="grid grid-cols-2 gap-2 mt-2 pl-2">
+                        {cat.subCategories.slice(0, 4).map((sub, sIdx) => (
+                          <Link 
+                            key={sIdx}
+                            href={sub.href}
+                            className="p-2 text-[9px] uppercase font-bold tracking-tighter text-brand-text/50 bg-white/50 rounded-lg border border-brand-text/5"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            {sub.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}

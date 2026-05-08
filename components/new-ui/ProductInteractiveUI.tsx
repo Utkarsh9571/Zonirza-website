@@ -1,42 +1,67 @@
-'use client';
-
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
-import { ShieldCheck, Truck, RotateCcw, Heart, Share2, Info, Check, Minus, Plus } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { useAuthModalStore } from '@/store/authModalStore';
+import { ShieldCheck, Truck, RotateCcw, Heart, Share2, Info, Check, Minus, Plus, Scale, Sparkles } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { Button } from './Button';
 import { Section } from './Section';
 import { cn } from '@/lib/utils';
-import { PLACEHOLDER_IMAGE, getValidImageUrl } from '@/lib/constants';
+import { getValidImageUrl } from '@/lib/constants';
+import { calculatePricing, formatCurrency, ProductConfiguration } from '@/lib/pricing';
+import { RingSizeGuide } from '../product/guides/RingSizeGuide';
+import { DiamondGuide } from '../product/guides/DiamondGuide';
+import { GoldPurityGuide } from '../product/guides/GoldPurityGuide';
 
 export function ProductInteractiveUI({ product }: { product: any }) {
+  // 1. Initial State from Product Config or Defaults
+  const configOptions = product.configurableOptions || {};
+  
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [selectedMetal, setSelectedMetal] = useState('18K Yellow Gold');
   const [isAdded, setIsAdded] = useState(false);
 
-  const addItem = useCartStore((state) => state.addItem);
-  
+  // Configuration State
+  const [config, setConfig] = useState<ProductConfiguration>({
+    metal: configOptions.metals?.[0] || '18K Yellow Gold',
+    purity: configOptions.purities?.[0] || '18K',
+    size: configOptions.sizes?.[0] || '7',
+    stone: configOptions.stones?.[0] || 'Diamond-Standard',
+  });
+
+  // 2. Dynamic Pricing Calculation
+  const pricing = useMemo(() => {
+    return calculatePricing({
+      basePrice: product.basePrice || product.price || 0,
+      baseWeight: product.baseWeight || 5.0,
+      makingCharges: product.makingCharges || 0
+    }, config);
+  }, [product.basePrice, product.price, product.baseWeight, product.makingCharges, config]);
+
+  const addItem = useCartStore((state) => state.items); // Note: we need the store's addItem action
+  const { status } = useSession();
+  const openAuthModal = useAuthModalStore(state => state.openAuthModal);
+
+  const cartAddItem = useCartStore((state) => state.addItem);
   const specs = product.specs instanceof Map ? Object.fromEntries(product.specs) : product.specs;
-  const price = product.price || 0;
 
   const handleAddToCart = () => {
-    addItem({
-      _id: product._id as string,
-      name: `${product.name} (${selectedMetal})`,
-      price,
+    // Generate a unique ID based on productId and current configuration
+    const cartItemId = `${product._id}-${config.purity}-${config.metal}-${config.size}-${config.stone}`.replace(/\s+/g, '-').toLowerCase();
+
+    cartAddItem({
+      cartItemId,
+      productId: product._id as string,
+      name: product.name,
+      price: pricing.totalPrice,
       image: product.images[selectedImage],
       quantity,
+      estimatedWeight: pricing.estimatedWeight,
+      configuration: { ...config }
     });
     
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
-  };
-
-  const handleBuyNow = () => {
-    handleAddToCart();
-    // In a real app, this would router.push('/cart') or '/checkout'
-    window.location.href = '/cart';
   };
 
   return (
@@ -47,17 +72,15 @@ export function ProductInteractiveUI({ product }: { product: any }) {
           
           {/* LEFT COLUMN (60%) - Image Gallery */}
           <div className="w-full lg:w-[60%] flex flex-col space-y-6 animate-in fade-in slide-in-from-left-8 duration-1000">
-            {/* Main Image */}
             <div className="relative aspect-[4/5] w-full rounded-[40px] overflow-hidden bg-white border border-brand-text/5 shadow-soft group">
               <Image
-                key={selectedImage} // forces remount for smooth transition
+                key={selectedImage}
                 src={getValidImageUrl(product.images?.[selectedImage])}
                 alt={product.name}
                 fill
                 className="object-cover p-12 transition-transform duration-[2s] group-hover:scale-110 animate-in fade-in zoom-in-95 duration-500"
                 priority
               />
-              {/* Floating Actions */}
               <div className="absolute top-8 right-8 flex flex-col space-y-3">
                 <button className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center border border-brand-text/5 text-brand-text hover:bg-brand-gold hover:text-white transition-all shadow-soft">
                   <Heart size={20} />
@@ -68,7 +91,6 @@ export function ProductInteractiveUI({ product }: { product: any }) {
               </div>
             </div>
 
-            {/* Thumbnails */}
             {product.images.length > 1 && (
               <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
                 {product.images.map((img: string, i: number) => (
@@ -88,9 +110,8 @@ export function ProductInteractiveUI({ product }: { product: any }) {
           </div>
 
           {/* RIGHT COLUMN (40%) - Details & Actions */}
-          <div className="w-full lg:w-[40%] space-y-10 lg:sticky lg:top-32 animate-in fade-in slide-in-from-right-8 duration-1000">
+          <div className="w-full lg:w-[40%] space-y-8 lg:sticky lg:top-32 animate-in fade-in slide-in-from-right-8 duration-1000">
             
-            {/* Title & Price */}
             <div className="space-y-4">
               <p className="text-brand-gold text-[10px] uppercase tracking-[0.4em] font-bold">
                 {product.category} Collection
@@ -98,126 +119,156 @@ export function ProductInteractiveUI({ product }: { product: any }) {
               <h1 className="text-4xl md:text-5xl font-serif text-brand-text leading-[1.1] tracking-tight">
                 {product.name}
               </h1>
-              <div className="flex items-end space-x-4 pt-2">
-                <p className="text-3xl text-brand-gold font-bold font-serif italic">
-                  $ {price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                </p>
-                <span className="text-[10px] uppercase tracking-widest text-brand-text/40 pb-1">Tax Included</span>
+              
+              <div className="flex flex-col space-y-2 pt-2">
+                <div className="flex items-baseline space-x-3">
+                   <p className="text-4xl text-brand-gold font-bold font-serif italic transition-all duration-500">
+                    {formatCurrency(pricing.totalPrice)}
+                  </p>
+                  <span className="text-[10px] uppercase tracking-widest text-brand-text/40">MRP Incl. Taxes</span>
+                </div>
+                
+                <div className="flex items-center space-x-4 text-[10px] text-brand-text/50 uppercase tracking-widest font-bold">
+                  <div className="flex items-center space-x-1">
+                    <Scale size={12} className="text-brand-gold" />
+                    <span>Est. Weight: {pricing.estimatedWeight}g</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Sparkles size={12} className="text-brand-gold" />
+                    <span>{config.purity} {config.metal}</span>
+                  </div>
+                </div>
               </div>
-              <p className="text-brand-text/60 text-sm leading-relaxed pt-4">
-                {product.description}
-              </p>
             </div>
 
             <div className="w-full h-[1px] bg-brand-text/10"></div>
 
-            {/* Interactive Selectors */}
+            {/* Configurable Selectors */}
             <div className="space-y-8">
               
-              {/* Variant Selector */}
+              {/* Purity & Metal Selector */}
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Metal Color</span>
-                  <span className="text-[10px] text-brand-text/50">{selectedMetal}</span>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  {['18K Yellow Gold', '18K Rose Gold', '18K White Gold'].map((metal) => (
+                <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Select Purity & Gold</span>
+                <div className="flex flex-wrap gap-2">
+                  {['18K Yellow Gold', '18K Rose Gold', '18K White Gold', '22K Yellow Gold'].map((option) => (
                     <button
-                      key={metal}
-                      onClick={() => setSelectedMetal(metal)}
+                      key={option}
+                      onClick={() => setConfig({ ...config, metal: option.split(' ').slice(1).join(' '), purity: option.split(' ')[0] })}
                       className={cn(
-                        "px-5 py-3 rounded-full text-[10px] uppercase tracking-widest font-bold border transition-all duration-300",
-                        selectedMetal === metal 
+                        "px-4 py-2.5 rounded-xl text-[9px] uppercase tracking-widest font-bold border transition-all duration-300",
+                        `${config.purity} ${config.metal}` === option 
                           ? "bg-brand-text text-white border-brand-text shadow-premium" 
                           : "bg-white text-brand-text/70 border-brand-text/10 hover:border-brand-gold hover:text-brand-text"
                       )}
                     >
-                      {metal}
+                      {option}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Quantity Selector */}
+              {/* Ring Size Selector */}
               <div className="space-y-4">
-                <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Quantity</span>
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center bg-white rounded-full border border-brand-text/10 p-1 shadow-soft">
-                    <button 
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-brand-bg text-brand-text transition-colors"
-                      disabled={quantity <= 1}
+                <div className="flex justify-between items-center">
+                   <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Size (India/US)</span>
+                   <button className="text-[9px] text-brand-gold underline tracking-widest">Not sure?</button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {['7', '8', '9', '10', '11'].map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => setConfig({ ...config, size })}
+                      className={cn(
+                        "w-12 h-12 flex items-center justify-center rounded-xl text-[10px] font-bold border transition-all duration-300",
+                        config.size === size 
+                          ? "bg-brand-text text-white border-brand-text shadow-premium" 
+                          : "bg-white text-brand-text/70 border-brand-text/10 hover:border-brand-gold hover:text-brand-text"
+                      )}
                     >
-                      <Minus size={16} />
+                      {size}
                     </button>
-                    <span className="w-12 text-center text-sm font-bold text-brand-text">{quantity}</span>
-                    <button 
-                      onClick={() => setQuantity(quantity + 1)}
-                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-brand-bg text-brand-text transition-colors"
-                    >
-                      <Plus size={16} />
-                    </button>
-                  </div>
+                  ))}
                 </div>
               </div>
 
+              {/* Diamond Quality Selector */}
+              <div className="space-y-4">
+                <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Diamond Clarity</span>
+                <div className="flex flex-wrap gap-2">
+                  {['VVS1', 'VS1', 'SI1', 'Diamond-Standard'].map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => setConfig({ ...config, stone: q })}
+                      className={cn(
+                        "px-4 py-2.5 rounded-xl text-[9px] uppercase tracking-widest font-bold border transition-all duration-300",
+                        config.stone === q
+                          ? "bg-brand-text text-white border-brand-text shadow-premium" 
+                          : "bg-white text-brand-text/70 border-brand-text/10 hover:border-brand-gold hover:text-brand-text"
+                      )}
+                    >
+                      {q.replace('-', ' ')}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* Call To Actions */}
+            {/* Live Config Summary */}
+            <div className="p-6 rounded-3xl bg-brand-bg border border-brand-gold/10 space-y-3">
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-brand-gold">Configuration Summary</h4>
+              <div className="grid grid-cols-2 gap-4">
+                 <div className="space-y-1">
+                   <p className="text-[9px] text-brand-text/40 uppercase">Metal & Purity</p>
+                   <p className="text-[11px] font-bold text-brand-text">{config.purity} {config.metal}</p>
+                 </div>
+                 <div className="space-y-1">
+                   <p className="text-[9px] text-brand-text/40 uppercase">Stone Quality</p>
+                   <p className="text-[11px] font-bold text-brand-text">{config.stone?.replace('-', ' ')}</p>
+                 </div>
+                 <div className="space-y-1">
+                   <p className="text-[9px] text-brand-text/40 uppercase">Estimated Weight</p>
+                   <p className="text-[11px] font-bold text-brand-text">{pricing.estimatedWeight}g</p>
+                 </div>
+                 <div className="space-y-1">
+                   <p className="text-[9px] text-brand-text/40 uppercase">Selected Size</p>
+                   <p className="text-[11px] font-bold text-brand-text">{config.size}</p>
+                 </div>
+              </div>
+            </div>
+
             <div className="flex flex-col space-y-4 pt-4">
-              <Button 
-                size="lg" 
-                className={cn(
-                  "w-full !py-5 shadow-premium transition-all duration-300",
-                  isAdded ? "bg-green-600 hover:bg-green-700" : ""
-                )}
-                onClick={handleAddToCart}
-              >
+              <Button size="lg" className={cn("w-full !py-5 shadow-premium transition-all duration-300", isAdded ? "bg-green-600 hover:bg-green-700" : "")} onClick={handleAddToCart}>
                 {isAdded ? <><Check size={18} className="mr-2 inline" /> Added to Cart</> : 'Add to Cart'}
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="w-full !py-5 shadow-soft border-brand-text text-brand-text hover:bg-brand-text hover:text-white"
-                onClick={handleBuyNow}
-              >
+              <Button size="lg" variant="outline" className="w-full !py-5 shadow-soft border-brand-text text-brand-text hover:bg-brand-text hover:text-white" onClick={() => window.location.href = '/cart'}>
                 Buy It Now
               </Button>
             </div>
 
-            {/* Quick Trust Badges */}
-            <div className="flex items-center justify-between pt-6 px-2 text-brand-text/60">
-              <div className="flex flex-col items-center space-y-2">
-                <Truck size={20} strokeWidth={1.5} />
-                <span className="text-[9px] uppercase tracking-widest text-center">Free Shipping</span>
-              </div>
-              <div className="flex flex-col items-center space-y-2">
-                <RotateCcw size={20} strokeWidth={1.5} />
-                <span className="text-[9px] uppercase tracking-widest text-center">Easy Returns</span>
-              </div>
-              <div className="flex flex-col items-center space-y-2">
-                <ShieldCheck size={20} strokeWidth={1.5} />
-                <span className="text-[9px] uppercase tracking-widest text-center">Certified</span>
-              </div>
+            {/* Educational Guides */}
+            <div className="space-y-3 pt-6 border-t border-brand-text/5">
+              <RingSizeGuide />
+              <DiamondGuide />
+              <GoldPurityGuide />
             </div>
 
           </div>
         </div>
       </Section>
 
-      {/* BELOW SECTION: Details & Specs */}
+      {/* Product Information */}
       <Section className="!py-16">
         <div className="bg-white rounded-[50px] p-10 md:p-16 border border-brand-text/5 shadow-premium">
           <div className="flex items-center space-x-6 mb-12 border-b border-brand-text/5 pb-8">
             <Info size={24} className="text-brand-gold" />
-            <h2 className="text-2xl font-serif text-brand-text italic">Product Information</h2>
+            <h2 className="text-2xl font-serif text-brand-text italic">Product Details</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             <div className="space-y-6">
               <h3 className="text-[11px] uppercase tracking-[0.3em] font-bold text-brand-text">The Design</h3>
               <p className="text-brand-text/60 text-sm leading-relaxed">
-                {product.description} Crafted with meticulous attention to detail, this piece represents the pinnacle of modern luxury jewelry. The intricate setting maximizes brilliance while ensuring everyday durability.
+                {product.description} This masterfully crafted piece showcases the perfect balance of heritage techniques and contemporary aesthetics.
               </p>
             </div>
             
@@ -237,27 +288,6 @@ export function ProductInteractiveUI({ product }: { product: any }) {
           </div>
         </div>
       </Section>
-
-      {/* Visual Story Video (If available) */}
-      {product.videoUrl && (
-        <Section className="!py-12">
-          <div className="mt-10 space-y-8">
-            <div className="flex items-center justify-center space-x-6">
-              <div className="w-12 h-[1px] bg-brand-gold"></div>
-              <h3 className="text-[11px] uppercase tracking-[0.5em] font-bold text-brand-gold italic">Visual Story</h3>
-              <div className="w-12 h-[1px] bg-brand-gold"></div>
-            </div>
-            <div className="aspect-video relative rounded-[50px] overflow-hidden bg-brand-text shadow-premium border-8 border-white/50 max-w-5xl mx-auto">
-              <iframe
-                src={product.videoUrl}
-                className="absolute inset-0 w-full h-full"
-                allowFullScreen
-              ></iframe>
-            </div>
-          </div>
-        </Section>
-      )}
-
     </div>
   );
 }

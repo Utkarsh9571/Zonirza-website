@@ -3,13 +3,22 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IProduct extends Document {
   name: string;
   slug: string;
-  category: string; // Category slug or ID
+  category: string;
   images: string[];
   videoUrl?: string;
   description: string;
-  price: number;
+  basePrice: number;
+  makingCharges: number;
+  baseWeight: number;
   tags: string[];
   specs: Record<string, string>;
+  configurableOptions?: {
+    metals?: string[];
+    purities?: string[];
+    sizes?: string[];
+    stones?: string[];
+    customizations?: string[];
+  };
 }
 
 const ProductSchema: Schema = new Schema({
@@ -19,9 +28,18 @@ const ProductSchema: Schema = new Schema({
   images: { type: [String], required: true },
   videoUrl: { type: String },
   description: { type: String, required: true },
-  price: { type: Number, required: true, default: 0 },
+  basePrice: { type: Number, required: true, default: 0 },
+  makingCharges: { type: Number, default: 0 },
+  baseWeight: { type: Number, default: 0 },
   tags: { type: [String], default: [] },
   specs: { type: Map, of: String, default: {} },
+  configurableOptions: {
+    metals: [String],
+    purities: [String],
+    sizes: [String],
+    stones: [String],
+    customizations: [String]
+  }
 }, { timestamps: true });
 
 export default mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema);

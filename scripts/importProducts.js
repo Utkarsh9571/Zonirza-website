@@ -32,9 +32,18 @@ const ProductSchema = new mongoose.Schema({
   images: { type: [String], required: true },
   videoUrl: { type: String },
   description: { type: String, required: true },
-  price: { type: Number, required: true, default: 0 },
+  basePrice: { type: Number, required: true, default: 0 },
+  makingCharges: { type: Number, default: 0 },
+  baseWeight: { type: Number, default: 0 },
   tags: { type: [String], default: [] },
   specs: { type: Map, of: String, default: {} },
+  configurableOptions: {
+    metals: [String],
+    purities: [String],
+    sizes: [String],
+    stones: [String],
+    customizations: [String]
+  }
 }, { timestamps: true });
 
 const CategorySchema = new mongoose.Schema({

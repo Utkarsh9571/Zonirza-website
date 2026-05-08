@@ -13,33 +13,52 @@ interface AuthModalProps {
 
 type AuthStep = 'email' | 'otp' | 'details';
 
+import { signIn, useSession } from "next-auth/react";
+
 export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
+  const { data: session } = useSession();
   const [step, setStep] = useState<AuthStep>('email');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [fullName, setFullName] = useState('');
   const [address, setAddress] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [error, setError] = useState('');
 
   // Backdrop remains for visual effect but clicking it no longer closes the modal
   if (!isOpen) return null;
 
-  const handleRequestOtp = (e: React.FormEvent) => {
+  const handleRequestOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsAnimating(true);
-    setTimeout(() => {
-      setStep('otp');
-      setIsAnimating(false);
-    }, 500);
+    setIsLoading(true);
+    setError('');
+    
+    try {
+      const res = await signIn('email', { 
+        email, 
+        redirect: false,
+        callbackUrl: window.location.origin + '/onboarding'
+      });
+      
+      if (res?.error) {
+        setError('Failed to send verification link. Please try again.');
+      } else {
+        setEmailSent(true);
+        // We stay on email step but show success message
+      }
+    } catch (err) {
+      setError('An unexpected error occurred.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleVerifyOtp = () => {
-    setIsAnimating(true);
-    setTimeout(() => {
-      // Simulating "New User" check - in reality, backend would return this
-      setStep('details');
-      setIsAnimating(false);
-    }, 500);
+    // Note: NextAuth Email provider uses magic links, so we'll guide user to check email
+    // but we can keep the OTP UI for future custom implementation if needed.
+    // For now, we show "Check your email" message.
   };
 
   const handleSaveDetails = (e: React.FormEvent) => {
@@ -119,34 +138,71 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             {step === 'email' ? (
               <div className="space-y-10">
                 <div className="space-y-3">
-                  <h3 className="text-3xl font-serif text-brand-text">Welcome to Zoniraz!</h3>
-                  <p className="text-sm text-brand-text/60">Log in or Sign up to get exclusive privileges</p>
+                  <h3 className="text-3xl font-serif text-brand-text">
+                    {emailSent ? "Check Your Inbox" : "Welcome to Zoniraz!"}
+                  </h3>
+                  <p className="text-sm text-brand-text/60">
+                    {emailSent 
+                      ? "We've sent an exclusive access link to your email." 
+                      : "Log in or Sign up to get exclusive privileges"}
+                  </p>
                 </div>
 
-                <form onSubmit={handleRequestOtp} className="space-y-8">
-                  <div className="relative">
-                    <AuthInput 
-                      label="Email Address" 
-                      type="email" 
-                      placeholder="name@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      className="pl-12"
-                    />
-                    <Mail size={18} className="absolute left-4 top-[46px] text-brand-gold/60" />
+                {emailSent ? (
+                  <div className="bg-brand-bg/30 p-10 rounded-[35px] border border-brand-gold/10 text-center space-y-6 animate-in fade-in zoom-in duration-700">
+                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto shadow-premium border border-brand-gold/5">
+                      <Mail className="text-brand-gold" size={32} />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm font-bold text-brand-text tracking-wide">{email}</p>
+                      <p className="text-[10px] uppercase tracking-[0.2em] text-brand-text/40 leading-relaxed">
+                        Please click the link in the email to verify your identity and enter our collection.
+                      </p>
+                    </div>
+                    <button 
+                      onClick={() => setEmailSent(false)}
+                      className="text-[10px] uppercase tracking-widest text-brand-gold font-bold hover:underline"
+                    >
+                      Use a different email
+                    </button>
                   </div>
+                ) : (
+                  <form onSubmit={handleRequestOtp} className="space-y-8">
+                    <div className="relative">
+                      <AuthInput 
+                        label="Email Address" 
+                        type="email" 
+                        placeholder="name@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="pl-12"
+                        disabled={isLoading}
+                      />
+                      <Mail size={18} className="absolute left-4 top-[46px] text-brand-gold/60" />
+                    </div>
 
-                  <div className="space-y-6">
-                    <Button type="submit" variant="primary" size="full" className="shadow-premium !py-6 text-[12px] tracking-[0.4em]">
-                      Request OTP <ArrowRight size={18} className="ml-3" />
-                    </Button>
-                    
-                    <p className="text-[10px] text-center text-brand-text/40 uppercase tracking-[0.2em] leading-relaxed">
-                      By continuing, I agree to <span className="text-brand-gold font-bold">Terms of Use</span> & <span className="text-brand-gold font-bold">Privacy Policy</span>
-                    </p>
-                  </div>
-                </form>
+                    {error && (
+                      <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{error}</p>
+                    )}
+
+                    <div className="space-y-6">
+                      <Button 
+                        type="submit" 
+                        variant="primary" 
+                        size="full" 
+                        className="shadow-premium !py-6 text-[12px] tracking-[0.4em]"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? "Preparing Gateway..." : "Request Access Link"} <ArrowRight size={18} className="ml-3" />
+                      </Button>
+                      
+                      <p className="text-[10px] text-center text-brand-text/40 uppercase tracking-[0.2em] leading-relaxed">
+                        By continuing, I agree to <span className="text-brand-gold font-bold">Terms of Use</span> & <span className="text-brand-gold font-bold">Privacy Policy</span>
+                      </p>
+                    </div>
+                  </form>
+                )}
               </div>
             ) : step === 'otp' ? (
               <div className="space-y-10">

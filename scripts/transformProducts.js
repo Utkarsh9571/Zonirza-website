@@ -68,7 +68,7 @@ function transform() {
     sizeMap[s.id] = s.value;
   });
 
-  // 3. Process Products
+    // 3. Process Products
   const cleanProducts = [];
   const slugs = new Set();
   let skippedCount = 0;
@@ -93,20 +93,17 @@ function transform() {
     if (p.gallery) {
       try {
         const galleryObj = JSON.parse(p.gallery);
-        // galleryObj is { "2": [img1, img2], "3": [...] }
         Object.values(galleryObj).forEach(imgList => {
           if (Array.isArray(imgList)) {
             images.push(...imgList);
           }
         });
       } catch (e) {
-        // If not JSON, maybe comma separated?
         if (typeof p.gallery === 'string') {
           images = p.gallery.split(',').map(img => img.trim()).filter(Boolean);
         }
       }
     }
-    // Filter out invalid image names
     images = images.filter(img => img && typeof img === 'string' && img.length > 5);
 
     // Category: Prefer Subcategory name, fallback to Main category
@@ -119,9 +116,15 @@ function transform() {
     if (p.product_type) tags.add(p.product_type.toLowerCase());
     if (p.feature === '1') tags.add('featured');
     if (p.topselling === '1') tags.add('trending');
-    
-    // Add category-based tags
     if (categoryName) tags.add(categoryName.toLowerCase());
+
+    // Configurable Options
+    const configurableOptions = {
+      metals: p.metal_type ? p.metal_type.split(',').map(id => metalMap[id.trim()]).filter(Boolean) : ['Yellow Gold', 'Rose Gold', 'White Gold'],
+      purities: p.karat_id ? p.karat_id.split(',').map(id => karatMap[id.trim()]).filter(Boolean) : ['18K', '22K'],
+      sizes: p.size_id ? p.size_id.split(',').map(id => sizeMap[id.trim()]).filter(Boolean) : ['7', '8', '9', '10', '11'],
+      stones: ['VVS1', 'VS1', 'SI1', 'Diamond-Standard']
+    };
 
     // Specs
     const specs = {};
@@ -138,19 +141,34 @@ function transform() {
       specs.size = sIds.map(id => sizeMap[id.trim()]).filter(Boolean).join(', ');
     }
     if (p.product_code) specs.sku = p.product_code;
+    if (p.gold_weight) specs['Gold Weight'] = `${p.gold_weight}g`;
+    if (p.diamond_weight) specs['Diamond Weight'] = `${p.diamond_weight}ct`;
 
-    // Price
-    const price = parseFloat(p.price) || 0;
+    // Pricing Logic
+    const baseWeight = parseFloat(p.gold_weight) || 5.0;
+    const makingCharges = 2500; // Fixed base making charge for now
+    
+    // If original price is 0, we calculate a realistic base price
+    // Gold Price (approx 6000/g) + Diamond + Making
+    let basePrice = parseFloat(p.price) || 0;
+    if (basePrice === 0) {
+      const estimatedGoldPrice = baseWeight * 5500; // 18K approx
+      const estimatedDiamondPrice = (parseFloat(p.diamond_weight) || 0) * 100000;
+      basePrice = estimatedGoldPrice + estimatedDiamondPrice;
+    }
 
     cleanProducts.push({
       name: p.product_title,
       slug: slug,
       description: p.description || p.product_title,
-      price: price,
+      basePrice: Math.round(basePrice),
+      makingCharges: makingCharges,
+      baseWeight: baseWeight,
       images: images,
       category: categoryName,
       tags: Array.from(tags),
-      specs: specs
+      specs: specs,
+      configurableOptions: configurableOptions
     });
 
     successCount++;
