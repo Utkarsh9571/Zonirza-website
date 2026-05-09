@@ -37,9 +37,12 @@ export default function ShippingPage() {
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+    if (isMounted && items.length === 0) {
+      router.push('/cart');
+    }
+  }, [isMounted, items.length, router]);
 
-  if (!isMounted) return null;
+  if (!isMounted || items.length === 0) return null;
 
   const total = getTotal();
 
@@ -58,10 +61,6 @@ export default function ShippingPage() {
     setShowAddressForm(false);
   };
 
-  if (items.length === 0) {
-    router.push('/cart');
-    return null;
-  }
 
   return (
     <div className="bg-brand-bg min-h-screen pt-24 pb-32">

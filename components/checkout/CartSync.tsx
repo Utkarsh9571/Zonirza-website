@@ -14,7 +14,7 @@ export function CartSync() {
   useEffect(() => {
     // LOGIN: User just logged in
     if (prevStatus.current === 'unauthenticated' && status === 'authenticated') {
-      syncCartFromDB();
+      syncFromDB();
     }
     
     // LOGOUT: User just logged out
@@ -28,7 +28,7 @@ export function CartSync() {
   // 2. Initial Fetch on Mount (if already logged in)
   useEffect(() => {
     if (status === 'authenticated' && isInitialSync.current) {
-        syncCartFromDB();
+        syncFromDB();
         isInitialSync.current = false;
     }
   }, [status]);
@@ -37,51 +37,53 @@ export function CartSync() {
   useEffect(() => {
     if (status === 'authenticated' && !isInitialSync.current) {
       const timer = setTimeout(() => {
-        persistCartToDB(items);
+        persistToDB({ cart: items });
       }, 1000); // Debounce to prevent too many API calls
       return () => clearTimeout(timer);
     }
   }, [items, status]);
 
-  const syncCartFromDB = async () => {
+  const syncFromDB = async () => {
     try {
       const res = await fetch('/api/user/profile');
       const data = await res.json();
-      if (data.success && data.user.cart) {
-        // If local cart has items, we might want to merge them or just take DB
-        // For Zoniraz luxury, we'll take the DB cart as the source of truth,
-        // or merge if local is newer (for now, let's take DB to prevent ghost items)
-        if (items.length > 0) {
-            // MERGE LOGIC: Add local items to DB items if they don't exist
-            const dbCart: CartItem[] = data.user.cart;
-            const mergedCart = [...dbCart];
-            
-            items.forEach(localItem => {
-                const exists = mergedCart.find(dbItem => dbItem.cartItemId === localItem.cartItemId);
-                if (!exists) {
-                    mergedCart.push(localItem);
-                }
-            });
-            setItems(mergedCart);
-            persistCartToDB(mergedCart);
-        } else {
-            setItems(data.user.cart);
+      if (data.success && data.user) {
+        // Sync Cart
+        if (data.user.cart) {
+          if (items.length > 0) {
+              const dbCart: CartItem[] = data.user.cart;
+              const mergedCart = [...dbCart];
+              
+              items.forEach(localItem => {
+                  const exists = mergedCart.find(dbItem => dbItem.cartItemId === localItem.cartItemId);
+                  if (!exists) {
+                      mergedCart.push(localItem);
+                  }
+              });
+              setItems(mergedCart);
+              persistToDB({ cart: mergedCart });
+          } else {
+              setItems(data.user.cart);
+          }
         }
+
+        // Future: Sync wishlist, preferences, etc. to their respective stores
+        // console.log("Synced ecommerce data:", data.user.wishlist, data.user.preferences);
       }
     } catch (err) {
-      console.error("Cart Sync Fetch Error:", err);
+      console.error("Sync Fetch Error:", err);
     }
   };
 
-  const persistCartToDB = async (cartItems: CartItem[]) => {
+  const persistToDB = async (data: any) => {
     try {
       await fetch('/api/user/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cart: cartItems })
+        body: JSON.stringify(data)
       });
     } catch (err) {
-      console.error("Cart Persist Error:", err);
+      console.error("Data Persist Error:", err);
     }
   };
 

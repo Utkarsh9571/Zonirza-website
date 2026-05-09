@@ -61,25 +61,25 @@ const Navbar = () => {
           setIsUserDropdownOpen(false);
         }
       };
+
+      let rafId: number;
       const handleScroll = () => {
-        if (window.scrollY > 50) {
+        const scrollY = window.scrollY || document.documentElement.scrollTop;
+        if (scrollY > 20) {
           setIsScrolled(true);
         } else {
           setIsScrolled(false);
         }
-        // Auto-close menu on scroll to improve mobile experience
-        if (window.scrollY > 100) {
-          setIsMegaMenuPinned(false);
-          setIsMegaMenuHovered(false);
-          setIsUserDropdownOpen(false);
-        }
+        
+        rafId = requestAnimationFrame(handleScroll);
       };
   
       document.addEventListener("mousedown", handleClickOutside);
-      window.addEventListener('scroll', handleScroll);
+      rafId = requestAnimationFrame(handleScroll);
+
       return () => {
         document.removeEventListener("mousedown", handleClickOutside);
-        window.removeEventListener('scroll', handleScroll);
+        cancelAnimationFrame(rafId);
       };
     }, []);
   
@@ -88,8 +88,8 @@ const Navbar = () => {
       <nav ref={navRef} className={cn(
         "fixed w-full z-[100] flex justify-between items-center transition-all duration-500",
         isScrolled 
-          ? "top-0 py-4 px-6 md:px-12 bg-white/60 backdrop-blur-md shadow-sm border-b border-white/20" 
-          : "top-6 px-6 md:px-12"
+          ? "top-0 py-4 px-6 md:px-12 bg-white/70 backdrop-blur-xl shadow-sm border-b border-white/20" 
+          : "top-0 py-6 px-6 md:px-12 bg-transparent"
       )}>
         
         {/* 1. LEFT: Floating Logo */}
@@ -106,18 +106,21 @@ const Navbar = () => {
           {/* Navigation Links inside Pill */}
           <div className="flex items-center space-x-8 mr-8">
             <button 
-              className="flex items-center space-x-1 cursor-pointer group py-2 focus:outline-none"
+              className={cn(
+                "flex items-center space-x-1 cursor-pointer group py-2 focus:outline-none touch-safe-hit transition-all",
+                isMegaMenuOpen ? "text-brand-gold" : "text-brand-text"
+              )}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               onClick={toggleMegaMenu}
               aria-expanded={isMegaMenuOpen}
             >
-              <span className="text-[11px] uppercase tracking-widest font-bold text-brand-text group-hover:text-brand-gold transition-colors">Shop</span>
-              <ChevronDown size={14} className={cn("text-brand-text transition-transform", isMegaMenuOpen ? "rotate-180" : "")} />
+              <span className="text-[11px] uppercase tracking-widest font-bold group-hover:text-brand-gold transition-colors">Shop</span>
+              <ChevronDown size={14} className={cn("transition-transform duration-300", isMegaMenuOpen ? "rotate-180 text-brand-gold" : "text-brand-text")} />
             </button>
             <Link href="/new-arrivals" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 hover:text-brand-gold transition-colors">New Arrivals</Link>
-            <Link href="/ready-to-ship" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 hover:text-brand-gold transition-colors">Ready to Ship</Link>
-            <Link href="/offers" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 hover:text-brand-gold transition-colors">Offers</Link>
+            <Link href="/blog" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 hover:text-brand-gold transition-colors">Blog</Link>
+            <Link href="/contact" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 hover:text-brand-gold transition-colors">Contact Us</Link>
           </div>
   
           {/* User Actions inside Pill */}
@@ -125,10 +128,14 @@ const Navbar = () => {
             {/* 3. Account Dropdown & Trigger */}
             <div className="relative">
               <button 
-                onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsUserDropdownOpen(!isUserDropdownOpen);
+                  setIsMegaMenuPinned(false); // Close other menus
+                }}
                 className={cn(
-                  "w-10 h-10 flex items-center justify-center rounded-full transition-all shadow-soft relative overflow-hidden",
-                  isLoggedIn ? "bg-brand-text text-white" : "bg-brand-bg text-brand-text hover:bg-brand-gold hover:text-white"
+                  "w-10 h-10 flex items-center justify-center rounded-full transition-all shadow-soft relative overflow-hidden touch-safe-hit",
+                  isLoggedIn ? "bg-brand-text text-white" : "bg-brand-bg text-brand-text active:bg-brand-gold active:text-white"
                 )}
                 aria-label="Account"
               >
@@ -233,10 +240,10 @@ const Navbar = () => {
             </button>
   
             <div className="flex items-center space-x-3 pl-2">
-              <button className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-bg text-brand-text hover:bg-brand-gold hover:text-white transition-colors" aria-label="Search">
+              <button className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-bg text-brand-text active:bg-brand-gold active:text-white transition-colors touch-safe-hit" aria-label="Search">
                 <Search size={16} />
               </button>
-              <Link href="/cart" className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-text text-white hover:bg-brand-gold transition-colors relative shadow-soft" aria-label="Cart">
+              <Link href="/cart" className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-text text-white active:bg-brand-gold transition-colors relative shadow-soft touch-safe-hit" aria-label="Cart">
                 <ShoppingCart size={16} />
                 {isMounted && totalQuantity > 0 && (
                   <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-brand-gold text-white text-[8px] flex items-center justify-center font-bold">
@@ -252,7 +259,10 @@ const Navbar = () => {
         {/* 3. MEGA MENU INTEGRATION (Full Width) */}
         {isMegaMenuOpen && (
           <div 
-            className="absolute top-full left-0 w-full pt-4 flex justify-center px-6"
+            className={cn(
+              "left-0 w-full pt-4 flex justify-center px-6 animate-in slide-in-from-top-2 duration-300 z-[110]",
+              isScrolled ? "fixed top-16" : "absolute top-full"
+            )}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
@@ -324,8 +334,8 @@ const Navbar = () => {
             </div>
 
             <Link href="/new-arrivals" className="text-sm uppercase tracking-widest font-bold text-brand-text py-2">New Arrivals</Link>
-            <Link href="/ready-to-ship" className="text-sm uppercase tracking-widest font-bold text-brand-text py-2">Ready to Ship</Link>
-            <Link href="/offers" className="text-sm uppercase tracking-widest font-bold text-brand-text py-2 border-b border-brand-text/5 pb-6">Offers</Link>
+            <Link href="/blog" className="text-sm uppercase tracking-widest font-bold text-brand-text py-2">Blog</Link>
+            <Link href="/contact" onClick={() => setIsOpen(false)} className="text-sm uppercase tracking-widest font-bold text-brand-text py-2 border-b border-brand-text/5 pb-6">Contact Us</Link>
             
             <div className="pt-6 border-t border-brand-text/5">
               <button 

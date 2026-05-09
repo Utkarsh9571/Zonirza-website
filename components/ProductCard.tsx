@@ -20,7 +20,13 @@ const ProductCard = ({ name, price, image, slug, oldPrice }: ProductCardProps) =
           className="object-cover p-6 sm:p-8 transition-transform duration-700 group-hover:scale-110"
         />
         {/* Mobile: Always visible, Desktop: Hover visible */}
-        <button className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-brand-text text-brand-white flex items-center justify-center opacity-100 md:opacity-0 translate-y-0 md:translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 hover:bg-brand-gold z-10 shadow-soft active:scale-95">
+        <button 
+          className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-brand-text text-brand-white flex items-center justify-center opacity-100 md:opacity-0 translate-y-0 md:translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 active:bg-brand-gold z-10 shadow-soft active:scale-95 touch-safe-hit"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
           <span className="text-xl font-light">+</span>
         </button>
       </div>

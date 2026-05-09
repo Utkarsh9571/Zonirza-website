@@ -112,8 +112,8 @@ export default async function Home() {
             </div>
 
             {/* Right Stacked Collections */}
-            <div className="w-full lg:w-1/3 grid grid-cols-2 lg:flex lg:flex-col gap-4">
-              <div className="relative w-full aspect-[4/5] md:h-full rounded-xl overflow-hidden group shadow-soft">
+            <div className="w-full lg:w-1/3 grid grid-cols-2 gap-4">
+              <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden group shadow-soft">
                 <Image
                   src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=600"
                   alt="Everyday Wear"
@@ -129,7 +129,7 @@ export default async function Home() {
                   </Link>
                 </div>
               </div>
-              <div className="relative w-full aspect-[4/5] md:h-full rounded-xl overflow-hidden group shadow-soft">
+              <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden group shadow-soft">
                 <Image
                   src="https://images.unsplash.com/photo-1588444837495-c6bfcceebce7?auto=format&fit=crop&q=80&w=600"
                   alt="Men's Edit"
@@ -141,6 +141,40 @@ export default async function Home() {
                 <div className="absolute bottom-6 left-6 text-white space-y-1">
                   <h3 className="text-xl sm:text-2xl font-serif">Men's Edit</h3>
                   <Link href="/products?gender=men" className="inline-flex items-center space-x-2 text-[8px] sm:text-[10px] uppercase tracking-widest hover:text-brand-gold transition-colors pt-1">
+                    <span>Explore</span> <ArrowRight size={12} />
+                  </Link>
+                </div>
+              </div>
+              
+              {/* NEW CARDS */}
+              <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden group shadow-soft">
+                <Image
+                  src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600"
+                  alt="Solitaire Dream"
+                  fill
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 400px"
+                  className="object-cover transition-transform duration-[3s] group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-text/80 via-transparent to-transparent"></div>
+                <div className="absolute bottom-6 left-6 text-white space-y-1">
+                  <h3 className="text-xl sm:text-2xl font-serif">Solitaire Dream</h3>
+                  <Link href="/products?tag=solitaire" className="inline-flex items-center space-x-2 text-[8px] sm:text-[10px] uppercase tracking-widest hover:text-brand-gold transition-colors pt-1">
+                    <span>Explore</span> <ArrowRight size={12} />
+                  </Link>
+                </div>
+              </div>
+              <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden group shadow-soft">
+                <Image
+                  src="https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&q=80&w=600"
+                  alt="Heritage Gold"
+                  fill
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 400px"
+                  className="object-cover transition-transform duration-[3s] group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-text/80 via-transparent to-transparent"></div>
+                <div className="absolute bottom-6 left-6 text-white space-y-1">
+                  <h3 className="text-xl sm:text-2xl font-serif">Heritage Gold</h3>
+                  <Link href="/products?collection=heritage" className="inline-flex items-center space-x-2 text-[8px] sm:text-[10px] uppercase tracking-widest hover:text-brand-gold transition-colors pt-1">
                     <span>Explore</span> <ArrowRight size={12} />
                   </Link>
                 </div>

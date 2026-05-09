@@ -48,9 +48,13 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
               <button
                 key={tab.id}
                 onMouseEnter={() => setActiveTabId(tab.id)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveTabId(tab.id);
+                }}
                 className={cn(
-                  "px-5 py-6 relative transition-all duration-300 flex items-center space-x-2 group whitespace-nowrap",
-                  activeTabId === tab.id ? "text-brand-text border-b-2 border-brand-text" : "text-brand-text/60 hover:text-brand-text"
+                  "px-5 py-6 relative transition-all duration-300 flex items-center space-x-2 group whitespace-nowrap touch-safe-hit",
+                  activeTabId === tab.id ? "text-brand-text border-b-2 border-brand-text" : "text-brand-text/60 active:text-brand-text"
                 )}
               >
                 {Icon && <Icon size={16} strokeWidth={1.5} className="text-brand-text/40 group-hover:text-brand-text transition-colors" />}
@@ -71,11 +75,15 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
               <button
                 key={idx}
                 onMouseEnter={() => setActiveFilter(filterGroup.title)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveFilter(filterGroup.title);
+                }}
                 className={cn(
-                  "w-full text-left px-5 py-3 rounded-xl transition-all duration-300 relative",
+                  "w-full text-left px-5 py-3 rounded-xl transition-all duration-300 relative touch-safe-hit",
                   activeFilter === filterGroup.title 
                     ? "bg-[#F9F3F1] text-brand-text font-bold" 
-                    : "text-brand-text/60 hover:bg-brand-bg/50"
+                    : "text-brand-text/60 active:bg-brand-bg/50"
                 )}
               >
                 {activeFilter === filterGroup.title && (

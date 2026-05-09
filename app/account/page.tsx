@@ -62,7 +62,15 @@ function AccountContent() {
     name: '',
     phone: '',
     gender: '',
-    addresses: [] as Address[]
+    addresses: [] as Address[],
+    wishlist: [] as string[],
+    orderHistory: [] as any[],
+    recentlyViewed: [] as string[],
+    preferences: {
+      preferredMetal: '',
+      preferredCategory: '',
+      ringSize: ''
+    }
   });
 
   const [addressForm, setAddressForm] = useState<Address>({
@@ -96,7 +104,15 @@ function AccountContent() {
           name: data.user.name || '',
           phone: data.user.phone || '',
           gender: data.user.gender || '',
-          addresses: data.user.addresses || []
+          addresses: data.user.addresses || [],
+          wishlist: data.user.wishlist || [],
+          orderHistory: data.user.orderHistory || [],
+          recentlyViewed: data.user.recentlyViewed || [],
+          preferences: data.user.preferences || {
+            preferredMetal: '',
+            preferredCategory: '',
+            ringSize: ''
+          }
         });
       }
     } catch (err) {
@@ -344,6 +360,12 @@ function AccountContent() {
                       <div className="space-y-2">
                         <p className="text-[9px] uppercase tracking-[0.2em] text-brand-text/30 font-bold">Gender</p>
                         <p className="text-sm font-bold text-brand-text tracking-wide">{userData.gender || '—'}</p>
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-[9px] uppercase tracking-[0.2em] text-brand-text/30 font-bold">Preferences</p>
+                        <p className="text-sm font-bold text-brand-text tracking-wide">
+                          {userData.preferences?.preferredMetal || 'No metal set'} | {userData.preferences?.ringSize ? `Size: ${userData.preferences.ringSize}` : 'No size set'}
+                        </p>
                       </div>
                     </div>
                   )}

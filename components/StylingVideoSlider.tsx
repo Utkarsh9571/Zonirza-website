@@ -1,23 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { ChevronLeft, ChevronRight, Share2, Volume2, Video, Play, Pause } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const videos = [
-  { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', title: 'Diamond Styling Guide', thumbnail: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=600' },
-  { id: 2, url: 'https://assets.mixkit.co/videos/preview/mixkit-close-up-of-a-woman-wearing-a-diamond-necklace-4406-large.mp4', title: 'The Solitaire Look', thumbnail: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600' },
-  { id: 3, url: 'https://www.instagram.com/reels/C42n-ZSvK-R/', title: 'Minimalist Magic', thumbnail: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=600' },
-  { id: 4, url: 'https://assets.mixkit.co/videos/preview/mixkit-diamond-earrings-on-a-woman-4404-large.mp4', title: 'Bridal Brilliance', thumbnail: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=600' },
-  { id: 5, url: 'https://assets.mixkit.co/videos/preview/mixkit-shiny-gold-necklace-on-a-glamorous-woman-4405-large.mp4', title: 'Heritage Elegance', thumbnail: 'https://images.unsplash.com/photo-1588444837495-c6bfcceebce7?auto=format&fit=crop&q=80&w=600' },
-  { id: 6, url: 'https://assets.mixkit.co/videos/preview/mixkit-diamond-pendant-hanging-from-a-gold-chain-4407-large.mp4', title: 'Gold Essentials', thumbnail: 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&q=80&w=600' },
-  { id: 7, url: 'https://assets.mixkit.co/videos/preview/mixkit-woman-displaying-a-diamond-bracelet-4403-large.mp4', title: 'Evening Sparkle', thumbnail: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600' },
-  { id: 8, url: 'https://assets.mixkit.co/videos/preview/mixkit-macro-of-a-beautiful-diamond-ring-4401-large.mp4', title: 'Vintage Charm', thumbnail: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=600' }
+  { id: 1, url: 'https://youtube.com/shorts/DIdvAeTcR3o?si=SGv3jksUslEbteXV', title: 'Adele - Skyfall', thumbnail: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600' },
+  { id: 2, url: 'https://youtu.be/DeumyOzKqgI?si=iannnhz9RK-gtcz3', title: 'The Solitaire Look', thumbnail: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600' },
+  { id: 3, url: 'https://youtu.be/DeumyOzKqgI?si=iannnhz9RK-gtcz3', title: 'Minimalist Magic', thumbnail: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=600' },
+  { id: 4, url: 'https://youtu.be/DeumyOzKqgI?si=iannnhz9RK-gtcz3', title: 'Bridal Brilliance', thumbnail: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=600' },
+  { id: 5, url: 'https://youtu.be/DeumyOzKqgI?si=iannnhz9RK-gtcz3', title: 'Heritage Elegance', thumbnail: 'https://images.unsplash.com/photo-1588444837495-c6bfcceebce7?auto=format&fit=crop&q=80&w=600' }
 ];
 
 const getYoutubeEmbedUrl = (url: string) => {
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    const videoId = url.includes('v=') ? url.split('v=')[1].split('&')[0] : url.split('/').pop();
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&iv_load_policy=3`;
+    let videoId = '';
+    if (url.includes('v=')) {
+      videoId = url.split('v=')[1].split('&')[0];
+    } else {
+      const parts = url.split('/');
+      videoId = parts[parts.length - 1].split('?')[0];
+    }
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=1&modestbranding=1&rel=0&iv_load_policy=3&enablejsapi=1`;
   }
   return null;
 };
@@ -32,19 +36,69 @@ const getInstagramEmbedUrl = (url: string) => {
 
 export default function StylingVideoSlider() {
   const [current, setCurrent] = useState(0);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isMouseDown, setIsMouseDown] = useState(false);
+  const [mouseStart, setMouseStart] = useState<number | null>(null);
+  const [isInView, setIsInView] = useState(false);
+  const [isUserPaused, setIsUserPaused] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const videoRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const next = () => setCurrent((prev) => (prev + 1) % videos.length);
   const prev = () => setCurrent((prev) => (prev - 1 + videos.length) % videos.length);
 
-  const onTouchStart = (e: React.TouchEvent) => setTouchStart(e.targetTouches[0].clientX);
-  const onTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX);
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    if (distance > 50) next();
-    if (distance < -50) prev();
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (e.isPrimary) {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      setIsMouseDown(true);
+      setMouseStart(e.clientX);
+    }
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!isMouseDown || mouseStart === null) return;
+    const distance = mouseStart - e.clientX;
+    if (Math.abs(distance) > 50) { 
+      if (distance > 0) next();
+      else prev();
+      setIsMouseDown(false);
+      setMouseStart(null);
+    }
+  };
+
+  const onPointerUp = () => {
+    setIsMouseDown(false);
+    setMouseStart(null);
+  };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0.2 }
+    );
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    setIsUserPaused(false);
+  }, [current]);
+
+  const togglePlay = () => {
+    setIsUserPaused(prev => !prev);
   };
 
   const getCardStyle = (index: number) => {
@@ -54,107 +108,174 @@ export default function StylingVideoSlider() {
 
     const absDiff = Math.abs(normalizedDiff);
     const zIndex = 50 - absDiff * 10;
-    const scale = 1 - absDiff * 0.15;
-    const opacity = 1 - absDiff * 0.25;
-    const translateX = normalizedDiff * 75;
+    const scale = isMobile ? (1 - absDiff * 0.15) : (1 - absDiff * 0.12);
+    const opacity = 1 - absDiff * 0.3;
+    const translateX = isMobile ? (normalizedDiff * 55) : (normalizedDiff * 45); 
     
     return {
-      transform: `translateX(${translateX}%) scale(${scale})`,
+      transform: isMobile && absDiff > 0 
+        ? `translateX(${normalizedDiff * 100}%) scale(0.8)` 
+        : `translateX(${translateX}%) scale(${scale})`,
       zIndex,
-      opacity: absDiff > 3 ? 0 : opacity,
-      pointerEvents: normalizedDiff === 0 ? 'auto' : 'none',
+      opacity: absDiff > (isMobile ? 1 : 2) ? 0 : opacity,
+      pointerEvents: normalizedDiff === 0 ? 'auto' : 'none' as const, 
+      visibility: absDiff > (isMobile ? 1 : 2) ? 'hidden' : 'visible' as const,
     };
   };
 
+  const renderContent = (video: typeof videos[0], isCurrent: boolean) => {
+    if (!isCurrent) {
+      return (
+        <div className="relative w-full h-full bg-brand-bg">
+          <img 
+            src={video.thumbnail} 
+            alt={video.title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/20" />
+        </div>
+      );
+    }
+
+    const youtubeUrl = getYoutubeEmbedUrl(video.url);
+    const instagramUrl = getInstagramEmbedUrl(video.url);
+
+    if (youtubeUrl) {
+      const shouldPlay = isInView && isCurrent && !isUserPaused;
+      return (
+        <iframe
+          key={`yt-${video.id}-${shouldPlay}`}
+          src={youtubeUrl + (shouldPlay ? "" : "&autoplay=0")}
+          className="w-full h-full object-cover z-0 pointer-events-auto"
+          allow="autoplay; encrypted-media"
+          allowFullScreen
+        ></iframe>
+      );
+    }
+
+    if (instagramUrl) {
+      return (
+        <iframe
+          key={`ig-${video.id}-${isInView}-${isCurrent}`}
+          src={instagramUrl + (isInView && isCurrent && !isUserPaused ? "?autoplay=1" : "")}
+          className="w-full h-full object-cover z-0"
+          allow="autoplay"
+          allowFullScreen
+        ></iframe>
+      );
+    }
+
+    return (
+      <video
+        ref={el => { videoRefs.current[video.id] = el; }}
+        src={video.url}
+        muted
+        loop
+        playsInline
+        className="w-full h-full object-cover z-0"
+      />
+    );
+  };
+
+  useEffect(() => {
+    Object.entries(videoRefs.current).forEach(([id, el]) => {
+      if (!el) return;
+      const isCurrentVideo = videos.find(v => v.id === parseInt(id))?.id === videos[current].id;
+      if (isCurrentVideo && isInView && !isUserPaused) {
+        el.play().catch(() => {});
+      } else {
+        el.pause();
+      }
+    });
+  }, [current, isInView, isUserPaused]);
+
   return (
-    <div className="relative w-full h-[550px] sm:h-[650px] flex items-center justify-center">
-      
-      {/* Navigation Arrows (Higher z-index and explicit click handling) */}
-      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 sm:px-10 z-[60] pointer-events-none">
+    <div 
+      ref={containerRef}
+      className="relative w-full h-[600px] sm:h-[700px] flex items-center justify-center overflow-hidden touch-pan-y"
+    >
+      <div 
+        className="relative w-[260px] sm:w-[340px] aspect-[9/16] flex items-center justify-center z-0 touch-none pointer-events-none"
+      >
+        {videos.map((video, i) => {
+          const isCurrentCard = i === current;
+          return (
+            <div 
+              key={video.id}
+              onPointerDown={isCurrentCard ? onPointerDown : undefined}
+              onPointerMove={isCurrentCard ? onPointerMove : undefined}
+              onPointerUp={isCurrentCard ? onPointerUp : undefined}
+              onPointerLeave={isCurrentCard ? onPointerUp : undefined}
+              onPointerCancel={isCurrentCard ? onPointerUp : undefined}
+              className={cn(
+                "absolute inset-0 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] rounded-[32px] overflow-hidden shadow-2xl border border-white/10 bg-brand-text",
+                isCurrentCard ? "pointer-events-auto cursor-grab active:cursor-grabbing" : "pointer-events-none"
+              )}
+              style={getCardStyle(i) as any}
+            >
+              <div className="relative w-full h-full">
+                {renderContent(video, isCurrentCard)}
+                <div className={cn(
+                  "absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10 pointer-events-none transition-opacity duration-500",
+                  isCurrentCard ? "opacity-100" : "opacity-0"
+                )} />
+                {isCurrentCard && (
+                  <div className="absolute top-6 left-0 right-0 px-6 flex justify-between items-center z-50 pointer-events-auto">
+                    <p className="text-[10px] text-white/80 font-medium tracking-tight truncate max-w-[150px]">
+                      Find the perfect diam...
+                    </p>
+                    <div className="flex items-center space-x-3">
+                      <button onClick={togglePlay} className="text-white/90 hover:text-white transition-colors">
+                        {isUserPaused ? <Play size={18} strokeWidth={1.5} /> : <Pause size={18} strokeWidth={1.5} />}
+                      </button>
+                      <button className="text-white/90 hover:text-white transition-colors">
+                        <Volume2 size={18} strokeWidth={1.5} />
+                      </button>
+                      <button 
+                        onClick={() => { if (navigator.share) navigator.share({ title: video.title, url: video.url }); }}
+                        className="text-white/90 hover:text-white transition-colors"
+                      >
+                        <Share2 size={18} strokeWidth={1.5} />
+                      </button>
+                      <a href={video.url} target="_blank" rel="noopener noreferrer" className="text-white/90 hover:text-white transition-colors">
+                        <Video size={18} strokeWidth={1.5} />
+                      </a>
+                    </div>
+                  </div>
+                )}
+                <div className={cn(
+                  "absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/90 to-transparent text-white transition-all duration-700 z-20",
+                  isCurrentCard ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                )}>
+                  <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-brand-gold mb-2">Styling 101</p>
+                  <h4 className="text-lg font-serif leading-tight">{video.title}</h4>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 sm:px-24 z-[200] pointer-events-none">
         <button 
-          onClick={(e) => { e.stopPropagation(); prev(); }}
-          className="pointer-events-auto w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-brand-text/90 text-white flex items-center justify-center hover:bg-brand-gold transition-all shadow-premium group border border-white/20 active:scale-95"
+          onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); prev(); }}
+          className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white/40 backdrop-blur-md text-brand-text flex items-center justify-center hover:bg-brand-gold hover:text-white transition-all shadow-premium border border-white/60 active:scale-95 pointer-events-auto cursor-pointer"
           aria-label="Previous video"
         >
-          <ChevronLeft size={32} className="group-hover:-translate-x-1 transition-transform" />
+          <ChevronLeft size={24} />
         </button>
         <button 
-          onClick={(e) => { e.stopPropagation(); next(); }}
-          className="pointer-events-auto w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-brand-text/90 text-white flex items-center justify-center hover:bg-brand-gold transition-all shadow-premium group border border-white/20 active:scale-95"
+          onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); next(); }}
+          className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white/40 backdrop-blur-md text-brand-text flex items-center justify-center hover:bg-brand-gold hover:text-white transition-all shadow-premium border border-white/60 active:scale-95 pointer-events-auto cursor-pointer"
           aria-label="Next video"
         >
-          <ChevronRight size={32} className="group-hover:translate-x-1 transition-transform" />
+          <ChevronRight size={24} />
         </button>
       </div>
 
-      {/* The Stacked Container */}
-      <div 
-        className="relative w-[260px] sm:w-[320px] aspect-[9/16] flex items-center justify-center"
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-      >
-        {videos.map((video, i) => (
-          <div 
-            key={video.id}
-            className="absolute inset-0 transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-brand-text"
-            style={getCardStyle(i) as any}
-          >
-            {/* Direct Video Tag for Mobile Autoplay */}
-            {i === current ? (
-              <div className="relative w-full h-full">
-                {getYoutubeEmbedUrl(video.url) ? (
-                  <iframe
-                    src={getYoutubeEmbedUrl(video.url) || ''}
-                    className="w-full h-full object-cover z-0"
-                    allow="autoplay; encrypted-media"
-                    allowFullScreen
-                  ></iframe>
-                ) : getInstagramEmbedUrl(video.url) ? (
-                  <iframe
-                    src={getInstagramEmbedUrl(video.url) || ''}
-                    className="w-full h-full object-cover z-0"
-                    allow="autoplay"
-                    allowFullScreen
-                  ></iframe>
-                ) : (
-                  <video
-                    src={video.url}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="w-full h-full object-cover z-0"
-                  />
-                )}
-                {/* Visual Overlay to ensure title readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10 pointer-events-none" />
-              </div>
-            ) : (
-              <div 
-                className="w-full h-full bg-cover bg-center"
-                style={{ backgroundImage: `url(${video.thumbnail})` }}
-              >
-                <div className="absolute inset-0 bg-black/20" />
-              </div>
-            )}
-
-            {/* Title Overlay */}
-            <div className={`absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent text-white transition-opacity duration-500 z-20 ${i === current ? 'opacity-100' : 'opacity-0'}`}>
-              <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-brand-gold mb-1">Styling 101</p>
-              <h4 className="text-sm font-serif leading-tight">{video.title}</h4>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Pagination Indicators */}
-      <div className="absolute bottom-4 flex space-x-2 z-20">
+      <div className="absolute bottom-10 flex space-x-3 z-20">
         {videos.map((_, i) => (
-          <div 
-            key={i} 
-            className={`h-1 rounded-full transition-all duration-300 ${i === current ? 'w-6 bg-brand-gold' : 'w-1.5 bg-brand-text/20'}`}
-          />
+          <div key={i} className={`h-1 rounded-full transition-all duration-500 ${i === current ? 'w-8 bg-brand-gold' : 'w-2 bg-brand-text/10'}`} />
         ))}
       </div>
     </div>

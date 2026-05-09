@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
@@ -9,6 +11,7 @@ import { Section } from './Section';
 import { cn } from '@/lib/utils';
 import { getValidImageUrl } from '@/lib/constants';
 import { calculatePricing, formatCurrency, ProductConfiguration } from '@/lib/pricing';
+import { validateProductConfiguration, isFieldMissing } from '@/lib/ecommerce';
 import { RingSizeGuide } from '../product/guides/RingSizeGuide';
 import { DiamondGuide } from '../product/guides/DiamondGuide';
 import { GoldPurityGuide } from '../product/guides/GoldPurityGuide';
@@ -20,13 +23,14 @@ export function ProductInteractiveUI({ product }: { product: any }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
+  const [showValidation, setShowValidation] = useState(false);
 
-  // Configuration State
+  // Configuration State - Initialize with empty or defaults based on necessity
   const [config, setConfig] = useState<ProductConfiguration>({
-    metal: configOptions.metals?.[0] || '18K Yellow Gold',
-    purity: configOptions.purities?.[0] || '18K',
-    size: configOptions.sizes?.[0] || '7',
-    stone: configOptions.stones?.[0] || 'Diamond-Standard',
+    metal: '',
+    purity: '',
+    size: '',
+    stone: configOptions.stones?.length > 0 ? '' : 'None',
   });
 
   // 2. Dynamic Pricing Calculation
@@ -38,25 +42,36 @@ export function ProductInteractiveUI({ product }: { product: any }) {
     }, config);
   }, [product.basePrice, product.price, product.baseWeight, product.makingCharges, config]);
 
+  const validation = useMemo(() => {
+    return validateProductConfiguration(product, config as any);
+  }, [product, config]);
+
   const addItem = useCartStore((state) => state.items); // Note: we need the store's addItem action
   const { status } = useSession();
-  const openAuthModal = useAuthModalStore(state => state.openAuthModal);
+  const openAuthModal = useAuthModalStore((state: any) => state.openAuthModal);
 
   const cartAddItem = useCartStore((state) => state.addItem);
   const specs = product.specs instanceof Map ? Object.fromEntries(product.specs) : product.specs;
 
   const handleAddToCart = () => {
+    if (!validation.isValid) {
+      setShowValidation(true);
+      return;
+    }
+
     // Generate a unique ID based on productId and current configuration
     const cartItemId = `${product._id}-${config.purity}-${config.metal}-${config.size}-${config.stone}`.replace(/\s+/g, '-').toLowerCase();
 
     cartAddItem({
       cartItemId,
       productId: product._id as string,
+      slug: product.slug,
       name: product.name,
       price: pricing.totalPrice,
       image: product.images[selectedImage],
       quantity,
       estimatedWeight: pricing.estimatedWeight,
+      lastUpdated: Date.now(),
       configuration: { ...config }
     });
     
@@ -148,17 +163,28 @@ export function ProductInteractiveUI({ product }: { product: any }) {
               
               {/* Purity & Metal Selector */}
               <div className="space-y-4">
-                <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Select Purity & Gold</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Select Purity & Gold</span>
+                  {showValidation && isFieldMissing('metal', validation.missingFields) && (
+                    <span className="text-[9px] text-red-500 font-bold uppercase tracking-widest flex items-center animate-pulse">
+                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2" /> Incomplete
+                    </span>
+                  )}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {['18K Yellow Gold', '18K Rose Gold', '18K White Gold', '22K Yellow Gold'].map((option) => (
                     <button
                       key={option}
-                      onClick={() => setConfig({ ...config, metal: option.split(' ').slice(1).join(' '), purity: option.split(' ')[0] })}
+                      onClick={() => {
+                        setConfig({ ...config, metal: option.split(' ').slice(1).join(' '), purity: option.split(' ')[0] });
+                        if (showValidation) setShowValidation(false);
+                      }}
                       className={cn(
                         "px-4 py-2.5 rounded-xl text-[9px] uppercase tracking-widest font-bold border transition-all duration-300",
                         `${config.purity} ${config.metal}` === option 
                           ? "bg-brand-text text-white border-brand-text shadow-premium" 
-                          : "bg-white text-brand-text/70 border-brand-text/10 hover:border-brand-gold hover:text-brand-text"
+                          : "bg-white text-brand-text/70 border-brand-text/10 hover:border-brand-gold hover:text-brand-text",
+                        showValidation && isFieldMissing('metal', validation.missingFields) && "border-red-200"
                       )}
                     >
                       {option}
@@ -170,19 +196,30 @@ export function ProductInteractiveUI({ product }: { product: any }) {
               {/* Ring Size Selector */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                   <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Size (India/US)</span>
+                   <div className="flex items-center space-x-2">
+                    <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Size (India/US)</span>
+                    {showValidation && isFieldMissing('size', validation.missingFields) && (
+                      <span className="text-[9px] text-red-500 font-bold uppercase tracking-widest flex items-center animate-pulse">
+                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2" /> Incomplete
+                      </span>
+                    )}
+                   </div>
                    <button className="text-[9px] text-brand-gold underline tracking-widest">Not sure?</button>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {['7', '8', '9', '10', '11'].map((size) => (
                     <button
                       key={size}
-                      onClick={() => setConfig({ ...config, size })}
+                      onClick={() => {
+                        setConfig({ ...config, size });
+                        if (showValidation) setShowValidation(false);
+                      }}
                       className={cn(
                         "w-12 h-12 flex items-center justify-center rounded-xl text-[10px] font-bold border transition-all duration-300",
                         config.size === size 
                           ? "bg-brand-text text-white border-brand-text shadow-premium" 
-                          : "bg-white text-brand-text/70 border-brand-text/10 hover:border-brand-gold hover:text-brand-text"
+                          : "bg-white text-brand-text/70 border-brand-text/10 hover:border-brand-gold hover:text-brand-text",
+                        showValidation && isFieldMissing('size', validation.missingFields) && "border-red-200"
                       )}
                     >
                       {size}
@@ -193,17 +230,28 @@ export function ProductInteractiveUI({ product }: { product: any }) {
 
               {/* Diamond Quality Selector */}
               <div className="space-y-4">
-                <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Diamond Clarity</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Diamond Clarity</span>
+                  {showValidation && isFieldMissing('stone', validation.missingFields) && (
+                    <span className="text-[9px] text-red-500 font-bold uppercase tracking-widest flex items-center animate-pulse">
+                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2" /> Incomplete
+                    </span>
+                  )}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {['VVS1', 'VS1', 'SI1', 'Diamond-Standard'].map((q) => (
                     <button
                       key={q}
-                      onClick={() => setConfig({ ...config, stone: q })}
+                      onClick={() => {
+                        setConfig({ ...config, stone: q });
+                        if (showValidation) setShowValidation(false);
+                      }}
                       className={cn(
                         "px-4 py-2.5 rounded-xl text-[9px] uppercase tracking-widest font-bold border transition-all duration-300",
                         config.stone === q
                           ? "bg-brand-text text-white border-brand-text shadow-premium" 
-                          : "bg-white text-brand-text/70 border-brand-text/10 hover:border-brand-gold hover:text-brand-text"
+                          : "bg-white text-brand-text/70 border-brand-text/10 hover:border-brand-gold hover:text-brand-text",
+                        showValidation && isFieldMissing('stone', validation.missingFields) && "border-red-200"
                       )}
                     >
                       {q.replace('-', ' ')}
@@ -237,8 +285,17 @@ export function ProductInteractiveUI({ product }: { product: any }) {
             </div>
 
             <div className="flex flex-col space-y-4 pt-4">
-              <Button size="lg" className={cn("w-full !py-5 shadow-premium transition-all duration-300", isAdded ? "bg-green-600 hover:bg-green-700" : "")} onClick={handleAddToCart}>
-                {isAdded ? <><Check size={18} className="mr-2 inline" /> Added to Cart</> : 'Add to Cart'}
+              <Button 
+                size="lg" 
+                className={cn(
+                  "w-full !py-5 shadow-premium transition-all duration-300", 
+                  isAdded ? "bg-green-600 hover:bg-green-700" : "",
+                  !validation.isValid && showValidation ? "bg-brand-text/40 opacity-70" : ""
+                )} 
+                onClick={handleAddToCart}
+              >
+                {isAdded ? <><Check size={18} className="mr-2 inline" /> Added to Cart</> : 
+                 (!validation.isValid && showValidation) ? 'Complete Selection' : 'Add to Cart'}
               </Button>
               <Button size="lg" variant="outline" className="w-full !py-5 shadow-soft border-brand-text text-brand-text hover:bg-brand-text hover:text-white" onClick={() => window.location.href = '/cart'}>
                 Buy It Now

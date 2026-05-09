@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     }
 
     const data = await req.json();
-    const { name, phone, gender, addresses, cart } = data;
+    const { name, phone, gender, addresses, cart, wishlist, orderHistory, recentlyViewed, preferences } = data;
 
     await dbConnect();
     
@@ -24,6 +24,10 @@ export async function POST(req: Request) {
     if (gender !== undefined) updateData.gender = gender;
     if (addresses !== undefined) updateData.addresses = addresses;
     if (cart !== undefined) updateData.cart = cart;
+    if (wishlist !== undefined) updateData.wishlist = wishlist;
+    if (orderHistory !== undefined) updateData.orderHistory = orderHistory;
+    if (recentlyViewed !== undefined) updateData.recentlyViewed = recentlyViewed;
+    if (preferences !== undefined) updateData.preferences = preferences;
 
     const updatedUser = await User.findOneAndUpdate(
       { email: session.user.email },
@@ -43,7 +47,11 @@ export async function POST(req: Request) {
         phone: updatedUser.phone,
         gender: updatedUser.gender,
         addresses: updatedUser.addresses,
-        cart: updatedUser.cart
+        cart: updatedUser.cart,
+        wishlist: updatedUser.wishlist,
+        orderHistory: updatedUser.orderHistory,
+        recentlyViewed: updatedUser.recentlyViewed,
+        preferences: updatedUser.preferences
       }
     });
   } catch (error: any) {
@@ -76,7 +84,11 @@ export async function GET(req: Request) {
           phone: user.phone,
           gender: user.gender,
           addresses: user.addresses,
-          cart: user.cart
+          cart: user.cart,
+          wishlist: user.wishlist,
+          orderHistory: user.orderHistory,
+          recentlyViewed: user.recentlyViewed,
+          preferences: user.preferences
         }
       });
     } catch (error: any) {

@@ -34,6 +34,7 @@
   body {
     background-color: var(--brand-bg);
     color: var(--brand-text);
+    -webkit-tap-highlight-color: transparent;
     @apply font-sans antialiased;
   }
   
@@ -55,14 +56,22 @@
   .btn-primary {
     @apply inline-flex items-center justify-center px-8 py-4 rounded-full 
            bg-brand-text text-white font-medium text-sm tracking-wider
-           transition-all duration-300 hover:bg-brand-gold active:scale-95;
+           transition-all duration-300 active:scale-95;
   }
 
   .btn-outline {
     @apply inline-flex items-center justify-center px-8 py-4 rounded-full 
            border border-brand-text/20 text-brand-text font-medium text-sm tracking-wider
-           transition-all duration-300 hover:border-brand-gold hover:text-brand-gold
-           active:scale-95;
+           transition-all duration-300 active:scale-95;
+  }
+
+  @media (hover: hover) {
+    .btn-primary:hover {
+      @apply bg-brand-gold;
+    }
+    .btn-outline:hover {
+      @apply border-brand-gold text-brand-gold;
+    }
   }
 
   .no-scrollbar::-webkit-scrollbar {
@@ -71,5 +80,20 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /* Support for Safari and older touch devices */
+  .backdrop-blur-xl {
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+  }
+
+  /* Interaction Utilities */
+  .touch-safe-hit {
+    @apply min-w-[44px] min-h-[44px] flex items-center justify-center;
+  }
+
+  .interaction-overlay {
+    @apply absolute inset-0 pointer-events-none;
   }
 }

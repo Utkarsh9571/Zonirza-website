@@ -20,6 +20,14 @@ export interface IUser extends Document {
   gender?: 'Male' | 'Female' | 'Other' | 'Prefer not to say';
   addresses: IUserAddress[];
   cart: any[];
+  wishlist: string[];
+  orderHistory: any[];
+  recentlyViewed: string[];
+  preferences: {
+    preferredMetal?: string;
+    preferredCategory?: string;
+    ringSize?: string;
+  };
   onboardingCompleted: boolean;
   lastLogin: Date;
   createdAt: Date;
@@ -57,6 +65,17 @@ const UserSchema = new Schema<IUser>({
   cart: {
     type: [Object],
     default: []
+  },
+  wishlist: [{ type: String }],
+  orderHistory: {
+    type: [Object],
+    default: []
+  },
+  recentlyViewed: [{ type: String }],
+  preferences: {
+    preferredMetal: { type: String },
+    preferredCategory: { type: String },
+    ringSize: { type: String }
   },
   onboardingCompleted: { type: Boolean, default: false },
   lastLogin: { type: Date, default: Date.now }

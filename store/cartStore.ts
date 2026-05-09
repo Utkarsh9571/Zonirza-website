@@ -17,11 +17,13 @@ export interface Address {
 export interface CartItem {
   cartItemId: string; // Unique ID based on productId + configuration
   productId: string;
+  slug: string;
   name: string;
   price: number;
   image: string;
   quantity: number;
   estimatedWeight: number;
+  lastUpdated: number;
   configuration: {
     metal: string;
     purity: string;
@@ -37,10 +39,11 @@ interface CartStore {
   pincode: string;
   savedAddresses: Address[];
   selectedAddressId: string | null;
+  lastSync: number;
   
   addItem: (item: CartItem) => void;
   removeItem: (cartItemId: string) => void;
-  updateQuantity: (cartItemId: string, quantity: number) => void;
+  updateQuantity: (cartItemId: string, quantity: number, mode?: 'duplicate' | 'new') => void;
   setItems: (items: CartItem[]) => void;
   clearCart: () => void;
   getTotal: () => number;
@@ -50,6 +53,7 @@ interface CartStore {
   addAddress: (address: Address) => void;
   removeAddress: (id: string) => void;
   selectAddress: (id: string) => void;
+  setLastSync: (time: number) => void;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -60,6 +64,7 @@ export const useCartStore = create<CartStore>()(
       pincode: '',
       savedAddresses: [],
       selectedAddressId: null,
+      lastSync: 0,
 
       addItem: (newItem) => {
         set((state) => {
@@ -70,13 +75,13 @@ export const useCartStore = create<CartStore>()(
             return {
               items: state.items.map((item) =>
                 item.cartItemId === newItem.cartItemId
-                  ? { ...item, quantity: item.quantity + newItem.quantity }
+                  ? { ...item, quantity: item.quantity + newItem.quantity, lastUpdated: Date.now() }
                   : item
               ),
             };
           }
           
-          return { items: [...state.items, newItem] };
+          return { items: [...state.items, { ...newItem, lastUpdated: Date.now() }] };
         });
       },
 
@@ -86,14 +91,23 @@ export const useCartStore = create<CartStore>()(
         }));
       },
 
-      updateQuantity: (cartItemId, quantity) => {
+      updateQuantity: (cartItemId, quantity, mode = 'duplicate') => {
         if (quantity < 1) return;
 
-        set((state) => ({
-          items: state.items.map((item) =>
-            item.cartItemId === cartItemId ? { ...item, quantity } : item
-          ),
-        }));
+        set((state) => {
+          const item = state.items.find(i => i.cartItemId === cartItemId);
+          if (!item) return state;
+
+          // If increasing quantity and mode is 'duplicate', we just increase it
+          // In the UI, we will catch the increase and show a modal before calling this with the final decision.
+          return {
+            items: state.items.map((item) =>
+              item.cartItemId === cartItemId 
+                ? { ...item, quantity, lastUpdated: Date.now() } 
+                : item
+            ),
+          };
+        });
       },
 
       setItems: (items) => {
@@ -101,7 +115,7 @@ export const useCartStore = create<CartStore>()(
       },
 
       clearCart: () => {
-        set({ items: [] });
+        set({ items: [], giftMessage: '', pincode: '', selectedAddressId: null });
       },
 
       getTotal: () => {
@@ -123,6 +137,7 @@ export const useCartStore = create<CartStore>()(
       })),
       
       selectAddress: (id) => set({ selectedAddressId: id }),
+      setLastSync: (lastSync) => set({ lastSync }),
     }),
     {
       name: 'zoniraz-cart',

@@ -13,9 +13,12 @@ import { Button } from '@/components/new-ui/Button';
 import { getValidImageUrl } from '@/lib/constants';
 import { CheckoutSteps } from '@/components/checkout/CheckoutSteps';
 import { AssuranceCards } from '@/components/checkout/AssuranceCards';
+import { QuantityChoiceModal } from '@/components/cart/QuantityChoiceModal';
 import { cn } from '@/lib/utils';
 
 export default function CartPage() {
+  const { status } = useSession();
+  const openAuthModal = useAuthModalStore((state: any) => state.openAuthModal);
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
   const { 
@@ -34,6 +37,10 @@ export default function CartPage() {
   const [isCheckingPincode, setIsCheckingPincode] = useState(false);
   const [deliveryStatus, setDeliveryStatus] = useState<null | 'success' | 'error'>(pincode ? 'success' : null);
   const [showGiftInput, setShowGiftInput] = useState(!!giftMessage);
+
+  // Modal State
+  const [modalOpen, setModalOpen] = useState(false);
+  const [pendingItem, setPendingItem] = useState<{ id: string, name: string, slug: string } | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -54,15 +61,33 @@ export default function CartPage() {
     }, 800);
   };
 
-  const { status } = useSession();
-  const openAuthModal = useAuthModalStore((state: any) => state.openAuthModal);
-
   const handleProceedToCheckout = () => {
     if (status !== 'authenticated') {
       openAuthModal();
       return;
     }
     router.push('/checkout/shipping');
+  };
+
+  const handleQuantityIncrease = (cartItemId: string, name: string, slug: string) => {
+    setPendingItem({ id: cartItemId, name, slug });
+    setModalOpen(true);
+  };
+
+  const handleModalSelect = (choice: 'duplicate' | 'new') => {
+    if (!pendingItem) return;
+
+    if (choice === 'duplicate') {
+      const item = items.find(i => i.cartItemId === pendingItem.id);
+      if (item) {
+        updateQuantity(pendingItem.id, item.quantity + 1, 'duplicate');
+      }
+    } else {
+      // Configure separately: redirect back to product page with prefilled options
+      router.push(`/product/${pendingItem.slug}`);
+    }
+    setModalOpen(false);
+    setPendingItem(null);
   };
 
   if (items.length === 0) {
@@ -199,7 +224,7 @@ export default function CartPage() {
                         </button>
                         <span className="w-12 text-center text-sm font-bold text-brand-text">{item.quantity}</span>
                         <button 
-                          onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}
+                          onClick={() => handleQuantityIncrease(item.cartItemId, item.name, item.slug)}
                           className="w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-sm text-brand-text/40 hover:text-brand-text"
                         >
                           <Plus size={14} />
@@ -316,6 +341,13 @@ export default function CartPage() {
           Checkout
         </Button>
       </div>
+
+      <QuantityChoiceModal 
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSelect={handleModalSelect}
+        itemName={pendingItem?.name || ''}
+      />
     </div>
   );
 }
