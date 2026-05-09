@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import dbConnect from '@/lib/db';
 import Product from '@/models/Product';
+import { resolveCollectionMapping } from '@/lib/collectionMapper';
 
 export async function GET(request: NextRequest) {
   try {
@@ -22,6 +23,38 @@ export async function GET(request: NextRequest) {
     filterKeys.forEach(key => {
       const value = searchParams.get(key);
       if (value) {
+        // Special Handling for 'collection' mapping
+        if (key === 'collection') {
+          const mapping = resolveCollectionMapping(value);
+          if (mapping) {
+            const collectionConditions: any[] = [];
+            
+            if (mapping.tags) collectionConditions.push({ tags: { $in: mapping.tags } });
+            if (mapping.categories) collectionConditions.push({ category: { $in: mapping.categories.map(c => new RegExp(`^${c.replace(/-/g, ' ')}$`, 'i')) } });
+            if (mapping.gender) collectionConditions.push({ "specs.gender": { $in: mapping.gender } });
+            
+            // Handle specs in mapping
+            if (mapping.specs) {
+              Object.entries(mapping.specs).forEach(([specKey, specValues]) => {
+                collectionConditions.push({ [`specs.${specKey}`]: { $in: specValues.map(v => new RegExp(`.*${v}.*`, 'i')) } });
+              });
+            }
+
+            // Handle price in mapping
+            if (mapping.minPrice || mapping.maxPrice) {
+              const priceCond: any = {};
+              if (mapping.minPrice) priceCond.$gte = mapping.minPrice;
+              if (mapping.maxPrice) priceCond.$lte = mapping.maxPrice;
+              collectionConditions.push({ basePrice: priceCond });
+            }
+
+            if (collectionConditions.length > 0) {
+              conditions.push({ $or: collectionConditions });
+            }
+            return; // Skip normal processing for this key
+          }
+        }
+
         // Normalize values: handle plural/singular and common synonyms
         const values = value.split(',').map(v => {
           let normalized = v.trim().replace(/-/g, ' ').toLowerCase();
@@ -55,17 +88,23 @@ export async function GET(request: NextRequest) {
       mongoQuery.$and = conditions;
     }
 
-    // 2. Handle Price Range
-    const priceMin = parseFloat(searchParams.get('price_min') || '0');
-    const priceMax = parseFloat(searchParams.get('price_max') || '0');
+    // 2. Handle Fallback if count is low
+    const collectionName = searchParams.get('collection');
+    const initialCount = await Product.countDocuments(mongoQuery);
     
-    if (priceMin > 0 || priceMax > 0) {
-      mongoQuery.basePrice = {};
-      if (priceMin > 0) mongoQuery.basePrice.$gte = priceMin;
-      if (priceMax > 0) mongoQuery.basePrice.$lte = priceMax;
+    if (collectionName && initialCount < 4) {
+      const mapping = resolveCollectionMapping(collectionName);
+      if (mapping && mapping.fallbackTags) {
+        mongoQuery = { 
+          $or: [
+            mongoQuery,
+            { tags: { $in: mapping.fallbackTags } }
+          ]
+        };
+      }
     }
 
-    console.log('Generated MongoDB Query:', JSON.stringify(mongoQuery, null, 2));
+    console.log('Final MongoDB Query:', JSON.stringify(mongoQuery, null, 2));
 
     // 3. Pagination & Sorting
     const limit = parseInt(searchParams.get('limit') || '0');
@@ -76,12 +115,12 @@ export async function GET(request: NextRequest) {
     if (sortParam === 'price-high') sortOptions = { basePrice: -1 };
     if (sortParam === 'oldest') sortOptions = { createdAt: 1 };
 
-    let productsQuery = Product.find(mongoQuery).sort(sortOptions);
+    let finalQuery = Product.find(mongoQuery).sort(sortOptions);
     if (limit > 0) {
-      productsQuery = productsQuery.limit(limit);
+      finalQuery = finalQuery.limit(limit);
     }
     
-    const products = await productsQuery;
+    const products = await finalQuery;
     const total = await Product.countDocuments(mongoQuery);
     
     return NextResponse.json({ 

@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { useCartStore } from '@/store/cartStore';
 import { useAuthModalStore } from '@/store/authModalStore';
 import { NAVIGATION_DATA } from '@/constants/navigation';
+import { SearchOverlay } from './new-ui/SearchOverlay';
 
 const Navbar = () => {
     const { data: session, status } = useSession();
@@ -20,6 +21,7 @@ const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const { isOpen: isAuthModalOpen, openAuthModal, closeAuthModal } = useAuthModalStore();
     const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
   
     const cartItems = useCartStore((state) => state.items);
     const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
@@ -59,6 +61,7 @@ const Navbar = () => {
           setIsMegaMenuPinned(false);
           setIsMegaMenuHovered(false);
           setIsUserDropdownOpen(false);
+          setIsSearchOpen(false);
         }
       };
 
@@ -240,7 +243,15 @@ const Navbar = () => {
             </button>
   
             <div className="flex items-center space-x-3 pl-2">
-              <button className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-bg text-brand-text active:bg-brand-gold active:text-white transition-colors touch-safe-hit" aria-label="Search">
+              <button 
+                onClick={() => {
+                  setIsSearchOpen(true);
+                  setIsMegaMenuPinned(false);
+                  setIsUserDropdownOpen(false);
+                }}
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-bg text-brand-text active:bg-brand-gold active:text-white transition-colors touch-safe-hit" 
+                aria-label="Search"
+              >
                 <Search size={16} />
               </button>
               <Link href="/cart" className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-text text-white active:bg-brand-gold transition-colors relative shadow-soft touch-safe-hit" aria-label="Cart">
@@ -337,7 +348,18 @@ const Navbar = () => {
             <Link href="/blog" className="text-sm uppercase tracking-widest font-bold text-brand-text py-2">Blog</Link>
             <Link href="/contact" onClick={() => setIsOpen(false)} className="text-sm uppercase tracking-widest font-bold text-brand-text py-2 border-b border-brand-text/5 pb-6">Contact Us</Link>
             
-            <div className="pt-6 border-t border-brand-text/5">
+            <div className="pt-6 border-t border-brand-text/5 space-y-4">
+              <button 
+                onClick={() => {
+                  setIsSearchOpen(true);
+                  setIsOpen(false);
+                }}
+                className="w-full flex items-center justify-center space-x-3 p-5 rounded-2xl bg-brand-bg text-brand-text font-bold uppercase tracking-widest text-[11px] border border-brand-text/5 hover:bg-brand-gold hover:text-white transition-all duration-300"
+              >
+                <Search size={18} />
+                <span>Search Masterpieces</span>
+              </button>
+
               <button 
                 onClick={() => {
                   openAuthModal();
@@ -356,6 +378,10 @@ const Navbar = () => {
     <AuthModal 
       isOpen={isAuthModalOpen} 
       onClose={closeAuthModal} 
+    />
+    <SearchOverlay 
+      isOpen={isSearchOpen}
+      onClose={() => setIsSearchOpen(false)}
     />
     </>
   );

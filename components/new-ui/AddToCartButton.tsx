@@ -22,11 +22,19 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
     if (isAnimating) return; // simple debounce
 
     addItem({
-      _id: product._id,
+      cartItemId: `${product._id}-default`,
+      productId: product._id,
+      slug: product.name.toLowerCase().replace(/\s+/g, '-'),
       name: product.name,
       price: product.price,
       image: product.image,
       quantity: 1,
+      estimatedWeight: 0,
+      lastUpdated: Date.now(),
+      configuration: {
+        metal: 'Gold',
+        purity: '18K'
+      }
     });
 
     setIsAdded(true);

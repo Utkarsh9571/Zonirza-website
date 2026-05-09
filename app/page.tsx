@@ -108,7 +108,7 @@ export default async function Home() {
               <div className="absolute bottom-6 left-6 text-white space-y-2">
                 <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-brand-gold">Signature</p>
                 <h3 className="text-3xl font-serif">Bridal Collection</h3>
-                <Link href="/products?tag=wedding" className="inline-flex items-center space-x-2 text-sm uppercase tracking-widest font-bold hover:text-brand-gold transition-colors pt-2">
+                <Link href="/products?collection=bridal" className="inline-flex items-center space-x-2 text-sm uppercase tracking-widest font-bold hover:text-brand-gold transition-colors pt-2">
                   <span>Explore</span>
                   <ArrowRight size={16} />
                 </Link>
@@ -128,7 +128,7 @@ export default async function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-text/80 via-transparent to-transparent"></div>
                 <div className="absolute bottom-6 left-6 text-white space-y-1">
                   <h3 className="text-xl sm:text-2xl font-serif">Everyday Wear</h3>
-                  <Link href="/products?tag=daily-wear" className="inline-flex items-center space-x-2 text-[8px] sm:text-[10px] uppercase tracking-widest hover:text-brand-gold transition-colors pt-1">
+                  <Link href="/products?collection=everyday-luxury" className="inline-flex items-center space-x-2 text-[8px] sm:text-[10px] uppercase tracking-widest hover:text-brand-gold transition-colors pt-1">
                     <span>Explore</span> <ArrowRight size={12} />
                   </Link>
                 </div>
@@ -143,8 +143,8 @@ export default async function Home() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-text/80 via-transparent to-transparent"></div>
                 <div className="absolute bottom-6 left-6 text-white space-y-1">
-                  <h3 className="text-xl sm:text-2xl font-serif">Men's Edit</h3>
-                  <Link href="/products?gender=men" className="inline-flex items-center space-x-2 text-[8px] sm:text-[10px] uppercase tracking-widest hover:text-brand-gold transition-colors pt-1">
+                  <h3 className="text-xl sm:text-2xl font-serif">Office Wear</h3>
+                  <Link href="/products?collection=office-wear" className="inline-flex items-center space-x-2 text-[8px] sm:text-[10px] uppercase tracking-widest hover:text-brand-gold transition-colors pt-1">
                     <span>Explore</span> <ArrowRight size={12} />
                   </Link>
                 </div>
@@ -162,7 +162,7 @@ export default async function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-text/80 via-transparent to-transparent"></div>
                 <div className="absolute bottom-6 left-6 text-white space-y-1">
                   <h3 className="text-xl sm:text-2xl font-serif">Solitaire Dream</h3>
-                  <Link href="/products?tag=solitaire" className="inline-flex items-center space-x-2 text-[8px] sm:text-[10px] uppercase tracking-widest hover:text-brand-gold transition-colors pt-1">
+                  <Link href="/products?collection=solitaire" className="inline-flex items-center space-x-2 text-[8px] sm:text-[10px] uppercase tracking-widest hover:text-brand-gold transition-colors pt-1">
                     <span>Explore</span> <ArrowRight size={12} />
                   </Link>
                 </div>
@@ -227,9 +227,9 @@ export default async function Home() {
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             {[
-              { title: 'The Solitaire Promise', img: '/images/images/product/rose-gold-16010347432265.jpg', query: 'tag=solitaire' },
-              { title: 'Vintage Heirloom', img: '/images/images/product/yellow-gold-16010959532807.jpg', query: 'style=vintage' },
-              { title: 'Modern Minimalism', img: '/images/images/product/default-16345640053092.jpg', query: 'style=modern' }
+              { title: 'The Solitaire Promise', img: '/images/images/product/rose-gold-16010347432265.jpg', query: 'collection=solitaire' },
+              { title: 'Vintage Heirloom', img: '/images/images/product/yellow-gold-16010959532807.jpg', query: 'collection=heritage' },
+              { title: 'Modern Minimalism', img: '/images/images/product/default-16345640053092.jpg', query: 'collection=minimal' }
             ].map((trend, i) => (
               <Link href={`/products?${trend.query}`} key={i} className="group relative aspect-[3/4] rounded-xl overflow-hidden shadow-soft cursor-pointer block">
                 <Image src={trend.img} alt={trend.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-1000 group-hover:scale-110" />

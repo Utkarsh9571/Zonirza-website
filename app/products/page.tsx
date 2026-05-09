@@ -144,7 +144,7 @@ function ProductsContent() {
                   : searchParams.get('tag') 
                     ? `${searchParams.get('tag')} Collection`
                     : searchParams.get('collection')
-                      ? `${searchParams.get('collection')} Series`
+                      ? `${searchParams.get('collection')?.replace(/-/g, ' ')} Collection`
                       : 'Exquisite Collection'}
               </h1>
               <p className="text-brand-text/50 text-sm max-w-lg">
