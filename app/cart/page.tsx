@@ -10,7 +10,7 @@ import { Minus, Plus, Trash2, ArrowRight, ShoppingBag, MapPin, Gift, ChevronRigh
 import { useCartStore } from '@/store/cartStore';
 import { Section } from '@/components/new-ui/Section';
 import { Button } from '@/components/new-ui/Button';
-import { getValidImageUrl } from '@/lib/constants';
+import { resolveProductImage } from '@/lib/imageResolver';
 import { CheckoutSteps } from '@/components/checkout/CheckoutSteps';
 import { AssuranceCards } from '@/components/checkout/AssuranceCards';
 import { QuantityChoiceModal } from '@/components/cart/QuantityChoiceModal';
@@ -177,7 +177,7 @@ export default function CartPage() {
                   {/* Image */}
                   <div className="w-full md:w-40 aspect-square rounded-[30px] overflow-hidden bg-brand-bg border border-brand-text/5 relative">
                     <Image 
-                      src={getValidImageUrl(item.image)} 
+                      src={resolveProductImage(item.image)} 
                       alt={item.name} 
                       fill 
                       className="object-cover p-3 group-hover:scale-110 transition-transform duration-700"

@@ -18,7 +18,7 @@ import {
 import { cn } from '@/lib/utils';
 import ProductCard from '@/components/ProductCard';
 import Navbar from '@/components/Navbar';
-import { getValidImageUrl } from '@/lib/constants';
+import { resolveProductImage } from '@/lib/imageResolver';
 
 // Filter data structure
 const FILTERS = [
@@ -310,7 +310,7 @@ function ProductsContent() {
                     key={product.slug}
                     name={product.name}
                     price={`₹${(product.basePrice || product.price || 0).toLocaleString()}`}
-                    image={getValidImageUrl(product.images?.[0])}
+                    image={resolveProductImage(product.images?.[0])}
                     slug={product.slug}
                   />
                 ))}

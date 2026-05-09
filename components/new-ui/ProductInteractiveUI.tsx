@@ -9,7 +9,7 @@ import { useCartStore } from '@/store/cartStore';
 import { Button } from './Button';
 import { Section } from './Section';
 import { cn } from '@/lib/utils';
-import { getValidImageUrl } from '@/lib/constants';
+import { resolveProductImage } from '@/lib/imageResolver';
 import { calculatePricing, formatCurrency, ProductConfiguration } from '@/lib/pricing';
 import { validateProductConfiguration, isFieldMissing } from '@/lib/ecommerce';
 import { RingSizeGuide } from '../product/guides/RingSizeGuide';
@@ -62,13 +62,15 @@ export function ProductInteractiveUI({ product }: { product: any }) {
     // Generate a unique ID based on productId and current configuration
     const cartItemId = `${product._id}-${config.purity}-${config.metal}-${config.size}-${config.stone}`.replace(/\s+/g, '-').toLowerCase();
 
+    const resolvedImage = resolveProductImage(product.images[selectedImage]);
+
     cartAddItem({
       cartItemId,
       productId: product._id as string,
       slug: product.slug,
       name: product.name,
       price: pricing.totalPrice,
-      image: product.images[selectedImage],
+      image: resolvedImage,
       quantity,
       estimatedWeight: pricing.estimatedWeight,
       lastUpdated: Date.now(),
@@ -90,11 +92,12 @@ export function ProductInteractiveUI({ product }: { product: any }) {
             <div className="relative aspect-[4/5] w-full rounded-[40px] overflow-hidden bg-white border border-brand-text/5 shadow-soft group">
               <Image
                 key={selectedImage}
-                src={getValidImageUrl(product.images?.[selectedImage])}
+                src={resolveProductImage(product.images?.[selectedImage])}
                 alt={product.name}
                 fill
                 className="object-cover p-12 transition-transform duration-[2s] group-hover:scale-110 animate-in fade-in zoom-in-95 duration-500"
                 priority
+                sizes="(max-width: 1024px) 100vw, 60vw"
               />
               <div className="absolute top-8 right-8 flex flex-col space-y-3">
                 <button className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center border border-brand-text/5 text-brand-text hover:bg-brand-gold hover:text-white transition-all shadow-soft">
@@ -117,7 +120,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                       selectedImage === i ? "border-brand-gold" : "border-transparent bg-white hover:border-brand-text/20"
                     )}
                   >
-                    <Image src={getValidImageUrl(img)} alt={`${product.name} ${i}`} fill className="object-cover p-2" />
+                    <Image src={resolveProductImage(img)} alt={`${product.name} ${i}`} fill className="object-cover p-2" sizes="96px" />
                   </button>
                 ))}
               </div>

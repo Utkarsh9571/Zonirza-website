@@ -1,15 +1,16 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Share2, Volume2, Video, Play, Pause } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Share2, Volume2, Video, Play, Pause, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 const videos = [
-  { id: 1, url: 'https://youtube.com/shorts/DIdvAeTcR3o?si=SGv3jksUslEbteXV', title: 'Adele - Skyfall', thumbnail: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600' },
-  { id: 2, url: 'https://youtu.be/DeumyOzKqgI?si=iannnhz9RK-gtcz3', title: 'The Solitaire Look', thumbnail: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600' },
-  { id: 3, url: 'https://youtu.be/DeumyOzKqgI?si=iannnhz9RK-gtcz3', title: 'Minimalist Magic', thumbnail: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=600' },
-  { id: 4, url: 'https://youtu.be/DeumyOzKqgI?si=iannnhz9RK-gtcz3', title: 'Bridal Brilliance', thumbnail: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=600' },
-  { id: 5, url: 'https://youtu.be/DeumyOzKqgI?si=iannnhz9RK-gtcz3', title: 'Heritage Elegance', thumbnail: 'https://images.unsplash.com/photo-1588444837495-c6bfcceebce7?auto=format&fit=crop&q=80&w=600' }
+  { id: 1, url: 'https://youtube.com/shorts/DIdvAeTcR3o?si=SGv3jksUslEbteXV', title: 'Adele - Skyfall', thumbnail: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600', link: '/products?tag=featured' },
+  { id: 2, url: 'https://youtu.be/DeumyOzKqgI?si=iannnhz9RK-gtcz3', title: 'The Solitaire Look', thumbnail: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600', link: '/products?tag=solitaire' },
+  { id: 3, url: 'https://youtu.be/DeumyOzKqgI?si=iannnhz9RK-gtcz3', title: 'Minimalist Magic', thumbnail: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=600', link: '/products?style=minimalist' },
+  { id: 4, url: 'https://youtu.be/DeumyOzKqgI?si=iannnhz9RK-gtcz3', title: 'Bridal Brilliance', thumbnail: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=600', link: '/products?tag=wedding' },
+  { id: 5, url: 'https://youtu.be/DeumyOzKqgI?si=iannnhz9RK-gtcz3', title: 'Heritage Elegance', thumbnail: 'https://images.unsplash.com/photo-1588444837495-c6bfcceebce7?auto=format&fit=crop&q=80&w=600', link: '/products?collection=heritage' }
 ];
 
 const getYoutubeEmbedUrl = (url: string) => {
@@ -249,6 +250,13 @@ export default function StylingVideoSlider() {
                 )}>
                   <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-brand-gold mb-2">Styling 101</p>
                   <h4 className="text-lg font-serif leading-tight">{video.title}</h4>
+                  <Link 
+                    href={video.link}
+                    className="inline-flex items-center space-x-2 text-[10px] uppercase tracking-widest font-bold text-brand-gold hover:text-white transition-colors mt-4 pointer-events-auto"
+                  >
+                    <span>Shop the Look</span>
+                    <ArrowRight size={12} />
+                  </Link>
                 </div>
               </div>
             </div>

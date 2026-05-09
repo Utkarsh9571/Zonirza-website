@@ -4,22 +4,26 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { resolveProductImage } from '@/lib/imageResolver';
+
+// Custom resolver for sliders since they live in a different folder
+const resolveSliderImage = (imageName: string) => `/images/images/slider/${imageName}`;
 
 const sliderItems = [
   {
-    image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=800',
+    image: resolveSliderImage('btimage1-1652120540.png'),
     title: 'Eternal Diamond Rings',
     subtitle: 'Classic Elegance',
     link: '/products?category=rings'
   },
   {
-    image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=800',
+    image: resolveSliderImage('btimage2-1652120540.png'),
     title: 'Signature Necklaces',
     subtitle: 'Handcrafted Beauty',
     link: '/products?category=necklaces'
   },
   {
-    image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=800',
+    image: resolveSliderImage('btimage3-1652120540.png'),
     title: 'Royal Gold Bracelets',
     subtitle: 'Timeless Style',
     link: '/products?category=bracelets'

@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { resolveProductImage } from '@/lib/imageResolver';
 
 interface ProductCardProps {
   name: string;
@@ -10,14 +11,17 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ name, price, image, slug, oldPrice }: ProductCardProps) => {
+  const imageUrl = resolveProductImage(image);
+
   return (
     <Link href={`/product/${slug}`} className="group block h-full">
       <div className="bg-brand-white rounded-2xl overflow-hidden aspect-square relative mb-4 border border-brand-text/5 transition-all duration-700 group-hover:shadow-premium group-hover:-translate-y-2">
         <Image
-          src={image}
+          src={imageUrl}
           alt={name}
           fill
           className="object-cover p-6 sm:p-8 transition-transform duration-700 group-hover:scale-110"
+          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
         />
         {/* Mobile: Always visible, Desktop: Hover visible */}
         <button 

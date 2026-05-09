@@ -5,6 +5,10 @@ import { IProduct } from '@/models/Product';
 import { ArrowRight, Star, ShieldCheck, Diamond, Heart, CheckCircle2, Video, Store, Gift, RotateCcw } from 'lucide-react';
 import HeroSlider from '@/components/HeroSlider';
 import StylingVideoSlider from '@/components/StylingVideoSlider';
+import { resolveProductImage } from '@/lib/imageResolver';
+
+const resolveSliderImage = (imageName: string) => `/images/images/slider/${imageName}`;
+const resolveContentImage = (imageName: string) => `/images/images/imgcontent/${imageName}`;
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
@@ -36,7 +40,7 @@ export default async function Home() {
       <section className="relative h-screen min-h-[700px] w-full flex items-center justify-center p-4 md:p-8 lg:p-12 overflow-hidden">
         <div className="absolute inset-0 w-full h-full">
           <Image
-            src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=2000"
+            src={resolveSliderImage('image1-1650725883.jpg')}
             alt="Luxury Jewelry"
             fill
             sizes="100vw"
@@ -94,7 +98,7 @@ export default async function Home() {
             {/* Left Main Collection */}
             <div className="w-full lg:w-2/3 relative aspect-[4/5] md:aspect-auto md:h-[500px] rounded-xl overflow-hidden group shadow-soft">
               <Image
-                src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=1200"
+                src="/images/wedding.png"
                 alt="Bridal Collection"
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 800px"
@@ -104,7 +108,7 @@ export default async function Home() {
               <div className="absolute bottom-6 left-6 text-white space-y-2">
                 <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-brand-gold">Signature</p>
                 <h3 className="text-3xl font-serif">Bridal Collection</h3>
-                <Link href="/products?tag=wedding&collection=bridal" className="inline-flex items-center space-x-2 text-sm uppercase tracking-widest font-bold hover:text-brand-gold transition-colors pt-2">
+                <Link href="/products?tag=wedding" className="inline-flex items-center space-x-2 text-sm uppercase tracking-widest font-bold hover:text-brand-gold transition-colors pt-2">
                   <span>Explore</span>
                   <ArrowRight size={16} />
                 </Link>
@@ -115,7 +119,7 @@ export default async function Home() {
             <div className="w-full lg:w-1/3 grid grid-cols-2 gap-4">
               <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden group shadow-soft">
                 <Image
-                  src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=600"
+                  src="/images/daily-wear.png"
                   alt="Everyday Wear"
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 400px"
@@ -131,7 +135,7 @@ export default async function Home() {
               </div>
               <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden group shadow-soft">
                 <Image
-                  src="https://images.unsplash.com/photo-1588444837495-c6bfcceebce7?auto=format&fit=crop&q=80&w=600"
+                  src="/images/images/product/default-16345643112830.jpg"
                   alt="Men's Edit"
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 400px"
@@ -149,7 +153,7 @@ export default async function Home() {
               {/* NEW CARDS */}
               <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden group shadow-soft">
                 <Image
-                  src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600"
+                  src="/images/images/product/rose-gold-16017058153130.jpg"
                   alt="Solitaire Dream"
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 400px"
@@ -165,7 +169,7 @@ export default async function Home() {
               </div>
               <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden group shadow-soft">
                 <Image
-                  src="https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&q=80&w=600"
+                  src="/images/images/product/yellow-gold-16010271191566.jpg"
                   alt="Heritage Gold"
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 400px"
@@ -197,7 +201,7 @@ export default async function Home() {
               <Link href={`/products?category=${cat.slug}`} key={i} className="group flex flex-col items-center text-center space-y-4">
                 <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden shadow-soft border border-brand-text/5 bg-brand-bg group-hover:shadow-premium transition-all">
                   <Image
-                    src={cat.image}
+                    src={resolveProductImage(cat.image)}
                     alt={cat.name}
                     fill
                     sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 300px"
@@ -223,9 +227,9 @@ export default async function Home() {
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             {[
-              { title: 'The Solitaire Promise', img: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e', query: 'tag=trending' },
-              { title: 'Vintage Heirloom', img: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f', query: 'style=vintage' },
-              { title: 'Modern Minimalism', img: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a', query: 'style=modern' }
+              { title: 'The Solitaire Promise', img: '/images/images/product/rose-gold-16010347432265.jpg', query: 'tag=solitaire' },
+              { title: 'Vintage Heirloom', img: '/images/images/product/yellow-gold-16010959532807.jpg', query: 'style=vintage' },
+              { title: 'Modern Minimalism', img: '/images/images/product/default-16345640053092.jpg', query: 'style=modern' }
             ].map((trend, i) => (
               <Link href={`/products?${trend.query}`} key={i} className="group relative aspect-[3/4] rounded-xl overflow-hidden shadow-soft cursor-pointer block">
                 <Image src={trend.img} alt={trend.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-1000 group-hover:scale-110" />
@@ -240,7 +244,7 @@ export default async function Home() {
       {/* 5. ZONIRAZ WORLD (Visual Banners - can also lead to products) */}
       <section className="py-8 sm:py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
-          <div className="text-center mb-8 sm:mb-10 space-y-4">
+          <div className="text-center mb-8 sm:mb-10 space-y-2">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Zoniraz World</h2>
             <div className="w-16 h-[1px] bg-brand-gold mx-auto"></div>
           </div>
@@ -249,15 +253,15 @@ export default async function Home() {
             {/* Top Left / Bottom Left equivalent (Grid split) */}
             <div className="grid grid-rows-2 gap-4 h-full">
               <Link href="/products?tag=featured" className="relative rounded-2xl overflow-hidden shadow-soft group block">
-                <Image src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=800" alt="World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
+                <Image src="/images/images/product/rose-gold-16017081121080.jpg" alt="Featured World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               </Link>
               <Link href="/products?collection=heritage" className="relative rounded-2xl overflow-hidden shadow-soft group block">
-                <Image src="https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&q=80&w=800" alt="World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
+                <Image src="/images/images/product/yellow-gold-16010972111558.jpg" alt="Heritage World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               </Link>
             </div>
             {/* Right Side (One Large) */}
             <Link href="/products?collection=heritage" className="relative rounded-2xl overflow-hidden shadow-soft group h-full min-h-[400px] block">
-              <Image src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=1000" alt="World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
+              <Image src="/images/images/product/default-16345651242469.jpg" alt="Heritage World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               <div className="absolute inset-0 bg-brand-text/20 flex flex-col items-center justify-center text-center p-8">
                 <h3 className="text-5xl font-serif text-white mb-4 italic">The Heritage</h3>
                 <p className="text-white/90 text-sm max-w-sm uppercase tracking-widest">Crafting brilliance for generations.</p>
@@ -284,7 +288,7 @@ export default async function Home() {
             <div className="w-full lg:w-2/3 grid grid-cols-2 p-4 gap-4">
               {products.slice(0, 2).map((prod: any, i: number) => (
                 <Link href={`/product/${prod.slug}`} key={i} className="flex-1 bg-white border-[6px] border-white rounded-2xl shadow-md relative group aspect-[4/5] overflow-hidden cursor-pointer block">
-                  <Image src={getValidImageUrl(prod.images?.[0])} alt={prod.name} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover transition-transform duration-1000 group-hover:scale-105" />
+                  <Image src={resolveProductImage(prod.images?.[0])} alt={prod.name} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover transition-transform duration-1000 group-hover:scale-105" />
                   <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-sm px-3 py-1 text-[10px] text-white tracking-widest uppercase">{prod.name}</div>
                 </Link>
               ))}
@@ -303,9 +307,9 @@ export default async function Home() {
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             {[
-              { img: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&q=80&w=600', text: 'Women Jewellery', href: '/products?gender=women' },
-              { img: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600', text: 'Men Jewellery', href: '/products?gender=men' },
-              { img: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=600', text: 'Kids Jewellery', href: '/products?gender=kids' }
+              { img: '/images/images/product/rose-gold-16023305023103.jpg', text: 'Women Jewellery', href: '/products?gender=women' },
+              { img: '/images/images/product/default-16345643113729.jpg', text: 'Men Jewellery', href: '/products?gender=men' },
+              { img: '/images/images/product/default-16345665363640.jpg', text: 'Kids Jewellery', href: '/products?gender=kids' }
             ].map((store, i) => (
               <Link href={store.href} key={i} className="group cursor-pointer flex flex-col items-center">
                 <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-4 shadow-soft hover:shadow-premium transition-all">
@@ -441,12 +445,12 @@ export default async function Home() {
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             {[
-              { img: 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&q=80&w=600', text: 'VISIT OUR STORE' },
-              { img: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600', text: 'BOOK AN APPOINTMENT' },
-              { img: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&q=80&w=600', text: 'TALK TO AN EXPERT' },
-              { img: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=600', text: 'DIGI GOLD' },
-              { img: 'https://images.unsplash.com/photo-1588444837495-c6bfcceebce7?auto=format&fit=crop&q=80&w=600', text: 'BLOGS' },
-              { img: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=600', text: 'JEWELLERY GUIDE' }
+              { img: '/images/images/product/yellow-gold-16010351071959.jpg', text: 'VISIT OUR STORE' },
+              { img: '/images/images/product/rose-gold-16018743641302.jpg', text: 'BOOK AN APPOINTMENT' },
+              { img: '/images/images/product/yellow-gold-16011019241983.jpg', text: 'TALK TO AN EXPERT' },
+              { img: '/images/images/product/default-16345640053478.jpg', text: 'DIGI GOLD' },
+              { img: '/images/images/product/default-16345643112830.jpg', text: 'BLOGS' },
+              { img: '/images/images/product/yellow-gold-1601102976168.jpg', text: 'JEWELLERY GUIDE' }
             ].map((store, i) => (
               <div key={i} className="group cursor-pointer bg-white border border-brand-text/5 flex flex-col rounded-2xl overflow-hidden shadow-soft hover:shadow-premium transition-all">
                 <div className="relative aspect-square overflow-hidden">
