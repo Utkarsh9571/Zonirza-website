@@ -10,7 +10,9 @@ import { cn } from '@/lib/utils';
 import { useCartStore } from '@/store/cartStore';
 import { useAuthModalStore } from '@/store/authModalStore';
 import { NAVIGATION_DATA } from '@/constants/navigation';
-import { SearchOverlay } from './new-ui/SearchOverlay';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { resolveProductImage } from '@/lib/imageResolver';
 
 const Navbar = () => {
     const { data: session, status } = useSession();
@@ -22,7 +24,11 @@ const Navbar = () => {
     const { isOpen: isAuthModalOpen, openAuthModal, closeAuthModal } = useAuthModalStore();
     const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
-  
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [isSearchLoading, setIsSearchLoading] = useState(false);
+    const router = useRouter();
+    const searchRef = useRef<HTMLDivElement>(null);
     const cartItems = useCartStore((state) => state.items);
     const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -61,6 +67,8 @@ const Navbar = () => {
           setIsMegaMenuPinned(false);
           setIsMegaMenuHovered(false);
           setIsUserDropdownOpen(false);
+        }
+        if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
           setIsSearchOpen(false);
         }
       };
@@ -86,6 +94,38 @@ const Navbar = () => {
       };
     }, []);
   
+    // Debounced Search Effect
+    useEffect(() => {
+      const timer = setTimeout(async () => {
+        if (searchQuery.length >= 2) {
+          setIsSearchLoading(true);
+          try {
+            const res = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}&limit=5`);
+            const data = await res.json();
+            if (data.success) {
+              setSearchResults(data.data);
+            }
+          } catch (error) {
+            console.error('Search error:', error);
+          } finally {
+            setIsSearchLoading(false);
+          }
+        } else {
+          setSearchResults([]);
+        }
+      }, 300);
+
+      return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    const handleSearchSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      if (searchQuery.trim()) {
+        router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+        setIsSearchOpen(false);
+      }
+    };
+
     return (
       <>
       <nav ref={navRef} className={cn(
@@ -103,9 +143,61 @@ const Navbar = () => {
           <span className="text-3xl font-serif font-bold tracking-widest text-brand-text uppercase drop-shadow-md hidden sm:block">Zoniraz</span>
         </Link>
   
-        {/* 2. RIGHT: Floating Pill Navbar */}
-        <div className="hidden md:flex items-center bg-white/95 backdrop-blur-md rounded-full shadow-premium border border-white/40 pl-8 pr-3 py-3 relative">
+        {/* 2. RIGHT: Floating Pill Navbar - Expanded for Search */}
+        <div className="hidden md:flex items-center bg-white/95 backdrop-blur-md rounded-full shadow-premium border border-white/40 pl-4 pr-3 py-2.5 relative">
           
+          {/* SEARCH BAR INTEGRATED ON LEFT OF PILL */}
+          <div ref={searchRef} className="relative flex items-center mr-6 border-r border-brand-text/5 pr-6">
+            <div className={cn(
+              "flex items-center bg-brand-bg/50 rounded-full transition-all duration-500 overflow-hidden px-4 py-2",
+              isSearchOpen || searchQuery ? "w-[280px] ring-1 ring-brand-gold/20" : "w-[180px]"
+            )}>
+              <Search size={14} className="text-brand-gold flex-shrink-0" />
+              <form onSubmit={handleSearchSubmit} className="flex-1 ml-2">
+                <input 
+                  type="text"
+                  placeholder="Find masterpieces..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsSearchOpen(true)}
+                  className="w-full bg-transparent border-none outline-none focus:outline-none focus:ring-0 text-[11px] font-bold uppercase tracking-widest text-brand-text placeholder:text-brand-text/30"
+                />
+              </form>
+              {isSearchLoading && <div className="w-3 h-3 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />}
+            </div>
+
+            {/* LIVE SUGGESTIONS DROPDOWN */}
+            {isSearchOpen && searchResults.length > 0 && (
+              <div className="absolute top-full left-0 mt-4 w-[350px] bg-white rounded-[24px] shadow-premium border border-brand-text/5 p-4 animate-in fade-in slide-in-from-top-2 duration-300 z-[120]">
+                <p className="text-[9px] uppercase tracking-widest font-black text-brand-text/30 px-3 mb-4">Quick Results</p>
+                <div className="space-y-1">
+                  {searchResults.map((product) => (
+                    <Link 
+                      key={product.slug}
+                      href={`/product/${product.slug}`}
+                      onClick={() => setIsSearchOpen(false)}
+                      className="flex items-center space-x-4 p-3 rounded-xl hover:bg-brand-bg transition-all group"
+                    >
+                      <div className="w-12 h-12 relative rounded-lg overflow-hidden bg-brand-bg flex-shrink-0">
+                        <Image src={resolveProductImage(product.images?.[0])} alt={product.name} fill className="object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] font-bold text-brand-text truncate group-hover:text-brand-gold transition-colors">{product.name}</p>
+                        <p className="text-[9px] text-brand-text/40 uppercase tracking-tighter">₹{product.basePrice?.toLocaleString()}</p>
+                      </div>
+                    </Link>
+                  ))}
+                  <button 
+                    onClick={handleSearchSubmit}
+                    className="w-full py-3 mt-2 text-[9px] font-black uppercase tracking-widest text-brand-gold hover:bg-brand-gold hover:text-white rounded-xl transition-all border border-brand-gold/10"
+                  >
+                    View All Results
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Navigation Links inside Pill */}
           <div className="flex items-center space-x-8 mr-8">
             <button 
@@ -243,17 +335,6 @@ const Navbar = () => {
             </button>
   
             <div className="flex items-center space-x-3 pl-2">
-              <button 
-                onClick={() => {
-                  setIsSearchOpen(true);
-                  setIsMegaMenuPinned(false);
-                  setIsUserDropdownOpen(false);
-                }}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-bg text-brand-text active:bg-brand-gold active:text-white transition-colors touch-safe-hit" 
-                aria-label="Search"
-              >
-                <Search size={16} />
-              </button>
               <Link href="/cart" className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-text text-white active:bg-brand-gold transition-colors relative shadow-soft touch-safe-hit" aria-label="Cart">
                 <ShoppingCart size={16} />
                 {isMounted && totalQuantity > 0 && (
@@ -378,10 +459,6 @@ const Navbar = () => {
     <AuthModal 
       isOpen={isAuthModalOpen} 
       onClose={closeAuthModal} 
-    />
-    <SearchOverlay 
-      isOpen={isSearchOpen}
-      onClose={() => setIsSearchOpen(false)}
     />
     </>
   );

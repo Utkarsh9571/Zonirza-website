@@ -40,17 +40,18 @@ export default async function Home() {
       <section className="relative h-screen min-h-[700px] w-full flex items-center justify-center p-4 md:p-8 lg:p-12 overflow-hidden">
         <div className="absolute inset-0 w-full h-full">
           <Image
-            src={resolveSliderImage('image1-1650725883.jpg')}
-            alt="Luxury Jewelry"
+            src="/images/hero-bg.jpg"
+            alt="Luxury Jewelry Background"
             fill
             sizes="100vw"
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-brand-text/10"></div>
+          <div className="absolute inset-0 bg-brand-text/20 backdrop-blur-[2px]"></div>
         </div>
 
-        <div className="relative z-10 w-full max-w-[1400px] h-full max-h-[90vh] lg:max-h-[800px] bg-white/10 backdrop-blur-2xl border border-white/20 rounded-[40px] md:rounded-[60px] shadow-premium overflow-hidden flex flex-col md:flex-row items-center justify-between p-8 md:p-16 lg:p-24 animate-in fade-in zoom-in duration-1000">
+        <div className="relative z-10 w-full max-w-[1400px] h-full max-h-[90vh] lg:max-h-[800px] bg-white/10 backdrop-blur-3xl border border-white/30 rounded-[40px] md:rounded-[60px] shadow-premium overflow-hidden flex flex-col md:flex-row items-center justify-between p-8 md:p-16 lg:p-24 animate-in fade-in zoom-in duration-1000">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none"></div>
 
           <div className="flex flex-col items-start space-y-12 max-w-2xl">
             <div className="space-y-4">
@@ -98,7 +99,7 @@ export default async function Home() {
             {/* Left Main Collection */}
             <div className="w-full lg:w-2/3 relative aspect-[4/5] md:aspect-auto md:h-[500px] rounded-xl overflow-hidden group shadow-soft">
               <Image
-                src="/images/wedding.png"
+                src="/images/site/wedding.png"
                 alt="Bridal Collection"
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 800px"
@@ -119,7 +120,7 @@ export default async function Home() {
             <div className="w-full lg:w-1/3 grid grid-cols-2 gap-4">
               <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden group shadow-soft">
                 <Image
-                  src="/images/daily-wear.png"
+                  src="/images/site/daily-wear.png"
                   alt="Everyday Wear"
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 400px"
