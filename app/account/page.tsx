@@ -29,6 +29,7 @@ import {
 import { Section } from '@/components/new-ui/Section';
 import { Button } from '@/components/new-ui/Button';
 import { cn } from '@/lib/utils';
+import { CURRENCIES, useCurrencyStore, CurrencyCode } from '@/store/currencyStore';
 
 interface Address {
   _id?: string;
@@ -69,7 +70,8 @@ function AccountContent() {
     preferences: {
       preferredMetal: '',
       preferredCategory: '',
-      ringSize: ''
+      ringSize: '',
+      preferredCurrency: ''
     }
   });
 
@@ -106,14 +108,25 @@ function AccountContent() {
           gender: data.user.gender || '',
           addresses: data.user.addresses || [],
           wishlist: data.user.wishlist || [],
-          orderHistory: data.user.orderHistory || [],
+          orderHistory: [], // Will be populated by next fetch
           recentlyViewed: data.user.recentlyViewed || [],
           preferences: data.user.preferences || {
             preferredMetal: '',
             preferredCategory: '',
-            ringSize: ''
+            ringSize: '',
+            preferredCurrency: 'INR'
           }
         });
+
+        // Also fetch orders
+        const ordersRes = await fetch('/api/orders');
+        const ordersData = await ordersRes.json();
+        if (ordersData.success) {
+          setUserData(prev => ({
+            ...prev,
+            orderHistory: ordersData.orders
+          }));
+        }
       }
     } catch (err) {
       console.error("Failed to fetch profile:", err);
@@ -130,7 +143,8 @@ function AccountContent() {
         body: JSON.stringify({
           name: userData.name,
           phone: userData.phone,
-          gender: userData.gender
+          gender: userData.gender,
+          preferences: userData.preferences
         })
       });
       if (res.ok) {
@@ -470,19 +484,84 @@ function AccountContent() {
               </div>
             )}
 
-            {/* Tab: Orders (Placeholder) */}
             {activeTab === 'orders' && (
-              <div className="py-24 bg-white rounded-[60px] border border-brand-text/5 shadow-soft flex flex-col items-center justify-center text-center space-y-6">
-                <div className="w-20 h-20 rounded-full bg-brand-bg flex items-center justify-center text-brand-gold/30 border border-brand-text/5">
-                  <Package size={36} />
+              <div className="space-y-8">
+                <h2 className="text-2xl md:text-3xl font-serif text-brand-text">My Orders</h2>
+                
+                <div className="space-y-6">
+                  {userData.orderHistory.map((order: any) => (
+                    <div 
+                      key={order._id}
+                      className="bg-white rounded-[40px] p-8 border border-brand-text/5 shadow-soft hover:shadow-premium transition-all group"
+                    >
+                      <div className="flex flex-col md:flex-row justify-between gap-6 mb-8 border-b border-brand-text/5 pb-8">
+                        <div className="space-y-2">
+                          <p className="text-[9px] uppercase tracking-widest text-brand-text/30 font-bold">Order Reference</p>
+                          <p className="text-sm font-bold text-brand-text tracking-widest"># {order._id.slice(-8).toUpperCase()}</p>
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-[9px] uppercase tracking-widest text-brand-text/30 font-bold">Date Placed</p>
+                          <p className="text-sm font-bold text-brand-text">{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-[9px] uppercase tracking-widest text-brand-text/30 font-bold">Status</p>
+                          <span className={cn(
+                            "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest",
+                            order.paymentStatus === 'paid' ? "bg-green-50 text-green-600" : "bg-brand-gold/10 text-brand-gold"
+                          )}>
+                            {order.paymentStatus === 'paid' ? 'Confirmed' : 'Pending Payment'}
+                          </span>
+                        </div>
+                        <div className="space-y-2 md:text-right">
+                          <p className="text-[9px] uppercase tracking-widest text-brand-text/30 font-bold">Total Amount</p>
+                          <p className="text-lg font-serif text-brand-text">
+                            {/* Use order's own currency context for historical accuracy */}
+                            {(() => {
+                              const symbol = CURRENCIES[order.currency as CurrencyCode]?.symbol || '₹';
+                              const amount = order.totalAmount * (order.exchangeRate || 1);
+                              return `${symbol}${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                            })()}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        {order.items.map((item: any, idx: number) => (
+                          <div key={idx} className="flex items-center space-x-4">
+                            <div className="w-12 h-12 rounded-xl bg-brand-bg flex items-center justify-center overflow-hidden border border-brand-text/5">
+                              <Image 
+                                src={item.image} 
+                                alt={item.name} 
+                                width={48} 
+                                height={48} 
+                                className="object-cover group-hover:scale-110 transition-transform duration-700" 
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[11px] font-bold text-brand-text truncate">{item.name}</p>
+                              <p className="text-[9px] text-brand-text/40 uppercase tracking-widest font-bold">Qty: {item.quantity}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+
+                  {userData.orderHistory.length === 0 && (
+                    <div className="py-24 bg-white rounded-[60px] border border-brand-text/5 shadow-soft flex flex-col items-center justify-center text-center space-y-6">
+                      <div className="w-20 h-20 rounded-full bg-brand-bg flex items-center justify-center text-brand-gold/30 border border-brand-text/5">
+                        <Package size={36} />
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-2xl font-serif italic text-brand-text">No orders yet</h3>
+                        <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-brand-text/30 max-w-[200px] leading-relaxed">Your journey of elegance is just beginning.</p>
+                      </div>
+                      <Link href="/products" className="pt-4">
+                        <Button variant="primary" className="shadow-premium px-10">Explore Masterpieces</Button>
+                      </Link>
+                    </div>
+                  )}
                 </div>
-                <div className="space-y-2">
-                  <h3 className="text-2xl font-serif italic text-brand-text">No orders yet</h3>
-                  <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-brand-text/30 max-w-[200px] leading-relaxed">Your journey of elegance is just beginning.</p>
-                </div>
-                <Link href="/products" className="pt-4">
-                  <Button variant="primary" className="shadow-premium px-10">Explore Masterpieces</Button>
-                </Link>
               </div>
             )}
 

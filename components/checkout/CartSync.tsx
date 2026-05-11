@@ -67,13 +67,32 @@ export function CartSync() {
           }
         }
 
-        // Future: Sync wishlist, preferences, etc. to their respective stores
-        // console.log("Synced ecommerce data:", data.user.wishlist, data.user.preferences);
+        // Sync preferences (including currency)
+        if (data.user.preferences?.preferredCurrency) {
+          useCurrencyStore.getState().setCurrency(data.user.preferences.preferredCurrency);
+        }
       }
     } catch (err) {
       console.error("Sync Fetch Error:", err);
     }
   };
+
+  // Sync currency changes back to DB
+  useEffect(() => {
+    if (status === 'authenticated') {
+      const unsub = useCurrencyStore.subscribe((state, prevState) => {
+        if (state.currentCurrency !== prevState.currentCurrency) {
+          persistToDB({ 
+            preferences: { 
+              ...state, // Note: this might need careful mapping if store state is complex
+              preferredCurrency: state.currentCurrency 
+            } 
+          });
+        }
+      });
+      return unsub;
+    }
+  }, [status]);
 
   const persistToDB = async (data: any) => {
     try {

@@ -54,6 +54,15 @@ export const metadata: Metadata = {
     images: ["/images/og-image.jpg"],
     creator: "@zonirazjewel",
   },
+  alternates: {
+    canonical: "https://zoniraz.com",
+    languages: {
+      "en-IN": "https://zoniraz.com",
+      "en-US": "https://zoniraz.com/country/usa",
+      "en-AE": "https://zoniraz.com/country/uae",
+      "en-EU": "https://zoniraz.com/country/europe",
+    },
+  },
   robots: {
     index: true,
     follow: true,

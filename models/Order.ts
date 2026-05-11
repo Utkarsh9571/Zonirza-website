@@ -31,6 +31,8 @@ export interface IOrder extends Document {
   };
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
   orderStatus: 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  currency: string;
+  exchangeRate: number;
   razorpayOrderId?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -76,6 +78,8 @@ const OrderSchema: Schema = new Schema(
       enum: ['processing', 'shipped', 'delivered', 'cancelled'],
       default: 'processing',
     },
+    currency: { type: String, required: true, default: 'INR' },
+    exchangeRate: { type: Number, required: true, default: 1 },
     razorpayOrderId: { type: String },
   },
   { timestamps: true }

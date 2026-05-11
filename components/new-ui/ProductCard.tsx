@@ -2,17 +2,21 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { PLACEHOLDER_IMAGE, getValidImageUrl } from '@/lib/constants';
+import { useCurrencyStore } from '@/store/currencyStore';
+import { displayPrice } from '@/lib/currency';
 
 interface ProductCardProps {
   name: string;
-  price: string;
+  price: number;
   image: string;
   slug: string;
-  oldPrice?: string;
+  oldPrice?: number;
   className?: string;
 }
 
 export const ProductCard = ({ name, price, image, slug, oldPrice, className }: ProductCardProps) => {
+  const { currentCurrency, rates } = useCurrencyStore();
+  
   return (
     <Link 
       href={`/product/${slug}`} 
@@ -49,9 +53,13 @@ export const ProductCard = ({ name, price, image, slug, oldPrice, className }: P
           {name}
         </h3>
         <div className="flex items-center justify-center space-x-3">
-          <span className="text-brand-gold text-[13px] font-bold tracking-widest">{price}</span>
+          <span className="text-brand-gold text-[13px] font-bold tracking-widest">
+            {displayPrice(price, currentCurrency, rates)}
+          </span>
           {oldPrice && (
-            <span className="text-brand-text/20 text-[11px] line-through font-medium">{oldPrice}</span>
+            <span className="text-brand-text/20 text-[11px] line-through font-medium">
+              {displayPrice(oldPrice, currentCurrency, rates)}
+            </span>
           )}
         </div>
       </div>

@@ -7,6 +7,8 @@ import { useCartStore } from '@/store/cartStore';
 import { CheckoutSteps } from '@/components/checkout/CheckoutSteps';
 import { Button } from '@/components/new-ui/Button';
 import { cn } from '@/lib/utils';
+import { useCurrencyStore } from '@/store/currencyStore';
+import { displayPrice } from '@/lib/currency';
 
 const PAYMENT_METHODS = [
   { id: 'card', label: 'Credit / Debit Card', icon: <CreditCard size={20} />, description: 'Visa, Mastercard, AMEX, RuPay' },
@@ -19,6 +21,7 @@ export default function PaymentPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState('card');
   const { items, getTotal, selectedAddressId, savedAddresses } = useCartStore();
+  const { currentCurrency, rates } = useCurrencyStore();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -51,6 +54,8 @@ export default function PaymentPage() {
         body: JSON.stringify({
           items,
           totalAmount: total,
+          currency: currentCurrency,
+          exchangeRate: rates[currentCurrency] || 1,
           shippingAddress: selectedAddress
         })
       });
@@ -217,7 +222,7 @@ export default function PaymentPage() {
               <div className="space-y-6">
                 <div className="flex justify-between items-end">
                   <span className="text-[11px] font-bold uppercase tracking-widest text-brand-text">Amount Payable</span>
-                  <span className="text-3xl font-serif text-brand-text italic">₹ {total.toLocaleString()}</span>
+                  <span className="text-3xl font-serif text-brand-text italic">{displayPrice(total, currentCurrency, rates)}</span>
                 </div>
 
                 <Button 

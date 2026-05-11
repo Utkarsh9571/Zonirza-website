@@ -309,7 +309,7 @@ function ProductsContent() {
                   <ProductCard 
                     key={product.slug}
                     name={product.name}
-                    price={`₹${(product.basePrice || product.price || 0).toLocaleString()}`}
+                    price={product.basePrice || product.price || 0}
                     image={resolveProductImage(product.images?.[0])}
                     slug={product.slug}
                   />

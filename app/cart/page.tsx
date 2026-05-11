@@ -15,23 +15,18 @@ import { CheckoutSteps } from '@/components/checkout/CheckoutSteps';
 import { AssuranceCards } from '@/components/checkout/AssuranceCards';
 import { QuantityChoiceModal } from '@/components/cart/QuantityChoiceModal';
 import { cn } from '@/lib/utils';
+import { useCurrencyStore } from '@/store/currencyStore';
+import { displayPrice } from '@/lib/currency';
 
 export default function CartPage() {
   const { status } = useSession();
   const openAuthModal = useAuthModalStore((state: any) => state.openAuthModal);
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
-  const { 
-    items, 
-    updateQuantity, 
-    removeItem, 
-    clearCart, 
-    getTotal,
-    giftMessage,
-    setGiftMessage,
     pincode,
     setPincode
   } = useCartStore();
+  const { currentCurrency, rates } = useCurrencyStore();
 
   const [pincodeInput, setPincodeInput] = useState(pincode);
   const [isCheckingPincode, setIsCheckingPincode] = useState(false);
@@ -230,7 +225,7 @@ export default function CartPage() {
                           <Plus size={14} />
                         </button>
                       </div>
-                      <p className="text-2xl font-serif text-brand-gold italic">₹ {item.price.toLocaleString()}</p>
+                      <p className="text-2xl font-serif text-brand-gold italic">{displayPrice(item.price, currentCurrency, rates)}</p>
                     </div>
                   </div>
                 </div>
@@ -282,7 +277,7 @@ export default function CartPage() {
               <div className="space-y-6 border-b border-brand-text/5 pb-10">
                 <div className="flex justify-between items-center">
                   <span className="text-[11px] font-bold uppercase tracking-widest text-brand-text/40">Subtotal ({items.length} Items)</span>
-                  <span className="text-lg font-serif text-brand-text">₹ {total.toLocaleString()}</span>
+                  <span className="text-lg font-serif text-brand-text">{displayPrice(total, currentCurrency, rates)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-[11px] font-bold uppercase tracking-widest text-brand-text/40">Delivery Charges</span>
@@ -300,7 +295,7 @@ export default function CartPage() {
                     <span className="text-[11px] font-bold uppercase tracking-widest text-brand-text">Amount Payable</span>
                     <p className="text-[9px] text-brand-text/30 uppercase tracking-[0.15em]">Inclusive of all taxes</p>
                   </div>
-                  <span className="text-4xl font-serif text-brand-text italic">₹ {total.toLocaleString()}</span>
+                  <span className="text-4xl font-serif text-brand-text italic">{displayPrice(total, currentCurrency, rates)}</span>
                 </div>
 
                 <Button 
@@ -331,7 +326,7 @@ export default function CartPage() {
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-t border-brand-text/5 p-6 lg:hidden flex items-center justify-between shadow-premium">
         <div className="space-y-1">
           <p className="text-[10px] font-bold uppercase tracking-widest text-brand-text/40">Payable Amount</p>
-          <p className="text-2xl font-serif text-brand-text font-bold">₹ {total.toLocaleString()}</p>
+          <p className="text-2xl font-serif text-brand-text font-bold">{displayPrice(total, currentCurrency, rates)}</p>
         </div>
         <Button 
           size="lg" 

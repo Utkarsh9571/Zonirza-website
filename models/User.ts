@@ -27,6 +27,7 @@ export interface IUser extends Document {
     preferredMetal?: string;
     preferredCategory?: string;
     ringSize?: string;
+    preferredCurrency?: string;
   };
   onboardingCompleted: boolean;
   lastLogin: Date;
@@ -75,7 +76,8 @@ const UserSchema = new Schema<IUser>({
   preferences: {
     preferredMetal: { type: String },
     preferredCategory: { type: String },
-    ringSize: { type: String }
+    ringSize: { type: String },
+    preferredCurrency: { type: String, enum: ['INR', 'USD', 'AED', 'EUR'], default: 'INR' }
   },
   onboardingCompleted: { type: Boolean, default: false },
   lastLogin: { type: Date, default: Date.now }

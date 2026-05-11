@@ -3,8 +3,20 @@
 import { motion } from 'framer-motion';
 import { Shield, Truck, CreditCard, Scale, Clock, AlertCircle, FileText, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useCurrencyStore } from '@/store/currencyStore';
+import { displayPrice } from '@/lib/currency';
+
+const SHIPPING_SERVICES = [
+  { service: "Royal Mail 1st Class", loc: "UK & Europe", schedule: "1-3 days", basePrice: 350 },
+  { service: "Royal Mail Tracker", loc: "UK All", schedule: "1-3 days", basePrice: 450 },
+  { service: "Standard Courier", loc: "UK Mainland", schedule: "1-3 days (7:30am-5:30pm)", basePrice: 550 },
+  { service: "Standard Courier", loc: "NI, Eire, Scilly Isles", schedule: "1-3 days", basePrice: 850 },
+  { service: "Priority Next Day", loc: "UK Mainland", schedule: "Pre 12pm", basePrice: 750 }
+];
 
 export default function PrivacyPolicyPage() {
+  const { currentCurrency, rates } = useCurrencyStore();
+  
   return (
     <div className="min-h-screen bg-[#FDF9F6] pb-24 pt-32">
       <div className="max-w-[1000px] mx-auto px-6 md:px-12">
@@ -66,18 +78,12 @@ export default function PrivacyPolicyPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-brand-text/5">
-                  {[
-                    ["Royal Mail 1st Class", "UK & Europe", "1-3 days", "$3.95"],
-                    ["Royal Mail Tracker", "UK All", "1-3 days", "$4.95"],
-                    ["Standard Courier", "UK Mainland", "1-3 days (7:30am-5:30pm)", "$5.95"],
-                    ["Standard Courier", "NI, Eire, Scilly Isles", "1-3 days", "$9.95"],
-                    ["Priority Next Day", "UK Mainland", "Pre 12pm", "$8.95"]
-                  ].map(([service, loc, schedule, cost], i) => (
+                  {SHIPPING_SERVICES.map((item, i) => (
                     <tr key={i} className="hover:bg-brand-gold/5 transition-colors">
-                      <td className="py-4 px-4 font-medium text-brand-text">{service}</td>
-                      <td className="py-4 px-4 text-brand-text/60">{loc}</td>
-                      <td className="py-4 px-4 text-brand-text/60">{schedule}</td>
-                      <td className="py-4 px-4 font-bold text-[#8B1D2F]">{cost}</td>
+                      <td className="py-4 px-4 font-medium text-brand-text">{item.service}</td>
+                      <td className="py-4 px-4 text-brand-text/60">{item.loc}</td>
+                      <td className="py-4 px-4 text-brand-text/60">{item.schedule}</td>
+                      <td className="py-4 px-4 font-bold text-[#8B1D2F]">{displayPrice(item.basePrice, currentCurrency, rates)}</td>
                     </tr>
                   ))}
                 </tbody>

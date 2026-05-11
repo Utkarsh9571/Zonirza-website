@@ -13,15 +13,18 @@ import { NAVIGATION_DATA } from '@/constants/navigation';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { resolveProductImage } from '@/lib/imageResolver';
+import { useCurrencyStore, CURRENCIES, CurrencyCode } from '@/store/currencyStore';
 
 const Navbar = () => {
     const { data: session, status } = useSession();
     const [isOpen, setIsOpen] = useState(false); // Mobile hamburger menu
+    const [isMounted, setIsMounted] = useState(false);
     
     // INTERACTION STATE MACHINE
-    const [activeMenu, setActiveMenu] = useState<'none' | 'shop' | 'account' | 'search'>('none');
+    const [activeMenu, setActiveMenu] = useState<'none' | 'shop' | 'account' | 'search' | 'currency'>('none');
     
-    const [isMounted, setIsMounted] = useState(false);
+    const { currentCurrency, setCurrency } = useCurrencyStore();
+    const currencyInfo = CURRENCIES[currentCurrency];
     const [isScrolled, setIsScrolled] = useState(false);
     const { isOpen: isAuthModalOpen, openAuthModal, closeAuthModal } = useAuthModalStore();
     
@@ -285,10 +288,47 @@ const Navbar = () => {
               )}
             </div>
             
-            <button className="flex items-center space-x-1 cursor-pointer min-h-[44px]">
-              <span className="text-[10px] uppercase tracking-widest font-bold text-brand-text">IND</span>
-              <ChevronDown size={12} className="text-brand-text" />
-            </button>
+            <div className="relative">
+              <button 
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setActiveMenu(prev => prev === 'currency' ? 'none' : 'currency');
+                }}
+                className="flex items-center space-x-1 cursor-pointer min-h-[44px] group touch-safe-hit"
+              >
+                <span className="text-[10px] uppercase tracking-widest font-black text-brand-text group-hover:text-brand-gold transition-colors">{currentCurrency}</span>
+                <ChevronDown size={12} className={cn("text-brand-text transition-transform duration-300", activeMenu === 'currency' ? "rotate-180" : "")} />
+              </button>
+
+              {/* Currency Dropdown */}
+              {activeMenu === 'currency' && (
+                <div className="absolute top-full right-0 mt-4 w-48 bg-white rounded-[24px] shadow-premium border border-brand-text/5 p-3 animate-in fade-in slide-in-from-top-2 duration-300 z-50 pointer-events-auto">
+                  <p className="text-[8px] uppercase tracking-widest font-black text-brand-text/30 px-3 mb-3">Select Currency</p>
+                  <div className="space-y-1">
+                    {(Object.keys(CURRENCIES) as CurrencyCode[]).map((code) => (
+                      <button
+                        key={code}
+                        onClick={() => {
+                          setCurrency(code);
+                          setActiveMenu('none');
+                        }}
+                        className={cn(
+                          "w-full flex items-center justify-between p-3 rounded-xl transition-all group",
+                          currentCurrency === code ? "bg-brand-bg text-brand-text font-bold" : "hover:bg-brand-bg text-brand-text/60"
+                        )}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <span className="text-sm">{CURRENCIES[code].flag}</span>
+                          <span className="text-[10px] uppercase tracking-widest font-bold">{code}</span>
+                        </div>
+                        {currentCurrency === code && <div className="w-1.5 h-1.5 rounded-full bg-brand-gold shadow-sm" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
   
             <div className="flex items-center space-x-3 pl-2">
               <Link href="/cart" className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-text text-white active:bg-brand-gold transition-colors relative shadow-soft touch-safe-hit" aria-label="Cart">

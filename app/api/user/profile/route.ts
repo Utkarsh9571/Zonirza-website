@@ -51,7 +51,10 @@ export async function POST(req: Request) {
         wishlist: updatedUser.wishlist,
         orderHistory: updatedUser.orderHistory,
         recentlyViewed: updatedUser.recentlyViewed,
-        preferences: updatedUser.preferences
+        preferences: {
+          ...updatedUser.preferences,
+          preferredCurrency: updatedUser.preferences?.preferredCurrency
+        }
       }
     });
   } catch (error: any) {
@@ -88,7 +91,10 @@ export async function GET(req: Request) {
           wishlist: user.wishlist,
           orderHistory: user.orderHistory,
           recentlyViewed: user.recentlyViewed,
-          preferences: user.preferences
+          preferences: {
+            ...user.preferences,
+            preferredCurrency: user.preferences?.preferredCurrency
+          }
         }
       });
     } catch (error: any) {

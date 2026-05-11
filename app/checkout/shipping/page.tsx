@@ -9,6 +9,8 @@ import { CheckoutSteps } from '@/components/checkout/CheckoutSteps';
 import { Button } from '@/components/new-ui/Button';
 import { getValidImageUrl } from '@/lib/constants';
 import { cn } from '@/lib/utils';
+import { useCurrencyStore } from '@/store/currencyStore';
+import { displayPrice } from '@/lib/currency';
 
 export default function ShippingPage() {
   const router = useRouter();
@@ -22,6 +24,7 @@ export default function ShippingPage() {
     selectedAddressId, 
     selectAddress 
   } = useCartStore();
+  const { currentCurrency, rates } = useCurrencyStore();
 
   const [showAddressForm, setShowAddressForm] = useState(savedAddresses.length === 0);
   const [formData, setFormData] = useState<Omit<Address, 'id'>>({
@@ -299,7 +302,7 @@ export default function ShippingPage() {
                       <p className="text-[9px] text-brand-text/40 uppercase tracking-widest">{item.configuration.purity} | Size: {item.configuration.size}</p>
                       <div className="flex justify-between items-center pt-1">
                         <span className="text-[10px] font-bold text-brand-text/40">Qty: {item.quantity}</span>
-                        <span className="text-xs font-serif text-brand-text font-bold">₹ {item.price.toLocaleString()}</span>
+                        <span className="text-xs font-serif text-brand-text font-bold">{displayPrice(item.price, currentCurrency, rates)}</span>
                       </div>
                     </div>
                   </div>
@@ -309,7 +312,7 @@ export default function ShippingPage() {
               <div className="space-y-6">
                 <div className="flex justify-between items-end">
                   <span className="text-[11px] font-bold uppercase tracking-widest text-brand-text">Amount Payable</span>
-                  <span className="text-3xl font-serif text-brand-text italic">₹ {total.toLocaleString()}</span>
+                  <span className="text-3xl font-serif text-brand-text italic">{displayPrice(total, currentCurrency, rates)}</span>
                 </div>
 
                 <Button 

@@ -191,8 +191,8 @@ function SearchResultsContent() {
                   <ProductCard 
                     key={product.slug}
                     name={product.name}
-                    price={`₹${(product.basePrice || 0).toLocaleString()}`}
-                    image={resolveProductImage(product.images?.[0])}
+                    price={product.basePrice || product.price || 0}
+                    image={product.images?.[0] || ''}
                     slug={product.slug}
                   />
                 ))}

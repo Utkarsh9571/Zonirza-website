@@ -11,6 +11,8 @@ import { Section } from './Section';
 import { cn } from '@/lib/utils';
 import { resolveProductImage } from '@/lib/imageResolver';
 import { calculatePricing, formatCurrency, ProductConfiguration } from '@/lib/pricing';
+import { useCurrencyStore } from '@/store/currencyStore';
+import { displayPrice } from '@/lib/currency';
 import { validateProductConfiguration, isFieldMissing } from '@/lib/ecommerce';
 import { RingSizeGuide } from '../product/guides/RingSizeGuide';
 import { DiamondGuide } from '../product/guides/DiamondGuide';
@@ -136,11 +138,8 @@ export function ProductInteractiveUI({ product }: { product: any }) {
     return validateProductConfiguration(product, config as any);
   }, [product, config]);
 
-  const addItem = useCartStore((state) => state.items); // Note: we need the store's addItem action
-  const { status } = useSession();
-  const openAuthModal = useAuthModalStore((state: any) => state.openAuthModal);
-
   const cartAddItem = useCartStore((state) => state.addItem);
+  const { currentCurrency, rates } = useCurrencyStore();
   const specs = product.specs instanceof Map ? Object.fromEntries(product.specs) : product.specs;
 
   const handleAddToCart = () => {
@@ -227,7 +226,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
               <div className="flex flex-col space-y-2 pt-2">
                 <div className="flex items-baseline space-x-3">
                    <p className="text-4xl text-brand-gold font-bold font-serif italic transition-all duration-500">
-                    {formatCurrency(pricing.totalPrice)}
+                    {displayPrice(pricing.totalPrice, currentCurrency, rates)}
                   </p>
                   <div className="flex flex-col">
                     <span className="text-[10px] uppercase tracking-widest text-brand-text/40">MRP Incl. Taxes</span>

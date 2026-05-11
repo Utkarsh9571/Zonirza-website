@@ -21,6 +21,8 @@ export async function POST(req: Request) {
       userId: session?.user ? (session.user as any).id : undefined,
       items,
       totalAmount,
+      currency: body.currency || 'INR',
+      exchangeRate: body.exchangeRate || 1,
       shippingAddress,
       paymentStatus: 'pending',
       orderStatus: 'processing',

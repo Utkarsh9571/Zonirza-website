@@ -10,6 +10,8 @@ import HeroSlider from '@/components/HeroSlider';
 import StylingVideoSlider from '@/components/StylingVideoSlider';
 import { resolveProductImage } from '@/lib/imageResolver';
 import { useAuthModalStore } from '@/store/authModalStore';
+import { useCurrencyStore } from '@/store/currencyStore';
+import { displayPrice } from '@/lib/currency';
 
 const resolveSliderImage = (imageName: string) => `/images/images/slider/${imageName}`;
 const resolveContentImage = (imageName: string) => `/images/images/imgcontent/${imageName}`;
@@ -19,6 +21,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 export default function Home() {
   const [data, setData] = useState<{products: any[], categories: any[]}>({ products: [], categories: [] });
   const { openAuthModal } = useAuthModalStore();
+  const { currentCurrency, rates } = useCurrencyStore();
 
   useEffect(() => {
     async function fetchData() {
@@ -294,7 +297,9 @@ export default function Home() {
               {products.slice(0, 2).map((prod: any, i: number) => (
                 <Link href={`/product/${prod.slug}`} key={i} className="flex-1 bg-white border-[6px] border-white rounded-2xl shadow-md relative group aspect-[4/5] overflow-hidden cursor-pointer block">
                   <Image src={resolveProductImage(prod.images?.[0])} alt={prod.name} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover transition-transform duration-1000 group-hover:scale-105" />
-                  <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-sm px-3 py-1 text-[10px] text-white tracking-widest uppercase">{prod.name}</div>
+                  <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-sm px-3 py-1 text-[10px] text-white tracking-widest uppercase">
+                    {prod.name} | {displayPrice(prod.basePrice || prod.price || 0, currentCurrency, rates)}
+                  </div>
                 </Link>
               ))}
             </div>
