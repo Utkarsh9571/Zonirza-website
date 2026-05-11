@@ -1,3 +1,6 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { PLACEHOLDER_IMAGE, getValidImageUrl } from '@/lib/constants';
@@ -6,37 +9,42 @@ import { ArrowRight, Star, ShieldCheck, Diamond, Heart, CheckCircle2, Video, Sto
 import HeroSlider from '@/components/HeroSlider';
 import StylingVideoSlider from '@/components/StylingVideoSlider';
 import { resolveProductImage } from '@/lib/imageResolver';
+import { useAuthModalStore } from '@/store/authModalStore';
 
 const resolveSliderImage = (imageName: string) => `/images/images/slider/${imageName}`;
 const resolveContentImage = (imageName: string) => `/images/images/imgcontent/${imageName}`;
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
-async function getData() {
-  try {
-    const [pRes, cRes] = await Promise.all([
-      fetch(`${API_URL}/api/products?limit=20`, { next: { revalidate: 60 } }),
-      fetch(`${API_URL}/api/categories`, { next: { revalidate: 60 } })
-    ]);
+export default function Home() {
+  const [data, setData] = useState<{products: any[], categories: any[]}>({ products: [], categories: [] });
+  const { openAuthModal } = useAuthModalStore();
 
-    const products = pRes.ok ? (await pRes.json()).data : [];
-    const categories = cRes.ok ? (await cRes.json()).data : [];
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [pRes, cRes] = await Promise.all([
+          fetch(`${API_URL}/api/products?limit=20`),
+          fetch(`${API_URL}/api/categories`)
+        ]);
 
-    return { products, categories };
-  } catch (error) {
-    console.error("Failed to fetch data:", error);
-    return { products: [], categories: [] };
-  }
-}
+        const products = pRes.ok ? (await pRes.json()).data : [];
+        const categories = cRes.ok ? (await cRes.json()).data : [];
 
-export default async function Home() {
-  const { products, categories } = await getData();
+        setData({ products, categories });
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      }
+    }
+    fetchData();
+  }, []);
 
+  const { products, categories } = data;
 
   return (
     <div className="flex flex-col bg-brand-bg min-h-screen overflow-x-hidden">
 
-      {/* 1. HERO SECTION (Unchanged) */}
+      {/* 1. HERO SECTION */}
       <section className="relative h-screen min-h-[700px] w-full flex items-center justify-center p-4 md:p-8 lg:p-12 overflow-hidden">
         <div className="absolute inset-0 w-full h-full">
           <Image
@@ -60,14 +68,17 @@ export default async function Home() {
               </h1>
             </div>
 
-            <div className="flex items-center space-x-4">
-              <button className="bg-white text-brand-text px-12 py-5 rounded-full text-[11px] uppercase tracking-[0.2em] font-bold hover:bg-brand-gold hover:text-white transition-all shadow-soft">
+            <button 
+              onClick={openAuthModal}
+              className="flex items-center space-x-4 group bg-transparent border-none outline-none p-0"
+            >
+              <div className="bg-white text-brand-text px-12 py-5 rounded-full text-[11px] uppercase tracking-[0.2em] font-bold group-hover:bg-brand-gold group-hover:text-white transition-all shadow-soft cursor-pointer">
                 Let's Get Started
-              </button>
-              <div className="w-14 h-14 rounded-full bg-white text-brand-text flex items-center justify-center shadow-soft hover:bg-brand-gold hover:text-white transition-all cursor-pointer">
+              </div>
+              <div className="w-14 h-14 rounded-full bg-white text-brand-text flex items-center justify-center shadow-soft group-hover:bg-brand-gold group-hover:text-white transition-all cursor-pointer">
                 <ArrowRight size={20} />
               </div>
-            </div>
+            </button>
 
             <div className="space-y-4 pt-6 border-l-2 border-brand-gold pl-8">
               <p className="text-white text-xs uppercase tracking-[0.4em] font-bold italic opacity-80">
@@ -85,8 +96,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* --- NEW TANISHQ-INSPIRED SECTIONS BEGIN HERE --- */}
-
       {/* 2. SHOP BY COLLECTION */}
       <section className="py-8 sm:py-12">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
@@ -96,7 +105,6 @@ export default async function Home() {
           </div>
 
           <div className="flex flex-col lg:flex-row gap-4">
-            {/* Left Main Collection */}
             <div className="w-full lg:w-2/3 relative aspect-[4/5] md:aspect-auto md:h-[500px] rounded-xl overflow-hidden group shadow-soft">
               <Image
                 src="/images/site/wedding.png"
@@ -116,7 +124,6 @@ export default async function Home() {
               </div>
             </div>
 
-            {/* Right Stacked Collections */}
             <div className="w-full lg:w-1/3 grid grid-cols-2 gap-4">
               <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden group shadow-soft">
                 <Image
@@ -151,7 +158,6 @@ export default async function Home() {
                 </div>
               </div>
               
-              {/* NEW CARDS */}
               <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden group shadow-soft">
                 <Image
                   src="/images/images/product/rose-gold-16017058153130.jpg"
@@ -242,7 +248,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 5. ZONIRAZ WORLD (Visual Banners - can also lead to products) */}
+      {/* 5. ZONIRAZ WORLD */}
       <section className="py-8 sm:py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
           <div className="text-center mb-8 sm:mb-10 space-y-2">
@@ -251,7 +257,6 @@ export default async function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-auto md:h-[500px]">
-            {/* Top Left / Bottom Left equivalent (Grid split) */}
             <div className="grid grid-rows-2 gap-4 h-full">
               <Link href="/products?tag=featured" className="relative rounded-2xl overflow-hidden shadow-soft group block">
                 <Image src="/images/images/product/rose-gold-16017081121080.jpg" alt="Featured World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
@@ -260,7 +265,6 @@ export default async function Home() {
                 <Image src="/images/images/product/yellow-gold-16010972111558.jpg" alt="Heritage World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               </Link>
             </div>
-            {/* Right Side (One Large) */}
             <Link href="/products?collection=heritage" className="relative rounded-2xl overflow-hidden shadow-soft group h-full min-h-[400px] block">
               <Image src="/images/images/product/default-16345651242469.jpg" alt="Heritage World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               <div className="absolute inset-0 bg-brand-text/20 flex flex-col items-center justify-center text-center p-8">
@@ -323,6 +327,7 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* 8. STYLING 101 */}
       <section className="py-16 bg-white overflow-hidden flex flex-col items-center">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12 text-center mb-12 sm:mb-16 space-y-2 w-full">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Styling 101 With Diamonds</h2>
@@ -334,11 +339,9 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 9. ZONIRAZ ASSURANCE & EXCHANGE */}
+      {/* 9. ZONIRAZ ASSURANCE */}
       <section className="py-16 bg-white border-y border-brand-text/5">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
-
-          {/* Top Strip */}
           <div className="flex flex-col md:flex-row items-center justify-between py-8 border-b border-brand-text/5 gap-8">
             <div className="text-center md:text-left">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Zoniraz <span className="text-[#8B2332]">Assurance</span></h2>
@@ -360,7 +363,6 @@ export default async function Home() {
             </div>
           </div>
 
-          {/* Bottom Strip (Exchange Program) */}
           <div className="flex flex-col items-center py-16 text-center space-y-8">
             <div>
               <h2 className="text-3xl font-serif text-brand-text tracking-tight mb-2">Exchange Program</h2>
@@ -398,13 +400,9 @@ export default async function Home() {
       {/* 10. GIFTING & OLD GOLD */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12 grid grid-cols-1 md:grid-cols-2 gap-8">
-
-          {/* Gift Card */}
           <div className="relative aspect-square md:aspect-auto md:h-[400px] rounded-3xl overflow-hidden bg-[#F6EDEB] group p-10 flex flex-col items-center justify-center text-center">
-            {/* Simulated ribbons */}
             <div className="absolute top-0 bottom-0 left-12 w-8 bg-[#8B2332]"></div>
             <div className="absolute left-0 right-0 bottom-12 h-8 bg-[#8B2332]"></div>
-            {/* Bow center */}
             <div className="absolute left-12 bottom-12 w-12 h-12 bg-[#701C28] rounded-full transform -translate-x-2 translate-y-2"></div>
 
             <div className="relative z-10 space-y-4 sm:ml-12 sm:mb-12 bg-white/80 backdrop-blur-sm p-6 rounded-2xl w-full max-w-[280px]">
@@ -418,7 +416,6 @@ export default async function Home() {
             </div>
           </div>
 
-          {/* Exchange Gold Card */}
           <div className="relative aspect-square md:aspect-auto md:h-[400px] rounded-3xl overflow-hidden bg-[#FFFBF0] group p-12 flex flex-col justify-center border-[12px] border-white shadow-sm">
             <div className="space-y-6">
               <div className="w-16 h-16 border border-brand-gold rounded-t-full flex items-center justify-center mb-6">
@@ -432,7 +429,6 @@ export default async function Home() {
               </button>
             </div>
           </div>
-
         </div>
       </section>
 

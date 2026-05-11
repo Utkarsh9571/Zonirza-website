@@ -15,7 +15,7 @@ const ProductCard = ({ name, price, image, slug, oldPrice }: ProductCardProps) =
 
   return (
     <Link href={`/product/${slug}`} className="group block h-full">
-      <div className="bg-brand-white rounded-2xl overflow-hidden aspect-square relative mb-4 border border-brand-text/5 transition-all duration-700 group-hover:shadow-premium group-hover:-translate-y-2">
+      <div className="bg-brand-white rounded-2xl overflow-hidden aspect-square relative mb-4 border border-brand-border transition-all duration-700 group-hover:shadow-premium group-hover:-translate-y-2 group-hover:border-brand-gold/30">
         <Image
           src={imageUrl}
           alt={name}
@@ -35,13 +35,13 @@ const ProductCard = ({ name, price, image, slug, oldPrice }: ProductCardProps) =
         </button>
       </div>
       <div className="space-y-1 text-center px-2">
-        <h3 className="text-[12px] sm:text-[13px] font-medium text-brand-text/80 group-hover:text-brand-gold transition-colors duration-300 line-clamp-1">
+        <h3 className="text-[12px] sm:text-[13px] font-medium text-brand-muted group-hover:text-brand-text transition-colors duration-300 line-clamp-1">
           {name}
         </h3>
         <div className="flex items-center justify-center space-x-2 sm:space-x-3">
           <p className="text-brand-gold text-[11px] sm:text-[12px] font-bold tracking-wider">{price}</p>
           {oldPrice && (
-            <p className="text-brand-text/30 text-[9px] sm:text-[10px] line-through font-medium">{oldPrice}</p>
+            <p className="text-brand-muted/40 text-[9px] sm:text-[10px] line-through font-medium italic">{oldPrice}</p>
           )}
         </div>
       </div>

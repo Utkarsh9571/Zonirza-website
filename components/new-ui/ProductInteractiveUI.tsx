@@ -16,22 +16,112 @@ import { RingSizeGuide } from '../product/guides/RingSizeGuide';
 import { DiamondGuide } from '../product/guides/DiamondGuide';
 import { GoldPurityGuide } from '../product/guides/GoldPurityGuide';
 
+// --- PREMIUM ZOOM COMPONENT ---
+function ProductImageZoom({ image, name }: { image: string, name: string }) {
+  const [isZooming, setIsZooming] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isTouch, setIsTouch] = useState(false);
+
+  useEffect(() => {
+    setIsTouch(window.matchMedia('(pointer: coarse)').matches);
+  }, []);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isTouch) return;
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.pageX - left - window.scrollX) / width) * 100;
+    const y = ((e.pageY - top - window.scrollY) / height) * 100;
+    setPosition({ x, y });
+  };
+
+  return (
+    <div 
+      className="relative w-full h-full cursor-zoom-in group/zoom touch-none overflow-hidden"
+      onMouseEnter={() => !isTouch && setIsZooming(true)}
+      onMouseLeave={() => !isTouch && setIsZooming(false)}
+      onMouseMove={handleMouseMove}
+      onClick={() => isTouch && setIsZooming(!isZooming)}
+    >
+      {/* Main Image */}
+      <Image
+        src={image}
+        alt={name}
+        fill
+        className={cn(
+          "object-cover p-4 sm:p-8 transition-opacity duration-300",
+          isZooming && !isTouch ? "opacity-0" : "opacity-100"
+        )}
+        priority
+        sizes="(max-width: 1024px) 100vw, 50vw"
+      />
+
+      {/* Magnified Layer (Desktop Hover or Mobile Tap-to-Zoom) */}
+      <div 
+        className={cn(
+          "absolute inset-0 z-10 overflow-hidden pointer-events-none transition-all duration-500 bg-white",
+          isZooming ? "opacity-100 scale-100" : "opacity-0 scale-95"
+        )}
+      >
+        <div 
+          className="absolute inset-0 bg-no-repeat bg-cover transition-transform duration-300"
+          style={{
+            backgroundImage: `url(${image})`,
+            backgroundPosition: isTouch ? 'center' : `${position.x}% ${position.y}%`,
+            backgroundSize: isTouch ? '180%' : '250%',
+            transform: isZooming ? 'scale(1.1)' : 'scale(1)',
+          }}
+        />
+      </div>
+
+      {/* Luxury Lens Overlay */}
+      {isZooming && (
+        <div className="absolute inset-0 border-2 border-brand-gold/20 z-20 pointer-events-none rounded-[24px] overflow-hidden">
+          <div className="absolute top-4 left-4 bg-brand-text/80 backdrop-blur-md px-3 py-1.5 rounded-full">
+            <p className="text-[8px] text-white uppercase tracking-[0.2em] font-black flex items-center">
+              <Sparkles size={10} className="mr-2 text-brand-gold" />
+              {isTouch ? 'Tap to Close' : 'Inspecting Details'}
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ProductInteractiveUI({ product }: { product: any }) {
-  // 1. Initial State from Product Config or Defaults
+  // 1. Initial State Calculation Logic
   const configOptions = product.configurableOptions || {};
+
+  // HELPER: Generate sensible defaults for every required option group
+  const getInitialConfiguration = () => {
+    const initialConfig: ProductConfiguration = {
+      metal: 'Yellow Gold', // Standard default
+      purity: '18K',        // Most popular choice
+      size: '',
+      stone: configOptions.stones?.length > 0 ? 'VS1' : 'None',
+    };
+
+    // Default Size for Rings/Bangles
+    const category = product.category?.toLowerCase() || '';
+    if (category.includes('ring')) {
+      initialConfig.size = '7'; // Standard base size
+    } else if (category.includes('bangle') || category.includes('bracelet')) {
+      initialConfig.size = '2.4'; // Standard bangle size
+    }
+
+    // Override with available options if defaults are not in list
+    // (In a real app, we'd check against actual product.configurableOptions if they existed)
+    
+    return initialConfig;
+  };
   
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
 
-  // Configuration State - Initialize with empty or defaults based on necessity
-  const [config, setConfig] = useState<ProductConfiguration>({
-    metal: '',
-    purity: '',
-    size: '',
-    stone: configOptions.stones?.length > 0 ? '' : 'None',
-  });
+  // Configuration State - Always initialized with valid defaults
+  const [config, setConfig] = useState<ProductConfiguration>(getInitialConfiguration());
 
   // 2. Dynamic Pricing Calculation
   const pricing = useMemo(() => {
@@ -84,51 +174,47 @@ export function ProductInteractiveUI({ product }: { product: any }) {
   return (
     <div className="bg-brand-bg min-h-screen pb-24">
       {/* Top 2-Column Section */}
-      <Section className="!pt-32 !pb-16">
-        <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-start">
+      <Section className="!pt-36 !pb-12">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
           
-          {/* LEFT COLUMN (60%) - Image Gallery */}
-          <div className="w-full lg:w-[60%] flex flex-col space-y-6 animate-in fade-in slide-in-from-left-8 duration-1000">
-            <div className="relative aspect-[4/5] w-full rounded-[40px] overflow-hidden bg-white border border-brand-text/5 shadow-soft group">
-              <Image
-                key={selectedImage}
-                src={resolveProductImage(product.images?.[selectedImage])}
-                alt={product.name}
-                fill
-                className="object-cover p-12 transition-transform duration-[2s] group-hover:scale-110 animate-in fade-in zoom-in-95 duration-500"
-                priority
-                sizes="(max-width: 1024px) 100vw, 60vw"
+          {/* LEFT COLUMN (50%) - Image Gallery */}
+          <div className="w-full lg:w-[50%] flex flex-col space-y-3 animate-in fade-in slide-in-from-left-8 duration-1000">
+            <div className="relative aspect-square w-full max-h-[350px] md:max-h-[420px] rounded-[24px] overflow-hidden bg-white border border-brand-border shadow-soft group mx-auto">
+              <ProductImageZoom 
+                image={resolveProductImage(product.images?.[selectedImage])} 
+                name={product.name} 
               />
-              <div className="absolute top-8 right-8 flex flex-col space-y-3">
-                <button className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center border border-brand-text/5 text-brand-text hover:bg-brand-gold hover:text-white transition-all shadow-soft">
-                  <Heart size={20} />
+              
+              <div className="absolute top-4 right-4 flex flex-col space-y-2 z-30">
+                <button className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center border border-brand-border text-brand-text hover:bg-brand-gold hover:text-white transition-all shadow-soft">
+                  <Heart size={16} />
                 </button>
-                <button className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center border border-brand-text/5 text-brand-text hover:bg-brand-gold hover:text-white transition-all shadow-soft">
-                  <Share2 size={20} />
+                <button className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center border border-brand-border text-brand-text hover:bg-brand-gold hover:text-white transition-all shadow-soft">
+                  <Share2 size={16} />
                 </button>
               </div>
             </div>
 
             {product.images.length > 1 && (
-              <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
+              <div className="flex justify-center space-x-2.5 overflow-x-auto pb-2 scrollbar-hide">
                 {product.images.map((img: string, i: number) => (
                   <button
                     key={i}
                     onClick={() => setSelectedImage(i)}
                     className={cn(
-                      "relative w-24 h-24 flex-shrink-0 rounded-[20px] overflow-hidden border-2 transition-all shadow-sm",
-                      selectedImage === i ? "border-brand-gold" : "border-transparent bg-white hover:border-brand-text/20"
+                      "relative w-14 h-14 md:w-16 md:h-16 flex-shrink-0 rounded-[12px] overflow-hidden border-2 transition-all shadow-sm",
+                      selectedImage === i ? "border-brand-gold" : "border-transparent bg-white hover:border-brand-border"
                     )}
                   >
-                    <Image src={resolveProductImage(img)} alt={`${product.name} ${i}`} fill className="object-cover p-2" sizes="96px" />
+                    <Image src={resolveProductImage(img)} alt={`${product.name} ${i}`} fill className="object-cover p-1" sizes="64px" />
                   </button>
                 ))}
               </div>
             )}
           </div>
 
-          {/* RIGHT COLUMN (40%) - Details & Actions */}
-          <div className="w-full lg:w-[40%] space-y-8 lg:sticky lg:top-32 animate-in fade-in slide-in-from-right-8 duration-1000">
+          {/* RIGHT COLUMN (50%) - Details & Actions */}
+          <div className="w-full lg:w-[50%] space-y-6 lg:sticky lg:top-24 animate-in fade-in slide-in-from-right-8 duration-1000">
             
             <div className="space-y-4">
               <p className="text-brand-gold text-[10px] uppercase tracking-[0.4em] font-bold">
@@ -143,17 +229,18 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                    <p className="text-4xl text-brand-gold font-bold font-serif italic transition-all duration-500">
                     {formatCurrency(pricing.totalPrice)}
                   </p>
-                  <span className="text-[10px] uppercase tracking-widest text-brand-text/40">MRP Incl. Taxes</span>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] uppercase tracking-widest text-brand-text/40">MRP Incl. Taxes</span>
+                    <span className="text-[9px] text-brand-gold font-black uppercase tracking-widest mt-0.5">
+                      {config.purity} {config.metal} {config.size ? `| Size ${config.size}` : ''} {config.stone !== 'None' ? `| ${config.stone}` : ''}
+                    </span>
+                  </div>
                 </div>
                 
                 <div className="flex items-center space-x-4 text-[10px] text-brand-text/50 uppercase tracking-widest font-bold">
                   <div className="flex items-center space-x-1">
                     <Scale size={12} className="text-brand-gold" />
                     <span>Est. Weight: {pricing.estimatedWeight}g</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <Sparkles size={12} className="text-brand-gold" />
-                    <span>{config.purity} {config.metal}</span>
                   </div>
                 </div>
               </div>
@@ -174,7 +261,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                     </span>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   {['18K Yellow Gold', '18K Rose Gold', '18K White Gold', '22K Yellow Gold'].map((option) => (
                     <button
                       key={option}
@@ -183,11 +270,11 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                         if (showValidation) setShowValidation(false);
                       }}
                       className={cn(
-                        "px-4 py-2.5 rounded-xl text-[9px] uppercase tracking-widest font-bold border transition-all duration-300",
+                        "px-5 py-3.5 rounded-2xl text-[10px] uppercase tracking-widest font-bold border transition-all duration-300 touch-safe-hit",
                         `${config.purity} ${config.metal}` === option 
                           ? "bg-brand-text text-white border-brand-text shadow-premium" 
-                          : "bg-white text-brand-text/70 border-brand-text/10 hover:border-brand-gold hover:text-brand-text",
-                        showValidation && isFieldMissing('metal', validation.missingFields) && "border-red-200"
+                          : "bg-white text-brand-text/70 border-brand-text/10 active:border-brand-gold active:text-brand-text",
+                        showValidation && isFieldMissing('metal', validation.missingFields) && "border-red-200 bg-red-50/30"
                       )}
                     >
                       {option}
@@ -209,7 +296,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                    </div>
                    <button className="text-[9px] text-brand-gold underline tracking-widest">Not sure?</button>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   {['7', '8', '9', '10', '11'].map((size) => (
                     <button
                       key={size}
@@ -218,11 +305,11 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                         if (showValidation) setShowValidation(false);
                       }}
                       className={cn(
-                        "w-12 h-12 flex items-center justify-center rounded-xl text-[10px] font-bold border transition-all duration-300",
+                        "w-14 h-14 flex items-center justify-center rounded-2xl text-[11px] font-bold border transition-all duration-300 touch-safe-hit",
                         config.size === size 
                           ? "bg-brand-text text-white border-brand-text shadow-premium" 
-                          : "bg-white text-brand-text/70 border-brand-text/10 hover:border-brand-gold hover:text-brand-text",
-                        showValidation && isFieldMissing('size', validation.missingFields) && "border-red-200"
+                          : "bg-white text-brand-text/70 border-brand-text/10 active:border-brand-gold active:text-brand-text",
+                        showValidation && isFieldMissing('size', validation.missingFields) && "border-red-200 bg-red-50/30"
                       )}
                     >
                       {size}

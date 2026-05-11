@@ -1,85 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import { ArrowRight, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+import { BLOG_POSTS } from '@/lib/blog/posts';
+
 // ---- BLOG DATA (static for now, easily replaceable with CMS/API) ----
 const BLOG_CATEGORIES = [
   'All Blogs', 'Gold', 'Diamond', 'Earrings', 'Rings', 
   'Trending', 'Bridal', 'Daily Wear', 'Styling'
-];
-
-const BLOG_POSTS = [
-  {
-    id: 1,
-    slug: 'why-akshaya-tritiya-is-best-time-to-buy-gold',
-    title: 'Why Is Akshaya Tritiya the Most Auspicious Time to Buy Gold Jewellery?',
-    excerpt: 'At Zoniraz, we have always believed that certain days carry a special energy. Akshaya Tritiya is one of those rare occasions when tradition, astrology, and timeless beauty converge.',
-    image: '/images/site/blog/post-1.png',
-    tags: ['Festive', 'Gold'],
-    date: 'May 5, 2026',
-    readTime: '5 min read',
-    featured: false,
-  },
-  {
-    id: 2,
-    slug: 'gold-earrings-must-have-accessory-2026',
-    title: 'Why Simple Gold Earrings Are the Must-Have Accessory of 2026',
-    excerpt: 'In 2026, jewellery is speaking softer and smarter. Women are moving toward pieces that feel effortless yet refined, wearable yet luxurious. Gold earrings lead this quiet revolution.',
-    image: '/images/site/blog/post-2.png',
-    tags: ['Daily Wear', 'Earrings', 'Gold'],
-    date: 'April 20, 2026',
-    readTime: '4 min read',
-    featured: true,
-  },
-  {
-    id: 3,
-    slug: 'diamond-engagement-ring-guide',
-    title: 'The Ultimate Guide to Choosing a Diamond Engagement Ring',
-    excerpt: 'Selecting the perfect diamond ring is a journey of emotion and precision. From the 4Cs to the setting style, every detail tells a story of eternal commitment.',
-    image: '/images/site/blog/post-3.png',
-    tags: ['Diamond', 'Rings'],
-    date: 'April 12, 2026',
-    readTime: '7 min read',
-    featured: false,
-  },
-  {
-    id: 4,
-    slug: 'bihari-bridal-jewellery-traditions',
-    title: 'From Dholna to Maang Tikka: Must-Have Bihari Bridal Jewellery for Your Wedding',
-    excerpt: 'Every Indian wedding carries its own visual language: a unique harmony of textiles, rituals and jewellery. In Bihar and Jharkhand, bridal adornment is nothing short of spectacular.',
-    image: '/images/site/blog/post-4.png',
-    tags: ['Bridal', 'Trending'],
-    date: 'March 28, 2026',
-    readTime: '6 min read',
-    featured: true,
-  },
-  {
-    id: 5,
-    slug: 'office-wear-jewellery-guide',
-    title: 'Elegant Jewellery for the Modern Working Woman: A Curated Office Wear Guide',
-    excerpt: 'The right piece of jewellery at work is not about making a statement — it is about quiet confidence. Discover pieces that transition from boardroom to evening effortlessly.',
-    image: '/images/site/blog/post-5.png',
-    tags: ['Daily Wear', 'Styling'],
-    date: 'March 15, 2026',
-    readTime: '4 min read',
-    featured: false,
-  },
-  {
-    id: 6,
-    slug: 'haldi-ceremony-jewellery-guide',
-    title: 'Trending Haldi Jewellery for Brides: What to Wear and Why It Matters',
-    excerpt: 'The Haldi ceremony is an integral part of Indian weddings. From floral to gold-plated sets, discover what brides are choosing for this cherished ritual in 2026.',
-    image: '/images/site/blog/post-6.png',
-    tags: ['Bridal', 'Trending'],
-    date: 'March 5, 2026',
-    readTime: '5 min read',
-    featured: false,
-  },
 ];
 
 // ---- HERO SLIDES ----
@@ -94,11 +27,30 @@ const HERO_SLIDES = [
     title: 'Bridal Jewellery Guide',
     subtitle: 'Timeless traditions, modern elegance',
   },
+  {
+    image: '/images/site/blog/post-4.png',
+    title: 'Wedding Statement Jewels',
+    subtitle: 'Crafted for your most precious moments',
+  },
+  {
+    image: '/images/site/blog/post-3.png',
+    title: 'Solitaire Excellence',
+    subtitle: 'A journey of emotion and precision',
+  },
 ];
 
 export default function BlogPage() {
   const [activeCategory, setActiveCategory] = useState('All Blogs');
   const [heroIndex, setHeroIndex] = useState(0);
+
+  // Auto-sliding loop
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroIndex((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(timer);
+  }, []);
 
   const filteredPosts = activeCategory === 'All Blogs'
     ? BLOG_POSTS
@@ -170,7 +122,7 @@ export default function BlogPage() {
       </section>
 
       {/* ====== CATEGORY TABS ====== */}
-      <section className="sticky top-[72px] z-30 bg-white/90 backdrop-blur-xl border-b border-brand-text/5 shadow-soft">
+      <section className="sticky top-[100px] z-[40] bg-white/95 backdrop-blur-xl border-b border-brand-border shadow-soft mt-1">
         <div className="max-w-7xl mx-auto px-6 sm:px-12">
           <div className="flex items-center overflow-x-auto no-scrollbar py-5 space-x-8">
             {BLOG_CATEGORIES.map(cat => (
@@ -178,10 +130,10 @@ export default function BlogPage() {
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={cn(
-                  "text-[11px] uppercase tracking-widest font-bold whitespace-nowrap transition-all duration-300 pb-2 border-b-2",
+                  "text-[11px] uppercase tracking-[0.2em] font-black whitespace-nowrap transition-all duration-300 pb-2 border-b-2",
                   activeCategory === cat
                     ? "text-brand-gold border-brand-gold"
-                    : "text-brand-text/50 border-transparent hover:text-brand-text"
+                    : "text-brand-muted/40 border-transparent hover:text-brand-text hover:border-brand-border"
                 )}
               >
                 {cat}
@@ -217,15 +169,15 @@ export default function BlogPage() {
                     </div>
                     <div className="flex items-center space-x-3 mb-4">
                       {featuredPosts[0].tags.map(tag => (
-                        <span key={tag} className="px-4 py-1.5 border border-[#EAE1D5]/30 rounded-full text-[10px] uppercase tracking-widest font-bold text-[#EAE1D5]/70">
+                        <span key={tag} className="px-4 py-1.5 border border-[#EAE1D5]/40 rounded-full text-[10px] uppercase tracking-widest font-bold text-[#EAE1D5]/80">
                           {tag}
                         </span>
                       ))}
                     </div>
-                    <h3 className="text-2xl sm:text-3xl font-serif text-[#EAE1D5] leading-snug group-hover:text-brand-gold transition-colors">
+                    <h3 className="text-2xl sm:text-4xl font-serif text-[#EAE1D5] leading-tight group-hover:text-brand-gold transition-colors">
                       {featuredPosts[0].title}
                     </h3>
-                    <p className="text-[#EAE1D5]/50 text-sm mt-3 leading-relaxed line-clamp-2">
+                    <p className="text-[#EAE1D5]/70 text-sm mt-4 leading-relaxed line-clamp-3">
                       {featuredPosts[0].excerpt}
                     </p>
                   </Link>
@@ -246,7 +198,7 @@ export default function BlogPage() {
                     </div>
                     <div className="flex flex-wrap gap-2 mb-3">
                       {post.tags.map(tag => (
-                        <span key={tag} className="px-3 py-1 border border-[#EAE1D5]/30 rounded-full text-[9px] uppercase tracking-widest font-bold text-[#EAE1D5]/70">
+                        <span key={tag} className="px-3 py-1 border border-[#EAE1D5]/40 rounded-full text-[9px] uppercase tracking-widest font-bold text-[#EAE1D5]/80">
                           {tag}
                         </span>
                       ))}
@@ -254,7 +206,7 @@ export default function BlogPage() {
                     <h4 className="text-lg font-serif text-[#EAE1D5] leading-snug group-hover:text-brand-gold transition-colors line-clamp-2">
                       {post.title}
                     </h4>
-                    <p className="text-[#EAE1D5]/40 text-xs mt-2 line-clamp-2">
+                    <p className="text-[#EAE1D5]/60 text-xs mt-2 line-clamp-2 leading-relaxed">
                       {post.excerpt}
                     </p>
                     <p className="text-brand-gold text-[10px] uppercase tracking-widest font-bold mt-3">{post.date}</p>
@@ -271,7 +223,7 @@ export default function BlogPage() {
         <div className="max-w-7xl mx-auto px-6 sm:px-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {(activeCategory === 'All Blogs' ? filteredPosts.slice(0, 2) : filteredPosts.slice(0, 2)).map(post => (
-              <Link href={`/blog/${post.slug}`} key={post.id} className="group bg-white rounded-[32px] overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 border border-brand-text/5">
+              <Link href={`/blog/${post.slug}`} key={post.id} className="group bg-white rounded-[32px] overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 border border-brand-border">
                 <div className="relative w-full aspect-[16/10] overflow-hidden">
                   <Image
                     src={post.image}
@@ -285,12 +237,12 @@ export default function BlogPage() {
                   <h3 className="text-xl sm:text-2xl font-serif text-brand-text leading-snug group-hover:text-brand-gold transition-colors">
                     {post.title}
                   </h3>
-                  <p className="text-brand-text/50 text-sm leading-relaxed line-clamp-2">
+                  <p className="text-brand-muted text-sm leading-relaxed line-clamp-2">
                     {post.excerpt}
                   </p>
                   <div className="flex flex-wrap gap-2 pt-2">
                     {post.tags.map(tag => (
-                      <span key={tag} className="px-4 py-1.5 border border-brand-text/10 rounded-full text-[10px] uppercase tracking-widest font-bold text-brand-text/50">
+                      <span key={tag} className="px-4 py-1.5 border border-brand-border rounded-full text-[10px] uppercase tracking-widest font-bold text-brand-muted">
                         {tag}
                       </span>
                     ))}

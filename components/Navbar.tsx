@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from "next-auth/react";
-import { Menu, X, ChevronDown, Search, ShoppingCart, User, LogIn, UserPlus, Gift, MessageSquare, LogOut, Package, MapPin as MapPinIcon, UserCircle } from 'lucide-react';
+import { Menu, X, ChevronDown, Search, ShoppingCart, User, LogIn, UserPlus, Gift, MessageSquare, LogOut, Package, MapPin as MapPinIcon, UserCircle, ArrowRight } from 'lucide-react';
 import { MegaMenu } from './MegaMenu';
 import { AuthModal } from './auth/AuthModal';
 import { cn } from '@/lib/utils';
@@ -16,14 +16,15 @@ import { resolveProductImage } from '@/lib/imageResolver';
 
 const Navbar = () => {
     const { data: session, status } = useSession();
-    const [isOpen, setIsOpen] = useState(false); // Mobile menu toggle
-    const [isMegaMenuHovered, setIsMegaMenuHovered] = useState(false);
-    const [isMegaMenuPinned, setIsMegaMenuPinned] = useState(false);
+    const [isOpen, setIsOpen] = useState(false); // Mobile hamburger menu
+    
+    // INTERACTION STATE MACHINE
+    const [activeMenu, setActiveMenu] = useState<'none' | 'shop' | 'account' | 'search'>('none');
+    
     const [isMounted, setIsMounted] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const { isOpen: isAuthModalOpen, openAuthModal, closeAuthModal } = useAuthModalStore();
-    const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -34,62 +35,53 @@ const Navbar = () => {
 
     const isLoggedIn = status === 'authenticated';
   
-    // MegaMenu is open if hovered OR pinned (clicked)
-    const isMegaMenuOpen = isMegaMenuHovered || isMegaMenuPinned;
     const navRef = useRef<HTMLElement>(null);
     const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
-    const handleMouseEnter = () => {
+    // Unified menu control
+    const closeAllMenus = () => {
+      setActiveMenu('none');
       if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-      setIsMegaMenuHovered(true);
-    };
-  
-    const handleMouseLeave = () => {
-      hoverTimeoutRef.current = setTimeout(() => {
-        setIsMegaMenuHovered(false);
-      }, 300); // Increased delay for better mobile/tablet transition
     };
 
-    const toggleMegaMenu = (e: React.MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsMegaMenuPinned(!isMegaMenuPinned);
-      if (!isMegaMenuPinned) {
-        setIsMegaMenuHovered(true); // Ensure it shows immediately on click
+    const handleShopInteraction = (type: 'hover' | 'click') => {
+      if (type === 'hover') {
+        if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+        setActiveMenu('shop');
+      } else {
+        setActiveMenu(prev => prev === 'shop' ? 'none' : 'shop');
       }
     };
+
+    const handleMouseLeave = () => {
+      hoverTimeoutRef.current = setTimeout(() => {
+        setActiveMenu(prev => prev === 'shop' ? 'none' : prev);
+      }, 300);
+    };
   
-    // Close mega menu when clicking outside
+    // Close menus on outside click/tap
     useEffect(() => {
       setIsMounted(true);
-      const handleClickOutside = (event: MouseEvent) => {
+      const handleGlobalInteraction = (event: MouseEvent | TouchEvent) => {
         if (navRef.current && !navRef.current.contains(event.target as Node)) {
-          setIsMegaMenuPinned(false);
-          setIsMegaMenuHovered(false);
-          setIsUserDropdownOpen(false);
-        }
-        if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-          setIsSearchOpen(false);
+          closeAllMenus();
         }
       };
 
       let rafId: number;
       const handleScroll = () => {
         const scrollY = window.scrollY || document.documentElement.scrollTop;
-        if (scrollY > 20) {
-          setIsScrolled(true);
-        } else {
-          setIsScrolled(false);
-        }
-        
+        setIsScrolled(scrollY > 20);
         rafId = requestAnimationFrame(handleScroll);
       };
   
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("mousedown", handleGlobalInteraction);
+      document.addEventListener("touchstart", handleGlobalInteraction);
       rafId = requestAnimationFrame(handleScroll);
 
       return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
+        document.removeEventListener("mousedown", handleGlobalInteraction);
+        document.removeEventListener("touchstart", handleGlobalInteraction);
         cancelAnimationFrame(rafId);
       };
     }, []);
@@ -122,35 +114,35 @@ const Navbar = () => {
       e.preventDefault();
       if (searchQuery.trim()) {
         router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
-        setIsSearchOpen(false);
+        setActiveMenu('none');
       }
     };
 
     return (
       <>
       <nav ref={navRef} className={cn(
-        "fixed w-full z-[100] flex justify-between items-center transition-all duration-500",
+        "fixed w-full z-[100] flex justify-between items-center transition-all duration-500 pointer-events-auto",
         isScrolled 
-          ? "top-0 py-4 px-6 md:px-12 bg-white/70 backdrop-blur-xl shadow-sm border-b border-white/20" 
+          ? "top-0 py-4 px-6 md:px-12 bg-white/90 backdrop-blur-xl shadow-premium border-b border-brand-border" 
           : "top-0 py-6 px-6 md:px-12 bg-transparent"
       )}>
         
         {/* 1. LEFT: Floating Logo */}
-        <Link href="/" className="flex items-center space-x-3 group">
+        <Link href="/" className="flex items-center space-x-3 group relative z-[110]">
           <div className="w-10 h-10 flex items-center justify-center bg-brand-gold rounded-full text-white shadow-soft">
             <span className="font-serif font-bold text-xl">Z</span>
           </div>
           <span className="text-3xl font-serif font-bold tracking-widest text-brand-text uppercase drop-shadow-md hidden sm:block">Zoniraz</span>
         </Link>
   
-        {/* 2. RIGHT: Floating Pill Navbar - Expanded for Search */}
-        <div className="hidden md:flex items-center bg-white/95 backdrop-blur-md rounded-full shadow-premium border border-white/40 pl-4 pr-3 py-2.5 relative">
+        {/* 2. RIGHT: Floating Pill Navbar */}
+        <div className="hidden md:flex items-center bg-brand-white/98 backdrop-blur-md rounded-full shadow-premium border border-brand-border pl-4 pr-3 py-2.5 relative">
           
-          {/* SEARCH BAR INTEGRATED ON LEFT OF PILL */}
-          <div ref={searchRef} className="relative flex items-center mr-6 border-r border-brand-text/5 pr-6">
+          {/* SEARCH BAR */}
+          <div ref={searchRef} className="relative flex items-center mr-6 border-r border-brand-border pr-6">
             <div className={cn(
-              "flex items-center bg-brand-bg/50 rounded-full transition-all duration-500 overflow-hidden px-4 py-2",
-              isSearchOpen || searchQuery ? "w-[280px] ring-1 ring-brand-gold/20" : "w-[180px]"
+              "flex items-center bg-brand-bg/80 rounded-full transition-all duration-500 overflow-hidden px-4 py-2",
+              activeMenu === 'search' || searchQuery ? "w-[280px] ring-1 ring-brand-gold/30" : "w-[180px]"
             )}>
               <Search size={14} className="text-brand-gold flex-shrink-0" />
               <form onSubmit={handleSearchSubmit} className="flex-1 ml-2">
@@ -159,7 +151,7 @@ const Navbar = () => {
                   placeholder="Find masterpieces..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => setIsSearchOpen(true)}
+                  onFocus={() => setActiveMenu('search')}
                   className="w-full bg-transparent border-none outline-none focus:outline-none focus:ring-0 text-[11px] font-bold uppercase tracking-widest text-brand-text placeholder:text-brand-text/30"
                 />
               </form>
@@ -167,7 +159,7 @@ const Navbar = () => {
             </div>
 
             {/* LIVE SUGGESTIONS DROPDOWN */}
-            {isSearchOpen && searchResults.length > 0 && (
+            {activeMenu === 'search' && searchResults.length > 0 && (
               <div className="absolute top-full left-0 mt-4 w-[350px] bg-white rounded-[24px] shadow-premium border border-brand-text/5 p-4 animate-in fade-in slide-in-from-top-2 duration-300 z-[120]">
                 <p className="text-[9px] uppercase tracking-widest font-black text-brand-text/30 px-3 mb-4">Quick Results</p>
                 <div className="space-y-1">
@@ -175,7 +167,7 @@ const Navbar = () => {
                     <Link 
                       key={product.slug}
                       href={`/product/${product.slug}`}
-                      onClick={() => setIsSearchOpen(false)}
+                      onClick={() => setActiveMenu('none')}
                       className="flex items-center space-x-4 p-3 rounded-xl hover:bg-brand-bg transition-all group"
                     >
                       <div className="w-12 h-12 relative rounded-lg overflow-hidden bg-brand-bg flex-shrink-0">
@@ -200,33 +192,42 @@ const Navbar = () => {
 
           {/* Navigation Links inside Pill */}
           <div className="flex items-center space-x-8 mr-8">
-            <button 
-              className={cn(
-                "flex items-center space-x-1 cursor-pointer group py-2 focus:outline-none touch-safe-hit transition-all",
-                isMegaMenuOpen ? "text-brand-gold" : "text-brand-text"
-              )}
-              onMouseEnter={handleMouseEnter}
+            <div 
+              className="relative py-2"
+              onMouseEnter={() => handleShopInteraction('hover')}
               onMouseLeave={handleMouseLeave}
-              onClick={toggleMegaMenu}
-              aria-expanded={isMegaMenuOpen}
             >
-              <span className="text-[11px] uppercase tracking-widest font-bold group-hover:text-brand-gold transition-colors">Shop</span>
-              <ChevronDown size={14} className={cn("transition-transform duration-300", isMegaMenuOpen ? "rotate-180 text-brand-gold" : "text-brand-text")} />
-            </button>
+              <button 
+                className={cn(
+                  "flex items-center space-x-1 cursor-pointer group focus:outline-none touch-safe-hit transition-all",
+                  activeMenu === 'shop' ? "text-brand-gold" : "text-brand-text"
+                )}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleShopInteraction('click');
+                }}
+                aria-expanded={activeMenu === 'shop'}
+              >
+                <span className="text-[11px] uppercase tracking-widest font-bold group-hover:text-brand-gold transition-colors">Shop</span>
+                <ChevronDown size={14} className={cn("transition-transform duration-300", activeMenu === 'shop' ? "rotate-180 text-brand-gold" : "text-brand-text")} />
+              </button>
+            </div>
+            
             <Link href="/new-arrivals" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 hover:text-brand-gold transition-colors">New Arrivals</Link>
             <Link href="/blog" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 hover:text-brand-gold transition-colors">Blog</Link>
+            <Link href="/franchise" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 hover:text-brand-gold transition-colors">Franchise</Link>
             <Link href="/contact" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 hover:text-brand-gold transition-colors">Contact Us</Link>
           </div>
   
           {/* User Actions inside Pill */}
           <div className="flex items-center space-x-6 border-l border-brand-text/10 pl-6">
-            {/* 3. Account Dropdown & Trigger */}
             <div className="relative">
               <button 
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
-                  setIsUserDropdownOpen(!isUserDropdownOpen);
-                  setIsMegaMenuPinned(false); // Close other menus
+                  setActiveMenu(prev => prev === 'account' ? 'none' : 'account');
                 }}
                 className={cn(
                   "w-10 h-10 flex items-center justify-center rounded-full transition-all shadow-soft relative overflow-hidden touch-safe-hit",
@@ -238,8 +239,8 @@ const Navbar = () => {
               </button>
 
               {/* Account Dropdown */}
-              {isUserDropdownOpen && (
-                <div className="absolute top-full right-0 mt-4 w-72 bg-white rounded-[32px] shadow-premium border border-brand-text/5 p-4 animate-in fade-in slide-in-from-top-2 duration-500 z-50">
+              {activeMenu === 'account' && (
+                <div className="absolute top-full right-0 mt-4 w-72 bg-white rounded-[32px] shadow-premium border border-brand-text/5 p-4 animate-in fade-in slide-in-from-top-2 duration-500 z-50 pointer-events-auto">
                    <div className="space-y-1">
                       {isLoggedIn ? (
                         <>
@@ -248,80 +249,35 @@ const Navbar = () => {
                             <p className="text-sm font-serif text-brand-text italic truncate">{session.user?.name || 'Valued Customer'}</p>
                           </div>
                           
-                          <Link 
-                            href="/account"
-                            className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg text-brand-text transition-all group"
-                            onClick={() => setIsUserDropdownOpen(false)}
-                          >
-                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-text/40 group-hover:text-brand-gold shadow-soft transition-all">
-                              <UserCircle size={18} />
-                            </div>
+                          <Link href="/account" className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg text-brand-text transition-all group" onClick={() => setActiveMenu('none')}>
+                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-text/40 group-hover:text-brand-gold shadow-soft transition-all"><UserCircle size={18} /></div>
                             <p className="text-[11px] font-bold uppercase tracking-widest">My Profile</p>
                           </Link>
 
-                          <Link 
-                            href="/account?tab=orders"
-                            className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg text-brand-text transition-all group"
-                            onClick={() => setIsUserDropdownOpen(false)}
-                          >
-                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-text/40 group-hover:text-brand-gold shadow-soft transition-all">
-                              <Package size={18} />
-                            </div>
+                          <Link href="/account?tab=orders" className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg text-brand-text transition-all group" onClick={() => setActiveMenu('none')}>
+                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-text/40 group-hover:text-brand-gold shadow-soft transition-all"><Package size={18} /></div>
                             <p className="text-[11px] font-bold uppercase tracking-widest">My Orders</p>
                           </Link>
 
-                          <Link 
-                            href="/account?tab=addresses"
-                            className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg text-brand-text transition-all group"
-                            onClick={() => setIsUserDropdownOpen(false)}
-                          >
-                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-text/40 group-hover:text-brand-gold shadow-soft transition-all">
-                              <MapPinIcon size={18} />
-                            </div>
+                          <Link href="/account?tab=addresses" className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg text-brand-text transition-all group" onClick={() => setActiveMenu('none')}>
+                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-text/40 group-hover:text-brand-gold shadow-soft transition-all"><MapPinIcon size={18} /></div>
                             <p className="text-[11px] font-bold uppercase tracking-widest">Saved Addresses</p>
                           </Link>
 
-                          <button 
-                            onClick={() => {
-                              signOut();
-                              setIsUserDropdownOpen(false);
-                            }}
-                            className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-red-50 text-brand-text hover:text-red-600 transition-all group"
-                          >
-                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-text/40 group-hover:text-red-500 shadow-soft transition-all">
-                              <LogOut size={18} />
-                            </div>
+                          <button onClick={() => { signOut(); setActiveMenu('none'); }} className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-red-50 text-brand-text hover:text-red-600 transition-all group">
+                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-text/40 group-hover:text-red-500 shadow-soft transition-all"><LogOut size={18} /></div>
                             <p className="text-[11px] font-bold uppercase tracking-widest">Logout</p>
                           </button>
                         </>
                       ) : (
                         <>
-                          <button 
-                            onClick={() => {
-                              openAuthModal();
-                              setIsUserDropdownOpen(false);
-                            }}
-                            className="w-full flex items-center space-x-4 p-6 rounded-2xl bg-brand-bg hover:bg-brand-gold hover:text-white text-brand-text transition-all group"
-                          >
-                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-text/40 group-hover:text-brand-gold shadow-soft transition-all">
-                              <Gift size={20} />
-                            </div>
+                          <button onClick={() => { openAuthModal(); setActiveMenu('none'); }} className="w-full flex items-center space-x-4 p-6 rounded-2xl bg-brand-bg hover:bg-brand-gold hover:text-white text-brand-text transition-all group">
+                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-text/40 group-hover:text-brand-gold shadow-soft transition-all"><Gift size={20} /></div>
                             <div className="text-left">
                               <p className="text-[11px] font-bold uppercase tracking-widest">Log in / Sign up</p>
                               <p className="text-[8px] uppercase tracking-widest text-brand-text/40 group-hover:text-white/60">Unlock Privileges</p>
                             </div>
                           </button>
-
-                          <Link 
-                            href="/contact"
-                            className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg text-brand-text transition-all group mt-2"
-                            onClick={() => setIsUserDropdownOpen(false)}
-                          >
-                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-text/40 group-hover:text-brand-gold shadow-soft transition-all">
-                              <MessageSquare size={18} />
-                            </div>
-                            <p className="text-[11px] font-bold uppercase tracking-widest">Contact Us</p>
-                          </Link>
                         </>
                       )}
                    </div>
@@ -345,111 +301,75 @@ const Navbar = () => {
               </Link>
             </div>
           </div>
-  
         </div>
   
-        {/* 3. MEGA MENU INTEGRATION (Full Width) */}
-        {isMegaMenuOpen && (
+        {/* 3. MEGA MENU INTEGRATION */}
+        {activeMenu === 'shop' && (
           <div 
             className={cn(
-              "left-0 w-full pt-4 flex justify-center px-6 animate-in slide-in-from-top-2 duration-300 z-[110]",
+              "left-0 w-full pt-4 flex justify-center px-6 animate-in slide-in-from-top-2 duration-300 z-[110] pointer-events-auto",
               isScrolled ? "fixed top-16" : "absolute top-full"
             )}
-            onMouseEnter={handleMouseEnter}
+            onMouseEnter={() => handleShopInteraction('hover')}
             onMouseLeave={handleMouseLeave}
           >
-            <div className="w-full max-w-[1500px] shadow-premium rounded-[40px]">
+            <div className="w-full max-w-[1500px] shadow-premium rounded-[40px] pointer-events-auto">
               <MegaMenu 
-                isOpen={isMegaMenuOpen} 
-                onMouseEnter={() => setIsMegaMenuHovered(true)} 
-                onMouseLeave={() => setIsMegaMenuHovered(false)}
-                onClose={() => {
-                  setIsMegaMenuPinned(false);
-                  setIsMegaMenuHovered(false);
-                }}
+                isOpen={activeMenu === 'shop'} 
+                onMouseEnter={() => handleShopInteraction('hover')} 
+                onMouseLeave={handleMouseLeave}
+                onClose={() => setActiveMenu('none')}
               />
             </div>
           </div>
         )}
 
       {/* Mobile Menu Toggle */}
-      <button className="md:hidden w-12 h-12 flex items-center justify-center bg-white/90 backdrop-blur-md rounded-full shadow-premium text-brand-text border border-white/40" onClick={() => setIsOpen(!isOpen)}>
+      <button className="md:hidden w-12 h-12 flex items-center justify-center bg-white/90 backdrop-blur-md rounded-full shadow-premium text-brand-text border border-white/40 active:scale-90 transition-all" onClick={() => setIsOpen(!isOpen)}>
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
       {/* MOBILE ACCORDION MENU */}
       {isOpen && (
-        <div className="md:hidden absolute top-24 left-6 right-6 bg-white/95 backdrop-blur-md rounded-[30px] border border-white/40 shadow-premium z-40 max-h-[80vh] overflow-y-auto">
+        <div className="md:hidden absolute top-24 left-6 right-6 bg-white/95 backdrop-blur-md rounded-[30px] border border-white/40 shadow-premium z-[150] max-h-[80vh] overflow-y-auto pointer-events-auto">
           <div className="flex flex-col py-6 px-8 space-y-4">
             <div className="flex flex-col space-y-2 pb-4 border-b border-brand-text/5">
               <div 
-                className="flex items-center justify-between text-sm uppercase tracking-widest font-bold text-brand-text py-2"
-                onClick={() => setIsMegaMenuPinned(!isMegaMenuPinned)}
+                className="flex items-center justify-between text-sm uppercase tracking-widest font-bold text-brand-text py-4 touch-safe-hit"
+                onClick={() => setActiveMenu(prev => prev === 'shop' ? 'none' : 'shop')}
               >
                 <span>Shop Categories</span>
-                <ChevronDown size={16} className={cn("transition-transform", isMegaMenuOpen ? "rotate-180" : "")} />
+                <ChevronDown size={16} className={cn("transition-transform", activeMenu === 'shop' ? "rotate-180" : "")} />
               </div>
               
-              {/* Mobile Mega Menu Accordion Content */}
-              {isMegaMenuOpen && (
-                <div className="pl-2 flex flex-col space-y-2 py-4">
+              {activeMenu === 'shop' && (
+                <div className="pl-2 flex flex-col space-y-2 py-4 animate-in fade-in slide-in-from-top-1">
                   {NAVIGATION_DATA.map((cat) => (
                     <div key={cat.id} className="flex flex-col">
-                      <div className="flex items-center justify-between p-3 rounded-xl bg-brand-bg/50 border border-brand-text/5">
-                        <Link 
-                          href={cat.href}
-                          className="text-[11px] font-bold uppercase tracking-widest text-brand-text/80"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          {cat.name}
-                        </Link>
-                        {/* No nested accordion for mobile to keep it simple, or add a toggle if needed */}
-                      </div>
-                      
-                      {/* Sub-links for mobile */}
-                      <div className="grid grid-cols-2 gap-2 mt-2 pl-2">
-                        {cat.subCategories.slice(0, 4).map((sub, sIdx) => (
-                          <Link 
-                            key={sIdx}
-                            href={sub.href}
-                            className="p-2 text-[9px] uppercase font-bold tracking-tighter text-brand-text/50 bg-white/50 rounded-lg border border-brand-text/5"
-                            onClick={() => setIsOpen(false)}
-                          >
-                            {sub.name}
-                          </Link>
-                        ))}
-                      </div>
+                      <Link 
+                        href={cat.href}
+                        className="flex items-center justify-between p-4 rounded-xl bg-brand-bg/50 border border-brand-text/5 text-[11px] font-bold uppercase tracking-widest text-brand-text"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {cat.name}
+                        <ArrowRight size={14} className="text-brand-gold" />
+                      </Link>
                     </div>
                   ))}
                 </div>
               )}
             </div>
 
-            <Link href="/new-arrivals" className="text-sm uppercase tracking-widest font-bold text-brand-text py-2">New Arrivals</Link>
-            <Link href="/blog" className="text-sm uppercase tracking-widest font-bold text-brand-text py-2">Blog</Link>
-            <Link href="/contact" onClick={() => setIsOpen(false)} className="text-sm uppercase tracking-widest font-bold text-brand-text py-2 border-b border-brand-text/5 pb-6">Contact Us</Link>
+            <Link href="/new-arrivals" className="text-sm uppercase tracking-widest font-bold text-brand-text py-4" onClick={() => setIsOpen(false)}>New Arrivals</Link>
+            <Link href="/blog" className="text-sm uppercase tracking-widest font-bold text-brand-text py-4" onClick={() => setIsOpen(false)}>Blog</Link>
+            <Link href="/franchise" className="text-sm uppercase tracking-widest font-bold text-brand-text py-4" onClick={() => setIsOpen(false)}>Franchise</Link>
             
             <div className="pt-6 border-t border-brand-text/5 space-y-4">
-              <button 
-                onClick={() => {
-                  setIsSearchOpen(true);
-                  setIsOpen(false);
-                }}
-                className="w-full flex items-center justify-center space-x-3 p-5 rounded-2xl bg-brand-bg text-brand-text font-bold uppercase tracking-widest text-[11px] border border-brand-text/5 hover:bg-brand-gold hover:text-white transition-all duration-300"
-              >
-                <Search size={18} />
-                <span>Search Masterpieces</span>
+               <button onClick={() => { setActiveMenu('search'); setIsOpen(false); }} className="w-full flex items-center justify-center space-x-3 p-5 rounded-2xl bg-brand-bg text-brand-text font-bold uppercase tracking-widest text-[11px] active:bg-brand-gold active:text-white transition-all">
+                <Search size={18} /><span>Search</span>
               </button>
-
-              <button 
-                onClick={() => {
-                  openAuthModal();
-                  setIsOpen(false);
-                }}
-                className="w-full flex items-center justify-center space-x-3 p-5 rounded-2xl bg-brand-text text-white font-bold uppercase tracking-widest text-[11px] border border-brand-text hover:bg-transparent hover:text-brand-text transition-all duration-300"
-              >
-                <User size={18} />
-                <span>Login / Sign Up</span>
+              <button onClick={() => { openAuthModal(); setIsOpen(false); }} className="w-full flex items-center justify-center space-x-3 p-5 rounded-2xl bg-brand-text text-white font-bold uppercase tracking-widest text-[11px] active:bg-brand-gold transition-all">
+                <User size={18} /><span>Login</span>
               </button>
             </div>
           </div>

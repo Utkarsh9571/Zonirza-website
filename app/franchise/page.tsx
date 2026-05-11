@@ -2,158 +2,258 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Navbar from '@/components/Navbar';
+import { Section } from '@/components/new-ui/Section';
+import { Button } from '@/components/new-ui/Button';
+import { cn } from '@/lib/utils';
+import { Check, Send, Award, Globe, Users, Briefcase } from 'lucide-react';
 
 export default function FranchisePage() {
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     city: '',
+    businessBackground: '',
+    investmentRange: '',
+    experience: '',
     message: ''
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus('loading');
-
+    setIsSubmitting(true);
+    
     try {
       const res = await fetch('/api/franchise', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData)
       });
-
+      
       if (res.ok) {
-        setStatus('success');
-        setFormData({ name: '', email: '', phone: '', city: '', message: '' });
-      } else {
-        setStatus('error');
+        setIsSuccess(true);
+        setFormData({
+          name: '', email: '', phone: '', city: '',
+          businessBackground: '', investmentRange: '',
+          experience: '', message: ''
+        });
       }
     } catch (error) {
-      setStatus('error');
+      console.error('Submission error:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="bg-brand-bg min-h-screen">
-      {/* Header Banner */}
-      <section className="relative h-[50vh] min-h-[400px] w-full flex items-center justify-center overflow-hidden">
-        <Image
-          src="https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&q=80&w=2000"
+    <div className="min-h-screen bg-brand-bg">
+      <Navbar />
+
+      {/* Hero Section - Editorial Style */}
+      <section className="relative h-[80vh] min-h-[600px] flex items-center justify-center overflow-hidden">
+        <Image 
+          src="/images/site/blog-hero.png" // Reusing high-end asset
           alt="Franchise Opportunity"
           fill
-          className="object-cover opacity-20 grayscale"
+          className="object-cover"
+          priority
         />
-        <div className="relative z-10 text-center px-6">
-          <p className="text-brand-gold text-[11px] uppercase tracking-[0.5em] font-bold mb-6 italic">Partner with Us</p>
-          <h1 className="text-5xl md:text-8xl font-serif text-brand-text font-light tracking-tight italic leading-tight">
-            Franchise Inquiry
+        <div className="absolute inset-0 bg-brand-text/40 backdrop-blur-[2px]" />
+        <div className="relative z-10 text-center px-6 max-w-5xl space-y-8">
+          <p className="text-white/80 text-xs md:text-sm uppercase tracking-[0.5em] font-black animate-in fade-in slide-in-from-bottom-4 duration-700">
+            Business Expansion Opportunity
+          </p>
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif text-[#EAE1D5] leading-[1.1] animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-150">
+            Join the <span className="italic">Zoniraz</span> Legacy
           </h1>
-          <div className="w-24 h-[1px] bg-brand-gold mx-auto mt-12"></div>
+          <p className="text-[#EAE1D5]/70 text-lg md:text-xl font-light max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+            Partner with India's leading luxury jewelry house and bring timeless craftsmanship to your city.
+          </p>
         </div>
       </section>
 
-      {/* Form Section */}
-      <section className="py-32 px-6">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-serif font-light text-brand-text italic mb-6">Become a Partner</h2>
-            <p className="text-brand-text/50 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-              Join the ZONIRAZ family and bring exquisite craftsmanship to your city. Please fill out the form below and our team will get in touch.
-            </p>
+      {/* Brand Pillars */}
+      <Section className="!py-24">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          {[
+            { icon: Award, title: "Heritage Excellence", desc: "50 years of manufacturing excellence and trust in the international jewels market." },
+            { icon: Globe, title: "Global Reach", desc: "A leading exporter and wholesaler with a footprint spanning major jewelry hubs." },
+            { icon: Users, title: "Partner Support", desc: "Comprehensive operational support, marketing leverage, and inventory management." }
+          ].map((item, i) => (
+            <div key={i} className="bg-white p-12 rounded-[40px] border border-brand-border shadow-soft space-y-6 group hover:shadow-premium transition-all duration-500">
+              <div className="w-16 h-16 rounded-2xl bg-brand-bg flex items-center justify-center text-brand-gold group-hover:bg-brand-text group-hover:text-white transition-colors duration-500">
+                <item.icon size={28} />
+              </div>
+              <h3 className="text-2xl font-serif text-brand-text">{item.title}</h3>
+              <p className="text-brand-muted text-sm leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* Main Inquiry Section */}
+      <Section className="!pb-32">
+        <div className="bg-white rounded-[60px] overflow-hidden border border-brand-border shadow-premium flex flex-col lg:flex-row">
+          
+          {/* Left Column - Info */}
+          <div className="lg:w-2/5 bg-[#3A1C16] p-12 md:p-20 text-[#EAE1D5] space-y-12">
+            <div className="space-y-6">
+              <h2 className="text-4xl font-serif leading-tight text-gray-200">Start Your <br/><span className="italic">Journey With Us</span></h2>
+              <p className="text-[#EAE1D5]/60 text-sm leading-relaxed">
+                We are looking for visionary partners who understand the language of luxury and are committed to maintaining the high standards of the Zoniraz brand.
+              </p>
+            </div>
+
+            <div className="space-y-8">
+              <div className="flex items-start space-x-6">
+                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"><Briefcase size={18} /></div>
+                <div>
+                  <h4 className="text-sm font-bold uppercase tracking-widest mb-2">Expansion Model</h4>
+                  <p className="text-xs text-[#EAE1D5]/50">FOCO & FOFO Models available for Tier 1 & Tier 2 cities.</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-6">
+                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"><Award size={18} /></div>
+                <div>
+                  <h4 className="text-sm font-bold uppercase tracking-widest mb-2">Brand Value</h4>
+                  <p className="text-xs text-[#EAE1D5]/50">Access to exclusive collections and established customer loyalty.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="pt-8">
+               <div className="p-8 rounded-3xl bg-white/5 border border-white/10 italic text-sm text-[#EAE1D5]/70 leading-relaxed">
+                 "Our franchise partners aren't just business associates; they are the guardians of our 50-year legacy."
+               </div>
+            </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-10 bg-white p-8 md:p-16 rounded-card shadow-premium border border-brand-text/5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              <div className="space-y-3">
-                <label className="text-[10px] uppercase tracking-widest text-brand-gold font-bold ml-1">Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Full Name"
-                  className="w-full bg-brand-accent/20 border border-brand-text/5 rounded-2xl px-6 py-4 text-brand-text focus:outline-none focus:border-brand-gold transition-colors placeholder:text-brand-text/20"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                />
+          {/* Right Column - Form */}
+          <div className="lg:w-3/5 p-12 md:p-20">
+            {isSuccess ? (
+              <div className="h-full flex flex-col items-center justify-center text-center space-y-6 animate-in fade-in zoom-in-95 duration-700">
+                <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center text-green-600 mb-4">
+                  <Check size={40} />
+                </div>
+                <h3 className="text-3xl font-serif text-brand-text">Inquiry Received</h3>
+                <p className="text-brand-muted max-w-md mx-auto">
+                  Thank you for your interest. A luxury brand expansion expert from our team will contact you shortly.
+                </p>
+                <Button variant="outline" onClick={() => setIsSuccess(false)} className="mt-8">
+                  Submit Another Inquiry
+                </Button>
               </div>
-              <div className="space-y-3">
-                <label className="text-[10px] uppercase tracking-widest text-brand-gold font-bold ml-1">Email</label>
-                <input
-                  type="email"
-                  required
-                  placeholder="Email Address"
-                  className="w-full bg-brand-accent/20 border border-brand-text/5 rounded-2xl px-6 py-4 text-brand-text focus:outline-none focus:border-brand-gold transition-colors placeholder:text-brand-text/20"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-              </div>
-              <div className="space-y-3">
-                <label className="text-[10px] uppercase tracking-widest text-brand-gold font-bold ml-1">Phone</label>
-                <input
-                  type="tel"
-                  required
-                  placeholder="Phone Number"
-                  className="w-full bg-brand-accent/20 border border-brand-text/5 rounded-2xl px-6 py-4 text-brand-text focus:outline-none focus:border-brand-gold transition-colors placeholder:text-brand-text/20"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                />
-              </div>
-              <div className="space-y-3">
-                <label className="text-[10px] uppercase tracking-widest text-brand-gold font-bold ml-1">City</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="City of Interest"
-                  className="w-full bg-brand-accent/20 border border-brand-text/5 rounded-2xl px-6 py-4 text-brand-text focus:outline-none focus:border-brand-gold transition-colors placeholder:text-brand-text/20"
-                  value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                />
-              </div>
-            </div>
-            <div className="space-y-3">
-              <label className="text-[10px] uppercase tracking-widest text-brand-gold font-bold ml-1">Message</label>
-              <textarea
-                required
-                rows={5}
-                placeholder="Your message or inquiry details..."
-                className="w-full bg-brand-accent/20 border border-brand-text/5 rounded-3xl px-6 py-4 text-brand-text focus:outline-none focus:border-brand-gold transition-colors resize-none placeholder:text-brand-text/20"
-                value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              ></textarea>
-            </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest font-black text-brand-text/40">Full Name</label>
+                    <input 
+                      required
+                      type="text" 
+                      placeholder="Enter your name"
+                      className="w-full bg-brand-bg/50 border-b border-brand-border py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm"
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest font-black text-brand-text/40">Email Address</label>
+                    <input 
+                      required
+                      type="email" 
+                      placeholder="email@example.com"
+                      className="w-full bg-brand-bg/50 border-b border-brand-border py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm"
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest font-black text-brand-text/40">Phone Number</label>
+                    <input 
+                      required
+                      type="tel" 
+                      placeholder="+91 XXXXX XXXXX"
+                      className="w-full bg-brand-bg/50 border-b border-brand-border py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest font-black text-brand-text/40">City / Location</label>
+                    <input 
+                      required
+                      type="text" 
+                      placeholder="Preferred location"
+                      className="w-full bg-brand-bg/50 border-b border-brand-border py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm"
+                      value={formData.city}
+                      onChange={(e) => setFormData({...formData, city: e.target.value})}
+                    />
+                  </div>
+                </div>
 
-            <div className="pt-6">
-              <button
-                type="submit"
-                disabled={status === 'loading'}
-                className="btn-luxury w-full !py-5 flex items-center justify-center disabled:opacity-50 shadow-premium"
-              >
-                {status === 'loading' ? (
-                  <span className="flex items-center space-x-3">
-                    <span className="w-4 h-4 border-2 border-brand-white/30 border-t-brand-white rounded-full animate-spin"></span>
-                    <span>Sending Inquiry...</span>
-                  </span>
-                ) : (
-                  'Submit Inquiry'
-                )}
-              </button>
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest font-black text-brand-text/40">Investment Budget</label>
+                    <select 
+                      className="w-full bg-brand-bg/50 border-b border-brand-border py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm appearance-none"
+                      value={formData.investmentRange}
+                      onChange={(e) => setFormData({...formData, investmentRange: e.target.value})}
+                    >
+                      <option value="">Select Range</option>
+                      <option value="50L - 1Cr">50L - 1Cr</option>
+                      <option value="1Cr - 3Cr">1Cr - 3Cr</option>
+                      <option value="3Cr - 5Cr">3Cr - 5Cr</option>
+                      <option value="5Cr+">5Cr+</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest font-black text-brand-text/40">Business Experience</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Retail, Real Estate"
+                      className="w-full bg-brand-bg/50 border-b border-brand-border py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm"
+                      value={formData.experience}
+                      onChange={(e) => setFormData({...formData, experience: e.target.value})}
+                    />
+                  </div>
+                </div>
 
-            {status === 'success' && (
-              <div className="p-6 bg-green-50 border border-green-100 rounded-2xl text-green-700 text-center text-sm font-medium animate-in fade-in slide-in-from-bottom-4 duration-500">
-                Thank you! Your inquiry has been sent successfully. Our team will contact you soon.
-              </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest font-black text-brand-text/40">Additional Details</label>
+                  <textarea 
+                    rows={4}
+                    placeholder="Tell us about your vision for a Zoniraz franchise..."
+                    className="w-full bg-brand-bg/50 border-b border-brand-border py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm resize-none"
+                    value={formData.message}
+                    onChange={(e) => setFormData({...formData, message: e.target.value})}
+                  />
+                </div>
+
+                <Button 
+                  type="submit" 
+                  className="w-full !py-6 text-xs uppercase tracking-[0.3em] font-black group"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Processing..." : (
+                    <>
+                      <span>Submit Inquiry</span>
+                      <Send size={14} className="ml-3 group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
+                </Button>
+                <p className="text-[10px] text-brand-text/30 text-center uppercase tracking-widest leading-relaxed">
+                  By submitting this form, you agree to our <br/> <strong>Franchise Partnership Terms & Privacy Policy</strong>
+                </p>
+              </form>
             )}
-            
-            {status === 'error' && (
-              <div className="p-6 bg-red-50 border border-red-100 rounded-2xl text-red-700 text-center text-sm font-medium animate-in fade-in slide-in-from-bottom-4 duration-500">
-                Something went wrong. Please try again or contact us directly.
-              </div>
-            )}
-          </form>
+          </div>
         </div>
-      </section>
+      </Section>
     </div>
   );
 }

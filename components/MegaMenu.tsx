@@ -47,17 +47,22 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
             return (
               <button
                 key={tab.id}
-                onMouseEnter={() => setActiveTabId(tab.id)}
+                onMouseEnter={() => {
+                   if (window.matchMedia('(hover: hover)').matches) {
+                     setActiveTabId(tab.id);
+                   }
+                }}
                 onClick={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();
                   setActiveTabId(tab.id);
                 }}
                 className={cn(
-                  "px-5 py-6 relative transition-all duration-300 flex items-center space-x-2 group whitespace-nowrap touch-safe-hit",
-                  activeTabId === tab.id ? "text-brand-text border-b-2 border-brand-text" : "text-brand-text/60 active:text-brand-text"
+                  "px-5 py-6 relative transition-all duration-300 flex items-center space-x-2 group whitespace-nowrap touch-safe-hit min-h-[64px]",
+                  activeTabId === tab.id ? "text-brand-text border-b-2 border-brand-text bg-brand-bg/30" : "text-brand-text/60"
                 )}
               >
-                {Icon && <Icon size={16} strokeWidth={1.5} className="text-brand-text/40 group-hover:text-brand-text transition-colors" />}
+                {Icon && <Icon size={16} strokeWidth={1.5} className={cn("transition-colors", activeTabId === tab.id ? "text-brand-gold" : "text-brand-text/40")} />}
                 <span className="text-[11px] uppercase tracking-[0.1em] font-bold">
                   {tab.name}
                 </span>
@@ -69,27 +74,32 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
 
       <div className="flex flex-1 overflow-hidden h-full">
         {/* 2. LEFT SIDEBAR FILTERS */}
-        <aside className="w-60 border-r border-brand-text/5 p-6 overflow-y-auto no-scrollbar hidden md:block">
-          <div className="space-y-1">
+        <aside className="w-64 border-r border-brand-text/5 p-6 overflow-y-auto no-scrollbar hidden lg:block bg-brand-bg/10">
+          <div className="space-y-2">
             {activeTab.filters.map((filterGroup, idx) => (
               <button
                 key={idx}
-                onMouseEnter={() => setActiveFilter(filterGroup.title)}
+                onMouseEnter={() => {
+                  if (window.matchMedia('(hover: hover)').matches) {
+                    setActiveFilter(filterGroup.title);
+                  }
+                }}
                 onClick={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();
                   setActiveFilter(filterGroup.title);
                 }}
                 className={cn(
-                  "w-full text-left px-5 py-3 rounded-xl transition-all duration-300 relative touch-safe-hit",
+                  "w-full text-left px-5 py-4 rounded-2xl transition-all duration-300 relative touch-safe-hit group",
                   activeFilter === filterGroup.title 
-                    ? "bg-[#F9F3F1] text-brand-text font-bold" 
-                    : "text-brand-text/60 active:bg-brand-bg/50"
+                    ? "bg-white text-brand-text font-bold shadow-soft border border-brand-text/5" 
+                    : "text-brand-text/50 hover:text-brand-text hover:bg-white/50"
                 )}
               >
                 {activeFilter === filterGroup.title && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#8B1D2F] rounded-r-full" />
+                  <div className="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-brand-gold rounded-full animate-in fade-in duration-500" />
                 )}
-                <span className="text-[12px] uppercase tracking-wider">{filterGroup.title}</span>
+                <span className="text-[12px] uppercase tracking-wider pl-2">{filterGroup.title}</span>
               </button>
             ))}
           </div>

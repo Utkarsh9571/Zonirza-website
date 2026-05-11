@@ -17,8 +17,54 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Zoniraz Jewellery | Timeless Elegance",
-  description: "Exquisite jewelry collections crafted for timeless beauty.",
+  title: {
+    default: "Zoniraz Jewellery | Exquisite Luxury & Timeless Elegance",
+    template: "%s | Zoniraz Jewellery"
+  },
+  description: "Discover Zoniraz, where 50 years of heritage meets modern luxury. Explore our curated collections of diamond rings, gold necklaces, and bespoke bridal jewelry. Crafted for timeless elegance.",
+  keywords: ["luxury jewelry", "diamond rings", "gold necklaces", "bridal jewelry", "Zoniraz", "bespoke jewelry", "indian jewelry brands", "timeless elegance"],
+  authors: [{ name: "Zoniraz Jewel House" }],
+  creator: "Zoniraz Team",
+  publisher: "Zoniraz Jewel House Pvt Ltd",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://zoniraz.com",
+    siteName: "Zoniraz Jewellery",
+    title: "Zoniraz Jewellery | Timeless Elegance & Exquisite Craftsmanship",
+    description: "Exquisite jewelry collections crafted for timeless beauty. Explore our heritage and find your perfect masterpiece.",
+    images: [
+      {
+        url: "/images/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Zoniraz Luxury Jewellery Collection",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Zoniraz Jewellery | Timeless Elegance",
+    description: "Exquisite jewelry collections crafted for timeless beauty.",
+    images: ["/images/og-image.jpg"],
+    creator: "@zonirazjewel",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 import { Providers } from "@/components/Providers";
@@ -65,6 +111,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <ul className="space-y-3 text-sm font-light text-[#EAE1D5]/70">
                   <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
                   <li><Link href="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
+                  <li><Link href="/franchise" className="hover:text-white transition-colors font-bold text-brand-gold">Franchise Inquiry</Link></li>
                   <li><Link href="/about" className="hover:text-white transition-colors">About Zoniraz</Link></li>
                 </ul>
               </div>

@@ -81,21 +81,28 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-12 overflow-hidden">
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-12 overflow-hidden pointer-events-none">
+      {/* Backdrop - captures clicks to close ONLY if intended, otherwise passive */}
       <div 
-        className="absolute inset-0 bg-brand-text/40 backdrop-blur-md animate-in fade-in duration-500" 
+        className="absolute inset-0 bg-brand-text/40 backdrop-blur-md animate-in fade-in duration-500 pointer-events-auto" 
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
       />
 
       {/* Modal Container */}
-      <div className="relative w-full max-w-5xl h-full max-h-[700px] bg-[#fdfaf5] rounded-[40px] shadow-premium flex flex-col md:flex-row overflow-hidden animate-in zoom-in slide-in-from-bottom-8 duration-700">
+      <div className="relative w-full max-w-5xl h-full max-h-[700px] bg-[#fdfaf5] rounded-[40px] shadow-premium flex flex-col md:flex-row overflow-hidden animate-in zoom-in slide-in-from-bottom-8 duration-700 pointer-events-auto z-10">
         
-        {/* Close Button */}
+        {/* Close Button - Guaranteed top layer */}
         <button 
-          onClick={onClose}
-          className="absolute top-8 right-8 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-soft text-brand-text/40 hover:text-brand-gold hover:rotate-90 transition-all duration-500"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onClose();
+          }}
+          className="absolute top-6 right-6 md:top-8 md:right-8 z-[60] w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-soft text-brand-text/40 hover:text-brand-gold hover:rotate-90 transition-all duration-500 active:scale-90 touch-safe-hit"
         >
-          <X size={20} />
+          <X size={24} />
         </button>
 
         {/* LEFT PANEL: Branding & Visuals */}

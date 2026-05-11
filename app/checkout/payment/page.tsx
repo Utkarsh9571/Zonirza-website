@@ -19,15 +19,95 @@ export default function PaymentPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState('card');
   const { items, getTotal, selectedAddressId, savedAddresses } = useCartStore();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  if (!isMounted) return null;
-
   const total = getTotal();
   const selectedAddress = savedAddresses.find(a => a.id === selectedAddressId);
+
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handlePayment = async () => {
+    setIsLoading(true);
+    try {
+      const isLoaded = await loadRazorpay();
+      if (!isLoaded) throw new Error('Razorpay SDK failed to load');
+
+      // 1. Create the Pending Order in our DB
+      const orderRes = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items,
+          totalAmount: total,
+          shippingAddress: selectedAddress
+        })
+      });
+
+      const orderData = await orderRes.json();
+      if (!orderData.success) throw new Error(orderData.error || 'Failed to create internal order');
+
+      // 2. Initiate Razorpay Order on Backend
+      const razorpayRes = await fetch('/api/razorpay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          totalAmount: total,
+          orderId: orderData.orderId
+        })
+      });
+
+      const razorpayData = await razorpayRes.json();
+      if (!razorpayData.success) throw new Error(razorpayData.error || 'Failed to initiate Razorpay');
+
+      // 3. Open Razorpay Checkout
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: razorpayData.amount,
+        currency: razorpayData.currency,
+        name: "Zoniraz Jewellery",
+        description: "Exquisite Luxury & Timeless Elegance",
+        image: "/favicon.ico",
+        order_id: razorpayData.id,
+        handler: function (response: any) {
+          // Success Callback
+          router.push(`/success?order_id=${orderData.orderId}&payment_id=${response.razorpay_payment_id}`);
+        },
+        prefill: {
+          name: selectedAddress?.fullName,
+          contact: selectedAddress?.phone,
+        },
+        notes: {
+          internal_order_id: orderData.orderId
+        },
+        theme: {
+          color: "#3A1C16",
+        },
+      };
+
+      const paymentObject = new (window as any).Razorpay(options);
+      paymentObject.open();
+
+    } catch (error: any) {
+      console.error('Payment Error:', error);
+      alert('Payment initialization failed: ' + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!isMounted) return null;
 
   if (items.length === 0) {
     router.push('/cart');
@@ -142,10 +222,11 @@ export default function PaymentPage() {
 
                 <Button 
                   size="lg" 
+                  disabled={isLoading}
                   className="w-full !py-7 shadow-premium text-sm tracking-[0.2em]"
-                  onClick={() => alert('Stripe Integration is the next phase!')}
+                  onClick={handlePayment}
                 >
-                  Pay Now
+                  {isLoading ? 'Processing...' : 'Pay Now'}
                 </Button>
               </div>
             </div>

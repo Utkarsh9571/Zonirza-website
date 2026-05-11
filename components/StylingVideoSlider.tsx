@@ -266,15 +266,15 @@ export default function StylingVideoSlider() {
 
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 sm:px-24 z-[200] pointer-events-none">
         <button 
-          onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); prev(); }}
-          className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white/40 backdrop-blur-md text-brand-text flex items-center justify-center hover:bg-brand-gold hover:text-white transition-all shadow-premium border border-white/60 active:scale-95 pointer-events-auto cursor-pointer"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); prev(); }}
+          className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/40 backdrop-blur-md text-brand-text flex items-center justify-center hover:bg-brand-gold hover:text-white transition-all shadow-premium border border-white/60 active:scale-90 pointer-events-auto cursor-pointer touch-safe-hit"
           aria-label="Previous video"
         >
           <ChevronLeft size={24} />
         </button>
         <button 
-          onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); next(); }}
-          className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white/40 backdrop-blur-md text-brand-text flex items-center justify-center hover:bg-brand-gold hover:text-white transition-all shadow-premium border border-white/60 active:scale-95 pointer-events-auto cursor-pointer"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); next(); }}
+          className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/40 backdrop-blur-md text-brand-text flex items-center justify-center hover:bg-brand-gold hover:text-white transition-all shadow-premium border border-white/60 active:scale-90 pointer-events-auto cursor-pointer touch-safe-hit"
           aria-label="Next video"
         >
           <ChevronRight size={24} />

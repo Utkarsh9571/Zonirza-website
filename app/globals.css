@@ -1,12 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  /* Exact Colors from Reference Image */
+  /* Exact Colors from Reference Image - Refined for Contrast */
   --brand-bg: #f9f5f0;          /* Light cream/beige */
-  --brand-text: #332d29;        /* Warm deep brown */
+  --brand-text: #2a2421;        /* Deepened for better readability */
   --brand-gold: #bca07e;        /* Soft muted gold */
   --brand-accent: #f2ede4;      /* Slightly darker beige for sections */
   --brand-white: #ffffff;
+  --brand-border: #e8e1d9;      /* Dedicated border color for card definition */
+  --brand-muted: #6b5f58;       /* Muted text that is still readable */
   
   --background: var(--brand-bg);
   --foreground: var(--brand-text);
@@ -18,6 +20,8 @@
   --color-brand-gold: var(--brand-gold);
   --color-brand-accent: var(--brand-accent);
   --color-brand-white: var(--brand-white);
+  --color-brand-border: var(--brand-border);
+  --color-brand-muted: var(--brand-muted);
   
   --font-serif: var(--font-playfair);
   --font-sans: var(--font-geist-sans);
@@ -25,21 +29,34 @@
   --radius-card: 2.5rem;
   --radius-pill: 100px;
   
-  --shadow-soft: 0 4px 20px rgba(51, 45, 41, 0.05);
-  --shadow-premium: 0 20px 50px rgba(51, 45, 41, 0.08);
+  --shadow-soft: 0 4px 20px rgba(51, 45, 41, 0.08);
+  --shadow-premium: 0 15px 45px rgba(42, 36, 33, 0.12);
 }
 
 /* Base Styles */
 @layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  
   body {
     background-color: var(--brand-bg);
     color: var(--brand-text);
     -webkit-tap-highlight-color: transparent;
     @apply font-sans antialiased;
+    
+    /* Prevent unwanted pull-to-refresh on certain interactive pages if needed */
+    overscroll-behavior-y: none;
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif tracking-tight text-brand-text;
+  }
+
+  /* Global Touch Feedback */
+  a, button, [role="button"] {
+    @apply transition-transform duration-200 active:scale-[0.98] cursor-pointer touch-manipulation;
   }
 }
 
@@ -53,24 +70,35 @@
     @apply bg-white/10 backdrop-blur-xl border border-white/20 shadow-premium;
   }
   
+  /* Responsive Scroll Containers */
+  .touch-scroll {
+    @apply overflow-x-auto overflow-y-hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .touch-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  
   .btn-primary {
     @apply inline-flex items-center justify-center px-8 py-4 rounded-full 
            bg-brand-text text-white font-medium text-sm tracking-wider
-           transition-all duration-300 active:scale-95;
+           transition-all duration-300;
   }
 
   .btn-outline {
     @apply inline-flex items-center justify-center px-8 py-4 rounded-full 
            border border-brand-text/20 text-brand-text font-medium text-sm tracking-wider
-           transition-all duration-300 active:scale-95;
+           transition-all duration-300;
   }
 
   @media (hover: hover) {
     .btn-primary:hover {
-      @apply bg-brand-gold;
+      @apply bg-brand-gold text-white shadow-lg -translate-y-0.5;
     }
     .btn-outline:hover {
-      @apply border-brand-gold text-brand-gold;
+      @apply border-brand-text bg-brand-text text-white shadow-md -translate-y-0.5;
     }
   }
 
@@ -90,10 +118,23 @@
 
   /* Interaction Utilities */
   .touch-safe-hit {
-    @apply min-w-[44px] min-h-[44px] flex items-center justify-center;
+    @apply min-w-[44px] min-h-[44px] flex items-center justify-center relative z-10;
   }
 
   .interaction-overlay {
     @apply absolute inset-0 pointer-events-none;
+  }
+  
+  /* Device Specific Interaction Layers */
+  @media (pointer: coarse) {
+    /* Disable hover-only visual artifacts that stick on touch */
+    .hover-only {
+      display: none !important;
+    }
+    
+    /* Ensure interactive elements have sufficient spacing */
+    .touch-grid {
+      @apply gap-6;
+    }
   }
 }
