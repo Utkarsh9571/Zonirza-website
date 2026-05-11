@@ -93,11 +93,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-12 border-b border-[#EAE1D5]/10 pb-12">
               
-              {/* 1. Brand (Left Column) */}
               <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-6">
-                <div className="font-serif text-4xl tracking-widest text-[#EAE1D5] mb-2">
-                  Zoniraz
-                </div>
+                <Link href="/" className="relative w-40 h-12 block">
+                  <Image 
+                    src="/images/ZONIRAZ LOGO.png" 
+                    alt="Zoniraz Logo" 
+                    fill
+                    sizes="160px"
+                    className="object-contain brightness-0 invert"
+                  />
+                </Link>
                 <p className="text-sm text-[#EAE1D5]/90 font-light tracking-wide max-w-[300px]">
                   Zoniraz Jewel house Pvt LTD. is one of the leading Jewellery manufacturer, wholesaler, retailer and exporter in the international Jewels market. From the last 50 Years we are serving for our loyal customers and delivering them not only a qualitative and best designs of Jewellery but also a trustful and responsible brand.
                 </p>

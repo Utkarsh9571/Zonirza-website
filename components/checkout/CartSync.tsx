@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useCartStore, CartItem } from '@/store/cartStore';
+import { useCurrencyStore } from '@/store/currencyStore';
 
 export function CartSync() {
   const { data: session, status } = useSession();

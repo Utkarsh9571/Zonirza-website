@@ -10,6 +10,14 @@ export async function GET(request: NextRequest) {
     
     console.log('--- Product Search Debug ---');
     console.log('Incoming Params:', Object.fromEntries(searchParams.entries()));
+    
+    // 1. Support fetching specific slugs (for Wishlist)
+    const slugs = searchParams.get('slugs');
+    if (slugs) {
+      const slugList = slugs.split(',');
+      const products = await Product.find({ slug: { $in: slugList } });
+      return NextResponse.json({ success: true, data: products, total: products.length });
+    }
 
     // Define all supported filter keys
     const filterKeys = [

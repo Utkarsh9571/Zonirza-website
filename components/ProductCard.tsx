@@ -3,6 +3,11 @@ import Link from 'next/link';
 import { resolveProductImage } from '@/lib/imageResolver';
 import { useCurrencyStore } from '@/store/currencyStore';
 import { displayPrice } from '@/lib/currency';
+import { Heart } from 'lucide-react';
+import { useWishlistStore } from '@/store/wishlistStore';
+import { useSession } from 'next-auth/react';
+import { useAuthModalStore } from '@/store/authModalStore';
+import { cn } from '@/lib/utils';
 
 interface ProductCardProps {
   name: string;
@@ -15,6 +20,21 @@ interface ProductCardProps {
 const ProductCard = ({ name, price, image, slug, oldPrice }: ProductCardProps) => {
   const imageUrl = resolveProductImage(image);
   const { currentCurrency, rates } = useCurrencyStore();
+  const { status } = useSession();
+  const openAuthModal = useAuthModalStore(state => state.openAuthModal);
+  const { toggleItem, isInWishlist } = useWishlistStore();
+  
+  const isWishlisted = isInWishlist(slug);
+
+  const handleWishlistClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (status !== 'authenticated') {
+      openAuthModal();
+      return;
+    }
+    toggleItem(slug);
+  };
 
   return (
     <Link href={`/product/${slug}`} className="group block h-full">
@@ -26,6 +46,20 @@ const ProductCard = ({ name, price, image, slug, oldPrice }: ProductCardProps) =
           className="object-cover p-6 sm:p-8 transition-transform duration-700 group-hover:scale-110"
           sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
         />
+
+        {/* Wishlist Button */}
+        <button 
+          onClick={handleWishlistClick}
+          className={cn(
+            "absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-500 z-10 shadow-soft active:scale-90",
+            isWishlisted 
+              ? "bg-brand-gold text-white" 
+              : "bg-white/80 backdrop-blur-sm text-brand-text/40 hover:text-brand-gold"
+          )}
+        >
+          <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} className={cn(isWishlisted && "animate-pulse")} />
+        </button>
+
         {/* Mobile: Always visible, Desktop: Hover visible */}
         <button 
           className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-brand-text text-brand-white flex items-center justify-center opacity-100 md:opacity-0 translate-y-0 md:translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 active:bg-brand-gold z-10 shadow-soft active:scale-95 touch-safe-hit"

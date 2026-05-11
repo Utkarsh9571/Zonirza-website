@@ -13,6 +13,7 @@ import { resolveProductImage } from '@/lib/imageResolver';
 import { calculatePricing, formatCurrency, ProductConfiguration } from '@/lib/pricing';
 import { useCurrencyStore } from '@/store/currencyStore';
 import { displayPrice } from '@/lib/currency';
+import { useWishlistStore } from '@/store/wishlistStore';
 import { validateProductConfiguration, isFieldMissing } from '@/lib/ecommerce';
 import { RingSizeGuide } from '../product/guides/RingSizeGuide';
 import { DiamondGuide } from '../product/guides/DiamondGuide';
@@ -141,6 +142,19 @@ export function ProductInteractiveUI({ product }: { product: any }) {
   const cartAddItem = useCartStore((state) => state.addItem);
   const { currentCurrency, rates } = useCurrencyStore();
   const specs = product.specs instanceof Map ? Object.fromEntries(product.specs) : product.specs;
+  
+  const { status } = useSession();
+  const openAuthModal = useAuthModalStore(state => state.openAuthModal);
+  const { toggleItem, isInWishlist } = useWishlistStore();
+  const isWishlisted = isInWishlist(product.slug);
+
+  const handleWishlistToggle = () => {
+    if (status !== 'authenticated') {
+      openAuthModal();
+      return;
+    }
+    toggleItem(product.slug);
+  };
 
   const handleAddToCart = () => {
     if (!validation.isValid) {
@@ -185,8 +199,16 @@ export function ProductInteractiveUI({ product }: { product: any }) {
               />
               
               <div className="absolute top-4 right-4 flex flex-col space-y-2 z-30">
-                <button className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center border border-brand-border text-brand-text hover:bg-brand-gold hover:text-white transition-all shadow-soft">
-                  <Heart size={16} />
+                <button 
+                  onClick={handleWishlistToggle}
+                  className={cn(
+                    "w-9 h-9 rounded-full flex items-center justify-center border transition-all shadow-soft active:scale-90",
+                    isWishlisted 
+                      ? "bg-brand-gold border-brand-gold text-white" 
+                      : "bg-white/90 backdrop-blur-md border-brand-border text-brand-text hover:bg-brand-gold hover:text-white"
+                  )}
+                >
+                  <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} className={cn(isWishlisted && "animate-pulse")} />
                 </button>
                 <button className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center border border-brand-border text-brand-text hover:bg-brand-gold hover:text-white transition-all shadow-soft">
                   <Share2 size={16} />

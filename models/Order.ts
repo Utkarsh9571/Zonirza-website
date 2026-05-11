@@ -75,8 +75,8 @@ const OrderSchema: Schema = new Schema(
     },
     orderStatus: {
       type: String,
-      enum: ['processing', 'shipped', 'delivered', 'cancelled'],
-      default: 'processing',
+      enum: ['placed', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'],
+      default: 'placed',
     },
     currency: { type: String, required: true, default: 'INR' },
     exchangeRate: { type: Number, required: true, default: 1 },

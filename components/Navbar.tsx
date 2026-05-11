@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from "next-auth/react";
-import { Menu, X, ChevronDown, Search, ShoppingCart, User, LogIn, UserPlus, Gift, MessageSquare, LogOut, Package, MapPin as MapPinIcon, UserCircle, ArrowRight } from 'lucide-react';
+import { Menu, X, ChevronDown, Search, ShoppingCart, User, LogIn, UserPlus, Gift, MessageSquare, LogOut, Package, MapPin as MapPinIcon, UserCircle, ArrowRight, Heart } from 'lucide-react';
 import { MegaMenu } from './MegaMenu';
 import { AuthModal } from './auth/AuthModal';
 import { cn } from '@/lib/utils';
@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { resolveProductImage } from '@/lib/imageResolver';
 import { useCurrencyStore, CURRENCIES, CurrencyCode } from '@/store/currencyStore';
+import { useWishlistStore } from '@/store/wishlistStore';
 
 const Navbar = () => {
     const { data: session, status } = useSession();
@@ -35,6 +36,8 @@ const Navbar = () => {
     const searchRef = useRef<HTMLDivElement>(null);
     const cartItems = useCartStore((state) => state.items);
     const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+    const wishlistItems = useWishlistStore((state) => state.items);
+    const wishlistCount = wishlistItems.length;
 
     const isLoggedIn = status === 'authenticated';
   
@@ -130,13 +133,23 @@ const Navbar = () => {
           : "top-0 py-6 px-6 md:px-12 bg-transparent"
       )}>
         
-        {/* 1. LEFT: Floating Logo */}
-        <Link href="/" className="flex items-center space-x-3 group relative z-[110]">
-          <div className="w-10 h-10 flex items-center justify-center bg-brand-gold rounded-full text-white shadow-soft">
-            <span className="font-serif font-bold text-xl">Z</span>
-          </div>
-          <span className="text-3xl font-serif font-bold tracking-widest text-brand-text uppercase drop-shadow-md hidden sm:block">Zoniraz</span>
-        </Link>
+        <div className={cn(
+          "transition-all duration-500",
+          !isScrolled && "bg-white/95 backdrop-blur-md px-6 py-2.5 rounded-full shadow-premium border border-brand-border"
+        )}>
+          <Link href="/" className="flex items-center group relative z-[110]">
+            <div className="relative w-32 md:w-40 h-10 md:h-12">
+              <Image 
+                src="/images/ZONIRAZ LOGO.png" 
+                alt="Zoniraz Logo" 
+                fill
+                sizes="(max-width: 768px) 128px, 160px"
+                className="object-contain"
+                priority
+              />
+            </div>
+          </Link>
+        </div>
   
         {/* 2. RIGHT: Floating Pill Navbar */}
         <div className="hidden md:flex items-center bg-brand-white/98 backdrop-blur-md rounded-full shadow-premium border border-brand-border pl-4 pr-3 py-2.5 relative">
@@ -225,6 +238,18 @@ const Navbar = () => {
   
           {/* User Actions inside Pill */}
           <div className="flex items-center space-x-6 border-l border-brand-text/10 pl-6">
+            
+            <Link href="/account?tab=wishlist" className="relative group">
+              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-bg text-brand-text active:bg-brand-gold active:text-white transition-all shadow-soft group-hover:text-brand-gold touch-safe-hit">
+                <Heart size={18} />
+                {isMounted && wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-brand-gold text-white text-[8px] flex items-center justify-center font-bold animate-in zoom-in duration-300">
+                    {wishlistCount}
+                  </span>
+                )}
+              </div>
+            </Link>
+
             <div className="relative">
               <button 
                 onClick={(e) => {
@@ -399,6 +424,11 @@ const Navbar = () => {
                 </div>
               )}
             </div>
+
+            <Link href="/account?tab=wishlist" className="text-sm uppercase tracking-widest font-bold text-brand-text py-4 flex items-center justify-between" onClick={() => setIsOpen(false)}>
+              <span>Wishlist</span>
+              {isMounted && wishlistCount > 0 && <span className="bg-brand-gold text-white px-2 py-0.5 rounded-full text-[10px]">{wishlistCount}</span>}
+            </Link>
 
             <Link href="/new-arrivals" className="text-sm uppercase tracking-widest font-bold text-brand-text py-4" onClick={() => setIsOpen(false)}>New Arrivals</Link>
             <Link href="/blog" className="text-sm uppercase tracking-widest font-bold text-brand-text py-4" onClick={() => setIsOpen(false)}>Blog</Link>

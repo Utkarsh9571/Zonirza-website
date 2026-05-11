@@ -21,15 +21,18 @@ import {
   Briefcase,
   Home,
   User,
-  X,
-  Check,
   Trash2,
-  Loader2
+  Loader2,
+  Heart,
+  X
 } from 'lucide-react';
 import { Section } from '@/components/new-ui/Section';
 import { Button } from '@/components/new-ui/Button';
 import { cn } from '@/lib/utils';
 import { CURRENCIES, useCurrencyStore, CurrencyCode } from '@/store/currencyStore';
+import { useWishlistStore } from '@/store/wishlistStore';
+import ProductCard from '@/components/ProductCard';
+import { resolveProductImage } from '@/lib/imageResolver';
 
 interface Address {
   _id?: string;
@@ -52,6 +55,8 @@ function AccountContent() {
   
   // UI State
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'profile');
+  const wishlistItems = useWishlistStore(state => state.items);
+  const { toggleItem } = useWishlistStore();
   const [isMounted, setIsMounted] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
@@ -74,6 +79,8 @@ function AccountContent() {
       preferredCurrency: ''
     }
   });
+  
+  const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
 
   const [addressForm, setAddressForm] = useState<Address>({
     fullName: '',
@@ -130,6 +137,25 @@ function AccountContent() {
       }
     } catch (err) {
       console.error("Failed to fetch profile:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'wishlist' && wishlistItems.length > 0) {
+      fetchWishlistDetails();
+    }
+  }, [activeTab, wishlistItems]);
+
+  const fetchWishlistDetails = async () => {
+    try {
+      // Create a search query for multiple slugs
+      const res = await fetch(`/api/products?slugs=${wishlistItems.join(',')}`);
+      const data = await res.json();
+      if (data.success) {
+        setWishlistProducts(data.data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch wishlist details:", err);
     }
   };
 
@@ -222,6 +248,7 @@ function AccountContent() {
   const tabs = [
     { id: 'profile', label: 'Personal Details', icon: <UserCircle size={18} /> },
     { id: 'orders', label: 'My Orders', icon: <Package size={18} /> },
+    { id: 'wishlist', label: 'My Wishlist', icon: <Heart size={18} /> },
     { id: 'addresses', label: 'Saved Addresses', icon: <MapPin size={18} /> },
   ];
 
@@ -484,6 +511,42 @@ function AccountContent() {
               </div>
             )}
 
+            {/* Tab: Wishlist */}
+            {activeTab === 'wishlist' && (
+              <div className="space-y-8">
+                <h2 className="text-2xl md:text-3xl font-serif text-brand-text">My Wishlist</h2>
+                
+                {wishlistItems.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                    {wishlistProducts.map((product) => (
+                      <div key={product.slug} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <ProductCard 
+                          name={product.name}
+                          price={product.basePrice}
+                          image={product.images?.[0]}
+                          slug={product.slug}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-24 bg-white rounded-[60px] border border-brand-text/5 shadow-soft flex flex-col items-center justify-center text-center space-y-6">
+                    <div className="w-20 h-20 rounded-full bg-brand-bg flex items-center justify-center text-brand-gold/30 border border-brand-text/5">
+                      <Heart size={36} />
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="text-2xl font-serif italic text-brand-text">Your heart is open</h3>
+                      <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-brand-text/30 max-w-[200px] leading-relaxed">Save your favorite masterpieces to view them later.</p>
+                    </div>
+                    <Link href="/products" className="pt-4">
+                      <Button variant="primary" className="shadow-premium px-10">Start Discovering</Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* Tab: Orders */}
             {activeTab === 'orders' && (
               <div className="space-y-8">
                 <h2 className="text-2xl md:text-3xl font-serif text-brand-text">My Orders</h2>
@@ -507,30 +570,28 @@ function AccountContent() {
                           <p className="text-[9px] uppercase tracking-widest text-brand-text/30 font-bold">Status</p>
                           <span className={cn(
                             "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest",
-                            order.paymentStatus === 'paid' ? "bg-green-50 text-green-600" : "bg-brand-gold/10 text-brand-gold"
+                            order.orderStatus === 'delivered' ? "bg-green-50 text-green-600" : 
+                            order.orderStatus === 'cancelled' ? "bg-red-50 text-red-600" :
+                            "bg-brand-gold/10 text-brand-gold"
                           )}>
-                            {order.paymentStatus === 'paid' ? 'Confirmed' : 'Pending Payment'}
+                            {order.orderStatus || (order.paymentStatus === 'paid' ? 'Confirmed' : 'Pending Payment')}
                           </span>
                         </div>
                         <div className="space-y-2 md:text-right">
-                          <p className="text-[9px] uppercase tracking-widest text-brand-text/30 font-bold">Total Amount</p>
-                          <p className="text-lg font-serif text-brand-text">
-                            {/* Use order's own currency context for historical accuracy */}
-                            {(() => {
-                              const symbol = CURRENCIES[order.currency as CurrencyCode]?.symbol || '₹';
-                              const amount = order.totalAmount * (order.exchangeRate || 1);
-                              return `${symbol}${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-                            })()}
-                          </p>
+                          <Link href={`/account/orders/${order._id}`}>
+                            <Button variant="outline" className="px-6 py-2 text-[8px] uppercase tracking-[0.2em] border-brand-text/10 hover:bg-brand-text hover:text-white transition-all">
+                              View Details
+                            </Button>
+                          </Link>
                         </div>
                       </div>
 
-                      <div className="space-y-4">
+                      <Link href={`/account/orders/${order._id}`} className="space-y-4 block group-hover:opacity-80 transition-opacity">
                         {order.items.map((item: any, idx: number) => (
                           <div key={idx} className="flex items-center space-x-4">
                             <div className="w-12 h-12 rounded-xl bg-brand-bg flex items-center justify-center overflow-hidden border border-brand-text/5">
                               <Image 
-                                src={item.image} 
+                                src={resolveProductImage(item.image)} 
                                 alt={item.name} 
                                 width={48} 
                                 height={48} 
@@ -543,7 +604,7 @@ function AccountContent() {
                             </div>
                           </div>
                         ))}
-                      </div>
+                      </Link>
                     </div>
                   ))}
 

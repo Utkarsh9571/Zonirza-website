@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import Order from '@/models/Order';
+import { sendOrderConfirmationEmail, sendAdminNewOrderEmail } from '@/lib/mail';
 
 // POST: Create a new pending order
 export async function POST(req: Request) {
@@ -25,10 +26,16 @@ export async function POST(req: Request) {
       exchangeRate: body.exchangeRate || 1,
       shippingAddress,
       paymentStatus: 'pending',
-      orderStatus: 'processing',
+      orderStatus: 'placed',
     };
 
     const order = await Order.create(orderData);
+
+    // Trigger Email Workflow (Async - Don't wait for response to confirm order creation)
+    if (session?.user?.email) {
+      sendOrderConfirmationEmail(order, session.user.email).catch(err => console.error('Order Email Error:', err));
+      sendAdminNewOrderEmail(order).catch(err => console.error('Admin Email Error:', err));
+    }
 
     return NextResponse.json({ success: true, orderId: order._id });
   } catch (error: any) {

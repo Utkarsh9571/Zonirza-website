@@ -57,6 +57,7 @@ function ProductsContent() {
   const [totalCount, setTotalCount] = useState(0);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState<any[]>([]);
+  const [gridCols, setGridCols] = useState(3);
 
   // Fetch products based on query params
   useEffect(() => {
@@ -265,12 +266,35 @@ function ProductsContent() {
               ))}
             </div>
 
-            {/* Sort & View Controls */}
             <div className="flex items-center justify-between py-4 border-y border-brand-text/5">
               <div className="flex items-center space-x-6">
-                <div className="flex items-center space-x-2 text-brand-text/40">
-                  <LayoutGrid size={16} className="text-brand-gold" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Grid View</span>
+                <div className="flex items-center space-x-4">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-brand-text/40">View:</span>
+                  <div className="flex items-center bg-brand-bg rounded-full p-1 border border-brand-text/5">
+                    {[2, 3, 4].map((cols) => (
+                      <button
+                        key={cols}
+                        onClick={() => setGridCols(cols)}
+                        className={cn(
+                          "w-8 h-8 flex items-center justify-center rounded-full transition-all duration-300",
+                          gridCols === cols ? "bg-brand-text text-white shadow-premium" : "text-brand-text/30 hover:text-brand-text"
+                        )}
+                        aria-label={`${cols} column grid`}
+                      >
+                        <span className="text-[10px] font-bold">{cols}</span>
+                      </button>
+                    ))}
+                    <div className="w-px h-4 bg-brand-text/10 mx-1" />
+                    <button
+                      className={cn(
+                        "w-8 h-8 flex items-center justify-center rounded-full text-brand-text/30",
+                        "cursor-not-allowed opacity-50"
+                      )}
+                      disabled
+                    >
+                      <List size={14} />
+                    </button>
+                  </div>
                 </div>
               </div>
               
@@ -292,9 +316,13 @@ function ProductsContent() {
               </div>
             </div>
 
-            {/* Product Grid */}
             {loading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+              <div className={cn(
+                "grid gap-8",
+                gridCols === 2 ? "grid-cols-2" : 
+                gridCols === 3 ? "grid-cols-2 md:grid-cols-3" : 
+                "grid-cols-2 md:grid-cols-4"
+              )}>
                 {[1, 2, 3, 4, 5, 6].map((n) => (
                   <div key={n} className="space-y-4 animate-pulse">
                     <div className="aspect-square bg-brand-bg rounded-2xl" />
@@ -304,7 +332,12 @@ function ProductsContent() {
                 ))}
               </div>
             ) : products.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+              <div className={cn(
+                "grid gap-8",
+                gridCols === 2 ? "grid-cols-2" : 
+                gridCols === 3 ? "grid-cols-2 md:grid-cols-3" : 
+                "grid-cols-2 md:grid-cols-4"
+              )}>
                 {products.map((product) => (
                   <ProductCard 
                     key={product.slug}
@@ -340,13 +373,19 @@ function ProductsContent() {
 
       {/* Mobile Filter Overlay */}
       {isFilterOpen && (
-        <div className="fixed inset-0 z-[100] lg:hidden">
-          <div className="absolute inset-0 bg-brand-text/40 backdrop-blur-sm" onClick={() => setIsFilterOpen(false)} />
-          <div className="absolute inset-y-0 right-0 w-full max-w-xs bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-500">
-            <div className="p-8 border-b border-brand-text/5 flex items-center justify-between">
-              <h2 className="text-sm font-black uppercase tracking-[0.2em]">Refine By</h2>
-              <button onClick={() => setIsFilterOpen(false)}>
-                <X size={24} />
+        <div className="fixed inset-0 z-[100] lg:hidden flex flex-col justify-end">
+          <div className="absolute inset-0 bg-brand-text/60 backdrop-blur-md animate-in fade-in duration-700" onClick={() => setIsFilterOpen(false)} />
+          <div className="relative w-full bg-white rounded-t-[40px] shadow-premium flex flex-col animate-in slide-in-from-bottom duration-700 max-h-[90vh]">
+            <div className="p-8 border-b border-brand-text/5 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md rounded-t-[40px] z-10">
+              <div className="space-y-1">
+                <h2 className="text-sm font-black uppercase tracking-[0.2em] text-brand-text">Refine Selection</h2>
+                <p className="text-[9px] uppercase tracking-widest text-brand-text/40 font-bold">{totalCount} Masterpieces</p>
+              </div>
+              <button 
+                onClick={() => setIsFilterOpen(false)}
+                className="w-10 h-10 rounded-full bg-brand-bg flex items-center justify-center text-brand-text/40"
+              >
+                <X size={20} />
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-8 space-y-12">
@@ -355,7 +394,7 @@ function ProductsContent() {
                   <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-brand-text/40">
                     {filter.label}
                   </h3>
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
                     {filter.options.map((option: any, idx) => {
                       const isPrice = typeof option === 'object';
                       const label = isPrice ? option.label : option;
@@ -369,34 +408,67 @@ function ProductsContent() {
                           onClick={() => {
                             if (isPrice) setPriceFilter(option.min, option.max);
                             else updateFilter(filter.id, option.toLowerCase());
-                            setIsFilterOpen(false);
                           }}
                           className={cn(
-                            "flex items-center justify-between w-full group transition-all duration-300",
-                            isActive ? "text-brand-gold font-bold" : "text-brand-text/60"
+                            "flex items-center justify-center px-4 py-4 rounded-2xl text-[10px] uppercase tracking-widest font-bold border transition-all duration-300 touch-safe-hit",
+                            isActive 
+                              ? "bg-brand-text text-white border-brand-text shadow-premium" 
+                              : "bg-brand-bg text-brand-text/60 border-brand-text/5 active:border-brand-gold active:bg-white active:text-brand-text"
                           )}
                         >
-                          <span className="text-[13px]">{label}</span>
-                          <div className={cn(
-                            "w-5 h-5 rounded-full border border-brand-text/10 flex items-center justify-center",
-                            isActive ? "bg-brand-gold border-brand-gold" : ""
-                          )}>
-                            {isActive && <div className="w-2 h-2 bg-white rounded-full" />}
-                          </div>
+                          {label}
                         </button>
                       );
                     })}
                   </div>
                 </div>
               ))}
+              
+              {/* Sorting on Mobile */}
+              <div className="space-y-6 pt-4">
+                <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-brand-text/40">Sort By</h3>
+                <div className="grid grid-cols-1 gap-3">
+                  {[
+                    { val: 'newest', label: 'Newest Arrivals' },
+                    { val: 'price-low', label: 'Price: Low to High' },
+                    { val: 'price-high', label: 'Price: High to Low' },
+                    { val: 'oldest', label: 'Classic Styles' }
+                  ].map((s) => (
+                    <button
+                      key={s.val}
+                      onClick={() => {
+                        const params = new URLSearchParams(searchParams.toString());
+                        params.set('sort', s.val);
+                        router.push(`/products?${params.toString()}`);
+                      }}
+                      className={cn(
+                        "w-full py-4 px-6 rounded-2xl text-[10px] uppercase tracking-widest font-bold border text-left transition-all",
+                        searchParams.get('sort') === s.val || (!searchParams.get('sort') && s.val === 'newest')
+                          ? "bg-brand-gold/10 border-brand-gold text-brand-gold"
+                          : "bg-brand-bg border-brand-text/5 text-brand-text/60"
+                      )}
+                    >
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
-            <div className="p-8 border-t border-brand-text/5">
-              <button 
-                onClick={() => setIsFilterOpen(false)}
-                className="w-full py-5 bg-brand-text text-white text-[11px] font-bold uppercase tracking-[0.2em] rounded-2xl shadow-xl"
-              >
-                Show {totalCount} Results
-              </button>
+            <div className="p-8 border-t border-brand-text/5 bg-white/80 backdrop-blur-md pb-12">
+              <div className="flex gap-4">
+                <button 
+                  onClick={clearAllFilters}
+                  className="flex-1 py-5 bg-brand-bg text-brand-text text-[11px] font-bold uppercase tracking-[0.2em] rounded-2xl border border-brand-text/5"
+                >
+                  Reset
+                </button>
+                <button 
+                  onClick={() => setIsFilterOpen(false)}
+                  className="flex-[2] py-5 bg-brand-text text-white text-[11px] font-bold uppercase tracking-[0.2em] rounded-2xl shadow-premium"
+                >
+                  Show Results
+                </button>
+              </div>
             </div>
           </div>
         </div>
