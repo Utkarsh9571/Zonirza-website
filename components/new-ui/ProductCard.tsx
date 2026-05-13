@@ -22,7 +22,7 @@ export const ProductCard = ({ name, price, image, slug, oldPrice, className }: P
       href={`/product/${slug}`} 
       className={cn('group block w-full touch-safe-hit', className)}
     >
-      <div className="relative aspect-[4/5] w-full rounded-[40px] overflow-hidden bg-white border border-brand-text/5 shadow-soft transition-all duration-1000 group-hover:shadow-premium lg:group-hover:-translate-y-3">
+      <div className="relative aspect-[4/5] w-full rounded-[40px] overflow-hidden bg-white border border-brand-gold/10 shadow-soft transition-all duration-1000 group-hover:shadow-premium lg:group-hover:-translate-y-3">
         <Image
           src={getValidImageUrl(image)}
           alt={name}

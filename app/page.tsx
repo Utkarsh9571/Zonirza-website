@@ -108,7 +108,7 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col lg:flex-row gap-4">
-            <div className="w-full lg:w-2/3 relative aspect-[4/5] md:aspect-auto md:h-[500px] rounded-xl overflow-hidden group shadow-soft">
+            <div className="w-full lg:w-2/3 relative aspect-[4/5] md:aspect-auto md:h-[500px] rounded-[40px] overflow-hidden group shadow-soft">
               <Image
                 src="/images/site/wedding.png"
                 alt="Bridal Collection"
@@ -128,7 +128,7 @@ export default function Home() {
             </div>
 
             <div className="w-full lg:w-1/3 grid grid-cols-2 gap-4">
-              <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden group shadow-soft">
+              <div className="relative w-full aspect-[4/5] rounded-[40px] overflow-hidden group shadow-soft">
                 <Image
                   src="/images/site/daily-wear.png"
                   alt="Everyday Wear"
@@ -144,7 +144,7 @@ export default function Home() {
                   </Link>
                 </div>
               </div>
-              <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden group shadow-soft">
+              <div className="relative w-full aspect-[4/5] rounded-[40px] overflow-hidden group shadow-soft">
                 <Image
                   src="/images/images/product/default-16345643112830.jpg"
                   alt="Men's Edit"
@@ -161,7 +161,7 @@ export default function Home() {
                 </div>
               </div>
               
-              <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden group shadow-soft">
+              <div className="relative w-full aspect-[4/5] rounded-[40px] overflow-hidden group shadow-soft">
                 <Image
                   src="/images/images/product/rose-gold-16017058153130.jpg"
                   alt="Solitaire Dream"
@@ -177,7 +177,7 @@ export default function Home() {
                   </Link>
                 </div>
               </div>
-              <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden group shadow-soft">
+              <div className="relative w-full aspect-[4/5] rounded-[40px] overflow-hidden group shadow-soft">
                 <Image
                   src="/images/images/product/yellow-gold-16010271191566.jpg"
                   alt="Heritage Gold"
@@ -209,7 +209,7 @@ export default function Home() {
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             {categories.slice(0, 8).map((cat: any, i: number) => (
               <Link href={`/products?category=${cat.slug}`} key={i} className="group flex flex-col items-center text-center space-y-4">
-                <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden shadow-soft border border-brand-text/5 bg-brand-bg group-hover:shadow-premium transition-all">
+                <div className="relative w-full aspect-[4/5] rounded-[40px] overflow-hidden shadow-soft border border-brand-gold/10 bg-brand-bg group-hover:shadow-premium transition-all">
                   <Image
                     src={resolveProductImage(cat.image)}
                     alt={cat.name}
@@ -241,7 +241,7 @@ export default function Home() {
               { title: 'Vintage Heirloom', img: '/images/images/product/yellow-gold-16010959532807.jpg', query: 'collection=heritage' },
               { title: 'Modern Minimalism', img: '/images/images/product/default-16345640053092.jpg', query: 'collection=minimal' }
             ].map((trend, i) => (
-              <Link href={`/products?${trend.query}`} key={i} className="group relative aspect-[3/4] rounded-xl overflow-hidden shadow-soft cursor-pointer block">
+              <Link href={`/products?${trend.query}`} key={i} className="group relative aspect-[3/4] rounded-[40px] overflow-hidden shadow-soft cursor-pointer block">
                 <Image src={trend.img} alt={trend.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-1000 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-text/90 via-transparent to-transparent"></div>
                 <h3 className="absolute bottom-6 w-full text-center text-white font-serif text-xl px-4">{trend.title}</h3>
@@ -261,14 +261,14 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-auto md:h-[500px]">
             <div className="grid grid-rows-2 gap-4 h-full">
-              <Link href="/products?tag=featured" className="relative rounded-2xl overflow-hidden shadow-soft group block">
+              <Link href="/products?tag=featured" className="relative rounded-[40px] overflow-hidden shadow-soft group block">
                 <Image src="/images/images/product/rose-gold-16017081121080.jpg" alt="Featured World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               </Link>
-              <Link href="/products?collection=heritage" className="relative rounded-2xl overflow-hidden shadow-soft group block">
+              <Link href="/products?collection=heritage" className="relative rounded-[40px] overflow-hidden shadow-soft group block">
                 <Image src="/images/images/product/yellow-gold-16010972111558.jpg" alt="Heritage World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               </Link>
             </div>
-            <Link href="/products?collection=heritage" className="relative rounded-2xl overflow-hidden shadow-soft group h-full min-h-[400px] block">
+            <Link href="/products?collection=heritage" className="relative rounded-[40px] overflow-hidden shadow-soft group h-full min-h-[400px] block">
               <Image src="/images/images/product/default-16345651242469.jpg" alt="Heritage World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               <div className="absolute inset-0 bg-brand-text/20 flex flex-col items-center justify-center text-center p-8">
                 <h3 className="text-5xl font-serif text-white mb-4 italic">The Heritage</h3>
@@ -282,7 +282,7 @@ export default function Home() {
       {/* 6. NEW ARRIVALS */}
       <section className="py-12 bg-white dark:bg-brand-accent transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
-          <div className="w-full bg-[#B3A99B] rounded-3xl overflow-hidden flex flex-col lg:flex-row shadow-soft">
+          <div className="w-full bg-[#B3A99B] rounded-[40px] overflow-hidden flex flex-col lg:flex-row shadow-soft">
             <div className="w-full lg:w-1/3 text-white p-6 sm:p-10 flex flex-col justify-center space-y-4">
               <h2 className="text-3xl sm:text-4xl font-serif">New Arrivals</h2>
               <p className="text-white/80 text-[10px] sm:text-xs leading-relaxed max-w-[250px]">
@@ -295,7 +295,7 @@ export default function Home() {
             </div>
             <div className="w-full lg:w-2/3 grid grid-cols-2 p-4 gap-4">
               {products.slice(0, 2).map((prod: any, i: number) => (
-                <Link href={`/product/${prod.slug}`} key={i} className="flex-1 bg-white dark:bg-[#1a1614] border-[6px] border-white dark:border-brand-border/10 rounded-2xl shadow-md relative group aspect-[4/5] overflow-hidden cursor-pointer block">
+                <Link href={`/product/${prod.slug}`} key={i} className="flex-1 bg-white dark:bg-[#1a1614] border-[6px] border-white dark:border-brand-border/10 rounded-[40px] shadow-md relative group aspect-[4/5] overflow-hidden cursor-pointer block">
                   <Image src={resolveProductImage(prod.images?.[0])} alt={prod.name} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover transition-transform duration-1000 group-hover:scale-105" />
                   <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-sm px-3 py-1 text-[10px] text-white tracking-widest uppercase">
                     {prod.name} | {displayPrice(prod.basePrice || prod.price || 0, currentCurrency, rates)}
@@ -322,7 +322,7 @@ export default function Home() {
               { img: '/images/images/product/default-16345665363640.jpg', text: 'Kids Jewellery', href: '/products?gender=kids' }
             ].map((store, i) => (
               <Link href={store.href} key={i} className="group cursor-pointer flex flex-col items-center">
-                <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-4 shadow-soft hover:shadow-premium transition-all">
+                <div className="relative w-full aspect-[4/5] rounded-[40px] overflow-hidden mb-4 shadow-soft hover:shadow-premium transition-all">
                 <Image src={store.img} alt={store.text} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                 </div>
                 <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/70 group-hover:text-brand-gold transition-colors">{store.text}</h4>
@@ -345,9 +345,9 @@ export default function Home() {
       </section>
 
       {/* 9. ZONIRAZ ASSURANCE */}
-      <section className="py-16 bg-white dark:bg-brand-accent border-y border-brand-text/5 transition-colors">
+      <section className="py-16 bg-white dark:bg-brand-accent border-y border-brand-gold/10 transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
-          <div className="flex flex-col md:flex-row items-center justify-between py-8 border-b border-brand-text/5 gap-8">
+          <div className="flex flex-col md:flex-row items-center justify-between py-8 border-b border-brand-gold/10 gap-8">
             <div className="text-center md:text-left">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Zoniraz <span className="text-[#8B2332]">Assurance</span></h2>
               <p className="text-xs sm:text-sm text-brand-text/50 dark:text-brand-text/70 mt-2">Crafted by experts, cherished by you</p>
@@ -405,12 +405,12 @@ export default function Home() {
       {/* 10. GIFTING & OLD GOLD */}
       <section className="py-16 bg-white dark:bg-brand-accent transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12 grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="relative aspect-square md:aspect-auto md:h-[400px] rounded-3xl overflow-hidden bg-[#F6EDEB] group p-10 flex flex-col items-center justify-center text-center">
+          <div className="relative aspect-square md:aspect-auto md:h-[400px] rounded-[40px] overflow-hidden bg-[#F6EDEB] group p-10 flex flex-col items-center justify-center text-center">
             <div className="absolute top-0 bottom-0 left-12 w-8 bg-[#8B2332]"></div>
             <div className="absolute left-0 right-0 bottom-12 h-8 bg-[#8B2332]"></div>
             <div className="absolute left-12 bottom-12 w-12 h-12 bg-[#701C28] rounded-full transform -translate-x-2 translate-y-2"></div>
 
-            <div className="relative z-10 space-y-4 sm:ml-12 sm:mb-12 bg-white/80 backdrop-blur-sm p-6 rounded-2xl w-full max-w-[280px]">
+            <div className="relative z-10 space-y-4 sm:ml-12 sm:mb-12 bg-white/80 backdrop-blur-sm p-6 rounded-[40px] w-full max-w-[280px]">
               <h3 className="text-2xl sm:text-4xl font-serif text-[#8B2332]">#GiftOfChoice</h3>
               <p className="text-brand-text/70 text-[10px] sm:text-xs leading-relaxed max-w-[200px] mx-auto">Breathtaking gifts for your loved one's</p>
               <p className="text-[#8B2332] text-[9px] sm:text-[10px] font-bold uppercase tracking-widest">Starting at $10,000</p>
@@ -421,7 +421,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative aspect-square md:aspect-auto md:h-[400px] rounded-3xl overflow-hidden bg-[#FFFBF0] dark:bg-brand-bg group p-12 flex flex-col justify-center border-[12px] border-white dark:border-brand-border/10 shadow-sm">
+          <div className="relative aspect-square md:aspect-auto md:h-[400px] rounded-[40px] overflow-hidden bg-[#FFFBF0] dark:bg-brand-bg group p-12 flex flex-col justify-center border-[12px] border-white dark:border-brand-border/10 shadow-sm">
             <div className="space-y-6">
               <div className="w-16 h-16 border border-brand-gold rounded-t-full flex items-center justify-center mb-6">
                 <RotateCcw size={24} className="text-brand-gold" />
@@ -438,7 +438,7 @@ export default function Home() {
       </section>
 
       {/* 11. ZONIRAZ EXPERIENCE */}
-      <section className="py-8 sm:py-16 bg-white dark:bg-brand-accent border-t border-brand-text/5 transition-colors">
+      <section className="py-8 sm:py-16 bg-white dark:bg-brand-accent border-t border-brand-gold/10 transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
           <div className="text-center mb-8 sm:mb-10 space-y-2">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Zoniraz Experience</h2>
@@ -454,7 +454,7 @@ export default function Home() {
               { img: '/images/images/product/default-16345643112830.jpg', text: 'BLOGS' },
               { img: '/images/images/product/yellow-gold-1601102976168.jpg', text: 'JEWELLERY GUIDE' }
             ].map((store, i) => (
-              <div key={i} className="group cursor-pointer bg-white dark:bg-brand-white border border-brand-text/5 flex flex-col rounded-2xl overflow-hidden shadow-soft hover:shadow-premium transition-all">
+              <div key={i} className="group cursor-pointer bg-white dark:bg-brand-white border border-brand-gold/10 flex flex-col rounded-[40px] overflow-hidden shadow-soft hover:shadow-premium transition-all">
                 <div className="relative aspect-square overflow-hidden">
                   <Image src={store.img} alt={store.text} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
                 </div>

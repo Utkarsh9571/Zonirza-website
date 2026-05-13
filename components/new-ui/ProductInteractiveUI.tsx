@@ -51,7 +51,7 @@ function ProductImageZoom({ image, name }: { image: string, name: string }) {
         alt={name}
         fill
         className={cn(
-          "object-cover p-4 sm:p-8 transition-opacity duration-300",
+          "object-cover p-4 sm:p-8 transition-opacity duration-300 rounded-[48px]",
           isZooming && !isTouch ? "opacity-0" : "opacity-100"
         )}
         priority
@@ -192,7 +192,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
           
           {/* LEFT COLUMN (50%) - Image Gallery */}
           <div className="w-full lg:w-[50%] flex flex-col space-y-3 animate-in fade-in slide-in-from-left-8 duration-1000">
-            <div className="relative aspect-square w-full max-h-[350px] md:max-h-[420px] rounded-[24px] overflow-hidden bg-brand-white dark:bg-[#1a1614] border border-brand-border dark:border-brand-border/20 shadow-soft group mx-auto transition-colors">
+            <div className="relative aspect-square w-full max-h-[350px] md:max-h-[420px] rounded-[40px] overflow-hidden bg-white dark:bg-[#1a1614] border border-brand-gold/10 shadow-soft group mx-auto transition-colors">
               <ProductImageZoom 
                 image={resolveProductImage(product.images?.[selectedImage])} 
                 name={product.name} 
@@ -223,11 +223,11 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                     key={i}
                     onClick={() => setSelectedImage(i)}
                     className={cn(
-                      "relative w-14 h-14 md:w-16 md:h-16 flex-shrink-0 rounded-[12px] overflow-hidden border-2 transition-all shadow-sm",
-                      selectedImage === i ? "border-brand-gold" : "border-transparent bg-white dark:bg-[#1a1614] hover:border-brand-border dark:hover:border-white/10"
+                      "relative w-14 h-14 md:w-16 md:h-16 flex-shrink-0 rounded-[16px] overflow-hidden border-2 transition-all shadow-sm",
+                      selectedImage === i ? "border-brand-gold" : "border-brand-gold/5 bg-white dark:bg-[#1a1614] hover:border-brand-gold/20"
                     )}
                   >
-                    <Image src={resolveProductImage(img)} alt={`${product.name} ${i}`} fill className="object-cover p-1" sizes="64px" />
+                    <Image src={resolveProductImage(img)} alt={`${product.name} ${i}`} fill className="object-cover p-1 rounded-2xl" sizes="64px" />
                   </button>
                 ))}
               </div>
@@ -293,8 +293,8 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                       className={cn(
                         "px-5 py-3.5 rounded-2xl text-[10px] uppercase tracking-widest font-bold border transition-all duration-300 touch-safe-hit",
                         `${config.purity} ${config.metal}` === option 
-                          ? "bg-brand-text dark:bg-brand-gold text-white border-brand-text dark:border-brand-gold shadow-premium" 
-                          : "bg-white dark:bg-[#1a1614] text-brand-text/70 dark:text-brand-text/80 border-brand-text/10 dark:border-white/5 active:border-brand-gold active:text-brand-text",
+                          ? "bg-brand-gold text-white border-brand-gold shadow-premium" 
+                          : "bg-white dark:bg-[#1a1614] text-brand-muted border-brand-gold/10 dark:border-white/5 active:border-brand-gold",
                         showValidation && isFieldMissing('metal', validation.missingFields) && "border-red-200 bg-red-50/30"
                       )}
                     >
@@ -336,8 +336,8 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                       className={cn(
                         "w-14 h-14 flex items-center justify-center rounded-2xl text-[11px] font-bold border transition-all duration-300 touch-safe-hit",
                         config.size === size 
-                          ? "bg-brand-text dark:bg-brand-gold text-white border-brand-text dark:border-brand-gold shadow-premium" 
-                          : "bg-white dark:bg-[#1a1614] text-brand-text/70 dark:text-brand-text/80 border-brand-text/10 dark:border-white/5 active:border-brand-gold active:text-brand-text",
+                          ? "bg-brand-gold text-white border-brand-gold shadow-premium" 
+                          : "bg-white dark:bg-[#1a1614] text-brand-muted border-brand-gold/10 dark:border-white/5 active:border-brand-gold",
                         showValidation && isFieldMissing('size', validation.missingFields) && "border-red-200 bg-red-50/30"
                       )}
                     >
@@ -368,8 +368,8 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                         className={cn(
                           "px-4 py-2.5 rounded-xl text-[9px] uppercase tracking-widest font-bold border transition-all duration-300",
                           config.stone === q
-                            ? "bg-brand-text dark:bg-brand-gold text-white border-brand-text dark:border-brand-gold shadow-premium" 
-                            : "bg-white dark:bg-[#1a1614] text-brand-text/70 dark:text-brand-text/80 border-brand-text/10 dark:border-white/5 hover:border-brand-gold hover:text-brand-text",
+                            ? "bg-brand-gold text-white border-brand-gold shadow-premium" 
+                            : "bg-white dark:bg-[#1a1614] text-brand-muted border-brand-gold/10 dark:border-white/5 hover:border-brand-gold",
                           showValidation && isFieldMissing('stone', validation.missingFields) && "border-red-200"
                         )}
                     >
@@ -381,7 +381,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
             </div>
 
             {/* Live Config Summary */}
-            <div className="p-6 rounded-3xl bg-brand-bg dark:bg-[#1a1614] border border-brand-gold/10 space-y-3 transition-colors">
+            <div className="p-6 rounded-[40px] bg-brand-bg dark:bg-[#1a1614] border border-brand-gold/10 space-y-3 transition-colors">
               <h4 className="text-[10px] font-bold uppercase tracking-widest text-brand-gold">Configuration Summary</h4>
               <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-1">

@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   /* Exact Colors from Reference Image - Refined for Contrast */
   --brand-bg: #f9f5f0;          /* Light cream/beige */
@@ -7,7 +9,7 @@
   --brand-gold: #bca07e;        /* Soft muted gold */
   --brand-accent: #f2ede4;      /* Slightly darker beige for sections */
   --brand-white: #ffffff;
-  --brand-border: #e8e1d9;      /* Dedicated border color for card definition */
+  --brand-border: #ffffff;      /* Pure white for seamless card integration in light mode */
   --brand-muted: #6b5f58;       /* Muted text that is still readable */
   
   --background: var(--brand-bg);

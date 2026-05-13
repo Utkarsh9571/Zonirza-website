@@ -38,12 +38,12 @@ const ProductCard = ({ name, price, image, slug, oldPrice }: ProductCardProps) =
 
   return (
     <Link href={`/product/${slug}`} className="group block h-full">
-      <div className="bg-brand-white dark:bg-[#1a1614] rounded-2xl overflow-hidden aspect-square relative mb-4 border border-brand-border dark:border-brand-border/20 transition-all duration-700 group-hover:shadow-premium group-hover:-translate-y-2 group-hover:border-brand-gold/30">
+      <div className="bg-white dark:bg-[#1a1614] rounded-[40px] overflow-hidden aspect-square relative mb-4 border border-brand-gold/10 shadow-soft transition-all duration-700 group-hover:shadow-premium group-hover:-translate-y-2 group-hover:border-brand-gold/40">
         <Image
           src={imageUrl}
           alt={name}
           fill
-          className="object-cover p-6 sm:p-8 transition-transform duration-700 group-hover:scale-110"
+          className="object-cover p-6 sm:p-8 transition-transform duration-700 group-hover:scale-110 rounded-[50px]"
           sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
         />
 
@@ -62,7 +62,7 @@ const ProductCard = ({ name, price, image, slug, oldPrice }: ProductCardProps) =
 
         {/* Mobile: Always visible, Desktop: Hover visible */}
         <button 
-          className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-brand-text text-brand-white flex items-center justify-center opacity-100 md:opacity-0 translate-y-0 md:translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 active:bg-brand-gold z-10 shadow-soft active:scale-95 touch-safe-hit"
+          className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-brand-gold text-white flex items-center justify-center opacity-100 md:opacity-0 translate-y-0 md:translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 active:bg-brand-gold z-10 shadow-soft active:scale-95 touch-safe-hit"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();

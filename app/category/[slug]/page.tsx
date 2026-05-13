@@ -68,7 +68,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
             ))}
           </div>
         ) : (
-          <div className="text-center py-40 bg-white rounded-[60px] shadow-soft border border-brand-text/5">
+          <div className="text-center py-40 bg-white rounded-[60px] shadow-soft border border-brand-gold/10">
             <p className="text-brand-text/40 text-3xl font-serif italic mb-6">
               No products found in this category yet.
             </p>
@@ -80,7 +80,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       </Section>
 
       {/* Brand Strip - Consistent with Homepage */}
-      <section className="py-24 border-t border-brand-text/5 bg-white/50 grayscale opacity-40 mix-blend-multiply">
+      <section className="py-24 border-t border-brand-gold/10 bg-white/50 grayscale opacity-40 mix-blend-multiply">
         <div className="section-container">
           <div className="flex flex-wrap justify-between items-center gap-16 md:gap-24">
             {['VOGUE', 'ELLE', 'BAZAAR', 'FORBES', 'GQ', 'GLAMOUR'].map((brand) => (

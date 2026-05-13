@@ -167,7 +167,7 @@ function ProductsContent() {
           {/* Mobile Filter Toggle */}
           <button 
             onClick={() => setIsFilterOpen(true)}
-            className="lg:hidden flex items-center justify-center space-x-2 py-4 px-6 bg-brand-text dark:bg-brand-gold text-white rounded-2xl w-full sticky top-24 z-30 shadow-xl"
+            className="lg:hidden flex items-center justify-center space-x-2 py-4 px-6 bg-brand-gold text-white rounded-2xl w-full sticky top-24 z-30 shadow-xl active:scale-95 transition-all"
           >
             <Filter size={18} />
             <span className="text-sm font-bold uppercase tracking-widest">Refine Collection</span>
@@ -412,8 +412,8 @@ function ProductsContent() {
                           className={cn(
                             "flex items-center justify-center px-4 py-4 rounded-2xl text-[10px] uppercase tracking-widest font-bold border transition-all duration-300 touch-safe-hit",
                             isActive 
-                              ? "bg-brand-text dark:bg-brand-gold text-white border-brand-text dark:border-brand-gold shadow-premium" 
-                              : "bg-brand-bg dark:bg-brand-white/10 text-brand-text/60 dark:text-brand-text/80 border-brand-text/5 dark:border-white/5 active:border-brand-gold active:bg-white active:text-brand-text"
+                              ? "bg-brand-gold text-white border-brand-gold shadow-premium" 
+                              : "bg-brand-bg dark:bg-brand-white/10 text-brand-muted border-brand-gold/10 dark:border-white/5 active:border-brand-gold"
                           )}
                         >
                           {label}
@@ -464,7 +464,7 @@ function ProductsContent() {
                 </button>
                 <button 
                   onClick={() => setIsFilterOpen(false)}
-                  className="flex-[2] py-5 bg-brand-text dark:bg-brand-gold text-white text-[11px] font-bold uppercase tracking-[0.2em] rounded-2xl shadow-premium"
+                  className="flex-[2] py-5 bg-brand-gold text-white text-[11px] font-bold uppercase tracking-[0.2em] rounded-2xl shadow-premium active:scale-95 transition-all"
                 >
                   Show Results
                 </button>

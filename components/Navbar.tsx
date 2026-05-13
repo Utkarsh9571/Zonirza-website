@@ -158,16 +158,16 @@ const Navbar = () => {
 
           {isScrolled && (
             <Link href="/" className="flex items-center group relative z-[110] animate-in fade-in slide-in-from-left-4 duration-500">
-               <div className="relative w-24 h-8">
-                 <Image 
+               <div className="relative w-32 md:w-40 h-10 md:h-12">
+                <Image 
                   src="/images/ZONIRAZ LOGO.png" 
                   alt="Zoniraz Logo" 
                   fill
-                  sizes="96px"
+                  sizes="(max-width: 768px) 128px, 160px"
                   className="object-contain"
                   priority
                 />
-               </div>
+              </div>
             </Link>
           )}
         </div>

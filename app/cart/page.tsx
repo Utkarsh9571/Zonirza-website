@@ -178,7 +178,7 @@ export default function CartPage() {
               {items.map((item) => (
                 <div key={item.cartItemId} className="flex flex-col md:flex-row gap-8 p-8 bg-white dark:bg-brand-white rounded-[45px] border border-brand-text/5 shadow-soft hover:shadow-premium transition-all duration-700 group relative">
                   {/* Image */}
-                  <div className="w-full md:w-40 aspect-square rounded-[30px] overflow-hidden bg-brand-bg dark:bg-brand-bg/50 border border-brand-text/5 relative transition-colors">
+                  <div className="w-full md:w-40 aspect-square rounded-[40px] overflow-hidden bg-brand-bg dark:bg-brand-bg/50 border border-brand-text/5 relative transition-colors">
                     <Image 
                       src={resolveProductImage(item.image)} 
                       alt={item.name} 
