@@ -39,7 +39,7 @@ function ProductImageZoom({ image, name }: { image: string, name: string }) {
 
   return (
     <div 
-      className="relative w-full h-full cursor-zoom-in group/zoom touch-none overflow-hidden"
+      className="relative w-full h-full cursor-zoom-in group/zoom touch-none overflow-hidden rounded-[48px] border-2 border-brand-gold/90" 
       onMouseEnter={() => !isTouch && setIsZooming(true)}
       onMouseLeave={() => !isTouch && setIsZooming(false)}
       onMouseMove={handleMouseMove}
@@ -51,7 +51,7 @@ function ProductImageZoom({ image, name }: { image: string, name: string }) {
         alt={name}
         fill
         className={cn(
-          "object-cover p-4 sm:p-8 transition-opacity duration-300 rounded-[48px]",
+          "object-cover p-2 sm:p-2 transition-opacity duration-300 rounded-[48px]",
           isZooming && !isTouch ? "opacity-0" : "opacity-100"
         )}
         priority

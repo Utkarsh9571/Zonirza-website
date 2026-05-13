@@ -136,44 +136,22 @@ const Navbar = () => {
       )}>
         
         <div className="flex items-center space-x-4">
-          <div className={cn(
-            "transition-all duration-500",
-            !isScrolled 
-              ? "hero-glass px-6 py-2.5 rounded-full" 
-              : "opacity-0 scale-90 translate-x-[-20px] pointer-events-none"
-          )}>
-            <Link href="/" className="flex items-center group relative z-[110]">
-              <div className="relative w-32 md:w-40 h-10 md:h-12">
-                <Image 
-                  src="/images/ZONIRAZ LOGO.png" 
-                  alt="Zoniraz Logo" 
-                  fill
-                  sizes="(max-width: 768px) 128px, 160px"
-                  className="object-contain"
-                  priority
-                />
-              </div>
-            </Link>
-          </div>
-
-          {isScrolled && (
-            <Link href="/" className="flex items-center group relative z-[110] animate-in fade-in slide-in-from-left-4 duration-500">
-               <div className="relative w-32 md:w-40 h-10 md:h-12">
-                <Image 
-                  src="/images/ZONIRAZ LOGO.png" 
-                  alt="Zoniraz Logo" 
-                  fill
-                  sizes="(max-width: 768px) 128px, 160px"
-                  className="object-contain"
-                  priority
-                />
-              </div>
-            </Link>
-          )}
+          <Link href="/" className="flex items-center group relative z-[110] bg-white/80 dark:bg-brand-white/80 backdrop-blur-md px-6 py-4 rounded-full border-2 border-brand-gold shadow-premium transition-all duration-500">
+            <div className="relative w-32 md:w-40 h-10 md:h-12">
+              <Image 
+                src="/images/ZONIRAZ LOGO.png" 
+                alt="Zoniraz Logo" 
+                fill
+                sizes="(max-width: 768px) 128px, 160px"
+                className="object-contain"
+                priority
+              />
+            </div>
+          </Link>
         </div>
   
         {/* 2. RIGHT: Floating Pill Navbar */}
-        <div className="hidden md:flex items-center bg-white/80 dark:bg-brand-white/80 backdrop-blur-md rounded-full shadow-premium border border-brand-border dark:border-white/10 pl-4 pr-3 py-2.5 relative transition-colors">
+        <div className="hidden md:flex items-center bg-white/80 dark:bg-brand-white/80 backdrop-blur-md rounded-full shadow-premium border-2 border-brand-gold pl-4 pr-3 py-2.5 relative transition-colors">
           
           {/* SEARCH BAR */}
           <div ref={searchRef} className="relative flex items-center mr-6 border-r border-brand-border dark:border-white/10 pr-6 transition-colors">

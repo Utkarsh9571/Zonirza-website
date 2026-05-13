@@ -91,7 +91,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="bg-[#3A1C16] text-[#EAE1D5] pt-20 pb-10 mt-10 rounded-t-[40px] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] relative z-20">
           <div className="max-w-[1400px] mx-auto px-6 md:px-12">
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-12 border-b border-[#EAE1D5]/10 pb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8 mb-12 border-b border-[#EAE1D5]/10 pb-12">
               
               <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-6">
                 <Link href="/" className="relative w-40 h-12 block">
@@ -109,7 +109,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
 
               {/* 2. Useful Links */}
-              <div className="pl-0 lg:pl-12">
+              <div className="pl-0 lg:pl-4">
                 <h4 className="font-serif text-lg mb-6 text-[#EAE1D5]">Useful Links</h4>
                 <ul className="space-y-3 text-sm font-light text-[#EAE1D5]/70">
                   <li><Link href="/help?tab=delivery" className="hover:text-white transition-colors">Delivery Information</Link></li>
@@ -125,8 +125,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <ul className="space-y-3 text-sm font-light text-[#EAE1D5]/70">
                   <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
                   <li><Link href="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
-                  <li><Link href="/franchise" className="hover:text-white transition-colors font-bold text-brand-gold">Franchise Inquiry</Link></li>
                   <li><Link href="/about" className="hover:text-white transition-colors">About Zoniraz</Link></li>
+                  <li><Link href="/franchise" className="hover:text-white transition-colors">Career</Link></li>
                 </ul>
               </div>
 
@@ -145,6 +145,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* 5. Franchise Enquiry */}
+              <div className="flex flex-col space-y-6">
+                <h4 className="font-serif text-lg mb-6 text-[#EAE1D5]">Partnership</h4>
+                <Link 
+                  href="/franchise" 
+                  className="inline-flex items-center justify-center px-6 py-4 bg-brand-gold text-white text-[10px] font-bold uppercase tracking-[0.2em] rounded-full hover:bg-[#EAE1D5] hover:text-[#3A1C16] transition-all shadow-premium text-center"
+                >
+                  Franchise Enquiry
+                </Link>
+                <p className="text-[10px] text-[#EAE1D5]/40 leading-relaxed uppercase tracking-[0.15em] font-medium">
+                  Join the legacy of excellence and trust.
+                </p>
               </div>
 
             </div>

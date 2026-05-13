@@ -38,7 +38,7 @@ const ProductCard = ({ name, price, image, slug, oldPrice }: ProductCardProps) =
 
   return (
     <Link href={`/product/${slug}`} className="group block h-full">
-      <div className="bg-white dark:bg-[#1a1614] rounded-[40px] overflow-hidden aspect-square relative mb-4 border border-brand-gold/10 shadow-soft transition-all duration-700 group-hover:shadow-premium group-hover:-translate-y-2 group-hover:border-brand-gold/40">
+      <div className="bg-white dark:bg-[#1a1614] rounded-[40px] overflow-hidden aspect-square relative mb-4 border border-brand-gold/90 shadow-soft transition-all duration-700 group-hover:shadow-premium group-hover:-translate-y-2 group-hover:border-brand-gold/100">
         <Image
           src={imageUrl}
           alt={name}
