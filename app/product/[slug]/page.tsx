@@ -28,7 +28,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       <ProductInteractiveUI product={product} />
       
       {/* Brand Strip Continuity */}
-      <section className="py-24 border-t border-brand-text/5 bg-white/50 grayscale opacity-40 mix-blend-multiply">
+      <section className="py-24 border-t border-brand-text/5 bg-white/50 dark:bg-brand-accent/20 grayscale opacity-40 dark:opacity-20 transition-all">
         <div className="section-container">
           <div className="flex flex-wrap justify-between items-center gap-16 md:gap-24">
             {['VOGUE', 'ELLE', 'BAZAAR', 'FORBES', 'GQ', 'GLAMOUR'].map((brand) => (

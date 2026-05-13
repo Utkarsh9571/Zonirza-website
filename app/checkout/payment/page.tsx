@@ -97,7 +97,7 @@ export default function PaymentPage() {
           internal_order_id: orderData.orderId
         },
         theme: {
-          color: "#3A1C16",
+          color: "#3A1C16", // Consider making this dynamic if needed, but #3A1C16 is luxury base
         },
       };
 
@@ -125,7 +125,7 @@ export default function PaymentPage() {
   }
 
   return (
-    <div className="bg-brand-bg min-h-screen pt-24 pb-32">
+    <div className="bg-brand-bg text-brand-text min-h-screen pt-24 pb-32 transition-colors duration-500">
       <div className="max-w-[1400px] mx-auto px-6">
         
         {/* Step Indicator */}
@@ -148,9 +148,9 @@ export default function PaymentPage() {
             </div>
 
             {/* Delivery Summary Brief */}
-            <div className="bg-white/40 backdrop-blur-sm rounded-[35px] border border-brand-text/5 p-6 flex items-center justify-between">
+            <div className="bg-white/40 dark:bg-white/5 backdrop-blur-sm rounded-[35px] border border-brand-text/5 dark:border-white/5 p-6 flex items-center justify-between transition-colors">
               <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 rounded-full bg-green-50 text-green-500 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-green-50 dark:bg-green-500/10 text-green-500 flex items-center justify-center transition-colors">
                   <ShieldCheck size={20} />
                 </div>
                 <div>
@@ -175,14 +175,14 @@ export default function PaymentPage() {
                   className={cn(
                     "p-8 rounded-[40px] border transition-all duration-500 cursor-pointer flex items-center justify-between group",
                     selectedMethod === method.id 
-                      ? "bg-white border-brand-gold shadow-premium" 
-                      : "bg-white/40 border-brand-text/5 hover:border-brand-text/10"
+                      ? "bg-white dark:bg-brand-white border-brand-gold shadow-premium" 
+                      : "bg-white/40 dark:bg-white/5 border-brand-text/5 dark:border-white/5 hover:border-brand-text/10"
                   )}
                 >
                   <div className="flex items-center space-x-6">
                     <div className={cn(
                       "w-14 h-14 rounded-2xl flex items-center justify-center transition-colors",
-                      selectedMethod === method.id ? "bg-brand-gold text-white" : "bg-brand-bg text-brand-text/30"
+                      selectedMethod === method.id ? "bg-brand-gold text-white" : "bg-brand-bg dark:bg-brand-bg text-brand-text/30"
                     )}>
                       {method.icon}
                     </div>
@@ -202,11 +202,11 @@ export default function PaymentPage() {
               ))}
             </div>
 
-            <div className="bg-brand-gold/5 rounded-[40px] p-10 border border-brand-gold/10 flex flex-col items-center text-center space-y-4">
+            <div className="bg-brand-gold/5 dark:bg-brand-gold/10 rounded-[40px] p-10 border border-brand-gold/10 flex flex-col items-center text-center space-y-4 transition-colors">
               <Lock className="text-brand-gold" size={32} />
               <div className="space-y-2">
                 <h4 className="text-sm font-bold uppercase tracking-widest text-brand-text">100% Secure Transaction</h4>
-                <p className="text-[10px] text-brand-text/40 uppercase tracking-widest leading-relaxed max-w-sm mx-auto">
+                <p className="text-[10px] text-brand-text/40 dark:text-brand-text/60 uppercase tracking-widest leading-relaxed max-w-sm mx-auto">
                   Your security is our priority. We use industry-standard encryption to protect your payment information.
                 </p>
               </div>
@@ -214,10 +214,9 @@ export default function PaymentPage() {
 
           </div>
 
-          {/* Right Side: Order Summary */}
           <div className="w-full lg:w-[480px]">
-            <div className="bg-white rounded-[50px] p-10 md:p-12 border border-brand-text/5 shadow-premium sticky top-32 space-y-10 animate-in fade-in slide-in-from-right duration-1000">
-              <h2 className="text-2xl font-serif text-brand-text text-center">Order Summary</h2>
+            <div className="bg-white dark:bg-brand-white rounded-[50px] p-10 md:p-12 border border-brand-text/5 shadow-premium sticky top-32 space-y-10 animate-in fade-in slide-in-from-right duration-1000 transition-colors">
+              <h2 className="text-2xl font-serif text-brand-text dark:text-brand-text/90 text-center">Order Summary</h2>
               
               <div className="space-y-6">
                 <div className="flex justify-between items-end">

@@ -57,7 +57,7 @@ function OrderDetailContent({ params }: { params: Promise<{ id: string }> }) {
 
   if (isLoading || !order) {
     return (
-      <div className="bg-brand-bg min-h-screen pt-32 pb-20 flex items-center justify-center">
+      <div className="bg-brand-bg text-brand-text min-h-screen pt-32 pb-20 flex items-center justify-center transition-colors duration-500">
         <Loader2 className="w-12 h-12 text-brand-gold animate-spin" />
       </div>
     );
@@ -67,7 +67,7 @@ function OrderDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const totalInCurrency = order.totalAmount * (order.exchangeRate || 1);
 
   return (
-    <div className="bg-brand-bg min-h-screen pt-32 pb-24 overflow-x-hidden">
+    <div className="bg-brand-bg text-brand-text min-h-screen pt-32 pb-24 overflow-x-hidden transition-colors duration-500">
       <Section className="max-w-[1200px] mx-auto px-6">
         
         {/* Header Navigation */}
@@ -93,13 +93,13 @@ function OrderDetailContent({ params }: { params: Promise<{ id: string }> }) {
           <div className="lg:col-span-2 space-y-10">
             
             {/* Status Tracking */}
-            <div className="bg-white rounded-[50px] p-8 md:p-12 border border-brand-text/5 shadow-premium animate-in fade-in slide-in-from-bottom-4 duration-1000">
+            <div className="bg-white dark:bg-brand-white rounded-[50px] p-8 md:p-12 border border-brand-text/5 shadow-premium animate-in fade-in slide-in-from-bottom-4 duration-1000 transition-colors">
                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
                   <div>
                     <h1 className="text-3xl font-serif text-brand-text mb-2">Order # {order._id.slice(-8).toUpperCase()}</h1>
                     <p className="text-[10px] uppercase tracking-widest text-brand-text/40 font-bold">Placed on {new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                   </div>
-                  <div className="px-5 py-2 bg-brand-bg rounded-full border border-brand-gold/20 flex items-center space-x-2">
+                  <div className="px-5 py-2 bg-brand-bg dark:bg-brand-bg/80 rounded-full border border-brand-gold/20 flex items-center space-x-2 transition-colors">
                     <div className="w-1.5 h-1.5 bg-brand-gold rounded-full animate-pulse" />
                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-brand-text">{order.orderStatus}</span>
                   </div>
@@ -109,12 +109,12 @@ function OrderDetailContent({ params }: { params: Promise<{ id: string }> }) {
             </div>
 
             {/* Order Items */}
-            <div className="bg-white rounded-[50px] p-8 md:p-12 border border-brand-text/5 shadow-premium">
+            <div className="bg-white dark:bg-brand-white rounded-[50px] p-8 md:p-12 border border-brand-text/5 shadow-premium transition-colors">
               <h3 className="text-[11px] uppercase tracking-[0.3em] font-bold text-brand-text mb-10 border-b border-brand-text/5 pb-6">Included Masterpieces</h3>
               <div className="space-y-8">
                 {order.items.map((item: any, idx: number) => (
                   <div key={idx} className="flex flex-col md:flex-row md:items-center gap-8 group">
-                    <div className="w-24 h-24 rounded-3xl bg-brand-bg flex items-center justify-center overflow-hidden border border-brand-text/5 shrink-0">
+                    <div className="w-24 h-24 rounded-3xl bg-brand-bg dark:bg-brand-bg/50 flex items-center justify-center overflow-hidden border border-brand-text/5 shrink-0 transition-colors">
                        <Image 
                         src={resolveProductImage(item.image)} 
                         alt={item.name} 
@@ -131,13 +131,13 @@ function OrderDetailContent({ params }: { params: Promise<{ id: string }> }) {
                       <div className="flex flex-wrap gap-4 mt-4">
                         {item.configuration && Object.entries(item.configuration).map(([key, value]) => (
                           value && (
-                            <div key={key} className="px-3 py-1 bg-brand-bg rounded-lg border border-brand-text/5">
+                            <div key={key} className="px-3 py-1 bg-brand-bg dark:bg-brand-bg rounded-lg border border-brand-text/5 dark:border-white/5 transition-colors">
                               <span className="text-[8px] uppercase tracking-widest text-brand-text/30 font-bold mr-2">{key}:</span>
                               <span className="text-[9px] font-bold text-brand-text uppercase">{value as string}</span>
                             </div>
                           )
                         ))}
-                        <div className="px-3 py-1 bg-brand-bg rounded-lg border border-brand-text/5">
+                        <div className="px-3 py-1 bg-brand-bg dark:bg-brand-bg rounded-lg border border-brand-text/5 dark:border-white/5 transition-colors">
                           <span className="text-[8px] uppercase tracking-widest text-brand-text/30 font-bold mr-2">Qty:</span>
                           <span className="text-[9px] font-bold text-brand-text">{item.quantity}</span>
                         </div>
@@ -168,9 +168,9 @@ function OrderDetailContent({ params }: { params: Promise<{ id: string }> }) {
           <div className="space-y-10">
             
             {/* Delivery Info */}
-            <div className="bg-white rounded-[45px] p-8 border border-brand-text/5 shadow-soft space-y-8">
+            <div className="bg-white dark:bg-brand-white rounded-[45px] p-8 border border-brand-text/5 shadow-soft space-y-8 transition-colors">
               <div className="flex items-center space-x-4 mb-2">
-                <div className="w-10 h-10 rounded-2xl bg-brand-bg text-brand-gold flex items-center justify-center">
+                <div className="w-10 h-10 rounded-2xl bg-brand-bg dark:bg-brand-bg/80 text-brand-gold flex items-center justify-center transition-colors">
                   <MapPin size={20} />
                 </div>
                 <h3 className="text-sm font-black uppercase tracking-widest text-brand-text">Shipping Sanctuary</h3>
@@ -198,7 +198,7 @@ function OrderDetailContent({ params }: { params: Promise<{ id: string }> }) {
             </div>
 
             {/* Payment Summary */}
-            <div className="bg-[#3A1C16] rounded-[45px] p-8 text-[#EAE1D5] shadow-premium space-y-8">
+            <div className="bg-[#3A1C16] dark:bg-[#1a1614] rounded-[45px] p-8 text-[#EAE1D5] dark:text-brand-text/90 shadow-premium space-y-8 border dark:border-brand-gold/20 transition-colors">
               <div className="flex items-center space-x-4">
                 <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center">
                   <CreditCard size={20} className="text-brand-gold" />
@@ -223,13 +223,13 @@ function OrderDetailContent({ params }: { params: Promise<{ id: string }> }) {
             </div>
 
             {/* Assistance */}
-            <div className="bg-brand-bg/50 rounded-[45px] p-10 border border-brand-text/5 text-center space-y-6">
+            <div className="bg-brand-bg/50 dark:bg-brand-white rounded-[45px] p-10 border border-brand-text/5 text-center space-y-6 transition-colors">
                <MessageSquare size={32} className="text-brand-gold mx-auto opacity-30" />
                <div className="space-y-2">
                  <p className="text-sm font-serif italic text-brand-text">Need Assistance?</p>
                  <p className="text-[9px] uppercase tracking-widest text-brand-text/30 font-bold leading-relaxed">Our concierge is available 24/7 to discuss your masterpiece.</p>
                </div>
-               <Button variant="outline" className="w-full !py-4 text-[9px] tracking-[0.3em] border-brand-text/10">Contact Concierge</Button>
+               <Button variant="outline" className="w-full !py-4 text-[9px] tracking-[0.3em] border-brand-text/10 dark:border-brand-gold/40 hover:bg-brand-text dark:hover:bg-brand-gold hover:text-white">Contact Concierge</Button>
             </div>
           </div>
 
@@ -242,7 +242,7 @@ function OrderDetailContent({ params }: { params: Promise<{ id: string }> }) {
 export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   return (
     <Suspense fallback={
-      <div className="bg-brand-bg min-h-screen pt-32 pb-20 flex items-center justify-center">
+      <div className="bg-brand-bg text-brand-text min-h-screen pt-32 pb-20 flex items-center justify-center transition-colors duration-500">
         <Loader2 className="w-12 h-12 text-brand-gold animate-spin" />
       </div>
     }>

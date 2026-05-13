@@ -42,10 +42,8 @@ export default function HeroSlider() {
   }, []);
 
   return (
-    <div className="relative w-full max-w-[480px] aspect-[4/5] md:aspect-square lg:aspect-[4/5] max-h-[500px] lg:max-h-[550px] lg:mt-8 animate-in fade-in slide-in-from-right-12 duration-1000 delay-300">
-      {/* Decorative Circles */}
-      <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-gold/20 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-white/20 rounded-full blur-3xl animate-pulse delay-700"></div>
+    <div className="relative w-full max-w-[480px] aspect-[4/5] md:aspect-square lg:aspect-[4/5] max-h-[500px] lg:max-h-[550px] animate-in fade-in slide-in-from-right-12 duration-1000 delay-300">
+      {/* Removed Decorative Circles */}
 
       {sliderItems.map((item, index) => {
         const isActive = index === current;
@@ -60,7 +58,7 @@ export default function HeroSlider() {
                 : 'opacity-0 translate-x-12 scale-95 rotate-3 z-10 pointer-events-none'
             )}
           >
-            <div className="relative h-full w-full rounded-[40px] md:rounded-[50px] overflow-hidden border border-white/20 shadow-2xl group touch-pan-y">
+            <div className="relative h-full w-full rounded-[40px] md:rounded-[50px] overflow-hidden hero-glass group touch-pan-y transition-colors">
               <Image 
                 src={item.image} 
                 alt={item.title} 
@@ -74,7 +72,7 @@ export default function HeroSlider() {
                 )} 
               />
               {/* Overlay Gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-text/90 via-brand-text/20 to-transparent pointer-events-none"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none transition-colors"></div>
               
               {/* Content Area */}
               <div className="absolute bottom-0 left-0 right-0 p-8 md:p-10 text-white space-y-4 pointer-events-none">

@@ -45,10 +45,10 @@ export default function Home() {
   const { products, categories } = data;
 
   return (
-    <div className="flex flex-col bg-brand-bg min-h-screen overflow-x-hidden">
+    <div className="flex flex-col bg-brand-bg text-brand-text min-h-screen overflow-x-hidden transition-colors duration-500">
 
       {/* 1. HERO SECTION */}
-      <section className="relative h-screen min-h-[700px] w-full flex items-center justify-center p-4 md:p-8 lg:p-12 overflow-hidden">
+      <section className="relative h-screen min-h-[700px] w-full flex items-center justify-center p-4 md:p-6 lg:p-8 overflow-hidden">
         <div className="absolute inset-0 w-full h-full">
           <Image
             src="/images/hero-bg.jpg"
@@ -58,13 +58,13 @@ export default function Home() {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-brand-text/20 backdrop-blur-[2px]"></div>
+          <div className="absolute inset-0 bg-black/60"></div>
         </div>
 
-        <div className="relative z-10 w-full max-w-[1400px] h-full max-h-[90vh] lg:max-h-[800px] bg-white/10 backdrop-blur-3xl border border-white/30 rounded-[40px] md:rounded-[60px] shadow-premium overflow-hidden flex flex-col md:flex-row items-center justify-between p-8 md:p-16 lg:p-24 animate-in fade-in zoom-in duration-1000">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none"></div>
-
-          <div className="flex flex-col items-start space-y-12 max-w-2xl">
+        <div className="relative z-10 w-full h-full hero-glass rounded-[30px] md:rounded-[50px] overflow-hidden flex flex-col md:flex-row items-center justify-between p-8 md:p-16 lg:p-24 pt-24 md:pt-32 lg:pt-32 animate-in fade-in zoom-in duration-1000">
+          {/* Removed light gradient overlay */}
+          
+          <div className="flex-1 flex flex-col items-start justify-center space-y-12 max-w-2xl">
             <div className="space-y-4">
               <h1 className="text-7xl md:text-[110px] font-serif text-white leading-[0.85] tracking-tighter">
                 Our Luxury <br /> Collections
@@ -75,10 +75,10 @@ export default function Home() {
               onClick={openAuthModal}
               className="flex items-center space-x-4 group bg-transparent border-none outline-none p-0"
             >
-              <div className="bg-white text-brand-text px-12 py-5 rounded-full text-[11px] uppercase tracking-[0.2em] font-bold group-hover:bg-brand-gold group-hover:text-white transition-all shadow-soft cursor-pointer">
+              <div className="bg-brand-text dark:bg-brand-gold text-brand-bg dark:text-white px-12 py-5 rounded-full text-[11px] uppercase tracking-[0.2em] font-bold hover:bg-brand-gold hover:text-white transition-all shadow-none cursor-pointer">
                 Let's Get Started
               </div>
-              <div className="w-14 h-14 rounded-full bg-white text-brand-text flex items-center justify-center shadow-soft group-hover:bg-brand-gold group-hover:text-white transition-all cursor-pointer">
+              <div className="w-14 h-14 rounded-full bg-brand-text dark:bg-brand-gold text-brand-bg dark:text-white flex items-center justify-center shadow-none group-hover:bg-brand-gold group-hover:text-white transition-all cursor-pointer">
                 <ArrowRight size={20} />
               </div>
             </button>
@@ -93,7 +93,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative flex-1 flex flex-col items-center md:items-end w-full mt-12 md:mt-0 min-h-[200px] md:min-h-0">
+          <div className="relative flex-1 flex flex-col items-center justify-center w-full mt-12 md:mt-8 min-h-[200px] md:min-h-0">
             <HeroSlider />
           </div>
         </div>
@@ -103,7 +103,7 @@ export default function Home() {
       <section className="py-8 sm:py-12">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
           <div className="text-center mb-8 sm:mb-10 space-y-4">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Shop by Collection</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight transition-colors">Shop by Collection</h2>
             <div className="w-16 h-[1px] bg-brand-gold mx-auto"></div>
           </div>
 
@@ -199,7 +199,7 @@ export default function Home() {
       </section>
 
       {/* 3. FIND YOUR PERFECT MATCH */}
-      <section className="py-8 sm:py-12 bg-white">
+      <section className="py-8 sm:py-12 bg-white dark:bg-brand-accent transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
           <div className="text-center mb-8 sm:mb-10 space-y-4">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Find Your Perfect Match</h2>
@@ -228,7 +228,7 @@ export default function Home() {
       </section>
 
       {/* 4. TRENDING NOW */}
-      <section className="py-8 sm:py-12 bg-[#F9F6F0]">
+      <section className="py-8 sm:py-12 bg-[#F9F6F0] dark:bg-brand-bg transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
           <div className="text-center mb-8 sm:mb-10 space-y-4">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Trending Now</h2>
@@ -252,7 +252,7 @@ export default function Home() {
       </section>
 
       {/* 5. ZONIRAZ WORLD */}
-      <section className="py-8 sm:py-12 bg-white">
+      <section className="py-8 sm:py-12 bg-white dark:bg-brand-accent transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
           <div className="text-center mb-8 sm:mb-10 space-y-2">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Zoniraz World</h2>
@@ -280,7 +280,7 @@ export default function Home() {
       </section>
 
       {/* 6. NEW ARRIVALS */}
-      <section className="py-12 bg-white">
+      <section className="py-12 bg-white dark:bg-brand-accent transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
           <div className="w-full bg-[#B3A99B] rounded-3xl overflow-hidden flex flex-col lg:flex-row shadow-soft">
             <div className="w-full lg:w-1/3 text-white p-6 sm:p-10 flex flex-col justify-center space-y-4">
@@ -295,7 +295,7 @@ export default function Home() {
             </div>
             <div className="w-full lg:w-2/3 grid grid-cols-2 p-4 gap-4">
               {products.slice(0, 2).map((prod: any, i: number) => (
-                <Link href={`/product/${prod.slug}`} key={i} className="flex-1 bg-white border-[6px] border-white rounded-2xl shadow-md relative group aspect-[4/5] overflow-hidden cursor-pointer block">
+                <Link href={`/product/${prod.slug}`} key={i} className="flex-1 bg-white dark:bg-[#1a1614] border-[6px] border-white dark:border-brand-border/10 rounded-2xl shadow-md relative group aspect-[4/5] overflow-hidden cursor-pointer block">
                   <Image src={resolveProductImage(prod.images?.[0])} alt={prod.name} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover transition-transform duration-1000 group-hover:scale-105" />
                   <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-sm px-3 py-1 text-[10px] text-white tracking-widest uppercase">
                     {prod.name} | {displayPrice(prod.basePrice || prod.price || 0, currentCurrency, rates)}
@@ -308,11 +308,11 @@ export default function Home() {
       </section>
 
       {/* 7. CURATED FOR YOU */}
-      <section className="py-12 bg-white">
+      <section className="py-12 bg-white dark:bg-brand-accent transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
           <div className="text-center mb-8 sm:mb-10 space-y-2">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Curated For You</h2>
-            <p className="text-[10px] sm:text-sm text-brand-text/60 uppercase tracking-widest">Shop By Gender</p>
+            <p className="text-[10px] sm:text-sm text-brand-text/60 dark:text-brand-text/80 uppercase tracking-widest">Shop By Gender</p>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
@@ -333,7 +333,7 @@ export default function Home() {
       </section>
 
       {/* 8. STYLING 101 */}
-      <section className="py-16 bg-white overflow-hidden flex flex-col items-center">
+      <section className="py-16 bg-white dark:bg-brand-accent overflow-hidden flex flex-col items-center transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12 text-center mb-12 sm:mb-16 space-y-2 w-full">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Styling 101 With Diamonds</h2>
           <p className="text-[10px] sm:text-sm text-brand-text/60 uppercase tracking-widest">Trendsetting diamond jewellery suited for every occasion</p>
@@ -345,12 +345,12 @@ export default function Home() {
       </section>
 
       {/* 9. ZONIRAZ ASSURANCE */}
-      <section className="py-16 bg-white border-y border-brand-text/5">
+      <section className="py-16 bg-white dark:bg-brand-accent border-y border-brand-text/5 transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
           <div className="flex flex-col md:flex-row items-center justify-between py-8 border-b border-brand-text/5 gap-8">
             <div className="text-center md:text-left">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Zoniraz <span className="text-[#8B2332]">Assurance</span></h2>
-              <p className="text-xs sm:text-sm text-brand-text/50 mt-2">Crafted by experts, cherished by you</p>
+              <p className="text-xs sm:text-sm text-brand-text/50 dark:text-brand-text/70 mt-2">Crafted by experts, cherished by you</p>
             </div>
             <div className="flex flex-wrap justify-center items-center gap-6 md:gap-16">
               <div className="flex flex-col items-center text-center">
@@ -371,7 +371,7 @@ export default function Home() {
           <div className="flex flex-col items-center py-16 text-center space-y-8">
             <div>
               <h2 className="text-3xl font-serif text-brand-text tracking-tight mb-2">Exchange Program</h2>
-              <p className="text-sm text-brand-text/50">Trusted by 2.8M+ families</p>
+              <p className="text-sm text-brand-text/50 dark:text-brand-text/70">Trusted by 2.8M+ families</p>
             </div>
 
             <button className="w-full sm:w-auto px-8 py-3 border border-[#8B2332]/30 rounded-full text-[10px] uppercase tracking-widest font-bold text-brand-text hover:bg-brand-bg transition-colors flex items-center justify-center space-x-2">
@@ -381,7 +381,7 @@ export default function Home() {
 
             <div className="w-full flex items-center justify-center space-x-4">
               <div className="h-[1px] w-full max-w-[200px] bg-brand-text/10"></div>
-              <p className="text-xs text-brand-text/40 italic">Trust us to be part of your precious moments and to deliver jewellery that you'll cherish forever.</p>
+              <p className="text-xs text-brand-text/40 dark:text-brand-text/60 italic">Trust us to be part of your precious moments and to deliver jewellery that you'll cherish forever.</p>
               <div className="h-[1px] w-full max-w-[200px] bg-brand-text/10"></div>
             </div>
 
@@ -403,7 +403,7 @@ export default function Home() {
       </section>
 
       {/* 10. GIFTING & OLD GOLD */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-brand-accent transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12 grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="relative aspect-square md:aspect-auto md:h-[400px] rounded-3xl overflow-hidden bg-[#F6EDEB] group p-10 flex flex-col items-center justify-center text-center">
             <div className="absolute top-0 bottom-0 left-12 w-8 bg-[#8B2332]"></div>
@@ -421,13 +421,13 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative aspect-square md:aspect-auto md:h-[400px] rounded-3xl overflow-hidden bg-[#FFFBF0] group p-12 flex flex-col justify-center border-[12px] border-white shadow-sm">
+          <div className="relative aspect-square md:aspect-auto md:h-[400px] rounded-3xl overflow-hidden bg-[#FFFBF0] dark:bg-brand-bg group p-12 flex flex-col justify-center border-[12px] border-white dark:border-brand-border/10 shadow-sm">
             <div className="space-y-6">
               <div className="w-16 h-16 border border-brand-gold rounded-t-full flex items-center justify-center mb-6">
                 <RotateCcw size={24} className="text-brand-gold" />
               </div>
               <h3 className="text-4xl font-serif text-brand-text max-w-[250px] leading-tight">Exchange your Old Gold for 100% Value!</h3>
-              <p className="text-brand-text/60 text-xs leading-relaxed max-w-[250px]">Unlock full value for your old gold today with our <span className="font-bold text-brand-text">Exchange Program!</span></p>
+              <p className="text-brand-text/60 dark:text-brand-text/80 text-xs leading-relaxed max-w-[250px]">Unlock full value for your old gold today with our <span className="font-bold text-brand-text">Exchange Program!</span></p>
               <button className="w-full sm:w-max px-6 py-3 border border-brand-gold bg-white rounded-full text-[10px] uppercase tracking-widest font-bold text-brand-text hover:bg-brand-gold hover:text-white transition-all flex items-center justify-center space-x-2">
                 <span>Know more</span>
                 <ArrowRight size={10} />
@@ -438,11 +438,11 @@ export default function Home() {
       </section>
 
       {/* 11. ZONIRAZ EXPERIENCE */}
-      <section className="py-8 sm:py-16 bg-white border-t border-brand-text/5">
+      <section className="py-8 sm:py-16 bg-white dark:bg-brand-accent border-t border-brand-text/5 transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
           <div className="text-center mb-8 sm:mb-10 space-y-2">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Zoniraz Experience</h2>
-            <p className="text-[10px] sm:text-sm text-brand-text/60 uppercase tracking-widest">Find a Boutique or Book a Consultation</p>
+            <p className="text-[10px] sm:text-sm text-brand-text/60 dark:text-brand-text/80 uppercase tracking-widest">Find a Boutique or Book a Consultation</p>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
@@ -454,7 +454,7 @@ export default function Home() {
               { img: '/images/images/product/default-16345643112830.jpg', text: 'BLOGS' },
               { img: '/images/images/product/yellow-gold-1601102976168.jpg', text: 'JEWELLERY GUIDE' }
             ].map((store, i) => (
-              <div key={i} className="group cursor-pointer bg-white border border-brand-text/5 flex flex-col rounded-2xl overflow-hidden shadow-soft hover:shadow-premium transition-all">
+              <div key={i} className="group cursor-pointer bg-white dark:bg-brand-white border border-brand-text/5 flex flex-col rounded-2xl overflow-hidden shadow-soft hover:shadow-premium transition-all">
                 <div className="relative aspect-square overflow-hidden">
                   <Image src={store.img} alt={store.text} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
                 </div>

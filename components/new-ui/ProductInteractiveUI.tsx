@@ -185,14 +185,14 @@ export function ProductInteractiveUI({ product }: { product: any }) {
   };
 
   return (
-    <div className="bg-brand-bg min-h-screen pb-24">
+    <div className="bg-brand-bg text-brand-text min-h-screen pb-24 transition-colors duration-500">
       {/* Top 2-Column Section */}
       <Section className="!pt-36 !pb-12">
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
           
           {/* LEFT COLUMN (50%) - Image Gallery */}
           <div className="w-full lg:w-[50%] flex flex-col space-y-3 animate-in fade-in slide-in-from-left-8 duration-1000">
-            <div className="relative aspect-square w-full max-h-[350px] md:max-h-[420px] rounded-[24px] overflow-hidden bg-white border border-brand-border shadow-soft group mx-auto">
+            <div className="relative aspect-square w-full max-h-[350px] md:max-h-[420px] rounded-[24px] overflow-hidden bg-brand-white dark:bg-[#1a1614] border border-brand-border dark:border-brand-border/20 shadow-soft group mx-auto transition-colors">
               <ProductImageZoom 
                 image={resolveProductImage(product.images?.[selectedImage])} 
                 name={product.name} 
@@ -205,12 +205,12 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                     "w-9 h-9 rounded-full flex items-center justify-center border transition-all shadow-soft active:scale-90",
                     isWishlisted 
                       ? "bg-brand-gold border-brand-gold text-white" 
-                      : "bg-white/90 backdrop-blur-md border-brand-border text-brand-text hover:bg-brand-gold hover:text-white"
+                      : "bg-white/90 dark:bg-black/40 backdrop-blur-md border-brand-border dark:border-white/10 text-brand-text hover:bg-brand-gold hover:text-white"
                   )}
                 >
                   <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} className={cn(isWishlisted && "animate-pulse")} />
                 </button>
-                <button className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center border border-brand-border text-brand-text hover:bg-brand-gold hover:text-white transition-all shadow-soft">
+                <button className="w-9 h-9 rounded-full bg-white/90 dark:bg-black/40 backdrop-blur-md flex items-center justify-center border border-brand-border dark:border-white/10 text-brand-text hover:bg-brand-gold hover:text-white transition-all shadow-soft">
                   <Share2 size={16} />
                 </button>
               </div>
@@ -224,7 +224,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                     onClick={() => setSelectedImage(i)}
                     className={cn(
                       "relative w-14 h-14 md:w-16 md:h-16 flex-shrink-0 rounded-[12px] overflow-hidden border-2 transition-all shadow-sm",
-                      selectedImage === i ? "border-brand-gold" : "border-transparent bg-white hover:border-brand-border"
+                      selectedImage === i ? "border-brand-gold" : "border-transparent bg-white dark:bg-[#1a1614] hover:border-brand-border dark:hover:border-white/10"
                     )}
                   >
                     <Image src={resolveProductImage(img)} alt={`${product.name} ${i}`} fill className="object-cover p-1" sizes="64px" />
@@ -251,14 +251,14 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                     {displayPrice(pricing.totalPrice, currentCurrency, rates)}
                   </p>
                   <div className="flex flex-col">
-                    <span className="text-[10px] uppercase tracking-widest text-brand-text/40">MRP Incl. Taxes</span>
+                    <span className="text-[10px] uppercase tracking-widest text-brand-text/40 dark:text-brand-text/60">MRP Incl. Taxes</span>
                     <span className="text-[9px] text-brand-gold font-black uppercase tracking-widest mt-0.5">
                       {config.purity} {config.metal} {config.size ? `| Size ${config.size}` : ''} {config.stone !== 'None' ? `| ${config.stone}` : ''}
                     </span>
                   </div>
                 </div>
                 
-                <div className="flex items-center space-x-4 text-[10px] text-brand-text/50 uppercase tracking-widest font-bold">
+                <div className="flex items-center space-x-4 text-[10px] text-brand-text/50 dark:text-brand-text/70 uppercase tracking-widest font-bold">
                   <div className="flex items-center space-x-1">
                     <Scale size={12} className="text-brand-gold" />
                     <span>Est. Weight: {pricing.estimatedWeight}g</span>
@@ -293,8 +293,8 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                       className={cn(
                         "px-5 py-3.5 rounded-2xl text-[10px] uppercase tracking-widest font-bold border transition-all duration-300 touch-safe-hit",
                         `${config.purity} ${config.metal}` === option 
-                          ? "bg-brand-text text-white border-brand-text shadow-premium" 
-                          : "bg-white text-brand-text/70 border-brand-text/10 active:border-brand-gold active:text-brand-text",
+                          ? "bg-brand-text dark:bg-brand-gold text-white border-brand-text dark:border-brand-gold shadow-premium" 
+                          : "bg-white dark:bg-[#1a1614] text-brand-text/70 dark:text-brand-text/80 border-brand-text/10 dark:border-white/5 active:border-brand-gold active:text-brand-text",
                         showValidation && isFieldMissing('metal', validation.missingFields) && "border-red-200 bg-red-50/30"
                       )}
                     >
@@ -315,7 +315,15 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                       </span>
                     )}
                    </div>
-                   <button className="text-[9px] text-brand-gold underline tracking-widest">Not sure?</button>
+                   <button 
+                     onClick={() => {
+                       document.getElementById('size-guide')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                       window.dispatchEvent(new CustomEvent('open-ring-guide'));
+                     }}
+                     className="text-[9px] text-brand-gold underline tracking-widest"
+                   >
+                     Not sure?
+                   </button>
                 </div>
                 <div className="flex flex-wrap gap-3">
                   {['7', '8', '9', '10', '11'].map((size) => (
@@ -328,8 +336,8 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                       className={cn(
                         "w-14 h-14 flex items-center justify-center rounded-2xl text-[11px] font-bold border transition-all duration-300 touch-safe-hit",
                         config.size === size 
-                          ? "bg-brand-text text-white border-brand-text shadow-premium" 
-                          : "bg-white text-brand-text/70 border-brand-text/10 active:border-brand-gold active:text-brand-text",
+                          ? "bg-brand-text dark:bg-brand-gold text-white border-brand-text dark:border-brand-gold shadow-premium" 
+                          : "bg-white dark:bg-[#1a1614] text-brand-text/70 dark:text-brand-text/80 border-brand-text/10 dark:border-white/5 active:border-brand-gold active:text-brand-text",
                         showValidation && isFieldMissing('size', validation.missingFields) && "border-red-200 bg-red-50/30"
                       )}
                     >
@@ -357,13 +365,13 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                         setConfig({ ...config, stone: q });
                         if (showValidation) setShowValidation(false);
                       }}
-                      className={cn(
-                        "px-4 py-2.5 rounded-xl text-[9px] uppercase tracking-widest font-bold border transition-all duration-300",
-                        config.stone === q
-                          ? "bg-brand-text text-white border-brand-text shadow-premium" 
-                          : "bg-white text-brand-text/70 border-brand-text/10 hover:border-brand-gold hover:text-brand-text",
-                        showValidation && isFieldMissing('stone', validation.missingFields) && "border-red-200"
-                      )}
+                        className={cn(
+                          "px-4 py-2.5 rounded-xl text-[9px] uppercase tracking-widest font-bold border transition-all duration-300",
+                          config.stone === q
+                            ? "bg-brand-text dark:bg-brand-gold text-white border-brand-text dark:border-brand-gold shadow-premium" 
+                            : "bg-white dark:bg-[#1a1614] text-brand-text/70 dark:text-brand-text/80 border-brand-text/10 dark:border-white/5 hover:border-brand-gold hover:text-brand-text",
+                          showValidation && isFieldMissing('stone', validation.missingFields) && "border-red-200"
+                        )}
                     >
                       {q.replace('-', ' ')}
                     </button>
@@ -373,23 +381,23 @@ export function ProductInteractiveUI({ product }: { product: any }) {
             </div>
 
             {/* Live Config Summary */}
-            <div className="p-6 rounded-3xl bg-brand-bg border border-brand-gold/10 space-y-3">
+            <div className="p-6 rounded-3xl bg-brand-bg dark:bg-[#1a1614] border border-brand-gold/10 space-y-3 transition-colors">
               <h4 className="text-[10px] font-bold uppercase tracking-widest text-brand-gold">Configuration Summary</h4>
               <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-1">
-                   <p className="text-[9px] text-brand-text/40 uppercase">Metal & Purity</p>
+                   <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Metal & Purity</p>
                    <p className="text-[11px] font-bold text-brand-text">{config.purity} {config.metal}</p>
                  </div>
                  <div className="space-y-1">
-                   <p className="text-[9px] text-brand-text/40 uppercase">Stone Quality</p>
+                   <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Stone Quality</p>
                    <p className="text-[11px] font-bold text-brand-text">{config.stone?.replace('-', ' ')}</p>
                  </div>
                  <div className="space-y-1">
-                   <p className="text-[9px] text-brand-text/40 uppercase">Estimated Weight</p>
+                   <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Estimated Weight</p>
                    <p className="text-[11px] font-bold text-brand-text">{pricing.estimatedWeight}g</p>
                  </div>
                  <div className="space-y-1">
-                   <p className="text-[9px] text-brand-text/40 uppercase">Selected Size</p>
+                   <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Selected Size</p>
                    <p className="text-[11px] font-bold text-brand-text">{config.size}</p>
                  </div>
               </div>
@@ -408,14 +416,16 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                 {isAdded ? <><Check size={18} className="mr-2 inline" /> Added to Cart</> : 
                  (!validation.isValid && showValidation) ? 'Complete Selection' : 'Add to Cart'}
               </Button>
-              <Button size="lg" variant="outline" className="w-full !py-5 shadow-soft border-brand-text text-brand-text hover:bg-brand-text hover:text-white" onClick={() => window.location.href = '/cart'}>
+              <Button size="lg" variant="outline" className="w-full !py-5 shadow-soft border-brand-text dark:border-brand-gold text-brand-text dark:text-brand-gold hover:bg-brand-text dark:hover:bg-brand-gold hover:text-white" onClick={() => window.location.href = '/cart'}>
                 Buy It Now
               </Button>
             </div>
 
             {/* Educational Guides */}
             <div className="space-y-3 pt-6 border-t border-brand-text/5">
-              <RingSizeGuide />
+              <div id="size-guide">
+                <RingSizeGuide />
+              </div>
               <DiamondGuide />
               <GoldPurityGuide />
             </div>
@@ -426,7 +436,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
 
       {/* Product Information */}
       <Section className="!py-16">
-        <div className="bg-white rounded-[50px] p-10 md:p-16 border border-brand-text/5 shadow-premium">
+        <div className="bg-white dark:bg-brand-white rounded-[50px] p-10 md:p-16 border border-brand-text/5 shadow-premium transition-colors">
           <div className="flex items-center space-x-6 mb-12 border-b border-brand-text/5 pb-8">
             <Info size={24} className="text-brand-gold" />
             <h2 className="text-2xl font-serif text-brand-text italic">Product Details</h2>
@@ -435,7 +445,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             <div className="space-y-6">
               <h3 className="text-[11px] uppercase tracking-[0.3em] font-bold text-brand-text">The Design</h3>
-              <p className="text-brand-text/60 text-sm leading-relaxed">
+              <p className="text-brand-text/60 dark:text-brand-text/80 text-sm leading-relaxed">
                 {product.description} This masterfully crafted piece showcases the perfect balance of heritage techniques and contemporary aesthetics.
               </p>
             </div>
@@ -445,8 +455,8 @@ export function ProductInteractiveUI({ product }: { product: any }) {
               <div className="grid grid-cols-2 gap-y-6 gap-x-8">
                 {Object.entries(specs || {}).map(([key, value]) => (
                   key !== 'price' && (
-                    <div key={key} className="space-y-2 border-l-2 border-brand-text/5 pl-4">
-                      <p className="text-brand-text/40 text-[9px] uppercase tracking-[0.2em] font-bold">{key}</p>
+                    <div key={key} className="space-y-2 border-l-2 border-brand-text/5 dark:border-white/10 pl-4 transition-colors">
+                      <p className="text-brand-text/40 dark:text-brand-text/60 text-[9px] uppercase tracking-[0.2em] font-bold">{key}</p>
                       <p className="text-brand-text text-sm font-medium">{value as string}</p>
                     </div>
                   )

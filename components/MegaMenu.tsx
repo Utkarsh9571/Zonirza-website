@@ -35,12 +35,12 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
 
   return (
     <div 
-      className="w-full bg-white rounded-[40px] border border-brand-text/5 shadow-premium z-50 animate-in slide-in-from-top-1 fade-in duration-300 overflow-hidden relative pointer-events-auto flex flex-col max-h-[90vh]"
+      className="w-full bg-white dark:bg-brand-white rounded-[40px] border border-brand-text/5 dark:border-white/5 shadow-premium z-50 animate-in slide-in-from-top-1 fade-in duration-300 overflow-hidden relative pointer-events-auto flex flex-col max-h-[90vh]"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
       {/* 1. TOP MAIN CATEGORY NAVIGATION TABS */}
-      <div className="border-b border-brand-text/5 px-8 flex justify-center">
+      <div className="border-b border-brand-text/5 dark:border-white/5 px-8 flex justify-center">
         <div className="flex items-center space-x-1 overflow-x-auto no-scrollbar">
           {NAVIGATION_DATA.map((tab) => {
             const Icon = tab.icon;
@@ -59,7 +59,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
                 }}
                 className={cn(
                   "px-5 py-6 relative transition-all duration-300 flex items-center space-x-2 group whitespace-nowrap touch-safe-hit min-h-[64px]",
-                  activeTabId === tab.id ? "text-brand-text border-b-2 border-brand-text bg-brand-bg/30" : "text-brand-text/60"
+                  activeTabId === tab.id ? "text-brand-text border-b-2 border-brand-text dark:border-brand-gold bg-brand-bg/30 dark:bg-brand-accent/50" : "text-brand-text/60 dark:text-brand-text/70"
                 )}
               >
                 {Icon && <Icon size={16} strokeWidth={1.5} className={cn("transition-colors", activeTabId === tab.id ? "text-brand-gold" : "text-brand-text/40")} />}
@@ -74,7 +74,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
 
       <div className="flex flex-1 overflow-hidden h-full">
         {/* 2. LEFT SIDEBAR FILTERS */}
-        <aside className="w-64 border-r border-brand-text/5 p-6 overflow-y-auto no-scrollbar hidden lg:block bg-brand-bg/10">
+        <aside className="w-64 border-r border-brand-text/5 dark:border-white/5 p-6 overflow-y-auto no-scrollbar hidden lg:block bg-brand-bg/10 dark:bg-brand-bg/20">
           <div className="space-y-2">
             {activeTab.filters.map((filterGroup, idx) => (
               <button
@@ -92,8 +92,8 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
                 className={cn(
                   "w-full text-left px-5 py-4 rounded-2xl transition-all duration-300 relative touch-safe-hit group",
                   activeFilter === filterGroup.title 
-                    ? "bg-white text-brand-text font-bold shadow-soft border border-brand-text/5" 
-                    : "text-brand-text/50 hover:text-brand-text hover:bg-white/50"
+                    ? "bg-white dark:bg-brand-bg text-brand-text font-bold shadow-soft border border-brand-text/5 dark:border-white/5" 
+                    : "text-brand-text/50 dark:text-brand-text/70 hover:text-brand-text hover:bg-white/50 dark:hover:bg-white/5"
                 )}
               >
                 {activeFilter === filterGroup.title && (
@@ -131,7 +131,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
                       >
                         {sub.image ? (
                           <>
-                            <div className="aspect-square rounded-[20px] overflow-hidden border border-brand-text/5 shadow-soft bg-brand-bg relative">
+                            <div className="aspect-square rounded-[20px] overflow-hidden border border-brand-text/5 dark:border-white/5 shadow-soft bg-brand-bg dark:bg-brand-bg/50 relative">
                               <img 
                                 src={sub.image} 
                                 alt={sub.name}
@@ -145,7 +145,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
                           </>
                         ) : (
                           <>
-                            <div className="w-12 h-12 rounded-full bg-brand-bg flex items-center justify-center text-xl transition-transform duration-300 group-hover:scale-110 border border-brand-text/5">
+                            <div className="w-12 h-12 rounded-full bg-brand-bg dark:bg-brand-bg/50 flex items-center justify-center text-xl transition-transform duration-300 group-hover:scale-110 border border-brand-text/5 dark:border-white/5">
                               {sub.thumbnail || '✨'}
                             </div>
                             <span className="text-[13px] font-medium text-brand-text/80 group-hover:text-brand-text transition-colors">
@@ -167,7 +167,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
                         className="flex items-center space-x-4 group border-b border-brand-text/5 pb-4"
                         onClick={onClose}
                       >
-                        <div className="w-8 h-8 rounded-full bg-brand-bg flex items-center justify-center text-sm transition-all duration-300 group-hover:bg-brand-gold group-hover:text-white">
+                        <div className="w-8 h-8 rounded-full bg-brand-bg dark:bg-brand-bg/50 flex items-center justify-center text-sm transition-all duration-300 group-hover:bg-brand-gold group-hover:text-white border border-brand-text/5 dark:border-white/5">
                           <ArrowRight size={14} />
                         </div>
                         <span className="text-[14px] font-medium text-brand-text/70 group-hover:text-brand-gold transition-colors">
@@ -183,14 +183,14 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
             {/* Bottom View All Banner */}
             {activeTab.bottomBanner && (
               <div className="mt-auto pt-8 border-t border-brand-text/5">
-                <div className="bg-[#FAF7F5] rounded-3xl p-6 flex items-center justify-between group overflow-hidden relative">
+                <div className="bg-[#FAF7F5] dark:bg-brand-bg/40 rounded-3xl p-6 flex items-center justify-between group overflow-hidden relative">
                   <div className="flex items-center space-x-6 relative z-10">
                     <div className="w-20 h-14 rounded-xl overflow-hidden shadow-soft">
                       <img src={activeTab.bottomBanner.image} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                     </div>
                     <div>
                       <h4 className="text-[13px] font-bold text-brand-text mb-1">{activeTab.bottomBanner.title}</h4>
-                      <p className="text-[11px] text-brand-text/50">{activeTab.bottomBanner.description}</p>
+                      <p className="text-[11px] text-brand-text/50 dark:text-brand-text/60">{activeTab.bottomBanner.description}</p>
                     </div>
                   </div>
                   <Link 
@@ -208,7 +208,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
           </main>
 
           {/* 4. RIGHT SIDE PROMO BANNER */}
-          <aside className="w-80 p-8 border-l border-brand-text/5 hidden xl:block">
+          <aside className="w-80 p-8 border-l border-brand-text/5 dark:border-white/5 hidden xl:block">
             {activeTab.promotions.map((promo, idx) => (
               <div key={idx} className="flex flex-col h-full">
                 <Link href={promo.href} className="group flex-1 flex flex-col" onClick={onClose}>

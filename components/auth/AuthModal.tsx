@@ -91,7 +91,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
       />
 
       {/* Modal Container */}
-      <div className="relative w-full max-w-5xl h-full max-h-[700px] bg-[#fdfaf5] rounded-[40px] shadow-premium flex flex-col md:flex-row overflow-hidden animate-in zoom-in slide-in-from-bottom-8 duration-700 pointer-events-auto z-10">
+      <div className="relative w-full max-w-5xl h-full max-h-[700px] bg-[#fdfaf5] dark:bg-brand-bg rounded-[40px] shadow-premium flex flex-col md:flex-row overflow-hidden animate-in zoom-in slide-in-from-bottom-8 duration-700 pointer-events-auto z-10 transition-colors">
         
         {/* Close Button - Guaranteed top layer */}
         <button 
@@ -100,19 +100,19 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             e.stopPropagation();
             onClose();
           }}
-          className="absolute top-6 right-6 md:top-8 md:right-8 z-[60] w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-soft text-brand-text/40 hover:text-brand-gold hover:rotate-90 transition-all duration-500 active:scale-90 touch-safe-hit"
+          className="absolute top-6 right-6 md:top-8 md:right-8 z-[60] w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-[#1a1614] shadow-soft text-brand-text/40 hover:text-brand-gold hover:rotate-90 transition-all duration-500 active:scale-90 touch-safe-hit border border-transparent dark:border-white/10"
         >
           <X size={24} />
         </button>
 
         {/* LEFT PANEL: Branding & Visuals */}
-        <div className="hidden md:flex w-[45%] bg-[#fff7e9] p-12 flex-col items-center justify-center text-center relative overflow-hidden">
+        <div className="hidden md:flex w-[45%] bg-[#fff7e9] dark:bg-brand-accent p-12 flex-col items-center justify-center text-center relative overflow-hidden transition-colors">
           {/* Decorative Blobs */}
           <div className="absolute top-[-10%] left-[-10%] w-64 h-64 bg-brand-gold/10 rounded-full blur-[80px]" />
           <div className="absolute bottom-[-10%] right-[-10%] w-64 h-64 bg-brand-gold/5 rounded-full blur-[80px]" />
           
           <div className="relative z-10 space-y-8">
-            <div className="w-48 h-48 mx-auto rounded-full bg-white p-4 shadow-premium border border-brand-gold/10 flex items-center justify-center relative">
+            <div className="w-48 h-48 mx-auto rounded-full bg-white dark:bg-brand-bg p-4 shadow-premium border border-brand-gold/10 flex items-center justify-center relative transition-colors">
                <div className="absolute inset-4 rounded-full border-2 border-dashed border-brand-gold/20 animate-[spin_20s_linear_infinite]" />
                <Diamond size={64} className="text-brand-gold" strokeWidth={1} />
             </div>
@@ -121,7 +121,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
               <h2 className="text-4xl font-serif text-brand-text italic leading-tight">
                 Personalized <br /> <span className="not-italic font-bold text-brand-gold">Curations</span>
               </h2>
-              <p className="text-[12px] uppercase tracking-[0.3em] font-bold text-brand-text/50 max-w-[250px] mx-auto leading-relaxed">
+              <p className="text-[12px] uppercase tracking-[0.3em] font-bold text-brand-text/50 dark:text-brand-text/70 max-w-[250px] mx-auto leading-relaxed">
                 Explore masterpieces tailored to your exquisite taste
               </p>
             </div>
@@ -137,7 +137,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
         </div>
 
         {/* RIGHT PANEL: Form */}
-        <div className="flex-1 bg-white p-8 md:p-16 flex flex-col justify-center relative">
+        <div className="flex-1 bg-white dark:bg-[#0f0d0c] p-8 md:p-16 flex flex-col justify-center relative transition-colors">
           <div className={cn(
             "transition-all duration-500 transform",
             isAnimating ? "opacity-0 scale-95" : "opacity-100 scale-100"
@@ -148,7 +148,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                   <h3 className="text-3xl font-serif text-brand-text">
                     {emailSent ? "Check Your Inbox" : "Welcome to Zoniraz!"}
                   </h3>
-                  <p className="text-sm text-brand-text/60">
+                  <p className="text-sm text-brand-text/60 dark:text-brand-text/80 transition-colors">
                     {emailSent 
                       ? "We've sent an exclusive access link to your email." 
                       : "Log in or Sign up to get exclusive privileges"}
@@ -156,13 +156,13 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                 </div>
 
                 {emailSent ? (
-                  <div className="bg-brand-bg/30 p-10 rounded-[35px] border border-brand-gold/10 text-center space-y-6 animate-in fade-in zoom-in duration-700">
-                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto shadow-premium border border-brand-gold/5">
+                  <div className="bg-brand-bg/30 dark:bg-white/5 p-10 rounded-[35px] border border-brand-gold/10 text-center space-y-6 animate-in fade-in zoom-in duration-700 transition-colors">
+                    <div className="w-20 h-20 bg-white dark:bg-brand-bg rounded-full flex items-center justify-center mx-auto shadow-premium border border-brand-gold/5 transition-colors">
                       <Mail className="text-brand-gold" size={32} />
                     </div>
                     <div className="space-y-2">
                       <p className="text-sm font-bold text-brand-text tracking-wide">{email}</p>
-                      <p className="text-[10px] uppercase tracking-[0.2em] text-brand-text/40 leading-relaxed">
+                      <p className="text-[10px] uppercase tracking-[0.2em] text-brand-text/40 dark:text-brand-text/60 leading-relaxed transition-colors">
                         Please click the link in the email to verify your identity and enter our collection.
                       </p>
                     </div>
@@ -204,7 +204,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                         {isLoading ? "Preparing Gateway..." : "Request Access Link"} <ArrowRight size={18} className="ml-3" />
                       </Button>
                       
-                      <p className="text-[10px] text-center text-brand-text/40 uppercase tracking-[0.2em] leading-relaxed">
+                      <p className="text-[10px] text-center text-brand-text/40 dark:text-brand-text/60 uppercase tracking-[0.2em] leading-relaxed transition-colors">
                         By continuing, I agree to <span className="text-brand-gold font-bold">Terms of Use</span> & <span className="text-brand-gold font-bold">Privacy Policy</span>
                       </p>
                     </div>
@@ -228,7 +228,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                         maxLength={1}
                         value={digit}
                         onChange={(e) => handleOtpChange(index, e.target.value)}
-                        className="w-12 h-14 md:w-14 md:h-16 text-center text-xl font-bold bg-brand-bg/30 border border-brand-text/10 rounded-2xl focus:border-brand-gold focus:ring-4 focus:ring-brand-gold/5 transition-all outline-none"
+                        className="w-12 h-14 md:w-14 md:h-16 text-center text-xl font-bold bg-brand-bg/30 dark:bg-white/5 border border-brand-text/10 dark:border-white/10 rounded-2xl focus:border-brand-gold focus:ring-4 focus:ring-brand-gold/5 transition-all outline-none"
                       />
                     ))}
                   </div>
@@ -280,7 +280,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                     <button 
                       type="button"
                       onClick={onClose}
-                      className="w-full text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 hover:text-brand-gold transition-colors"
+                      className="w-full text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60 hover:text-brand-gold transition-colors"
                     >
                       Skip for now
                     </button>

@@ -1,11 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Ruler } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function RingSizeGuide() {
   const [isOpen, setIsOpen] = useState(false);
+  
+  useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener('open-ring-guide', handleOpen);
+    return () => window.removeEventListener('open-ring-guide', handleOpen);
+  }, []);
 
   const sizes = [
     { in: '1.81 cm', size: '8' },
@@ -18,7 +24,7 @@ export function RingSizeGuide() {
   ];
 
   return (
-    <div className="border border-brand-text/5 rounded-2xl overflow-hidden bg-white/50 backdrop-blur-sm transition-all duration-300">
+    <div className="border border-brand-text/5 dark:border-white/5 rounded-2xl overflow-hidden bg-white/50 dark:bg-brand-white/10 backdrop-blur-sm transition-all duration-300">
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className="w-full p-4 flex items-center justify-between text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text hover:bg-brand-bg transition-colors"
@@ -36,15 +42,15 @@ export function RingSizeGuide() {
             Measuring your ring size is easy. You can use a piece of string or a strip of paper. Wrap it around the base of the finger you want to measure. Mark the point where the ends meet. Measure the length with a ruler in millimeters.
           </p>
           
-          <div className="overflow-hidden rounded-xl border border-brand-text/5">
+          <div className="overflow-hidden rounded-xl border border-brand-text/5 dark:border-white/5">
             <table className="w-full text-[10px]">
-              <thead className="bg-brand-bg text-brand-text/40">
+              <thead className="bg-brand-bg dark:bg-brand-bg/50 text-brand-text/40 dark:text-brand-text/50">
                 <tr>
                   <th className="p-3 text-left font-bold uppercase tracking-widest">Diameter (Inner)</th>
                   <th className="p-3 text-left font-bold uppercase tracking-widest">Indian/US Size</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-brand-text/5">
+              <tbody className="divide-y divide-brand-text/5 dark:divide-white/5">
                 {sizes.map((s, i) => (
                   <tr key={i} className="hover:bg-brand-bg/30 transition-colors">
                     <td className="p-3 text-brand-text font-medium">{s.in}</td>

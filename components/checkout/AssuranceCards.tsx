@@ -27,10 +27,10 @@ const ASSURANCES = [
 
 export function AssuranceCards() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-12 border-t border-brand-text/5">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-12 border-t border-brand-text/5 dark:border-white/5 transition-colors">
       {ASSURANCES.map((item, idx) => (
-        <div key={idx} className="p-8 bg-white/40 backdrop-blur-sm rounded-[35px] border border-brand-text/5 flex items-start space-x-6 hover:shadow-premium transition-all duration-500 group">
-          <div className="p-4 bg-white rounded-2xl shadow-soft group-hover:scale-110 transition-transform duration-500">
+        <div key={idx} className="p-8 bg-white/40 dark:bg-white/5 backdrop-blur-sm rounded-[35px] border border-brand-text/5 dark:border-white/5 flex items-start space-x-6 hover:shadow-premium transition-all duration-500 group">
+          <div className="p-4 bg-white dark:bg-brand-bg rounded-2xl shadow-soft group-hover:scale-110 transition-transform duration-500">
             {item.icon}
           </div>
           <div className="space-y-2">

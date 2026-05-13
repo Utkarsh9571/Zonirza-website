@@ -17,9 +17,9 @@ export const AuthInput = React.forwardRef<HTMLInputElement, AuthInputProps>(
           <input
             ref={ref}
             className={cn(
-              "w-full bg-white/60 backdrop-blur-sm border border-brand-text/10 rounded-2xl px-6 py-4 text-sm text-brand-text placeholder:text-brand-text/40 outline-none transition-all duration-500",
-              "focus:border-brand-gold/40 focus:bg-white focus:shadow-premium focus:ring-4 focus:ring-brand-gold/5",
-              error ? "border-red-400" : "hover:border-brand-text/20",
+              "w-full bg-white/60 dark:bg-white/5 backdrop-blur-sm border border-brand-text/10 dark:border-white/10 rounded-2xl px-6 py-4 text-sm text-brand-text dark:text-brand-text/90 placeholder:text-brand-text/40 dark:placeholder:text-brand-text/30 outline-none transition-all duration-500",
+              "focus:border-brand-gold/40 dark:focus:border-brand-gold/60 focus:bg-white dark:focus:bg-brand-accent focus:shadow-premium focus:ring-4 focus:ring-brand-gold/5",
+              error ? "border-red-400" : "hover:border-brand-text/20 dark:hover:border-white/20",
               className
             )}
             {...props}

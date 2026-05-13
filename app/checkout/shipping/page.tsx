@@ -66,7 +66,7 @@ export default function ShippingPage() {
 
 
   return (
-    <div className="bg-brand-bg min-h-screen pt-24 pb-32">
+    <div className="bg-brand-bg text-brand-text min-h-screen pt-24 pb-32 transition-colors duration-500">
       <div className="max-w-[1400px] mx-auto px-6">
         
         {/* Step Indicator */}
@@ -110,8 +110,8 @@ export default function ShippingPage() {
                       className={cn(
                         "relative p-8 rounded-[40px] border transition-all duration-500 cursor-pointer group",
                         selectedAddressId === address.id 
-                          ? "bg-white border-brand-gold shadow-premium" 
-                          : "bg-white/40 border-brand-text/5 hover:border-brand-text/10"
+                          ? "bg-white dark:bg-brand-white border-brand-gold shadow-premium" 
+                          : "bg-white/40 dark:bg-white/5 border-brand-text/5 dark:border-white/5 hover:border-brand-text/10"
                       )}
                     >
                       {selectedAddressId === address.id && (
@@ -124,7 +124,7 @@ export default function ShippingPage() {
                         <div className="flex items-center space-x-3">
                           <div className={cn(
                             "w-10 h-10 rounded-full flex items-center justify-center transition-colors",
-                            selectedAddressId === address.id ? "bg-brand-gold text-white" : "bg-brand-bg text-brand-text/40"
+                            selectedAddressId === address.id ? "bg-brand-gold text-white" : "bg-brand-bg dark:bg-brand-bg text-brand-text/40"
                           )}>
                             {address.type === 'Home' ? <Home size={18} /> : <Briefcase size={18} />}
                           </div>
@@ -160,7 +160,7 @@ export default function ShippingPage() {
 
             {/* Address Form */}
             {showAddressForm && (
-              <div className="bg-white rounded-[50px] p-10 md:p-12 border border-brand-text/5 shadow-soft">
+              <div className="bg-white dark:bg-brand-white rounded-[50px] p-10 md:p-12 border border-brand-text/5 shadow-soft transition-colors">
                 <div className="flex items-center justify-between mb-10">
                   <h3 className="text-xl font-serif text-brand-text">Add New Delivery Address</h3>
                   {savedAddresses.length > 0 && (
@@ -184,7 +184,7 @@ export default function ShippingPage() {
                           name="fullName"
                           value={formData.fullName}
                           onChange={handleInputChange}
-                          className="w-full h-16 bg-brand-bg/50 border border-brand-text/5 rounded-2xl pl-16 pr-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30"
+                          className="w-full h-16 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl pl-16 pr-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 dark:text-brand-text/90"
                           placeholder="Utkarsh Sharma"
                         />
                       </div>
@@ -198,7 +198,7 @@ export default function ShippingPage() {
                           name="phone"
                           value={formData.phone}
                           onChange={handleInputChange}
-                          className="w-full h-16 bg-brand-bg/50 border border-brand-text/5 rounded-2xl pl-16 pr-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30"
+                          className="w-full h-16 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl pl-16 pr-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 dark:text-brand-text/90"
                           placeholder="9876543210"
                         />
                       </div>
@@ -214,7 +214,7 @@ export default function ShippingPage() {
                         name="addressLine"
                         value={formData.addressLine}
                         onChange={handleInputChange}
-                        className="w-full h-16 bg-brand-bg/50 border border-brand-text/5 rounded-2xl pl-16 pr-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30"
+                        className="w-full h-16 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl pl-16 pr-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 dark:text-brand-text/90"
                         placeholder="D-524, 25 Budh vihar"
                       />
                     </div>
@@ -228,7 +228,7 @@ export default function ShippingPage() {
                         name="city"
                         value={formData.city}
                         onChange={handleInputChange}
-                        className="w-full h-16 bg-brand-bg/50 border border-brand-text/5 rounded-2xl px-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30"
+                        className="w-full h-16 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl px-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 dark:text-brand-text/90"
                         placeholder="ALWAR"
                       />
                     </div>
@@ -239,7 +239,7 @@ export default function ShippingPage() {
                         name="state"
                         value={formData.state}
                         onChange={handleInputChange}
-                        className="w-full h-16 bg-brand-bg/50 border border-brand-text/5 rounded-2xl px-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30"
+                        className="w-full h-16 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl px-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 dark:text-brand-text/90"
                         placeholder="RAJASTHAN"
                       />
                     </div>
@@ -250,7 +250,7 @@ export default function ShippingPage() {
                         name="pincode"
                         value={formData.pincode}
                         onChange={handleInputChange}
-                        className="w-full h-16 bg-brand-bg/50 border border-brand-text/5 rounded-2xl px-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30"
+                        className="w-full h-16 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl px-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 dark:text-brand-text/90"
                         placeholder="301001"
                       />
                     </div>
@@ -267,8 +267,8 @@ export default function ShippingPage() {
                           className={cn(
                             "flex-1 h-14 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all",
                             formData.type === type 
-                              ? "bg-brand-text text-white border-brand-text" 
-                              : "bg-transparent text-brand-text/40 border-brand-text/5 hover:border-brand-text/20"
+                              ? "bg-brand-text dark:bg-brand-gold text-white border-brand-text dark:border-brand-gold" 
+                              : "bg-transparent text-brand-text/40 dark:text-brand-text/60 border-brand-text/5 dark:border-white/5 hover:border-brand-text/20"
                           )}
                         >
                           {type}
@@ -288,13 +288,13 @@ export default function ShippingPage() {
 
           {/* Right Side: Order Summary */}
           <div className="w-full lg:w-[480px]">
-            <div className="bg-white rounded-[50px] p-10 md:p-12 border border-brand-text/5 shadow-premium sticky top-32 space-y-10 animate-in fade-in slide-in-from-right duration-1000">
-              <h2 className="text-2xl font-serif text-brand-text text-center">Order Summary</h2>
+            <div className="bg-white dark:bg-brand-white rounded-[50px] p-10 md:p-12 border border-brand-text/5 shadow-premium sticky top-32 space-y-10 animate-in fade-in slide-in-from-right duration-1000 transition-colors">
+              <h2 className="text-2xl font-serif text-brand-text dark:text-brand-text/90 text-center">Order Summary</h2>
               
               <div className="space-y-6 border-b border-brand-text/5 pb-10">
                 {items.map((item) => (
                   <div key={item.cartItemId} className="flex space-x-4">
-                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-brand-bg relative border border-brand-text/5">
+                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-brand-bg dark:bg-brand-bg/50 relative border border-brand-text/5 transition-colors">
                       <Image src={getValidImageUrl(item.image)} alt={item.name} fill className="object-cover p-1" />
                     </div>
                     <div className="flex-1 space-y-1">

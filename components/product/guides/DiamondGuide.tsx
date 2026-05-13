@@ -15,7 +15,7 @@ export function DiamondGuide() {
   ];
 
   return (
-    <div className="border border-brand-text/5 rounded-2xl overflow-hidden bg-white/50 backdrop-blur-sm transition-all duration-300">
+    <div className="border border-brand-text/5 dark:border-white/5 rounded-2xl overflow-hidden bg-white/50 dark:bg-brand-white/10 backdrop-blur-sm transition-all duration-300">
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className="w-full p-4 flex items-center justify-between text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text hover:bg-brand-bg transition-colors"
@@ -35,10 +35,10 @@ export function DiamondGuide() {
           
           <div className="space-y-3">
             {clarityLevels.map((level, i) => (
-              <div key={i} className="p-3 rounded-xl border border-brand-text/5 bg-white transition-all hover:shadow-soft">
+              <div key={i} className="p-3 rounded-xl border border-brand-text/5 dark:border-white/5 bg-white dark:bg-brand-accent transition-all hover:shadow-soft">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-[10px] font-bold text-brand-gold">{level.grade}</span>
-                  <span className="text-[9px] uppercase tracking-widest text-brand-text/40">{level.label}</span>
+                  <span className="text-[9px] uppercase tracking-widest text-brand-text/40 dark:text-brand-text/50">{level.label}</span>
                 </div>
                 <p className="text-[10px] text-brand-text/60 leading-tight">{level.desc}</p>
               </div>
@@ -46,12 +46,12 @@ export function DiamondGuide() {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="aspect-square rounded-xl bg-brand-bg flex flex-col items-center justify-center p-4 text-center border border-brand-text/5">
-              <span className="text-[9px] uppercase tracking-widest text-brand-text/40 mb-2">Colorless</span>
+            <div className="aspect-square rounded-xl bg-brand-bg dark:bg-brand-bg/50 flex flex-col items-center justify-center p-4 text-center border border-brand-text/5 dark:border-white/5">
+              <span className="text-[9px] uppercase tracking-widest text-brand-text/40 dark:text-brand-text/50 mb-2">Colorless</span>
               <span className="text-lg font-serif italic text-brand-text font-bold">D-F</span>
             </div>
-            <div className="aspect-square rounded-xl bg-brand-bg flex flex-col items-center justify-center p-4 text-center border border-brand-text/5">
-              <span className="text-[9px] uppercase tracking-widest text-brand-text/40 mb-2">Near Colorless</span>
+            <div className="aspect-square rounded-xl bg-brand-bg dark:bg-brand-bg/50 flex flex-col items-center justify-center p-4 text-center border border-brand-text/5 dark:border-white/5">
+              <span className="text-[9px] uppercase tracking-widest text-brand-text/40 dark:text-brand-text/50 mb-2">Near Colorless</span>
               <span className="text-lg font-serif italic text-brand-text font-bold">G-J</span>
             </div>
           </div>

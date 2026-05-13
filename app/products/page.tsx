@@ -126,20 +126,20 @@ function ProductsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-white">
+    <div className="min-h-screen bg-brand-white dark:bg-brand-bg transition-colors duration-500">
       <Navbar />
       
       {/* Page Header */}
-      <div className="pt-32 pb-12 px-6 sm:px-12 bg-gradient-to-b from-[#FDF8F6] to-brand-white">
+      <div className="pt-32 pb-12 px-6 sm:px-12 bg-gradient-to-b from-[#FDF8F6] to-brand-white dark:from-[#1a1614] dark:to-brand-bg transition-all duration-700">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-2">
-              <div className="flex items-center space-x-2 text-[10px] uppercase tracking-widest text-brand-text/40 font-bold">
+              <div className="flex items-center space-x-2 text-[10px] uppercase tracking-widest text-brand-text/40 dark:text-brand-text/60 font-bold transition-colors">
                 <Link href="/" className="hover:text-brand-gold transition-colors">Home</Link>
                 <span>/</span>
-                <span className="text-brand-text/80">Products</span>
+                <span className="text-brand-text/80 dark:text-brand-text/90">Products</span>
               </div>
-              <h1 className="text-4xl sm:text-5xl font-serif font-bold text-brand-text capitalize">
+              <h1 className="text-4xl sm:text-5xl font-serif font-bold text-brand-text dark:text-brand-text/90 transition-colors capitalize">
                 {searchParams.get('category') 
                   ? searchParams.get('category')?.replace(/-/g, ' ') 
                   : searchParams.get('tag') 
@@ -148,12 +148,12 @@ function ProductsContent() {
                       ? `${searchParams.get('collection')?.replace(/-/g, ' ')} Collection`
                       : 'Exquisite Collection'}
               </h1>
-              <p className="text-brand-text/50 text-sm max-w-lg">
+              <p className="text-brand-text/50 dark:text-brand-text/70 text-sm max-w-lg transition-colors">
                 Discover our hand-curated selection of luxury jewellery, where timeless craftsmanship meets modern elegance.
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-[12px] font-bold text-brand-text/60 uppercase tracking-widest">
+              <span className="text-[12px] font-bold text-brand-text/60 dark:text-brand-text/80 uppercase tracking-widest transition-colors">
                 {totalCount} Masterpieces Found
               </span>
             </div>
@@ -167,20 +167,20 @@ function ProductsContent() {
           {/* Mobile Filter Toggle */}
           <button 
             onClick={() => setIsFilterOpen(true)}
-            className="lg:hidden flex items-center justify-center space-x-2 py-4 px-6 bg-brand-text text-white rounded-2xl w-full sticky top-24 z-30 shadow-xl"
+            className="lg:hidden flex items-center justify-center space-x-2 py-4 px-6 bg-brand-text dark:bg-brand-gold text-white rounded-2xl w-full sticky top-24 z-30 shadow-xl"
           >
             <Filter size={18} />
             <span className="text-sm font-bold uppercase tracking-widest">Refine Collection</span>
           </button>
 
           {/* Sidebar Filters - Desktop */}
-          <aside className="hidden lg:block w-72 flex-shrink-0 space-y-10">
-            <div className="flex items-center justify-between pb-6 border-b border-brand-text/10">
-              <h2 className="text-sm font-black uppercase tracking-[0.2em] text-brand-text">Filters</h2>
+          <aside className="hidden lg:block w-72 flex-shrink-0 space-y-10 transition-all duration-500">
+            <div className="flex items-center justify-between pb-6 border-b border-brand-text/10 dark:border-white/10 transition-colors">
+              <h2 className="text-sm font-black uppercase tracking-[0.2em] text-brand-text dark:text-brand-text/90">Filters</h2>
               {activeFilters.length > 0 && (
                 <button 
                   onClick={clearAllFilters}
-                  className="text-[10px] font-bold text-brand-gold uppercase tracking-widest hover:text-brand-text transition-colors"
+                  className="text-[10px] font-bold text-brand-gold uppercase tracking-widest hover:text-brand-text dark:hover:text-white transition-colors"
                 >
                   Clear All
                 </button>
@@ -190,7 +190,7 @@ function ProductsContent() {
             <div className="space-y-12">
               {FILTERS.map((filter) => (
                 <div key={filter.id} className="space-y-6">
-                  <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-brand-text/40">
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-brand-text/40 dark:text-brand-text/60 transition-colors">
                     {filter.label}
                   </h3>
                   <div className="space-y-3">
@@ -207,13 +207,13 @@ function ProductsContent() {
                           onClick={() => isPrice ? setPriceFilter(option.min, option.max) : updateFilter(filter.id, option.toLowerCase())}
                           className={cn(
                             "flex items-center justify-between w-full group transition-all duration-300",
-                            isActive ? "text-brand-gold font-bold" : "text-brand-text/60 hover:text-brand-text"
+                            isActive ? "text-brand-gold font-bold" : "text-brand-text/60 dark:text-brand-text/80 hover:text-brand-text dark:hover:text-brand-text"
                           )}
                         >
                           <span className="text-[13px] tracking-wide">{label}</span>
                           <div className={cn(
-                            "w-4 h-4 rounded-full border border-brand-text/10 flex items-center justify-center transition-all duration-300",
-                            isActive ? "bg-brand-gold border-brand-gold" : "group-hover:border-brand-gold"
+                            "w-4 h-4 rounded-full border border-brand-text/10 dark:border-white/20 flex items-center justify-center transition-all duration-300",
+                            isActive ? "bg-brand-gold border-brand-gold" : "group-hover:border-brand-gold dark:group-hover:border-brand-gold/60"
                           )}>
                             {isActive && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                           </div>
@@ -226,11 +226,11 @@ function ProductsContent() {
             </div>
 
             {/* Sidebar Promo */}
-            <div className="p-8 bg-[#FAF7F5] rounded-[32px] border border-brand-text/5 relative overflow-hidden group">
+            <div className="p-8 bg-[#FAF7F5] dark:bg-[#1a1614] rounded-[32px] border border-brand-text/5 relative overflow-hidden group transition-colors">
               <div className="relative z-10">
                 <ShoppingBag className="text-brand-gold mb-4 group-hover:scale-110 transition-transform" size={24} />
-                <h4 className="text-brand-text font-serif font-bold text-lg mb-2">Bespoke Design</h4>
-                <p className="text-brand-text/50 text-[11px] leading-relaxed mb-6 uppercase tracking-widest font-medium">
+                <h4 className="text-brand-text dark:text-brand-text/90 font-serif font-bold text-lg mb-2">Bespoke Design</h4>
+                <p className="text-brand-text/50 dark:text-brand-text/70 text-[11px] leading-relaxed mb-6 uppercase tracking-widest font-medium transition-colors">
                   Cannot find your perfect piece? Let us craft it for you.
                 </p>
                 <button className="text-[10px] font-bold text-brand-gold flex items-center group/btn uppercase tracking-widest">
@@ -248,12 +248,12 @@ function ProductsContent() {
               {activeFilters.map((filter, i) => (
                 <div 
                   key={i} 
-                  className="flex items-center space-x-2 px-4 py-2 bg-brand-bg rounded-full border border-brand-text/5 group animate-in fade-in zoom-in duration-300"
+                  className="flex items-center space-x-2 px-4 py-2 bg-brand-bg dark:bg-brand-white/10 rounded-full border border-brand-text/5 dark:border-white/5 group animate-in fade-in zoom-in duration-300 transition-colors"
                 >
-                  <span className="text-[11px] font-bold text-brand-text/60 uppercase tracking-widest">
+                  <span className="text-[11px] font-bold text-brand-text/60 dark:text-brand-text/80 uppercase tracking-widest transition-colors">
                     {filter.key}:
                   </span>
-                  <span className="text-[11px] font-black text-brand-text uppercase tracking-widest">
+                  <span className="text-[11px] font-black text-brand-text dark:text-brand-text/90 uppercase tracking-widest transition-colors">
                     {filter.value}
                   </span>
                   <button 
@@ -266,25 +266,25 @@ function ProductsContent() {
               ))}
             </div>
 
-            <div className="flex items-center justify-between py-4 border-y border-brand-text/5">
+            <div className="flex items-center justify-between py-4 border-y border-brand-text/5 dark:border-white/10 transition-colors">
               <div className="flex items-center space-x-6">
                 <div className="flex items-center space-x-4">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-brand-text/40">View:</span>
-                  <div className="flex items-center bg-brand-bg rounded-full p-1 border border-brand-text/5">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-brand-text/40 dark:text-brand-text/60 transition-colors">View:</span>
+                  <div className="flex items-center bg-brand-bg dark:bg-brand-white/10 rounded-full p-1 border border-brand-text/5 dark:border-white/5 transition-colors">
                     {[2, 3, 4].map((cols) => (
                       <button
                         key={cols}
                         onClick={() => setGridCols(cols)}
                         className={cn(
                           "w-8 h-8 flex items-center justify-center rounded-full transition-all duration-300",
-                          gridCols === cols ? "bg-brand-text text-white shadow-premium" : "text-brand-text/30 hover:text-brand-text"
+                          gridCols === cols ? "bg-brand-text dark:bg-brand-gold text-white shadow-premium" : "text-brand-text/30 dark:text-brand-text/50 hover:text-brand-text dark:hover:text-brand-text/90"
                         )}
                         aria-label={`${cols} column grid`}
                       >
                         <span className="text-[10px] font-bold">{cols}</span>
                       </button>
                     ))}
-                    <div className="w-px h-4 bg-brand-text/10 mx-1" />
+                    <div className="w-px h-4 bg-brand-text/10 dark:bg-white/10 mx-1 transition-colors" />
                     <button
                       className={cn(
                         "w-8 h-8 flex items-center justify-center rounded-full text-brand-text/30",
@@ -299,14 +299,14 @@ function ProductsContent() {
               </div>
               
               <div className="flex items-center space-x-4">
-                <label className="text-[10px] font-black uppercase tracking-widest text-brand-text/40">Sort By:</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-brand-text/40 dark:text-brand-text/60 transition-colors">Sort By:</label>
                 <select 
                   onChange={(e) => {
                     const params = new URLSearchParams(searchParams.toString());
                     params.set('sort', e.target.value);
                     router.push(`/products?${params.toString()}`);
                   }}
-                  className="text-[11px] font-bold text-brand-text uppercase tracking-widest bg-transparent border-none focus:ring-0 cursor-pointer"
+                  className="text-[11px] font-bold text-brand-text dark:text-brand-text/90 uppercase tracking-widest bg-transparent dark:bg-brand-bg border-none focus:ring-0 cursor-pointer transition-colors [color-scheme:light] dark:[color-scheme:dark]"
                 >
                   <option value="newest">Newest Arrivals</option>
                   <option value="price-low">Price: Low to High</option>
@@ -325,9 +325,9 @@ function ProductsContent() {
               )}>
                 {[1, 2, 3, 4, 5, 6].map((n) => (
                   <div key={n} className="space-y-4 animate-pulse">
-                    <div className="aspect-square bg-brand-bg rounded-2xl" />
-                    <div className="h-4 bg-brand-bg rounded w-3/4 mx-auto" />
-                    <div className="h-4 bg-brand-bg rounded w-1/2 mx-auto" />
+                    <div className="aspect-square bg-brand-bg dark:bg-brand-bg/50 rounded-2xl transition-colors" />
+                    <div className="h-4 bg-brand-bg dark:bg-brand-bg/50 rounded w-3/4 mx-auto transition-colors" />
+                    <div className="h-4 bg-brand-bg dark:bg-brand-bg/50 rounded w-1/2 mx-auto transition-colors" />
                   </div>
                 ))}
               </div>
@@ -349,19 +349,19 @@ function ProductsContent() {
                 ))}
               </div>
             ) : (
-              <div className="py-24 text-center space-y-6 bg-brand-bg rounded-[40px] border border-dashed border-brand-text/10">
-                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto shadow-soft">
+              <div className="py-24 text-center space-y-6 bg-brand-bg dark:bg-brand-white/5 rounded-[40px] border border-dashed border-brand-text/10 dark:border-white/10 transition-colors">
+                <div className="w-20 h-20 bg-white dark:bg-brand-bg rounded-full flex items-center justify-center mx-auto shadow-soft">
                   <Search size={32} className="text-brand-gold/30" />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-2xl font-serif font-bold text-brand-text">No Masterpieces Found</h3>
-                  <p className="text-brand-text/50 text-sm max-w-sm mx-auto uppercase tracking-widest">
+                  <h3 className="text-2xl font-serif font-bold text-brand-text dark:text-brand-text/90 transition-colors">No Masterpieces Found</h3>
+                  <p className="text-brand-text/50 dark:text-brand-text/70 text-sm max-w-sm mx-auto uppercase tracking-widest transition-colors">
                     We couldn't find any products matching your specific refinement. Try adjusting your filters.
                   </p>
                 </div>
                 <button 
                   onClick={clearAllFilters}
-                  className="px-10 py-4 bg-brand-text text-white text-[11px] font-bold uppercase tracking-[0.2em] rounded-full hover:bg-brand-gold transition-all duration-300 shadow-xl"
+                  className="px-10 py-4 bg-brand-text dark:bg-brand-gold text-white text-[11px] font-bold uppercase tracking-[0.2em] rounded-full hover:bg-brand-gold dark:hover:bg-white dark:hover:text-brand-text transition-all duration-300 shadow-xl"
                 >
                   Clear All Filters
                 </button>
@@ -374,16 +374,16 @@ function ProductsContent() {
       {/* Mobile Filter Overlay */}
       {isFilterOpen && (
         <div className="fixed inset-0 z-[100] lg:hidden flex flex-col justify-end">
-          <div className="absolute inset-0 bg-brand-text/60 backdrop-blur-md animate-in fade-in duration-700" onClick={() => setIsFilterOpen(false)} />
-          <div className="relative w-full bg-white rounded-t-[40px] shadow-premium flex flex-col animate-in slide-in-from-bottom duration-700 max-h-[90vh]">
-            <div className="p-8 border-b border-brand-text/5 flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md rounded-t-[40px] z-10">
+          <div className="absolute inset-0 bg-brand-text/60 dark:bg-black/80 backdrop-blur-md animate-in fade-in duration-700" onClick={() => setIsFilterOpen(false)} />
+          <div className="relative w-full bg-white dark:bg-brand-bg rounded-t-[40px] shadow-premium flex flex-col animate-in slide-in-from-bottom duration-700 max-h-[90vh]">
+            <div className="p-8 border-b border-brand-text/5 flex items-center justify-between sticky top-0 bg-white/80 dark:bg-brand-bg/80 backdrop-blur-md rounded-t-[40px] z-10 transition-colors">
               <div className="space-y-1">
-                <h2 className="text-sm font-black uppercase tracking-[0.2em] text-brand-text">Refine Selection</h2>
-                <p className="text-[9px] uppercase tracking-widest text-brand-text/40 font-bold">{totalCount} Masterpieces</p>
+                <h2 className="text-sm font-black uppercase tracking-[0.2em] text-brand-text dark:text-brand-text/90">Refine Selection</h2>
+                <p className="text-[9px] uppercase tracking-widest text-brand-text/40 dark:text-brand-text/60 font-bold transition-colors">{totalCount} Masterpieces</p>
               </div>
               <button 
                 onClick={() => setIsFilterOpen(false)}
-                className="w-10 h-10 rounded-full bg-brand-bg flex items-center justify-center text-brand-text/40"
+                className="w-10 h-10 rounded-full bg-brand-bg dark:bg-white/10 flex items-center justify-center text-brand-text/40 dark:text-brand-text/80 transition-colors"
               >
                 <X size={20} />
               </button>
@@ -391,7 +391,7 @@ function ProductsContent() {
             <div className="flex-1 overflow-y-auto p-8 space-y-12">
               {FILTERS.map((filter) => (
                 <div key={filter.id} className="space-y-6">
-                  <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-brand-text/40">
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-brand-text/40 dark:text-brand-text/60 transition-colors">
                     {filter.label}
                   </h3>
                   <div className="grid grid-cols-2 gap-3">
@@ -412,8 +412,8 @@ function ProductsContent() {
                           className={cn(
                             "flex items-center justify-center px-4 py-4 rounded-2xl text-[10px] uppercase tracking-widest font-bold border transition-all duration-300 touch-safe-hit",
                             isActive 
-                              ? "bg-brand-text text-white border-brand-text shadow-premium" 
-                              : "bg-brand-bg text-brand-text/60 border-brand-text/5 active:border-brand-gold active:bg-white active:text-brand-text"
+                              ? "bg-brand-text dark:bg-brand-gold text-white border-brand-text dark:border-brand-gold shadow-premium" 
+                              : "bg-brand-bg dark:bg-brand-white/10 text-brand-text/60 dark:text-brand-text/80 border-brand-text/5 dark:border-white/5 active:border-brand-gold active:bg-white active:text-brand-text"
                           )}
                         >
                           {label}
@@ -426,7 +426,7 @@ function ProductsContent() {
               
               {/* Sorting on Mobile */}
               <div className="space-y-6 pt-4">
-                <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-brand-text/40">Sort By</h3>
+                <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-brand-text/40 dark:text-brand-text/60 transition-colors">Sort By</h3>
                 <div className="grid grid-cols-1 gap-3">
                   {[
                     { val: 'newest', label: 'Newest Arrivals' },
@@ -445,7 +445,7 @@ function ProductsContent() {
                         "w-full py-4 px-6 rounded-2xl text-[10px] uppercase tracking-widest font-bold border text-left transition-all",
                         searchParams.get('sort') === s.val || (!searchParams.get('sort') && s.val === 'newest')
                           ? "bg-brand-gold/10 border-brand-gold text-brand-gold"
-                          : "bg-brand-bg border-brand-text/5 text-brand-text/60"
+                          : "bg-brand-bg dark:bg-brand-white/10 border-brand-text/5 dark:border-white/5 text-brand-text/60 dark:text-brand-text/80"
                       )}
                     >
                       {s.label}
@@ -454,17 +454,17 @@ function ProductsContent() {
                 </div>
               </div>
             </div>
-            <div className="p-8 border-t border-brand-text/5 bg-white/80 backdrop-blur-md pb-12">
+            <div className="p-8 border-t border-brand-text/5 bg-white/80 dark:bg-brand-bg/80 backdrop-blur-md pb-12 transition-colors">
               <div className="flex gap-4">
                 <button 
                   onClick={clearAllFilters}
-                  className="flex-1 py-5 bg-brand-bg text-brand-text text-[11px] font-bold uppercase tracking-[0.2em] rounded-2xl border border-brand-text/5"
+                  className="flex-1 py-5 bg-brand-bg dark:bg-white/10 text-brand-text dark:text-brand-text/80 text-[11px] font-bold uppercase tracking-[0.2em] rounded-2xl border border-brand-text/5 dark:border-white/5 transition-colors"
                 >
                   Reset
                 </button>
                 <button 
                   onClick={() => setIsFilterOpen(false)}
-                  className="flex-[2] py-5 bg-brand-text text-white text-[11px] font-bold uppercase tracking-[0.2em] rounded-2xl shadow-premium"
+                  className="flex-[2] py-5 bg-brand-text dark:bg-brand-gold text-white text-[11px] font-bold uppercase tracking-[0.2em] rounded-2xl shadow-premium"
                 >
                   Show Results
                 </button>

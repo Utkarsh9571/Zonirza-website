@@ -31,22 +31,22 @@ export function CheckoutSteps({ currentStep }: { currentStep: 'cart' | 'shipping
                   className={cn(
                     "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 border",
                     isCompleted ? "bg-brand-gold border-brand-gold text-white" : 
-                    isActive ? "bg-brand-text border-brand-text text-white shadow-premium scale-110" : 
-                    "bg-white border-brand-text/10 text-brand-text/30"
+                    isActive ? "bg-brand-text dark:bg-brand-gold border-brand-text dark:border-brand-gold text-white shadow-premium scale-110" : 
+                    "bg-white dark:bg-white/5 border-brand-text/10 dark:border-white/10 text-brand-text/30 dark:text-brand-text/50"
                   )}
                 >
                   {isCompleted ? <Check size={20} /> : <span className="text-xs font-bold">{idx + 1}</span>}
                 </div>
                 <span className={cn(
                   "text-[10px] uppercase tracking-[0.2em] font-bold transition-colors duration-500",
-                  isActive ? "text-brand-text" : "text-brand-text/30"
+                  isActive ? "text-brand-text dark:text-brand-text" : "text-brand-text/30 dark:text-brand-text/50"
                 )}>
                   {step.label}
                 </span>
               </div>
               
               {idx < STEPS.length - 1 && (
-                <div className="w-12 md:w-24 h-[1px] bg-brand-text/10 mx-4 mt-[-20px]" />
+                <div className="w-12 md:w-24 h-[1px] bg-brand-text/10 dark:bg-white/10 mx-4 mt-[-20px] transition-colors" />
               )}
             </div>
           );

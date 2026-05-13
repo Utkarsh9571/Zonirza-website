@@ -239,7 +239,7 @@ function AccountContent() {
 
   if (!isMounted || status === 'loading') {
     return (
-      <div className="bg-brand-bg min-h-screen pt-32 pb-20 flex items-center justify-center">
+      <div className="bg-brand-bg text-brand-text min-h-screen pt-32 pb-20 flex items-center justify-center transition-colors duration-500">
         <Loader2 className="w-12 h-12 text-brand-gold animate-spin" />
       </div>
     );
@@ -253,15 +253,15 @@ function AccountContent() {
   ];
 
   return (
-    <div className="bg-brand-bg min-h-screen pt-32 pb-20 overflow-x-hidden">
+    <div className="bg-brand-bg text-brand-text min-h-screen pt-32 pb-20 overflow-x-hidden transition-colors duration-500">
       <Section className="max-w-[1400px] mx-auto px-4 md:px-6">
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
           
           {/* Sidebar */}
           <div className="w-full lg:w-[350px] space-y-6 animate-in fade-in slide-in-from-left duration-1000">
-            <div className="bg-white rounded-[40px] p-6 md:p-8 border border-brand-text/5 shadow-soft space-y-8">
+            <div className="bg-white dark:bg-brand-white rounded-[40px] p-6 md:p-8 border border-brand-text/5 shadow-soft space-y-8 transition-colors">
               <div className="flex items-center space-x-5">
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-brand-text flex items-center justify-center text-white text-2xl md:text-3xl font-serif italic shadow-premium shrink-0">
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-brand-text dark:bg-brand-gold flex items-center justify-center text-white text-2xl md:text-3xl font-serif italic shadow-premium shrink-0 transition-colors">
                   {userData.name?.charAt(0) || session?.user?.email?.charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">
@@ -278,8 +278,8 @@ function AccountContent() {
                     className={cn(
                       "flex items-center space-x-4 p-4 rounded-2xl transition-all whitespace-nowrap",
                       activeTab === tab.id 
-                        ? "bg-brand-text text-white shadow-premium w-auto lg:w-full" 
-                        : "hover:bg-brand-bg text-brand-text/60 w-auto lg:w-full"
+                        ? "bg-brand-text dark:bg-brand-gold text-white shadow-premium w-auto lg:w-full" 
+                        : "hover:bg-brand-bg dark:hover:bg-brand-bg text-brand-text/60 dark:text-brand-text/80 w-auto lg:w-full"
                     )}
                   >
                     <div className={cn(
@@ -296,9 +296,9 @@ function AccountContent() {
               <div className="pt-4 border-t border-brand-text/5">
                 <button 
                   onClick={() => signOut()}
-                  className="w-full flex items-center space-x-4 p-4 rounded-2xl text-red-500 hover:bg-red-50 transition-all font-bold uppercase tracking-widest text-[10px]"
+                  className="w-full flex items-center space-x-4 p-4 rounded-2xl text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all font-bold uppercase tracking-widest text-[10px]"
                 >
-                  <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-red-50 dark:bg-red-500/10 flex items-center justify-center shrink-0">
                     <LogOut size={16} />
                   </div>
                   <span>Logout</span>
@@ -326,7 +326,7 @@ function AccountContent() {
                   )}
                 </div>
 
-                <div className="bg-white rounded-[40px] p-8 md:p-12 border border-brand-text/5 shadow-soft">
+                <div className="bg-white dark:bg-brand-white rounded-[40px] p-8 md:p-12 border border-brand-text/5 shadow-soft transition-colors">
                   {isEditingProfile ? (
                     <form onSubmit={handleUpdateProfile} className="space-y-8">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -335,7 +335,7 @@ function AccountContent() {
                           <input 
                             value={userData.name}
                             onChange={(e) => setUserData({...userData, name: e.target.value})}
-                            className="w-full h-14 bg-brand-bg/50 border border-brand-text/5 rounded-2xl px-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all"
+                            className="w-full h-14 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl px-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all dark:text-brand-text/90"
                             placeholder="Enter your name"
                           />
                         </div>
@@ -344,7 +344,7 @@ function AccountContent() {
                           <input 
                             value={userData.phone}
                             onChange={(e) => setUserData({...userData, phone: e.target.value})}
-                            className="w-full h-14 bg-brand-bg/50 border border-brand-text/5 rounded-2xl px-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all"
+                            className="w-full h-14 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl px-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all dark:text-brand-text/90"
                             placeholder="Enter phone"
                           />
                         </div>
@@ -353,7 +353,7 @@ function AccountContent() {
                           <select 
                             value={userData.gender}
                             onChange={(e) => setUserData({...userData, gender: e.target.value})}
-                            className="w-full h-14 bg-brand-bg/50 border border-brand-text/5 rounded-2xl px-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all appearance-none"
+                            className="w-full h-14 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl px-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all appearance-none dark:text-brand-text/90"
                           >
                             <option value="">Select Gender</option>
                             <option value="Male">Male</option>
@@ -404,7 +404,7 @@ function AccountContent() {
                       </div>
                       <div className="space-y-2">
                         <p className="text-[9px] uppercase tracking-[0.2em] text-brand-text/30 font-bold">Preferences</p>
-                        <p className="text-sm font-bold text-brand-text tracking-wide">
+                        <p className="text-sm font-bold text-brand-text dark:text-brand-text/90 tracking-wide">
                           {userData.preferences?.preferredMetal || 'No metal set'} | {userData.preferences?.ringSize ? `Size: ${userData.preferences.ringSize}` : 'No size set'}
                         </p>
                       </div>
@@ -448,7 +448,7 @@ function AccountContent() {
                     <div 
                       key={idx}
                       className={cn(
-                        "bg-white rounded-[40px] p-8 border transition-all shadow-soft relative group",
+                        "bg-white dark:bg-brand-white rounded-[40px] p-8 border transition-all shadow-soft relative group",
                         addr.isDefault ? "border-brand-gold/40 shadow-premium ring-1 ring-brand-gold/10" : "border-brand-text/5 hover:border-brand-gold/20"
                       )}
                     >
@@ -497,8 +497,8 @@ function AccountContent() {
                   ))}
 
                   {userData.addresses.length === 0 && (
-                    <div className="md:col-span-2 py-20 bg-white/50 rounded-[40px] border-2 border-dashed border-brand-text/10 flex flex-col items-center justify-center text-center space-y-4">
-                      <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-brand-text/20">
+                    <div className="md:col-span-2 py-20 bg-white/50 dark:bg-white/5 rounded-[40px] border-2 border-dashed border-brand-text/10 flex flex-col items-center justify-center text-center space-y-4 transition-colors">
+                      <div className="w-16 h-16 rounded-full bg-white dark:bg-brand-bg flex items-center justify-center text-brand-text/20 transition-colors">
                         <MapPin size={32} />
                       </div>
                       <div className="space-y-1">
@@ -530,8 +530,8 @@ function AccountContent() {
                     ))}
                   </div>
                 ) : (
-                  <div className="py-24 bg-white rounded-[60px] border border-brand-text/5 shadow-soft flex flex-col items-center justify-center text-center space-y-6">
-                    <div className="w-20 h-20 rounded-full bg-brand-bg flex items-center justify-center text-brand-gold/30 border border-brand-text/5">
+                  <div className="py-24 bg-white dark:bg-brand-white rounded-[60px] border border-brand-text/5 shadow-soft flex flex-col items-center justify-center text-center space-y-6 transition-colors">
+                    <div className="w-20 h-20 rounded-full bg-brand-bg dark:bg-brand-bg flex items-center justify-center text-brand-gold/30 border border-brand-text/5">
                       <Heart size={36} />
                     </div>
                     <div className="space-y-2">
@@ -555,7 +555,7 @@ function AccountContent() {
                   {userData.orderHistory.map((order: any) => (
                     <div 
                       key={order._id}
-                      className="bg-white rounded-[40px] p-8 border border-brand-text/5 shadow-soft hover:shadow-premium transition-all group"
+                      className="bg-white dark:bg-brand-white rounded-[40px] p-8 border border-brand-text/5 shadow-soft hover:shadow-premium transition-all group"
                     >
                       <div className="flex flex-col md:flex-row justify-between gap-6 mb-8 border-b border-brand-text/5 pb-8">
                         <div className="space-y-2">
@@ -570,8 +570,8 @@ function AccountContent() {
                           <p className="text-[9px] uppercase tracking-widest text-brand-text/30 font-bold">Status</p>
                           <span className={cn(
                             "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest",
-                            order.orderStatus === 'delivered' ? "bg-green-50 text-green-600" : 
-                            order.orderStatus === 'cancelled' ? "bg-red-50 text-red-600" :
+                            order.orderStatus === 'delivered' ? "bg-green-50 dark:bg-green-500/10 text-green-600" : 
+                            order.orderStatus === 'cancelled' ? "bg-red-50 dark:bg-red-500/10 text-red-600" :
                             "bg-brand-gold/10 text-brand-gold"
                           )}>
                             {order.orderStatus || (order.paymentStatus === 'paid' ? 'Confirmed' : 'Pending Payment')}
@@ -579,7 +579,7 @@ function AccountContent() {
                         </div>
                         <div className="space-y-2 md:text-right">
                           <Link href={`/account/orders/${order._id}`}>
-                            <Button variant="outline" className="px-6 py-2 text-[8px] uppercase tracking-[0.2em] border-brand-text/10 hover:bg-brand-text hover:text-white transition-all">
+                            <Button variant="outline" className="px-6 py-2 text-[8px] uppercase tracking-[0.2em] border-brand-text/10 dark:border-brand-gold/40 hover:bg-brand-text dark:hover:bg-brand-gold hover:text-white transition-all">
                               View Details
                             </Button>
                           </Link>
@@ -609,8 +609,8 @@ function AccountContent() {
                   ))}
 
                   {userData.orderHistory.length === 0 && (
-                    <div className="py-24 bg-white rounded-[60px] border border-brand-text/5 shadow-soft flex flex-col items-center justify-center text-center space-y-6">
-                      <div className="w-20 h-20 rounded-full bg-brand-bg flex items-center justify-center text-brand-gold/30 border border-brand-text/5">
+                    <div className="py-24 bg-white dark:bg-brand-white rounded-[60px] border border-brand-text/5 shadow-soft flex flex-col items-center justify-center text-center space-y-6 transition-colors">
+                      <div className="w-20 h-20 rounded-full bg-brand-bg dark:bg-brand-bg flex items-center justify-center text-brand-gold/30 border border-brand-text/5">
                         <Package size={36} />
                       </div>
                       <div className="space-y-2">
@@ -633,11 +633,11 @@ function AccountContent() {
       {/* Address Modal */}
       {isAddressModalOpen && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-brand-text/40 backdrop-blur-md animate-in fade-in duration-500" onClick={() => setIsAddressModalOpen(false)} />
-          <div className="relative w-full max-w-2xl bg-white rounded-[45px] shadow-premium p-8 md:p-12 animate-in zoom-in slide-in-from-bottom-8 duration-700">
+          <div className="absolute inset-0 bg-brand-text/40 dark:bg-black/60 backdrop-blur-md animate-in fade-in duration-500" onClick={() => setIsAddressModalOpen(false)} />
+          <div className="relative w-full max-w-2xl bg-white dark:bg-brand-white rounded-[45px] shadow-premium p-8 md:p-12 animate-in zoom-in slide-in-from-bottom-8 duration-700 transition-colors">
             <button 
               onClick={() => setIsAddressModalOpen(false)}
-              className="absolute top-8 right-8 w-10 h-10 flex items-center justify-center rounded-full bg-brand-bg text-brand-text/40 hover:text-brand-gold transition-all"
+              className="absolute top-8 right-8 w-10 h-10 flex items-center justify-center rounded-full bg-brand-bg dark:bg-brand-bg text-brand-text/40 hover:text-brand-gold transition-all"
             >
               <X size={20} />
             </button>
@@ -656,7 +656,7 @@ function AccountContent() {
                       required
                       value={addressForm.fullName}
                       onChange={(e) => setAddressForm({...addressForm, fullName: e.target.value})}
-                      className="w-full h-14 bg-brand-bg/50 border border-brand-text/5 rounded-2xl px-6 text-xs font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all"
+                      className="w-full h-14 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl px-6 text-xs font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all dark:text-brand-text/90"
                       placeholder="Enter name"
                     />
                   </div>
@@ -666,7 +666,7 @@ function AccountContent() {
                       required
                       value={addressForm.phone}
                       onChange={(e) => setAddressForm({...addressForm, phone: e.target.value})}
-                      className="w-full h-14 bg-brand-bg/50 border border-brand-text/5 rounded-2xl px-6 text-xs font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all"
+                      className="w-full h-14 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl px-6 text-xs font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all dark:text-brand-text/90"
                       placeholder="Enter phone"
                     />
                   </div>
@@ -678,7 +678,7 @@ function AccountContent() {
                     required
                     value={addressForm.addressLine1}
                     onChange={(e) => setAddressForm({...addressForm, addressLine1: e.target.value})}
-                    className="w-full h-14 bg-brand-bg/50 border border-brand-text/5 rounded-2xl px-6 text-xs font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all"
+                    className="w-full h-14 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl px-6 text-xs font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all dark:text-brand-text/90"
                     placeholder="House / Office / Area"
                   />
                 </div>
@@ -690,7 +690,7 @@ function AccountContent() {
                       required
                       value={addressForm.city}
                       onChange={(e) => setAddressForm({...addressForm, city: e.target.value})}
-                      className="w-full h-14 bg-brand-bg/50 border border-brand-text/5 rounded-2xl px-6 text-xs font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all"
+                      className="w-full h-14 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl px-6 text-xs font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all dark:text-brand-text/90"
                       placeholder="City"
                     />
                   </div>
@@ -700,7 +700,7 @@ function AccountContent() {
                       required
                       value={addressForm.pincode}
                       onChange={(e) => setAddressForm({...addressForm, pincode: e.target.value})}
-                      className="w-full h-14 bg-brand-bg/50 border border-brand-text/5 rounded-2xl px-6 text-xs font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all"
+                      className="w-full h-14 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl px-6 text-xs font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all dark:text-brand-text/90"
                       placeholder="000000"
                     />
                   </div>
@@ -709,7 +709,7 @@ function AccountContent() {
                     <select 
                       value={addressForm.type}
                       onChange={(e) => setAddressForm({...addressForm, type: e.target.value as any})}
-                      className="w-full h-14 bg-brand-bg/50 border border-brand-text/5 rounded-2xl px-6 text-xs font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all appearance-none"
+                      className="w-full h-14 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl px-6 text-xs font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all appearance-none dark:text-brand-text/90"
                     >
                       <option value="Home">Home</option>
                       <option value="Office">Office</option>
@@ -745,7 +745,7 @@ function AccountContent() {
 export default function AccountPage() {
   return (
     <Suspense fallback={
-      <div className="bg-brand-bg min-h-screen pt-32 pb-20 flex items-center justify-center">
+      <div className="bg-brand-bg text-brand-text min-h-screen pt-32 pb-20 flex items-center justify-center transition-colors duration-500">
         <Loader2 className="w-12 h-12 text-brand-gold animate-spin" />
       </div>
     }>

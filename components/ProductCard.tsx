@@ -38,7 +38,7 @@ const ProductCard = ({ name, price, image, slug, oldPrice }: ProductCardProps) =
 
   return (
     <Link href={`/product/${slug}`} className="group block h-full">
-      <div className="bg-brand-white rounded-2xl overflow-hidden aspect-square relative mb-4 border border-brand-border transition-all duration-700 group-hover:shadow-premium group-hover:-translate-y-2 group-hover:border-brand-gold/30">
+      <div className="bg-brand-white dark:bg-[#1a1614] rounded-2xl overflow-hidden aspect-square relative mb-4 border border-brand-border dark:border-brand-border/20 transition-all duration-700 group-hover:shadow-premium group-hover:-translate-y-2 group-hover:border-brand-gold/30">
         <Image
           src={imageUrl}
           alt={name}
@@ -54,7 +54,7 @@ const ProductCard = ({ name, price, image, slug, oldPrice }: ProductCardProps) =
             "absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-500 z-10 shadow-soft active:scale-90",
             isWishlisted 
               ? "bg-brand-gold text-white" 
-              : "bg-white/80 backdrop-blur-sm text-brand-text/40 hover:text-brand-gold"
+              : "bg-white/80 dark:bg-black/40 backdrop-blur-sm text-brand-text/40 dark:text-brand-text/80 hover:text-brand-gold"
           )}
         >
           <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} className={cn(isWishlisted && "animate-pulse")} />
@@ -80,7 +80,7 @@ const ProductCard = ({ name, price, image, slug, oldPrice }: ProductCardProps) =
             {displayPrice(price, currentCurrency, rates)}
           </p>
           {oldPrice && (
-            <p className="text-brand-muted/40 text-[9px] sm:text-[10px] line-through font-medium italic">
+            <p className="text-brand-muted/40 dark:text-brand-muted/60 text-[9px] sm:text-[10px] line-through font-medium italic transition-colors">
               {displayPrice(oldPrice, currentCurrency, rates)}
             </p>
           )}
