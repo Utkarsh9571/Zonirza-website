@@ -447,12 +447,12 @@ export default function Home() {
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             {[
-              { img: '/images/images/product/yellow-gold-16010351071959.jpg', text: 'VISIT OUR STORE' },
-              { img: '/images/images/product/rose-gold-16018743641302.jpg', text: 'BOOK AN APPOINTMENT' },
-              { img: '/images/images/product/yellow-gold-16011019241983.jpg', text: 'TALK TO AN EXPERT' },
-              { img: '/images/images/product/default-16345640053478.jpg', text: 'DIGI GOLD' },
-              { img: '/images/images/product/default-16345643112830.jpg', text: 'BLOGS' },
-              { img: '/images/images/product/yellow-gold-1601102976168.jpg', text: 'JEWELLERY GUIDE' }
+              { img: '/images/site/visit_store.png', text: 'VISIT OUR STORE' },
+              { img: '/images/site/book_appointment.png', text: 'BOOK AN APPOINTMENT' },
+              { img: '/images/site/talk_expert.png', text: 'TALK TO AN EXPERT' },
+              { img: '/images/site/digi_gold.png', text: 'DIGI GOLD' },
+              { img: '/images/site/blogs.png', text: 'BLOGS' },
+              { img: '/images/site/jewellery_guide.png', text: 'JEWELLERY GUIDE' }
             ].map((store, i) => (
               <div key={i} className="group cursor-pointer bg-white dark:bg-brand-white border border-brand-gold/10 flex flex-col rounded-[40px] overflow-hidden shadow-soft hover:shadow-premium transition-all">
                 <div className="relative aspect-square overflow-hidden">
