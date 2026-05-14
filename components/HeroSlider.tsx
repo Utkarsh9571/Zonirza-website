@@ -8,23 +8,23 @@ import { resolveProductImage } from '@/lib/imageResolver';
 import { cn } from '@/lib/utils';
 
 // Custom resolver for sliders since they live in a different folder
-const resolveSliderImage = (imageName: string) => `/images/images/slider/${imageName}`;
+const resolveSliderImage = (imageName: string) => `/images/site/${imageName}`;
 
 const sliderItems = [
   {
-    image: resolveSliderImage('btimage1-1652120540.png'),
+    image: resolveSliderImage('wedding.png'),
     title: 'Eternal Diamond Rings',
     subtitle: 'Classic Elegance',
     link: '/products?category=rings'
   },
   {
-    image: resolveSliderImage('btimage2-1652120540.png'),
+    image: resolveSliderImage('daily-wear.png'),
     title: 'Signature Necklaces',
     subtitle: 'Handcrafted Beauty',
     link: '/products?category=necklaces'
   },
   {
-    image: resolveSliderImage('btimage3-1652120540.png'),
+    image: resolveSliderImage('jewellery_guide.png'),
     title: 'Royal Gold Bracelets',
     subtitle: 'Timeless Style',
     link: '/products?category=bracelets'
