@@ -8,6 +8,7 @@ import { useWishlistStore } from '@/store/wishlistStore';
 import { useSession } from 'next-auth/react';
 import { useAuthModalStore } from '@/store/authModalStore';
 import { cn } from '@/lib/utils';
+import { getProductThumbnail } from '@/lib/productImage';
 
 interface ProductCardProps {
   name: string;
@@ -15,10 +16,14 @@ interface ProductCardProps {
   image: string;
   slug: string;
   oldPrice?: number;
+  variantImages?: Record<string, string>;
+  images?: string[];
+  context?: { search?: string; metal?: string };
 }
 
-const ProductCard = ({ name, price, image, slug, oldPrice }: ProductCardProps) => {
-  const imageUrl = resolveProductImage(image);
+const ProductCard = ({ name, price, image, slug, oldPrice, variantImages, images, context }: ProductCardProps) => {
+  const selectedImage = getProductThumbnail({ images, variantImages }, context) || image;
+  const imageUrl = resolveProductImage(selectedImage);
   const { currentCurrency, rates } = useCurrencyStore();
   const { status } = useSession();
   const openAuthModal = useAuthModalStore(state => state.openAuthModal);

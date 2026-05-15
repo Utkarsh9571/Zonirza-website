@@ -12,6 +12,7 @@ export interface IProduct extends Document {
   baseWeight: number;
   tags: string[];
   specs: Record<string, string>;
+  variantImages?: Record<string, string>;
   configurableOptions?: {
     metals?: string[];
     purities?: string[];
@@ -26,6 +27,7 @@ const ProductSchema: Schema = new Schema({
   slug: { type: String, required: true, unique: true },
   category: { type: String, required: true },
   images: { type: [String], required: true },
+  variantImages: { type: Map, of: String, default: {} },
   videoUrl: { type: String },
   description: { type: String, required: true },
   basePrice: { type: Number, required: true, default: 0 },

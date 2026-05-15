@@ -61,8 +61,10 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                 key={product.slug}
                 name={product.name}
                 price={product.basePrice || 0}
-                image={getValidImageUrl(product.images?.[0])}
+                image={product.images?.[0] || ''}
                 slug={product.slug}
+                variantImages={product.variantImages}
+                images={product.images}
                 className="animate-in fade-in slide-in-from-bottom-12 duration-1000"
               />
             ))}

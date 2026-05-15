@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
       ]
     })
     .limit(limit)
-    .select('name slug images basePrice category tags');
+    .select('name slug images variantImages basePrice category tags');
 
     // 2. Discover relevant Collections/Categories from our Mapping Layer
     // Check if the query matches any of our curated collection names

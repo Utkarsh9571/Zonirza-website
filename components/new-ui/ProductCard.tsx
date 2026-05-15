@@ -4,6 +4,8 @@ import { cn } from '@/lib/utils';
 import { PLACEHOLDER_IMAGE, getValidImageUrl } from '@/lib/constants';
 import { useCurrencyStore } from '@/store/currencyStore';
 import { displayPrice } from '@/lib/currency';
+import { getProductThumbnail } from '@/lib/productImage';
+import { resolveProductImage } from '@/lib/imageResolver';
 
 interface ProductCardProps {
   name: string;
@@ -12,9 +14,14 @@ interface ProductCardProps {
   slug: string;
   oldPrice?: number;
   className?: string;
+  variantImages?: Record<string, string>;
+  images?: string[];
+  context?: { search?: string; metal?: string };
 }
 
-export const ProductCard = ({ name, price, image, slug, oldPrice, className }: ProductCardProps) => {
+export const ProductCard = ({ name, price, image, slug, oldPrice, className, variantImages, images, context }: ProductCardProps) => {
+  const selectedImage = getProductThumbnail({ images, variantImages }, context) || image;
+  const imageUrl = resolveProductImage(selectedImage);
   const { currentCurrency, rates } = useCurrencyStore();
   
   return (
@@ -24,7 +31,7 @@ export const ProductCard = ({ name, price, image, slug, oldPrice, className }: P
     >
       <div className="relative aspect-[4/5] w-full rounded-[40px] overflow-hidden bg-white border border-brand-gold/10 shadow-soft transition-all duration-1000 group-hover:shadow-premium lg:group-hover:-translate-y-3">
         <Image
-          src={getValidImageUrl(image)}
+          src={imageUrl}
           alt={name}
           fill
           className="object-cover p-10 transition-transform duration-1000 group-hover:scale-110"

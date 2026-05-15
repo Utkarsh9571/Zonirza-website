@@ -194,6 +194,12 @@ function SearchResultsContent() {
                     price={product.basePrice || product.price || 0}
                     image={product.images?.[0] || ''}
                     slug={product.slug}
+                    variantImages={product.variantImages}
+                    images={product.images}
+                    context={{ 
+                      search: query,
+                      metal: searchParams.get('metal') || undefined
+                    }}
                   />
                 ))}
               </div>
