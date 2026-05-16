@@ -12,8 +12,6 @@ import {
   AlertTriangle,
   Mail,
   Phone,
-  Instagram,
-  Facebook,
   MessageSquare
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -231,7 +229,7 @@ export default function AdminSettingsPage() {
 
             <div className="space-y-6">
               <div className="flex items-center space-x-6">
-                <Instagram className="text-pink-600" size={20} />
+                <Share2 className="text-pink-600" size={20} />
                 <input 
                   type="text" 
                   value={settings.socialLinks.instagram}
@@ -244,7 +242,7 @@ export default function AdminSettingsPage() {
                 />
               </div>
               <div className="flex items-center space-x-6">
-                <Facebook className="text-blue-600" size={20} />
+                <Share2 className="text-blue-600" size={20} />
                 <input 
                   type="text" 
                   value={settings.socialLinks.facebook}
