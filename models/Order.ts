@@ -30,7 +30,7 @@ export interface IOrder extends Document {
     country: string;
   };
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
-  orderStatus: 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  orderStatus: 'placed' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   currency: string;
   exchangeRate: number;
   razorpayOrderId?: string;

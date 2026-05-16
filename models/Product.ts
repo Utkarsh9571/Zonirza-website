@@ -9,6 +9,8 @@ export interface IProduct extends Document {
   description: string;
   basePrice: number;
   makingCharges: number;
+  stockStatus: 'in-stock' | 'out-of-stock';
+  isActive: boolean;
   baseWeight: number;
   tags: string[];
   specs: Record<string, string>;
@@ -33,6 +35,8 @@ const ProductSchema: Schema = new Schema({
   basePrice: { type: Number, required: true, default: 0 },
   makingCharges: { type: Number, default: 0 },
   baseWeight: { type: Number, default: 0 },
+  stockStatus: { type: String, enum: ['in-stock', 'out-of-stock'], default: 'in-stock' },
+  isActive: { type: Boolean, default: true },
   tags: { type: [String], default: [] },
   specs: { type: Map, of: String, default: {} },
   configurableOptions: {

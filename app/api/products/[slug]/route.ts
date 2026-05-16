@@ -9,7 +9,7 @@ export async function GET(
   try {
     await dbConnect();
     const { slug } = await params;
-    const product = await Product.findOne({ slug });
+    const product = await Product.findOne({ slug, isActive: { $ne: false } });
     
     if (!product) {
       return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });

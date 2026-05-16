@@ -1,10 +1,12 @@
 import { NextAuthOptions } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
+import CredentialsProvider from "next-auth/providers/credentials";
 import nodemailer from "nodemailer";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "./mongodb";
 import dbConnect from "./db";
 import User from "@/models/User";
+import { verifyAdminCredentials, hashPassword } from "./adminAuth";
 
 // Custom transporter for Gmail
 const transporter = nodemailer.createTransport({
@@ -18,6 +20,30 @@ const transporter = nodemailer.createTransport({
 export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise) as any,
   providers: [
+    CredentialsProvider({
+      id: "admin-credentials",
+      name: "Admin Access",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
+        
+        const inputHash = hashPassword(credentials.password);
+        const isValid = verifyAdminCredentials(credentials.email, inputHash);
+
+        if (isValid) {
+          return {
+            id: "admin-user",
+            email: credentials.email,
+            name: "Zoniraz Admin",
+            role: "admin"
+          };
+        }
+        return null;
+      }
+    }),
     EmailProvider({
       server: {
         host: process.env.EMAIL_SERVER_HOST,
@@ -61,7 +87,8 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async signIn({ user }) {
+    async signIn({ user, account }) {
+      if (account?.provider === "admin-credentials") return true;
       if (!user.email) return false;
       
       await dbConnect();
@@ -84,8 +111,15 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       await dbConnect();
-      const dbUser = await User.findOne({ email: session.user?.email });
       
+      // @ts-ignore
+      session.user.role = token.role;
+      
+      if (token.role === "admin") {
+        return session;
+      }
+
+      const dbUser = await User.findOne({ email: session.user?.email });
       if (dbUser && session.user) {
         session.user.name = dbUser.name;
         // @ts-ignore
@@ -97,6 +131,10 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async jwt({ token, user }) {
+      if (user) {
+        // @ts-ignore
+        token.role = user.role || "user";
+      }
       return token;
     },
   },

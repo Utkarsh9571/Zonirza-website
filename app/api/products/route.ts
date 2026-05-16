@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const slugs = searchParams.get('slugs');
     if (slugs) {
       const slugList = slugs.split(',');
-      const products = await Product.find({ slug: { $in: slugList } });
+      const products = await Product.find({ slug: { $in: slugList }, isActive: { $ne: false } });
       return NextResponse.json({ success: true, data: products, total: products.length });
     }
 
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       'occasion', 'metal', 'stone', 'style', 'tag'
     ];
     
-    let mongoQuery: any = {};
+    let mongoQuery: any = { isActive: { $ne: false } };
     const conditions: any[] = [];
 
     filterKeys.forEach(key => {
