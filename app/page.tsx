@@ -18,6 +18,17 @@ const resolveContentImage = (imageName: string) => `/images/images/imgcontent/${
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
+const PERFECT_MATCH_CATEGORIES = [
+  { name: 'Rings', image: '/images/site/rings_category.png', href: '/products?category=rings' },
+  { name: 'Earrings', image: '/images/site/earrings_category.png', href: '/products?category=earrings' },
+  { name: 'Necklaces', image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=600', href: '/products?category=necklaces' },
+  { name: 'Bracelets', image: '/images/site/bracelets_category.png', href: '/products?category=bracelets' },
+  { name: 'Pendants', image: '/images/site/pendants_category.png', href: '/products?category=pendants' },
+  { name: 'Bangles', image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=600', href: '/products?category=bangles' },
+  { name: 'Solitaires', image: 'https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&q=80&w=600', href: '/products?category=solitaires' },
+  { name: 'Nose Pins', image: '/images/site/nose_pins_category.png', href: '/products?category=nose-pins' },
+];
+
 export default function Home() {
   const [data, setData] = useState<{products: any[], categories: any[]}>({ products: [], categories: [] });
   const [homeContent, setHomeContent] = useState<any>(null);
@@ -212,11 +223,11 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-            {categories.slice(0, 8).map((cat: any, i: number) => (
-              <Link href={`/products?category=${cat.slug}`} key={i} className="group flex flex-col items-center text-center space-y-4">
+            {PERFECT_MATCH_CATEGORIES.map((cat, i) => (
+              <Link href={cat.href} key={i} className="group flex flex-col items-center text-center space-y-4">
                 <div className="relative w-full aspect-[4/5] rounded-[40px] overflow-hidden shadow-soft border border-brand-gold bg-brand-bg group-hover:shadow-premium transition-all">
                   <Image
-                    src={resolveProductImage(cat.image)}
+                    src={cat.image}
                     alt={cat.name}
                     fill
                     sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 300px"
@@ -322,9 +333,9 @@ export default function Home() {
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             {[
-              { img: '/images/images/product/rose-gold-16023305023103.jpg', text: 'Women Jewellery', href: '/products?gender=women' },
-              { img: '/images/images/product/default-16345643113729.jpg', text: 'Men Jewellery', href: '/products?gender=men' },
-              { img: '/images/images/product/default-16345665363640.jpg', text: 'Kids Jewellery', href: '/products?gender=kids' }
+              { img: '/images/site/women_jewelry.png', text: 'Women Jewellery', href: '/products?gender=women' },
+              { img: '/images/site/men_jewelry.png', text: 'Men Jewellery', href: '/products?gender=men' },
+              { img: '/images/site/kids_jewelry.png', text: 'Kids Jewellery', href: '/products?gender=kids' }
             ].map((store, i) => (
               <Link href={store.href} key={i} className="group cursor-pointer flex flex-col items-center">
                 <div className="relative w-full aspect-[4/5] rounded-4xl overflow-hidden mb-4 shadow-soft hover:shadow-premium transition-all hover:border-2 border-brand-gold">
