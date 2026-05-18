@@ -229,7 +229,6 @@ const Navbar = () => {
               </button>
             </div>
             
-            <Link href="/new-arrivals" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 dark:text-brand-text/80 hover:text-brand-gold transition-colors">New Arrivals</Link>
             <Link href="/blog" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 dark:text-brand-text/80 hover:text-brand-gold transition-colors">Blog</Link>
             <Link href="/franchise" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 dark:text-brand-text/80 hover:text-brand-gold transition-colors">Franchise</Link>
             <Link href="/contact" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 dark:text-brand-text/80 hover:text-brand-gold transition-colors">Contact Us</Link>
@@ -437,7 +436,6 @@ const Navbar = () => {
               {isMounted && wishlistCount > 0 && <span className="bg-brand-gold text-white px-2 py-0.5 rounded-full text-[10px]">{wishlistCount}</span>}
             </Link>
 
-            <Link href="/new-arrivals" className="text-sm uppercase tracking-widest font-bold text-brand-text dark:text-brand-text/90 py-4" onClick={() => setIsOpen(false)}>New Arrivals</Link>
             <Link href="/blog" className="text-sm uppercase tracking-widest font-bold text-brand-text dark:text-brand-text/90 py-4" onClick={() => setIsOpen(false)}>Blog</Link>
             <Link href="/franchise" className="text-sm uppercase tracking-widest font-bold text-brand-text dark:text-brand-text/90 py-4" onClick={() => setIsOpen(false)}>Franchise</Link>
             

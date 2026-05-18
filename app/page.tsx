@@ -214,7 +214,7 @@ export default function Home() {
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             {categories.slice(0, 8).map((cat: any, i: number) => (
               <Link href={`/products?category=${cat.slug}`} key={i} className="group flex flex-col items-center text-center space-y-4">
-                <div className="relative w-full aspect-[4/5] rounded-[40px] overflow-hidden shadow-soft border border-brand-gold/10 bg-brand-bg group-hover:shadow-premium transition-all">
+                <div className="relative w-full aspect-[4/5] rounded-[40px] overflow-hidden shadow-soft border border-brand-gold bg-brand-bg group-hover:shadow-premium transition-all">
                   <Image
                     src={resolveProductImage(cat.image)}
                     alt={cat.name}
@@ -246,9 +246,9 @@ export default function Home() {
               { title: 'Vintage Heirloom', imageUrl: '/images/images/product/yellow-gold-16010959532807.jpg', link: '/products?collection=heritage' },
               { title: 'Modern Minimalism', imageUrl: '/images/images/product/default-16345640053092.jpg', link: '/products?collection=minimal' }
             ]).map((trend: any, i: number) => (
-              <Link href={trend.link} key={i} className="group relative aspect-[3/4] rounded-[40px] overflow-hidden shadow-soft cursor-pointer block">
+              <Link href={trend.link} key={i} className="group relative aspect-[3/4] rounded-4xl overflow-hidden shadow-soft cursor-pointer block">
                 <Image src={trend.imageUrl} alt={trend.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-1000 group-hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-text/90 via-transparent to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-text/90 via-transparent to-transparent rounded-4xl border border-brand-gold"></div>
                 <h3 className="absolute bottom-6 w-full text-center text-white font-serif text-xl px-4">{trend.title}</h3>
               </Link>
             ))}
@@ -266,16 +266,16 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-auto md:h-[500px]">
             <div className="grid grid-rows-2 gap-4 h-full">
-              <Link href="/products?tag=featured" className="relative rounded-[40px] overflow-hidden shadow-soft group block">
+              <Link href="/products?tag=featured" className="relative rounded-4xl overflow-hidden shadow-soft group block border border-brand-gold">
                 <Image src="/images/images/product/rose-gold-16017081121080.jpg" alt="Featured World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               </Link>
-              <Link href="/products?collection=heritage" className="relative rounded-[40px] overflow-hidden shadow-soft group block">
+              <Link href="/products?collection=heritage" className="relative rounded-4xl overflow-hidden shadow-soft group block border border-brand-gold">
                 <Image src="/images/images/product/yellow-gold-16010972111558.jpg" alt="Heritage World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               </Link>
             </div>
-            <Link href="/products?collection=heritage" className="relative rounded-[40px] overflow-hidden shadow-soft group h-full min-h-[400px] block">
+            <Link href="/products?collection=heritage" className="relative rounded-4xl overflow-hidden shadow-soft group h-full min-h-[400px] block">
               <Image src="/images/images/product/default-16345651242469.jpg" alt="Heritage World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
-              <div className="absolute inset-0 bg-brand-text/20 flex flex-col items-center justify-center text-center p-8">
+              <div className="absolute inset-0 bg-brand-text/20 flex flex-col items-center justify-center text-center p-8 rounded-4xl border border-brand-gold">
                 <h3 className="text-5xl font-serif text-white mb-4 italic">The Heritage</h3>
                 <p className="text-white/90 text-sm max-w-sm uppercase tracking-widest">Crafting brilliance for generations.</p>
               </div>
@@ -327,8 +327,8 @@ export default function Home() {
               { img: '/images/images/product/default-16345665363640.jpg', text: 'Kids Jewellery', href: '/products?gender=kids' }
             ].map((store, i) => (
               <Link href={store.href} key={i} className="group cursor-pointer flex flex-col items-center">
-                <div className="relative w-full aspect-[4/5] rounded-[40px] overflow-hidden mb-4 shadow-soft hover:shadow-premium transition-all">
-                <Image src={store.img} alt={store.text} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div className="relative w-full aspect-[4/5] rounded-4xl overflow-hidden mb-4 shadow-soft hover:shadow-premium transition-all hover:border-2 border-brand-gold">
+                <Image src={store.img} alt={store.text} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700 border border-brand-gold rounded-4xl" />
                 </div>
                 <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/70 group-hover:text-brand-gold transition-colors">{store.text}</h4>
               </Link>
@@ -426,7 +426,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative aspect-square md:aspect-auto md:h-[400px] rounded-[40px] overflow-hidden bg-[#FFFBF0] dark:bg-brand-bg group p-12 flex flex-col justify-center border-[12px] border-white dark:border-brand-border/10 shadow-sm">
+          <div className="relative aspect-square md:aspect-auto md:h-[400px] rounded-[40px] overflow-hidden bg-[#FFFBF0] dark:bg-brand-bg group p-12 flex flex-col justify-center border-1 border-brand-gold dark:border-brand-border/10 shadow-sm">
             <div className="space-y-6">
               <div className="w-16 h-16 border border-brand-gold rounded-t-full flex items-center justify-center mb-6">
                 <RotateCcw size={24} className="text-brand-gold" />

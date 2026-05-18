@@ -232,7 +232,7 @@ export default function BlogPage() {
                     className="object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                 </div>
-                <div className="p-8 space-y-4">
+                <div className="p-8 space-y-4 border-1 border-brand-gold rounded-b-4xl">
                   <p className="text-brand-gold text-[11px] uppercase tracking-widest font-bold">{post.date}</p>
                   <h3 className="text-xl sm:text-2xl font-serif text-brand-text leading-snug group-hover:text-brand-gold transition-colors">
                     {post.title}
@@ -319,7 +319,7 @@ export default function BlogPage() {
                     className="object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                 </div>
-                <div className="p-6 space-y-3">
+                <div className="p-6 space-y-3 border border-brand-gold rounded-b-4xl">
                   <div className="flex flex-wrap gap-2">
                     {post.tags.map(tag => (
                       <span key={tag} className="px-3 py-1 border border-brand-text/10 rounded-full text-[9px] uppercase tracking-widest font-bold text-brand-text/50 hover:border-brand-gold hover:text-brand-gold transition-colors">

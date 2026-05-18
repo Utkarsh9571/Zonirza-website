@@ -166,7 +166,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image src={relatedPost.image} alt={relatedPost.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
                 </div>
-                <div className="p-6 space-y-4">
+                <div className="p-6 space-y-4 border border-brand-gold rounded-b-4xl">
                   <div className="flex flex-wrap gap-2">
                     {relatedPost.tags.slice(0, 2).map(tag => (
                       <span key={tag} className="px-3 py-1 border border-red-800/20 rounded-lg text-[9px] uppercase tracking-widest font-bold text-red-800/60">
