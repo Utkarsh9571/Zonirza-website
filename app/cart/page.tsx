@@ -6,7 +6,7 @@ import { useAuthModalStore } from '@/store/authModalStore';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Minus, Plus, Trash2, ArrowRight, ShoppingBag, MapPin, Gift, ChevronRight, Info } from 'lucide-react';
+import { Minus, Plus, Trash2, ArrowRight, ShoppingBag, MapPin, Gift, ChevronRight, Info, Ticket, XCircle, CheckCircle2 } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { Section } from '@/components/new-ui/Section';
 import { Button } from '@/components/new-ui/Button';
@@ -45,6 +45,12 @@ export default function CartPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [pendingItem, setPendingItem] = useState<{ id: string, name: string, slug: string } | null>(null);
 
+  // Coupon State
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -62,6 +68,35 @@ export default function CartPage() {
       setDeliveryStatus('success');
       setPincode(pincodeInput);
     }, 800);
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode) return;
+    setIsValidatingCoupon(true);
+    setCouponError(null);
+    try {
+      const res = await fetch('/api/coupons/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: couponCode, cartTotal: total })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAppliedCoupon(data.data);
+      } else {
+        setCouponError(data.message);
+      }
+    } catch (error) {
+      setCouponError('Failed to validate coupon');
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode('');
+    setCouponError(null);
   };
 
   const handleProceedToCheckout = () => {
@@ -295,7 +330,61 @@ export default function CartPage() {
                   <span className="text-[11px] font-bold uppercase tracking-widest text-brand-text/40">Packaging & Insurance</span>
                   <span className="text-[10px] font-black uppercase tracking-widest text-brand-text/20">₹ 0</span>
                 </div>
+
+                {appliedCoupon && (
+                  <div className="flex justify-between items-center animate-in slide-in-from-top-2 duration-300">
+                    <div className="flex items-center space-x-2">
+                      <Ticket size={12} className="text-emerald-500" />
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-500">Discount ({appliedCoupon.code})</span>
+                    </div>
+                    <span className="text-lg font-serif text-emerald-500">-{displayPrice(appliedCoupon.discountAmount, currentCurrency, rates)}</span>
+                  </div>
+                )}
               </div>
+
+              {/* Coupon Input */}
+              {!appliedCoupon ? (
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-4 mb-2">
+                    <Ticket size={18} className="text-brand-gold" />
+                    <h3 className="text-[10px] uppercase tracking-[0.2em] font-black text-brand-text">Apply Coupon Code</h3>
+                  </div>
+                  <div className="flex space-x-3">
+                    <input 
+                      type="text" 
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      placeholder="ENTER CODE"
+                      className="flex-1 h-12 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 rounded-xl px-4 text-[10px] font-black tracking-widest focus:outline-none focus:border-brand-gold/30"
+                    />
+                    <button 
+                      onClick={handleApplyCoupon}
+                      disabled={isValidatingCoupon || !couponCode}
+                      className="h-12 px-6 bg-brand-gold text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-brand-text transition-all disabled:opacity-50"
+                    >
+                      {isValidatingCoupon ? '...' : 'Apply'}
+                    </button>
+                  </div>
+                  {couponError && (
+                    <p className="text-[9px] font-bold text-red-500 uppercase tracking-widest ml-1">{couponError}</p>
+                  )}
+                </div>
+              ) : (
+                <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-4 flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white">
+                      <CheckCircle2 size={16} />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Coupon Applied!</p>
+                      <p className="text-[9px] text-emerald-600/60 uppercase tracking-wider">You saved {displayPrice(appliedCoupon.discountAmount, currentCurrency, rates)}</p>
+                    </div>
+                  </div>
+                  <button onClick={removeCoupon} className="text-emerald-500/40 hover:text-red-500 transition-colors">
+                    <XCircle size={20} />
+                  </button>
+                </div>
+              )}
 
               <div className="space-y-8">
                 <div className="flex justify-between items-end">
@@ -303,7 +392,9 @@ export default function CartPage() {
                     <span className="text-[11px] font-bold uppercase tracking-widest text-brand-text">Amount Payable</span>
                     <p className="text-[9px] text-brand-text/30 dark:text-brand-text/60 uppercase tracking-[0.15em]">Inclusive of all taxes</p>
                   </div>
-                  <span className="text-4xl font-serif text-brand-text italic">{displayPrice(total, currentCurrency, rates)}</span>
+                  <span className="text-4xl font-serif text-brand-text italic">
+                    {displayPrice(total - (appliedCoupon?.discountAmount || 0), currentCurrency, rates)}
+                  </span>
                 </div>
 
                 <Button 
@@ -334,7 +425,9 @@ export default function CartPage() {
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 dark:bg-brand-bg/80 backdrop-blur-xl border-t border-brand-text/5 dark:border-white/5 p-6 lg:hidden flex items-center justify-between shadow-premium transition-colors">
         <div className="space-y-1">
           <p className="text-[10px] font-bold uppercase tracking-widest text-brand-text/40 dark:text-brand-text/60">Payable Amount</p>
-          <p className="text-2xl font-serif text-brand-text dark:text-brand-text/90 font-bold">{displayPrice(total, currentCurrency, rates)}</p>
+          <p className="text-2xl font-serif text-brand-text dark:text-brand-text/90 font-bold">
+            {displayPrice(total - (appliedCoupon?.discountAmount || 0), currentCurrency, rates)}
+          </p>
         </div>
         <Button 
           size="lg" 

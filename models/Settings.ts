@@ -4,6 +4,9 @@ export interface ISettings extends Document {
   siteName: string;
   supportEmail: string;
   supportPhone: string;
+  address: string;
+  businessHours: string;
+  footerText: string;
   maintenanceMode: boolean;
   pricingFactors: {
     gstPercentage: number;
@@ -15,12 +18,30 @@ export interface ISettings extends Document {
     facebook?: string;
     whatsapp?: string;
   };
+  contactPage: {
+    title: string;
+    description: string;
+    mapUrl?: string;
+  };
+  seo: {
+    defaultTitle: string;
+    defaultDescription: string;
+    keywords: string[];
+  };
+  announcement: {
+    text: string;
+    link?: string;
+    isActive: boolean;
+  };
 }
 
 const SettingsSchema: Schema = new Schema({
   siteName: { type: String, default: 'Zoniraz Jewelers' },
   supportEmail: { type: String, default: 'support@zoniraz.com' },
   supportPhone: { type: String, default: '+91 99999 99999' },
+  address: { type: String, default: '123 Luxury Lane, Jewelry District' },
+  businessHours: { type: String, default: 'Mon-Sat: 10AM - 8PM, Sun: Closed' },
+  footerText: { type: String, default: 'Crafting brilliance for generations.' },
   maintenanceMode: { type: Boolean, default: false },
   pricingFactors: {
     gstPercentage: { type: Number, default: 3 },
@@ -31,6 +52,21 @@ const SettingsSchema: Schema = new Schema({
     instagram: { type: String },
     facebook: { type: String },
     whatsapp: { type: String }
+  },
+  contactPage: {
+    title: { type: String, default: 'Get in Touch' },
+    description: { type: String, default: 'Visit our boutique or talk to an expert.' },
+    mapUrl: { type: String }
+  },
+  seo: {
+    defaultTitle: { type: String, default: 'Zoniraz - Premium Jewelry' },
+    defaultDescription: { type: String, default: 'Discover the artistry of fine jewellery.' },
+    keywords: { type: [String], default: ['jewelry', 'luxury', 'diamonds'] }
+  },
+  announcement: {
+    text: { type: String, default: '' },
+    link: { type: String, default: '' },
+    isActive: { type: Boolean, default: false }
   }
 }, { timestamps: true });
 

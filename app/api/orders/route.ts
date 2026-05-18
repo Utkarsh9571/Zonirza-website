@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import Order from '@/models/Order';
+import Coupon from '@/models/Coupon';
 import { sendOrderConfirmationEmail, sendAdminNewOrderEmail } from '@/lib/mail';
 
 // POST: Create a new pending order
@@ -10,7 +11,7 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const body = await req.json();
-    const { items, totalAmount, shippingAddress } = body;
+    const { items, totalAmount, shippingAddress, couponCode, discountAmount } = body;
 
     if (!items || items.length === 0) {
       return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
@@ -22,6 +23,8 @@ export async function POST(req: Request) {
       userId: session?.user ? (session.user as any).id : undefined,
       items,
       totalAmount,
+      discountAmount: discountAmount || 0,
+      couponCode: couponCode || undefined,
       currency: body.currency || 'INR',
       exchangeRate: body.exchangeRate || 1,
       shippingAddress,
@@ -30,6 +33,14 @@ export async function POST(req: Request) {
     };
 
     const order = await Order.create(orderData);
+
+    // If a coupon was used, increment its usage count
+    if (couponCode) {
+      await Coupon.findOneAndUpdate(
+        { code: couponCode.toUpperCase() },
+        { $inc: { usedCount: 1 } }
+      );
+    }
 
     // Trigger Email Workflow (Async - Don't wait for response to confirm order creation)
     if (session?.user?.email) {

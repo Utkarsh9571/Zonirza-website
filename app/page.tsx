@@ -20,21 +20,25 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 export default function Home() {
   const [data, setData] = useState<{products: any[], categories: any[]}>({ products: [], categories: [] });
+  const [homeContent, setHomeContent] = useState<any>(null);
   const { openAuthModal } = useAuthModalStore();
   const { currentCurrency, rates } = useCurrencyStore();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [pRes, cRes] = await Promise.all([
+        const [pRes, cRes, hRes] = await Promise.all([
           fetch(`${API_URL}/api/products?limit=20`),
-          fetch(`${API_URL}/api/categories`)
+          fetch(`${API_URL}/api/categories`),
+          fetch(`${API_URL}/api/merchandising/public`)
         ]);
 
         const products = pRes.ok ? (await pRes.json()).data : [];
         const categories = cRes.ok ? (await cRes.json()).data : [];
+        const home = hRes.ok ? (await hRes.json()).data : null;
 
         setData({ products, categories });
+        if (home) setHomeContent(home);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       }
@@ -51,7 +55,7 @@ export default function Home() {
       <section className="relative h-screen min-h-[700px] w-full flex items-center justify-center p-4 md:p-6 lg:p-8 overflow-hidden">
         <div className="absolute inset-0 w-full h-full">
           <Image
-            src="/images/hero-bg.jpg"
+            src={homeContent?.hero?.imageUrl || "/images/hero-bg.jpg"}
             alt="Luxury Jewelry Background"
             fill
             sizes="100vw"
@@ -66,9 +70,10 @@ export default function Home() {
           
           <div className="flex-1 flex flex-col items-start justify-center space-y-12 max-w-2xl">
             <div className="space-y-4">
-              <h1 className="text-7xl md:text-[110px] font-serif text-white leading-[0.85] tracking-tighter">
-                Our Luxury <br /> Collections
-              </h1>
+              <h1 
+                className="text-7xl md:text-[110px] font-serif text-white leading-[0.85] tracking-tighter"
+                dangerouslySetInnerHTML={{ __html: homeContent?.hero?.title?.replace(/\n/g, '<br />') || 'Our Luxury <br /> Collections' }}
+              />
             </div>
 
             <button 
@@ -76,7 +81,7 @@ export default function Home() {
               className="flex items-center space-x-4 group bg-transparent border-none outline-none p-0"
             >
               <div className="bg-brand-text dark:bg-brand-gold text-brand-bg dark:text-white px-12 py-5 rounded-full text-[11px] uppercase tracking-[0.2em] font-bold hover:bg-brand-gold hover:text-white transition-all shadow-none cursor-pointer">
-                Let's Get Started
+                {homeContent?.hero?.buttonText || "Let's Get Started"}
               </div>
               <div className="w-14 h-14 rounded-full bg-brand-text dark:bg-brand-gold text-brand-bg dark:text-white flex items-center justify-center shadow-none group-hover:bg-brand-gold group-hover:text-white transition-all cursor-pointer">
                 <ArrowRight size={20} />
@@ -88,7 +93,7 @@ export default function Home() {
                 # Zoniraz Jewelry Store
               </p>
               <p className="text-white/60 text-sm leading-relaxed max-w-sm font-medium">
-                Discover the artistry of fine jewellery at Zoniraz. From timeless diamond necklaces to contemporary gold collections, our pieces are crafted to celebrate your most precious moments.
+                {homeContent?.hero?.subtitle || "Discover the artistry of fine jewellery at Zoniraz. From timeless diamond necklaces to contemporary gold collections, our pieces are crafted to celebrate your most precious moments."}
               </p>
             </div>
           </div>
@@ -236,13 +241,13 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-            {[
-              { title: 'The Solitaire Promise', img: '/images/images/product/rose-gold-16010347432265.jpg', query: 'collection=solitaire' },
-              { title: 'Vintage Heirloom', img: '/images/images/product/yellow-gold-16010959532807.jpg', query: 'collection=heritage' },
-              { title: 'Modern Minimalism', img: '/images/images/product/default-16345640053092.jpg', query: 'collection=minimal' }
-            ].map((trend, i) => (
-              <Link href={`/products?${trend.query}`} key={i} className="group relative aspect-[3/4] rounded-[40px] overflow-hidden shadow-soft cursor-pointer block">
-                <Image src={trend.img} alt={trend.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-1000 group-hover:scale-110" />
+            {(homeContent?.trendingCollections?.length > 0 ? homeContent.trendingCollections : [
+              { title: 'The Solitaire Promise', imageUrl: '/images/images/product/rose-gold-16010347432265.jpg', link: '/products?collection=solitaire' },
+              { title: 'Vintage Heirloom', imageUrl: '/images/images/product/yellow-gold-16010959532807.jpg', link: '/products?collection=heritage' },
+              { title: 'Modern Minimalism', imageUrl: '/images/images/product/default-16345640053092.jpg', link: '/products?collection=minimal' }
+            ]).map((trend: any, i: number) => (
+              <Link href={trend.link} key={i} className="group relative aspect-[3/4] rounded-[40px] overflow-hidden shadow-soft cursor-pointer block">
+                <Image src={trend.imageUrl} alt={trend.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-1000 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-text/90 via-transparent to-transparent"></div>
                 <h3 className="absolute bottom-6 w-full text-center text-white font-serif text-xl px-4">{trend.title}</h3>
               </Link>

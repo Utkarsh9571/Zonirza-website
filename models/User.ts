@@ -30,6 +30,8 @@ export interface IUser extends Document {
     preferredCurrency?: string;
   };
   onboardingCompleted: boolean;
+  isActive: boolean;
+  status: 'active' | 'suspended' | 'banned';
   lastLogin: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -80,6 +82,8 @@ const UserSchema = new Schema<IUser>({
     preferredCurrency: { type: String, enum: ['INR', 'USD', 'AED', 'EUR'], default: 'INR' }
   },
   onboardingCompleted: { type: Boolean, default: false },
+  isActive: { type: Boolean, default: true },
+  status: { type: String, enum: ['active', 'suspended', 'banned'], default: 'active' },
   lastLogin: { type: Date, default: Date.now }
 }, { timestamps: true });
 

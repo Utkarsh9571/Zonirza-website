@@ -9,6 +9,8 @@ export interface IFranchiseLead extends Document {
   investmentRange: string;
   experience: string;
   message: string;
+  status: 'pending' | 'contacted' | 'rejected';
+  adminNotes?: string;
 }
 
 const FranchiseLeadSchema: Schema = new Schema({
@@ -20,6 +22,8 @@ const FranchiseLeadSchema: Schema = new Schema({
   investmentRange: { type: String, required: false },
   experience: { type: String, required: false },
   message: { type: String, required: true },
+  status: { type: String, enum: ['pending', 'contacted', 'rejected'], default: 'pending' },
+  adminNotes: { type: String, default: '' },
 }, { timestamps: true });
 
 export default mongoose.models.FranchiseLead || mongoose.model<IFranchiseLead>('FranchiseLead', FranchiseLeadSchema);

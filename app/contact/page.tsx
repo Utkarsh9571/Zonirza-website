@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Mail, Phone, MessageSquare, ChevronRight, CheckCircle2, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Mail, Phone, MessageSquare, ChevronRight, CheckCircle2, Loader2, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
@@ -14,6 +14,20 @@ export default function ContactPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const [settings, setSettings] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch('/api/settings/public');
+        const data = await res.json();
+        if (data.success) setSettings(data.data);
+      } catch (err) {
+        console.error('Contact page settings fetch error:', err);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,8 +105,8 @@ export default function ContactPage() {
               <Phone size={28} strokeWidth={1} />
             </div>
             <h3 className="text-2xl text-brand-text mb-4">Call Us At</h3>
-            <p className="text-sm font-bold text-brand-gold tracking-widest mb-2 font-sans">1800 572 6599</p>
-            <p className="text-[10px] text-brand-text/40">10 AM - 7 PM (Mon-Sat)</p>
+            <p className="text-sm font-bold text-brand-gold tracking-widest mb-2 font-sans">{settings?.supportPhone || "1800 572 6599"}</p>
+            <p className="text-[10px] text-brand-text/40">{settings?.businessHours || "10 AM - 7 PM (Mon-Sat)"}</p>
           </div>
           
           {/* Write */}
@@ -101,7 +115,7 @@ export default function ContactPage() {
               <Mail size={28} strokeWidth={1} />
             </div>
             <h3 className="text-2xl text-brand-text mb-4">Write to Us</h3>
-            <p className="text-sm font-bold text-brand-gold tracking-tighter font-sans">zonirazjewelhouse@gmail.com</p>
+            <p className="text-sm font-bold text-brand-gold tracking-tighter font-sans">{settings?.supportEmail || "zonirazjewelhouse@gmail.com"}</p>
           </div>
         </div>
         

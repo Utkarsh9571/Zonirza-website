@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { useState, useEffect } from 'react';
 import { 
   Users, 
@@ -13,7 +15,10 @@ import {
   Calendar,
   ShoppingBag,
   CreditCard,
-  User as UserIcon
+  User as UserIcon,
+  Clock,
+  Eye,
+  ChevronRightIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -98,19 +103,19 @@ export default function AdminCustomersPage() {
               </thead>
               <tbody className="divide-y divide-brand-text/5 dark:divide-white/5">
                 {customers.map((customer) => (
-                  <tr key={customer._id} className="group hover:bg-brand-bg/30 dark:hover:bg-white/2 transition-colors">
+                  <tr key={customer._id} className="group hover:bg-brand-gold/[0.03] transition-colors relative">
                     <td className="px-8 py-6">
                       <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold">
-                          <UserIcon size={20} />
+                        <div className="w-10 h-10 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold font-bold">
+                          {customer.name ? customer.name[0] : <UserIcon size={18} />}
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[14px] font-bold text-brand-text dark:text-white">{customer.name || 'Anonymous Patron'}</span>
                           <span className={cn(
                             "text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md w-fit mt-1",
-                            customer.onboardingCompleted ? "bg-emerald-500/10 text-emerald-500" : "bg-amber-500/10 text-amber-500"
+                            customer.status === 'active' ? "bg-emerald-500/10 text-emerald-600" : "bg-red-500/10 text-red-600"
                           )}>
-                            {customer.onboardingCompleted ? 'Verified' : 'Pending'}
+                            {customer.status || 'active'}
                           </span>
                         </div>
                       </div>
@@ -152,9 +157,17 @@ export default function AdminCustomersPage() {
                       </div>
                     </td>
                     <td className="px-8 py-6 text-right">
-                      <span className="text-[11px] font-bold text-brand-text/40 uppercase tracking-widest">
-                        {new Date(customer.createdAt).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
-                      </span>
+                      <div className="flex items-center justify-end space-x-4">
+                        <span className="text-[11px] font-bold text-brand-text/40 uppercase tracking-widest">
+                          {new Date(customer.createdAt).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                        </span>
+                        <Link 
+                          href={`/admin/customers/${customer._id}`}
+                          className="p-3 bg-brand-gold/5 text-brand-gold rounded-xl hover:bg-brand-gold hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                        >
+                          <Eye size={18} />
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))}

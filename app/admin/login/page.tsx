@@ -67,7 +67,7 @@ export default function AdminLoginPage() {
             )}
 
             <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 ml-2">Secure Email</label>
+              <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-gold ml-2">Secure Email</label>
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text/30 group-focus-within:text-brand-gold transition-colors" size={18} />
                 <input 
@@ -82,7 +82,7 @@ export default function AdminLoginPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 ml-2">Master Password</label>
+              <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-gold ml-2">Master Password</label>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text/30 group-focus-within:text-brand-gold transition-colors" size={18} />
                 <input 

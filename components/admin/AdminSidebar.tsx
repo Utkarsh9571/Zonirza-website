@@ -12,7 +12,10 @@ import {
   ChevronRight,
   Sparkles,
   Tag,
-  Layers
+  Layers,
+  Ticket,
+  Briefcase,
+  Monitor
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { signOut } from 'next-auth/react';
@@ -24,6 +27,9 @@ const MENU_ITEMS = [
   { icon: Tag, label: 'Categories', href: '/admin/categories' },
   { icon: Users, label: 'Customers', href: '/admin/customers' },
   { icon: Layers, label: 'Collections', href: '/admin/collections' },
+  { icon: Ticket, label: 'Coupons', href: '/admin/coupons' },
+  { icon: Briefcase, label: 'Franchise Leads', href: '/admin/franchise-leads' },
+  { icon: Monitor, label: 'Merchandising', href: '/admin/merchandising' },
   { icon: Settings, label: 'Settings', href: '/admin/settings' },
 ];
 

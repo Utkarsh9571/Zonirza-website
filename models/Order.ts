@@ -33,6 +33,8 @@ export interface IOrder extends Document {
   orderStatus: 'placed' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   currency: string;
   exchangeRate: number;
+  discountAmount: number;
+  couponCode?: string;
   razorpayOrderId?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -80,6 +82,8 @@ const OrderSchema: Schema = new Schema(
     },
     currency: { type: String, required: true, default: 'INR' },
     exchangeRate: { type: Number, required: true, default: 1 },
+    discountAmount: { type: Number, default: 0 },
+    couponCode: { type: String },
     razorpayOrderId: { type: String },
   },
   { timestamps: true }
