@@ -66,14 +66,14 @@ export default function Home() {
       <section className="relative h-screen min-h-[700px] w-full flex items-center justify-center p-4 md:p-6 lg:p-8 overflow-hidden">
         <div className="absolute inset-0 w-full h-full">
           <Image
-            src={homeContent?.hero?.imageUrl || "/images/hero-bg.jpg"}
+            src={homeContent?.hero?.imageUrl || "/images/hero-bg.avif"}
             alt="Luxury Jewelry Background"
             fill
             sizes="100vw"
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-black/60"></div>
+          <div className="absolute inset-0"></div>
         </div>
 
         <div className="relative z-10 w-full h-full hero-glass rounded-[30px] md:rounded-[50px] overflow-hidden flex flex-col md:flex-row items-center justify-between p-8 md:p-16 lg:p-24 pt-24 md:pt-32 lg:pt-32 animate-in fade-in zoom-in duration-1000">
@@ -463,22 +463,51 @@ export default function Home() {
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             {[
-              { img: '/images/site/visit_store.png', text: 'VISIT OUR STORE' },
-              { img: '/images/site/book_appointment.png', text: 'BOOK AN APPOINTMENT' },
-              { img: '/images/site/talk_expert.png', text: 'TALK TO AN EXPERT' },
+              { img: '/images/site/visit_store.png', text: 'VISIT OUR STORE', hidden: true },
+              { img: '/images/site/book_appointment.png', text: 'BOOK AN APPOINTMENT', link: '/contact' },
+              { img: '/images/site/talk_expert.png', text: 'TALK TO AN EXPERT', hidden: true },
               { img: '/images/site/digi_gold.png', text: 'DIGI GOLD' },
-              { img: '/images/site/blogs.png', text: 'BLOGS' },
-              { img: '/images/site/jewellery_guide.png', text: 'JEWELLERY GUIDE' }
-            ].map((store, i) => (
-              <div key={i} className="group cursor-pointer bg-white dark:bg-brand-white border border-brand-gold/10 flex flex-col rounded-[40px] overflow-hidden shadow-soft hover:shadow-premium transition-all">
-                <div className="relative aspect-square overflow-hidden">
-                  <Image src={store.img} alt={store.text} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+              { img: '/images/site/blogs.png', text: 'BLOGS', link: '/blog' },
+              { img: '/images/site/jewellery_guide.png', text: 'JEWELLERY GUIDE', hidden: true }
+            ].filter(store => !store.hidden).map((store, i) => {
+              const CardContent = (
+                <>
+                  <div className="relative aspect-square overflow-hidden">
+                    <Image 
+                      src={store.img} 
+                      alt={store.text} 
+                      fill 
+                      sizes="(max-width: 768px) 100vw, 33vw" 
+                      className="object-cover transition-transform duration-700 group-hover:scale-105" 
+                    />
+                  </div>
+                  <div className="p-4 text-center border border-brand-gold rounded-b-[40px]">
+                    <h4 className="text-[10px] uppercase tracking-widest font-bold text-brand-text group-hover:text-brand-gold transition-colors">{store.text}</h4>
+                  </div>
+                </>
+              );
+
+              if (store.link) {
+                return (
+                  <Link 
+                    href={store.link} 
+                    key={i} 
+                    className="group cursor-pointer bg-white dark:bg-brand-white border border-brand-gold/10 flex flex-col rounded-[40px] overflow-hidden shadow-soft hover:shadow-premium transition-all"
+                  >
+                    {CardContent}
+                  </Link>
+                );
+              }
+
+              return (
+                <div 
+                  key={i} 
+                  className="group bg-white dark:bg-brand-white border border-brand-gold/10 flex flex-col rounded-[40px] overflow-hidden shadow-soft transition-all"
+                >
+                  {CardContent}
                 </div>
-                <div className="p-4 text-center">
-                  <h4 className="text-[10px] uppercase tracking-widest font-bold text-brand-text group-hover:text-brand-gold transition-colors">{store.text}</h4>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>

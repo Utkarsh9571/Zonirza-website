@@ -50,19 +50,19 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20">
             <ProductCard 
               name="Rose Pearl Cake Charm Pendant" 
-              price="$ 198.99" 
+              price={198.99} 
               image="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=800"
               slug="pearl-cake-pendant"
             />
             <ProductCard 
               name="Pavé Diamond Huggie Hoops" 
-              price="$ 89.99" 
+              price={89.99} 
               image="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=800"
               slug="pave-diamond-hoops"
             />
             <ProductCard 
               name="Charlotte Slim Ring" 
-              price="$ 129.99" 
+              price={129.99} 
               image="https://images.unsplash.com/photo-1603561591411-0e7320b97d1b?auto=format&fit=crop&q=80&w=800"
               slug="charlotte-slim-ring"
             />

@@ -30,7 +30,7 @@ const HomepageContentSchema: Schema = new Schema({
     subtitle: { type: String, default: 'Discover the artistry of fine jewellery at Zoniraz.' },
     buttonText: { type: String, default: "Let's Get Started" },
     buttonLink: { type: String, default: '/products' },
-    imageUrl: { type: String, default: '/images/hero-bg.jpg' }
+    imageUrl: { type: String, default: '/images/hero-bg.avif' }
   },
   featuredProducts: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
   featuredCollections: [{ type: Schema.Types.ObjectId, ref: 'Collection' }],

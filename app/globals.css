@@ -112,7 +112,7 @@
   }
 
   .hero-glass {
-    @apply backdrop-blur-3xl border-none bg-white/1;
+    @apply backdrop-blur-3xl border-none bg-white/5;
   }
 
   /* Responsive Scroll Containers */

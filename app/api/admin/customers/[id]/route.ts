@@ -5,7 +5,7 @@ import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import Order from "@/models/Order";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || (session.user as any).role !== "admin") {
@@ -13,7 +13,8 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     }
 
     await dbConnect();
-    const user = await User.findById(params.id);
+    const { id } = await params;
+    const user = await User.findById(id);
     
     if (!user) {
       return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
@@ -34,7 +35,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || (session.user as any).role !== "admin") {
@@ -44,7 +45,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     await dbConnect();
     const body = await req.json();
     
-    const user = await User.findByIdAndUpdate(params.id, { $set: body }, { new: true });
+    const { id } = await params;
+    const user = await User.findByIdAndUpdate(id, { $set: body }, { new: true });
     
     if (!user) {
       return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
