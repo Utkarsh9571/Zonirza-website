@@ -19,11 +19,6 @@ export interface PricingBreakdown {
   estimatedWeight: number;
 }
 
-// Mock constants - In a real app, these could come from an API or DB
-const GOLD_RATE_24K = 6500; // Price per gram
-const PLATINUM_RATE = 4000;
-const SILVER_RATE = 100;
-
 const PURITY_MULTIPLIERS: Record<string, number> = {
   '24K': 1.0,
   '22K': 0.916,
@@ -61,16 +56,16 @@ export function calculateEstimatedWeight(baseWeight: number, size: string | unde
 /**
  * Calculate the metal price based on weight and purity
  */
-function calculateMetalPrice(weight: number, metal: string, purity: string): number {
-  let rate = GOLD_RATE_24K;
+function calculateMetalPrice(weight: number, metal: string, purity: string, rates: any): number {
+  let rate = rates.gold24k || 6500;
   
   if (metal.toLowerCase().includes('platinum')) {
-    rate = PLATINUM_RATE;
+    rate = rates.platinum || 4000;
     return weight * rate;
   }
   
   if (metal.toLowerCase().includes('silver')) {
-    rate = SILVER_RATE;
+    rate = rates.silver || 100;
     return weight * rate;
   }
   
@@ -79,15 +74,17 @@ function calculateMetalPrice(weight: number, metal: string, purity: string): num
 }
 
 /**
- * Main Pricing Engine Function
+ * Main Pricing Engine Function - Client Side Friendly (Uses defaults or provided rates)
  */
 export function calculatePricing(
   product: { basePrice: number; baseWeight: number; makingCharges: number },
-  config: ProductConfiguration
+  config: ProductConfiguration,
+  providedRates?: any
 ): PricingBreakdown {
+  const rates = providedRates || { gold24k: 6500, silver: 100, platinum: 4000 };
   const estimatedWeight = calculateEstimatedWeight(product.baseWeight, config.size);
   
-  const metalPrice = calculateMetalPrice(estimatedWeight, config.metal, config.purity);
+  const metalPrice = calculateMetalPrice(estimatedWeight, config.metal, config.purity, rates);
   const makingCharges = product.makingCharges || (metalPrice * 0.15); // Default 15% if not set
   const stonePrice = STONE_PRICES[config.stone || 'None'] || 0;
   

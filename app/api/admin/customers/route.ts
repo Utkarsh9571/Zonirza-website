@@ -19,11 +19,17 @@ export async function GET(req: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
     const query = searchParams.get("q") || "";
+    const status = searchParams.get("status") || "";
+    const isActive = searchParams.get("isActive") || "";
+    const sort = searchParams.get("sort") || "newest";
 
     const skip = (page - 1) * limit;
 
     // Build filter
     const filter: any = {};
+    if (status) filter.status = status;
+    if (isActive) filter.isActive = isActive === "true";
+
     if (query) {
       filter.$or = [
         { name: { $regex: query, $options: "i" } },
@@ -32,31 +38,88 @@ export async function GET(req: NextRequest) {
       ];
     }
 
-    const users = await User.find(filter)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+    // Determine sort
+    let sortObj: any = { createdAt: -1 };
+    if (sort === "oldest") sortObj = { createdAt: 1 };
+    else if (sort === "activity") sortObj = { lastLogin: -1 };
+    // Spend and orders high sorting will be done in memory after enrichment for now
+    // unless we use aggregation which is better for performance
 
-    const total = await User.countDocuments(filter);
+    let users;
+    let total;
 
-    // Enrich users with order stats
-    const enrichedUsers = await Promise.all(users.map(async (user) => {
-      const orderCount = await Order.countDocuments({ "shippingAddress.email": user.email });
-      const totalSpent = await Order.aggregate([
-        { $match: { "shippingAddress.email": user.email, paymentStatus: 'paid' } },
-        { $group: { _id: null, total: { $sum: '$totalAmount' } } }
-      ]);
+    if (sort === "spend-high" || sort === "orders-high") {
+      // For these we need aggregation to sort by computed fields
+      const aggregationPipeline: any[] = [
+        { $match: filter },
+        {
+          $lookup: {
+            from: 'orders',
+            localField: 'email',
+            foreignField: 'shippingAddress.email',
+            as: 'userOrders'
+          }
+        },
+        {
+          $addFields: {
+            orderCount: { $size: '$userOrders' },
+            totalSpent: {
+              $sum: {
+                $map: {
+                  input: {
+                    $filter: {
+                      input: '$userOrders',
+                      as: 'order',
+                      cond: { $eq: ['$$order.paymentStatus', 'paid'] }
+                    }
+                  },
+                  as: 'paidOrder',
+                  in: '$$paidOrder.totalAmount'
+                }
+              }
+            }
+          }
+        }
+      ];
 
-      return {
-        ...user.toObject(),
-        orderCount,
-        totalSpent: totalSpent[0]?.total || 0
-      };
-    }));
+      if (sort === "spend-high") {
+        aggregationPipeline.push({ $sort: { totalSpent: -1 } });
+      } else {
+        aggregationPipeline.push({ $sort: { orderCount: -1 } });
+      }
+
+      aggregationPipeline.push({ $skip: skip });
+      aggregationPipeline.push({ $limit: limit });
+
+      users = await User.aggregate(aggregationPipeline);
+      total = await User.countDocuments(filter);
+    } else {
+      users = await User.find(filter)
+        .sort(sortObj)
+        .skip(skip)
+        .limit(limit);
+
+      total = await User.countDocuments(filter);
+
+      // Enrich users with order stats
+      users = await Promise.all(users.map(async (user) => {
+        const orderCount = await Order.countDocuments({ "shippingAddress.email": user.email });
+        const totalSpent = await Order.aggregate([
+          { $match: { "shippingAddress.email": user.email, paymentStatus: 'paid' } },
+          { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+        ]);
+
+        return {
+          ...user.toObject(),
+          orderCount,
+          totalSpent: totalSpent[0]?.total || 0
+        };
+      }));
+    }
 
     return NextResponse.json({
       success: true,
-      data: enrichedUsers,
+      data: users,
       total,
       page,
       totalPages: Math.ceil(total / limit),

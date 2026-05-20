@@ -48,15 +48,28 @@ export default function PaymentPage() {
       if (!isLoaded) throw new Error('Razorpay SDK failed to load');
 
       // 1. Create the Pending Order in our DB
+      // SECURE: Only send minimal data, backend recalculates everything
       const orderRes = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          items,
-          totalAmount: total,
+          items: items.map(item => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            configuration: item.configuration
+          })),
+          couponCode: undefined, // Add if coupon logic is implemented in store
           currency: currentCurrency,
           exchangeRate: rates[currentCurrency] || 1,
-          shippingAddress: selectedAddress
+          shippingAddress: {
+            fullName: selectedAddress?.fullName,
+            phone: selectedAddress?.phone,
+            addressLine: `${selectedAddress?.addressLine1} ${selectedAddress?.addressLine2 || ''}`.trim(),
+            city: selectedAddress?.city,
+            state: selectedAddress?.state,
+            pincode: selectedAddress?.pincode,
+            country: selectedAddress?.country || 'India'
+          }
         })
       });
 
@@ -64,11 +77,11 @@ export default function PaymentPage() {
       if (!orderData.success) throw new Error(orderData.error || 'Failed to create internal order');
 
       // 2. Initiate Razorpay Order on Backend
+      // SECURE: Only send orderId, backend fetches amount from DB
       const razorpayRes = await fetch('/api/razorpay', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          totalAmount: total,
           orderId: orderData.orderId
         })
       });

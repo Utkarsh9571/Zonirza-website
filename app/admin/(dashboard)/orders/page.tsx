@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { 
   ShoppingBag, 
   Search, 
@@ -15,29 +15,64 @@ import {
   XCircle,
   AlertCircle,
   Eye,
-  ExternalLink
+  ChevronDown,
+  Check,
+  X,
+  CreditCard
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
-export default function AdminOrdersPage() {
+function AdminOrdersPageContent() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // URL States
+  const page = parseInt(searchParams.get('page') || '1');
+  const searchTerm = searchParams.get('q') || '';
+  const status = searchParams.get('status') || '';
+  const paymentStatus = searchParams.get('paymentStatus') || '';
+  const sort = searchParams.get('sort') || 'newest';
+
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
   const [totalOrders, setTotalOrders] = useState(0);
-  const [page, setPage] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
+  const [showSort, setShowSort] = useState(false);
   const limit = 10;
 
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [updating, setUpdating] = useState(false);
 
-  useEffect(() => {
-    fetchOrders();
-  }, [page, searchTerm]);
+  // Helper to update URL params
+  const updateQueryParams = useCallback((updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null || value === '') {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
+    });
+    if (!updates.page && updates.page !== null) {
+      params.set('page', '1');
+    }
+    router.push(`${pathname}?${params.toString()}`);
+  }, [router, pathname, searchParams]);
 
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/admin/orders?page=${page}&limit=${limit}&q=${encodeURIComponent(searchTerm)}`);
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        q: searchTerm,
+        status,
+        paymentStatus,
+        sort
+      });
+      const res = await fetch(`/api/admin/orders?${queryParams.toString()}`);
       const data = await res.json();
       if (data.success) {
         setOrders(data.data);
@@ -49,6 +84,10 @@ export default function AdminOrdersPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchOrders();
+  }, [page, searchTerm, status, paymentStatus, sort]);
 
   const handleUpdateStatus = async (id: string, updates: any) => {
     setUpdating(true);
@@ -87,9 +126,20 @@ export default function AdminOrdersPage() {
       case 'shipped': return "bg-blue-500/10 text-blue-500 border-blue-500/20";
       case 'cancelled': return "bg-red-500/10 text-red-500 border-red-500/20";
       case 'processing': return "bg-amber-500/10 text-amber-500 border-amber-500/20";
+      case 'placed': return "bg-brand-gold/10 text-brand-gold border-brand-gold/20";
       default: return "bg-brand-text/10 text-brand-text/40 border-brand-text/5";
     }
   };
+
+  const statusOptions = ['placed', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+  const paymentStatusOptions = ['pending', 'paid', 'failed', 'refunded'];
+  const sortOptions = [
+    { label: 'Newest First', value: 'newest' },
+    { label: 'Oldest First', value: 'oldest' },
+    { label: 'Amount: High to Low', value: 'amount-high' },
+    { label: 'Amount: Low to High', value: 'amount-low' },
+    { label: 'Recently Updated', value: 'updated' },
+  ];
 
   return (
     <div className="space-y-8">
@@ -104,27 +154,164 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Filters & Search */}
-      <div className="bg-white dark:bg-white/10 p-6 rounded-[32px] border border-brand-text/15 dark:border-white/15 flex flex-col md:flex-row items-center gap-4 shadow-sm">
-        <div className="relative flex-1 group w-full">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text/30 group-focus-within:text-brand-gold transition-colors" size={18} />
-          <input 
-            type="text" 
-            placeholder="Search by Order ID, Customer Name, or Phone..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-slate-100 dark:bg-white/5 border border-brand-text/10 dark:border-white/10 rounded-2xl py-3 pl-12 pr-4 text-[13px] focus:ring-1 focus:ring-brand-gold/50 transition-all placeholder:text-brand-text/30 dark:placeholder:text-white/20"
-          />
+      <div className="space-y-4">
+        <div className="bg-white dark:bg-white/10 p-4 md:p-6 rounded-[32px] border border-brand-text/15 dark:border-white/15 flex flex-col md:flex-row items-center gap-4 shadow-sm">
+          <div className="relative flex-1 group w-full">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text/30 group-focus-within:text-brand-gold transition-colors" size={18} />
+            <input 
+              type="text" 
+              placeholder="Search by Order ID, Customer Name, or Phone..." 
+              value={searchTerm}
+              onChange={(e) => updateQueryParams({ q: e.target.value })}
+              className="w-full bg-slate-100 dark:bg-white/5 border border-brand-text/10 dark:border-white/10 rounded-2xl py-3 pl-12 pr-4 text-[13px] focus:ring-1 focus:ring-brand-gold/50 transition-all placeholder:text-brand-text/30 dark:placeholder:text-white/20"
+            />
+            {searchTerm && (
+              <button 
+                onClick={() => updateQueryParams({ q: '' })}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-text/30 hover:text-brand-gold"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <div className="relative flex-1 md:flex-none">
+              <button 
+                onClick={() => { setShowFilters(!showFilters); setShowSort(false); }}
+                className={cn(
+                  "flex items-center space-x-2 px-6 py-3 rounded-2xl border transition-all text-[12px] font-bold uppercase tracking-widest w-full md:w-auto justify-center",
+                  showFilters || status || paymentStatus
+                    ? "bg-brand-gold text-brand-bg border-brand-gold" 
+                    : "bg-brand-bg dark:bg-white/5 text-brand-text/60 dark:text-white/60 border-transparent hover:border-brand-gold/20"
+                )}
+              >
+                <Filter size={16} />
+                <span>Filters</span>
+                {(status || paymentStatus) && (
+                  <span className="ml-1 w-2 h-2 bg-white rounded-full" />
+                )}
+              </button>
+              
+              {showFilters && (
+                <div className="absolute top-full mt-4 right-0 w-72 bg-white dark:bg-[#1A1A1A] rounded-3xl shadow-2xl border border-brand-text/10 dark:border-white/10 p-6 z-50 space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-[10px] uppercase tracking-[0.2em] font-black text-brand-gold">Filter Orders</h4>
+                    <button 
+                      onClick={() => updateQueryParams({ status: '', paymentStatus: '' })}
+                      className="text-[9px] uppercase tracking-widest font-bold text-brand-text/40 hover:text-brand-gold"
+                    >
+                      Reset All
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-[9px] uppercase tracking-widest font-bold text-brand-text/40 ml-1">Order Status</label>
+                      <select 
+                        value={status}
+                        onChange={(e) => updateQueryParams({ status: e.target.value })}
+                        className="w-full bg-slate-100 dark:bg-white/5 border-none rounded-xl py-2 px-3 text-[12px] focus:ring-1 focus:ring-brand-gold/50"
+                      >
+                        <option value="">All Statuses</option>
+                        {statusOptions.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[9px] uppercase tracking-widest font-bold text-brand-text/40 ml-1">Payment Status</label>
+                      <select 
+                        value={paymentStatus}
+                        onChange={(e) => updateQueryParams({ paymentStatus: e.target.value })}
+                        className="w-full bg-slate-100 dark:bg-white/5 border-none rounded-xl py-2 px-3 text-[12px] focus:ring-1 focus:ring-brand-gold/50"
+                      >
+                        <option value="">All Payments</option>
+                        {paymentStatusOptions.map(p => <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="relative flex-1 md:flex-none">
+              <button 
+                onClick={() => { setShowSort(!showSort); setShowFilters(false); }}
+                className={cn(
+                  "flex items-center space-x-2 px-6 py-3 rounded-2xl border transition-all text-[12px] font-bold uppercase tracking-widest w-full md:w-auto justify-center",
+                  showSort || sort !== 'newest'
+                    ? "bg-brand-text text-white border-brand-text dark:bg-white dark:text-brand-bg" 
+                    : "bg-brand-bg dark:bg-white/5 text-brand-text/60 dark:text-white/60 border-transparent hover:border-brand-gold/20"
+                )}
+              >
+                <span>Sort</span>
+                <ChevronDown size={16} className={cn("transition-transform", showSort && "rotate-180")} />
+              </button>
+
+              {showSort && (
+                <div className="absolute top-full mt-4 right-0 w-56 bg-white dark:bg-[#1A1A1A] rounded-3xl shadow-2xl border border-brand-text/10 dark:border-white/10 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="py-2">
+                    {sortOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => {
+                          updateQueryParams({ sort: option.value });
+                          setShowSort(false);
+                        }}
+                        className="w-full px-6 py-3 text-left flex items-center justify-between hover:bg-brand-bg dark:hover:bg-white/5 transition-colors group"
+                      >
+                        <span className={cn(
+                          "text-[11px] font-bold uppercase tracking-widest",
+                          sort === option.value ? "text-brand-gold" : "text-brand-text/60 dark:text-white/60 group-hover:text-brand-text dark:group-hover:text-white"
+                        )}>
+                          {option.label}
+                        </span>
+                        {sort === option.value && <Check size={14} className="text-brand-gold" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-4 w-full md:w-auto">
-          <button className="flex items-center space-x-2 px-6 py-3 bg-brand-bg dark:bg-white/5 text-brand-text/60 dark:text-white/60 rounded-2xl border border-transparent hover:border-brand-gold/20 transition-all text-[12px] font-bold uppercase tracking-widest flex-1 md:flex-none justify-center">
-            <Filter size={16} />
-            <span>Refine</span>
-          </button>
-        </div>
+
+        {/* Active Filters Bar */}
+        {(status || paymentStatus || searchTerm) && (
+          <div className="flex flex-wrap items-center gap-2 px-2">
+            <span className="text-[9px] uppercase tracking-widest font-black text-brand-text/40 mr-2">Active:</span>
+            {searchTerm && (
+              <button 
+                onClick={() => updateQueryParams({ q: '' })}
+                className="flex items-center space-x-2 px-3 py-1.5 bg-brand-gold/10 text-brand-gold border border-brand-gold/20 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-brand-gold/20 transition-all"
+              >
+                <span>"{searchTerm}"</span>
+                <X size={12} />
+              </button>
+            )}
+            {status && (
+              <button 
+                onClick={() => updateQueryParams({ status: '' })}
+                className="flex items-center space-x-2 px-3 py-1.5 bg-brand-gold/10 text-brand-gold border border-brand-gold/20 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-brand-gold/20 transition-all"
+              >
+                <span>{status}</span>
+                <X size={12} />
+              </button>
+            )}
+            {paymentStatus && (
+              <button 
+                onClick={() => updateQueryParams({ paymentStatus: '' })}
+                className="flex items-center space-x-2 px-3 py-1.5 bg-brand-gold/10 text-brand-gold border border-brand-gold/20 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-brand-gold/20 transition-all"
+              >
+                <span>{paymentStatus}</span>
+                <X size={12} />
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white dark:bg-white/10 rounded-[40px] border border-brand-text/15 dark:border-white/15 overflow-hidden shadow-md">
+      <div className="bg-white dark:bg-white/10 rounded-[40px] border border-brand-text/15 dark:border-white/15 overflow-hidden shadow-premium">
         {loading ? (
           <div className="py-40 flex flex-col items-center justify-center space-y-4">
             <Loader2 className="text-brand-gold animate-spin" size={40} />
@@ -135,17 +322,17 @@ export default function AdminOrdersPage() {
             <table className="w-full">
               <thead>
                 <tr className="text-left bg-brand-bg/50 dark:bg-white/2">
-                  <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Order Info</th>
-                  <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Customer</th>
-                  <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Status</th>
-                  <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Payment</th>
-                  <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Amount</th>
-                  <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-black text-brand-text/50 text-right">Actions</th>
+                  <th className="px-8 py-5 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Order Info</th>
+                  <th className="px-8 py-5 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Customer</th>
+                  <th className="px-8 py-5 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Status</th>
+                  <th className="px-8 py-5 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Payment</th>
+                  <th className="px-8 py-5 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Amount</th>
+                  <th className="px-8 py-5 text-[10px] uppercase tracking-widest font-black text-brand-text/50 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-brand-text/5 dark:divide-white/5">
                 {orders.map((order) => (
-                  <tr key={order._id} className="group hover:bg-brand-bg/30 dark:hover:bg-white/2 transition-colors">
+                  <tr key={order._id} className="group hover:bg-brand-bg/30 dark:hover:bg-white/2 transition-all duration-300">
                     <td className="px-8 py-6">
                       <div className="flex flex-col">
                         <span className="text-[14px] font-bold text-brand-text dark:text-white">#{order._id.slice(-8).toUpperCase()}</span>
@@ -163,7 +350,7 @@ export default function AdminOrdersPage() {
                     </td>
                     <td className="px-8 py-6">
                       <div className={cn(
-                        "flex items-center space-x-2 px-3 py-1.5 rounded-full border w-fit",
+                        "flex items-center space-x-2 px-3 py-1.5 rounded-full border w-fit transition-all duration-500",
                         getStatusColor(order.orderStatus)
                       )}>
                         {getStatusIcon(order.orderStatus)}
@@ -211,6 +398,12 @@ export default function AdminOrdersPage() {
                 No purchases have been recorded in the current filter context.
               </p>
             </div>
+            <button 
+              onClick={() => updateQueryParams({ status: '', paymentStatus: '', q: '' })}
+              className="px-10 py-4 bg-brand-text dark:bg-white/5 text-white text-[10px] font-bold uppercase tracking-[0.2em] rounded-2xl hover:bg-brand-gold transition-all"
+            >
+              Clear All Filters
+            </button>
           </div>
         )}
 
@@ -218,18 +411,19 @@ export default function AdminOrdersPage() {
         {totalOrders > limit && (
           <div className="p-8 border-t border-brand-text/5 dark:border-white/5 flex items-center justify-between">
             <p className="text-[11px] text-brand-text/40 uppercase tracking-widest font-medium">
-              Page <span className="text-brand-text dark:text-white font-black">{page}</span> of <span className="text-brand-text dark:text-white font-black">{Math.ceil(totalOrders / limit)}</span>
+              Showing <span className="text-brand-text dark:text-white font-black">{((page - 1) * limit) + 1}</span> to <span className="text-brand-text dark:text-white font-black">{Math.min(page * limit, totalOrders)}</span> of <span className="text-brand-text dark:text-white font-black">{totalOrders}</span> orders
             </p>
             <div className="flex items-center space-x-4">
               <button 
-                onClick={() => setPage(p => Math.max(1, p - 1))}
+                onClick={() => updateQueryParams({ page: Math.max(1, page - 1).toString() })}
                 disabled={page === 1}
                 className="p-3 bg-brand-bg dark:bg-white/5 text-brand-text/40 rounded-xl disabled:opacity-30 transition-all hover:text-brand-gold"
               >
                 <ChevronLeft size={20} />
               </button>
+              <span className="text-[11px] font-black uppercase tracking-widest text-brand-gold">Page {page}</span>
               <button 
-                onClick={() => setPage(p => p + 1)}
+                onClick={() => updateQueryParams({ page: (page + 1).toString() })}
                 disabled={page * limit >= totalOrders}
                 className="p-3 bg-brand-bg dark:bg-white/5 text-brand-text/40 rounded-xl disabled:opacity-30 transition-all hover:text-brand-gold"
               >
@@ -262,7 +456,7 @@ export default function AdminOrdersPage() {
                 onClick={() => setSelectedOrder(null)}
                 className="w-12 h-12 rounded-full bg-brand-bg dark:bg-white/5 flex items-center justify-center text-brand-text/40 hover:text-brand-gold transition-colors"
               >
-                <XCircle size={24} />
+                <X size={24} />
               </button>
             </div>
 
@@ -288,7 +482,7 @@ export default function AdminOrdersPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <h4 className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Update Lifecycle</h4>
+                    <h4 className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Lifecycle Management</h4>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-3">
                         <label className="text-[9px] uppercase tracking-widest font-black text-brand-text/30">Order Status</label>
@@ -298,12 +492,7 @@ export default function AdminOrdersPage() {
                           onChange={(e) => handleUpdateStatus(selectedOrder._id, { orderStatus: e.target.value })}
                           className="w-full bg-brand-bg dark:bg-white/5 border border-brand-text/5 dark:border-white/5 rounded-xl py-3 px-4 text-[12px] font-bold text-brand-text dark:text-white focus:ring-1 focus:ring-brand-gold"
                         >
-                          <option value="placed">Placed</option>
-                          <option value="confirmed">Confirmed</option>
-                          <option value="processing">Processing</option>
-                          <option value="shipped">Shipped</option>
-                          <option value="delivered">Delivered</option>
-                          <option value="cancelled">Cancelled</option>
+                          {statusOptions.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
                         </select>
                       </div>
                       <div className="space-y-3">
@@ -314,76 +503,98 @@ export default function AdminOrdersPage() {
                           onChange={(e) => handleUpdateStatus(selectedOrder._id, { paymentStatus: e.target.value })}
                           className="w-full bg-brand-bg dark:bg-white/5 border border-brand-text/5 dark:border-white/5 rounded-xl py-3 px-4 text-[12px] font-bold text-brand-text dark:text-white focus:ring-1 focus:ring-brand-gold"
                         >
-                          <option value="pending">Pending</option>
-                          <option value="paid">Paid</option>
-                          <option value="failed">Failed</option>
-                          <option value="refunded">Refunded</option>
+                          {paymentStatusOptions.map(p => <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>)}
                         </select>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Order Items */}
-                <div className="space-y-6">
-                  <h4 className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Acquired Masterpieces</h4>
+                {/* Summary */}
+                <div className="space-y-8">
                   <div className="space-y-4">
-                    {selectedOrder.items?.map((item: any, idx: number) => (
-                      <div key={idx} className="flex items-center space-x-4 p-4 bg-brand-bg dark:bg-white/2 rounded-2xl border border-brand-text/5 dark:border-white/5">
-                        <div className="w-16 h-16 rounded-xl bg-white dark:bg-black/20 overflow-hidden p-2 flex-shrink-0">
-                          <img src={item.image} className="w-full h-full object-contain" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[13px] font-bold text-brand-text dark:text-white truncate">{item.name}</p>
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            <span className="text-[9px] uppercase tracking-widest bg-brand-gold/10 text-brand-gold px-2 py-0.5 rounded-md font-bold">
-                              {item.configuration?.metal}
-                            </span>
-                            <span className="text-[9px] uppercase tracking-widest bg-brand-text/5 text-brand-text/40 px-2 py-0.5 rounded-md font-bold">
-                              {item.configuration?.purity}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-[13px] font-black text-brand-gold">₹{item.price.toLocaleString()}</p>
-                          <p className="text-[10px] text-brand-text/30 font-bold mt-1">QTY: {item.quantity}</p>
-                        </div>
+                    <h4 className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Financial Summary</h4>
+                    <div className="bg-brand-bg dark:bg-white/2 p-8 rounded-3xl border border-brand-text/5 dark:border-white/5 space-y-4">
+                      <div className="flex justify-between items-center text-[13px]">
+                        <span className="text-brand-text/40 font-bold uppercase tracking-widest">Currency</span>
+                        <span className="font-black text-brand-text dark:text-white">{selectedOrder.currency}</span>
                       </div>
-                    ))}
+                      <div className="flex justify-between items-center text-[13px]">
+                        <span className="text-brand-text/40 font-bold uppercase tracking-widest">Tax (GST)</span>
+                        <span className="font-black text-brand-text dark:text-white">Included</span>
+                      </div>
+                      <div className="h-px bg-brand-text/5 dark:bg-white/5" />
+                      <div className="flex justify-between items-end pt-2">
+                        <span className="text-[10px] text-brand-gold font-black uppercase tracking-[0.2em]">Grand Total</span>
+                        <span className="text-2xl font-black text-brand-gold">₹{selectedOrder.totalAmount.toLocaleString()}</span>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="pt-6 border-t border-brand-text/5 dark:border-white/5 space-y-3">
-                    <div className="flex justify-between text-[11px] uppercase tracking-widest font-bold text-brand-text/40">
-                      <span>Subtotal</span>
-                      <span>{selectedOrder.currency} {selectedOrder.totalAmount.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between text-[11px] uppercase tracking-widest font-bold text-brand-text/40">
-                      <span>Shipping</span>
-                      <span className="text-emerald-500">Free</span>
-                    </div>
-                    <div className="flex justify-between pt-4 text-lg font-serif font-bold italic text-brand-gold border-t border-brand-text/5 border-dashed">
-                      <span className="not-italic">Total Amount</span>
-                      <span>{selectedOrder.currency} {selectedOrder.totalAmount.toLocaleString()}</span>
+                  <div className="space-y-4">
+                    <h4 className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Payment Intelligence</h4>
+                    <div className="bg-brand-bg dark:bg-white/2 p-6 rounded-3xl border border-brand-text/5 dark:border-white/5 space-y-4">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 rounded-xl bg-white dark:bg-white/5 flex items-center justify-center text-brand-gold border border-brand-text/5">
+                          <CreditCard size={20} />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[11px] font-black uppercase tracking-widest text-brand-text dark:text-white">Razorpay ID</span>
+                          <span className="text-[10px] text-brand-text/40 font-medium">{selectedOrder.razorpayOrderId || 'N/A'}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            
-            {/* Modal Footer */}
-            <div className="p-8 border-t border-brand-text/5 dark:border-white/5 bg-brand-bg/50 dark:bg-white/2 flex justify-end items-center space-x-4">
-              <button 
-                onClick={() => setSelectedOrder(null)}
-                className="px-10 py-4 bg-brand-text dark:bg-white/5 text-white text-[10px] font-bold uppercase tracking-[0.2em] rounded-2xl hover:bg-brand-gold transition-all"
-              >
-                Close Portal
-              </button>
+
+              {/* Items List */}
+              <div className="space-y-6">
+                <h4 className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Manifest ({selectedOrder.items?.length})</h4>
+                <div className="space-y-4">
+                  {selectedOrder.items?.map((item: any, idx: number) => (
+                    <div key={idx} className="flex items-center space-x-6 p-4 bg-brand-bg/50 dark:bg-white/2 rounded-2xl border border-brand-text/5 dark:border-white/5 group hover:border-brand-gold/20 transition-all">
+                      <div className="w-20 h-20 rounded-xl bg-white dark:bg-white/5 overflow-hidden p-2 flex-shrink-0">
+                        <img src={item.image} alt={item.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h5 className="text-[14px] font-bold text-brand-text dark:text-white truncate">{item.name}</h5>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          <span className="px-2 py-0.5 bg-brand-text/5 dark:bg-white/5 text-[9px] font-bold uppercase tracking-widest text-brand-text/40 rounded-md border border-brand-text/5">
+                            {item.configuration?.metal} {item.configuration?.purity}
+                          </span>
+                          {item.configuration?.size && (
+                            <span className="px-2 py-0.5 bg-brand-text/5 dark:bg-white/5 text-[9px] font-bold uppercase tracking-widest text-brand-text/40 rounded-md border border-brand-text/5">
+                              Size: {item.configuration?.size}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <div className="text-[11px] text-brand-text/40 font-bold uppercase tracking-widest mb-1">{item.quantity} × ₹{item.price.toLocaleString()}</div>
+                        <div className="text-[15px] font-black text-brand-gold">₹{(item.quantity * item.price).toLocaleString()}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       )}
-
-      {/* Quick Stats/Alerts */}
     </div>
+  );
+}
+
+export default function AdminOrdersPage() {
+  return (
+    <Suspense fallback={
+      <div className="py-40 flex flex-col items-center justify-center space-y-4">
+        <Loader2 className="text-brand-gold animate-spin" size={40} />
+        <p className="text-[11px] uppercase tracking-[0.4em] font-bold text-brand-text/40">Loading Ledger...</p>
+      </div>
+    }>
+      <AdminOrdersPageContent />
+    </Suspense>
   );
 }

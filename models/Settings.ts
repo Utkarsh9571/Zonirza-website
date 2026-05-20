@@ -46,7 +46,12 @@ const SettingsSchema: Schema = new Schema({
   pricingFactors: {
     gstPercentage: { type: Number, default: 3 },
     shippingBaseCharge: { type: Number, default: 0 },
-    freeShippingThreshold: { type: Number, default: 5000 }
+    freeShippingThreshold: { type: Number, default: 5000 },
+    metalRates: {
+      gold24k: { type: Number, default: 6500 },
+      silver: { type: Number, default: 100 },
+      platinum: { type: Number, default: 4000 }
+    }
   },
   socialLinks: {
     instagram: { type: String },

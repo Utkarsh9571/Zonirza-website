@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import Link from 'next/link';
 import { 
   Plus, 
   Search, 
   Filter, 
-  MoreVertical, 
   Edit, 
   Trash2, 
   ExternalLink,
@@ -15,32 +14,66 @@ import {
   ChevronRight,
   Package,
   AlertCircle,
-  Eye,
-  EyeOff
+  X,
+  ChevronDown,
+  Check
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { resolveProductImage } from '@/lib/imageResolver';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 function AdminProductsPageContent() {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const filterType = searchParams.get('filter') || '';
+
+  // URL States
+  const page = parseInt(searchParams.get('page') || '1');
+  const searchTerm = searchParams.get('q') || '';
+  const category = searchParams.get('category') || '';
+  const metal = searchParams.get('metal') || '';
+  const stockStatus = searchParams.get('stockStatus') || '';
+  const isActive = searchParams.get('isActive') || '';
+  const sort = searchParams.get('sort') || 'newest';
 
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
   const [totalProducts, setTotalProducts] = useState(0);
-  const [page, setPage] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
+  const [showSort, setShowSort] = useState(false);
   const limit = 10;
 
-  useEffect(() => {
-    fetchProducts();
-  }, [page, searchTerm, filterType]);
+  // Helper to update URL params
+  const updateQueryParams = useCallback((updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null || value === '') {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
+    });
+    // Reset page on filter change unless explicitly setting page
+    if (!updates.page && updates.page !== null) {
+      params.set('page', '1');
+    }
+    router.push(`${pathname}?${params.toString()}`);
+  }, [router, pathname, searchParams]);
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/admin/products?page=${page}&limit=${limit}&q=${encodeURIComponent(searchTerm)}&filter=${filterType}`);
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        q: searchTerm,
+        category,
+        metal,
+        stockStatus,
+        isActive,
+        sort
+      });
+      const res = await fetch(`/api/admin/products?${queryParams.toString()}`);
       const data = await res.json();
       if (data.success) {
         setProducts(data.data);
@@ -51,6 +84,14 @@ function AdminProductsPageContent() {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, [page, searchTerm, category, metal, stockStatus, isActive, sort]);
+
+  const handleSearch = (val: string) => {
+    updateQueryParams({ q: val });
   };
 
   const handleToggleStatus = async (id: string, currentStatus: boolean) => {
@@ -76,6 +117,17 @@ function AdminProductsPageContent() {
     }
   };
 
+  const categories = ['Rings', 'Earrings', 'Necklaces', 'Bracelets', 'Bangles', 'Pendants'];
+  const metals = ['Yellow Gold', 'Rose Gold', 'White Gold', 'Platinum', 'Silver'];
+  const sortOptions = [
+    { label: 'Newest First', value: 'newest' },
+    { label: 'Oldest First', value: 'oldest' },
+    { label: 'Price: High to Low', value: 'price-high' },
+    { label: 'Price: Low to High', value: 'price-low' },
+    { label: 'Alphabetical', value: 'alphabetical' },
+    { label: 'Recently Updated', value: 'updated' },
+  ];
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -96,30 +148,209 @@ function AdminProductsPageContent() {
       </div>
 
       {/* Filters & Search */}
-      <div className="bg-white dark:bg-white/10 p-6 rounded-[32px] border border-brand-text/15 dark:border-white/15 flex flex-col md:flex-row items-center gap-4 shadow-sm">
-        <div className="relative flex-1 group w-full">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text/30 group-focus-within:text-brand-gold transition-colors" size={18} />
-          <input 
-            type="text" 
-            placeholder="Search by name, slug, or category..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-slate-100 dark:bg-white/5 border border-brand-text/10 dark:border-white/10 rounded-2xl py-3 pl-12 pr-4 text-[13px] focus:ring-1 focus:ring-brand-gold/50 transition-all placeholder:text-brand-text/30 dark:placeholder:text-white/20"
-          />
+      <div className="space-y-4">
+        <div className="bg-white dark:bg-white/10 p-4 md:p-6 rounded-[32px] border border-brand-text/15 dark:border-white/15 flex flex-col md:flex-row items-center gap-4 shadow-sm">
+          <div className="relative flex-1 group w-full">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text/30 group-focus-within:text-brand-gold transition-colors" size={18} />
+            <input 
+              type="text" 
+              placeholder="Search by name, slug, or category..." 
+              value={searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="w-full bg-slate-100 dark:bg-white/5 border border-brand-text/10 dark:border-white/10 rounded-2xl py-3 pl-12 pr-4 text-[13px] focus:ring-1 focus:ring-brand-gold/50 transition-all placeholder:text-brand-text/30 dark:placeholder:text-white/20"
+            />
+            {searchTerm && (
+              <button 
+                onClick={() => handleSearch('')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-text/30 hover:text-brand-gold"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <div className="relative flex-1 md:flex-none">
+              <button 
+                onClick={() => { setShowFilters(!showFilters); setShowSort(false); }}
+                className={cn(
+                  "flex items-center space-x-2 px-6 py-3 rounded-2xl border transition-all text-[12px] font-bold uppercase tracking-widest w-full md:w-auto justify-center",
+                  showFilters || category || metal || stockStatus || isActive
+                    ? "bg-brand-gold text-brand-bg border-brand-gold" 
+                    : "bg-brand-bg dark:bg-white/5 text-brand-text/60 dark:text-white/60 border-transparent hover:border-brand-gold/20"
+                )}
+              >
+                <Filter size={16} />
+                <span>Filters</span>
+                {(category || metal || stockStatus || isActive) && (
+                  <span className="ml-1 w-2 h-2 bg-white rounded-full" />
+                )}
+              </button>
+              
+              {showFilters && (
+                <div className="absolute top-full mt-4 right-0 w-72 bg-white dark:bg-[#1A1A1A] rounded-3xl shadow-2xl border border-brand-text/10 dark:border-white/10 p-6 z-50 space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-[10px] uppercase tracking-[0.2em] font-black text-brand-gold">Refine Catalog</h4>
+                    <button 
+                      onClick={() => updateQueryParams({ category: '', metal: '', stockStatus: '', isActive: '' })}
+                      className="text-[9px] uppercase tracking-widest font-bold text-brand-text/40 hover:text-brand-gold"
+                    >
+                      Reset All
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-[9px] uppercase tracking-widest font-bold text-brand-text/40 ml-1">Category</label>
+                      <select 
+                        value={category}
+                        onChange={(e) => updateQueryParams({ category: e.target.value })}
+                        className="w-full bg-slate-100 dark:bg-white/5 border-none rounded-xl py-2 px-3 text-[12px] focus:ring-1 focus:ring-brand-gold/50"
+                      >
+                        <option value="">All Categories</option>
+                        {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[9px] uppercase tracking-widest font-bold text-brand-text/40 ml-1">Metal</label>
+                      <select 
+                        value={metal}
+                        onChange={(e) => updateQueryParams({ metal: e.target.value })}
+                        className="w-full bg-slate-100 dark:bg-white/5 border-none rounded-xl py-2 px-3 text-[12px] focus:ring-1 focus:ring-brand-gold/50"
+                      >
+                        <option value="">All Metals</option>
+                        {metals.map(m => <option key={m} value={m}>{m}</option>)}
+                      </select>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <label className="text-[9px] uppercase tracking-widest font-bold text-brand-text/40 ml-1">Stock</label>
+                        <select 
+                          value={stockStatus}
+                          onChange={(e) => updateQueryParams({ stockStatus: e.target.value })}
+                          className="w-full bg-slate-100 dark:bg-white/5 border-none rounded-xl py-2 px-3 text-[12px] focus:ring-1 focus:ring-brand-gold/50"
+                        >
+                          <option value="">All</option>
+                          <option value="in-stock">Available</option>
+                          <option value="out-of-stock">Sold Out</option>
+                        </select>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[9px] uppercase tracking-widest font-bold text-brand-text/40 ml-1">Visibility</label>
+                        <select 
+                          value={isActive}
+                          onChange={(e) => updateQueryParams({ isActive: e.target.value })}
+                          className="w-full bg-slate-100 dark:bg-white/5 border-none rounded-xl py-2 px-3 text-[12px] focus:ring-1 focus:ring-brand-gold/50"
+                        >
+                          <option value="">All</option>
+                          <option value="true">Live</option>
+                          <option value="false">Hidden</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="relative flex-1 md:flex-none">
+              <button 
+                onClick={() => { setShowSort(!showSort); setShowFilters(false); }}
+                className={cn(
+                  "flex items-center space-x-2 px-6 py-3 rounded-2xl border transition-all text-[12px] font-bold uppercase tracking-widest w-full md:w-auto justify-center",
+                  showSort || sort !== 'newest'
+                    ? "bg-brand-text text-white border-brand-text dark:bg-white dark:text-brand-bg" 
+                    : "bg-brand-bg dark:bg-white/5 text-brand-text/60 dark:text-white/60 border-transparent hover:border-brand-gold/20"
+                )}
+              >
+                <span>Sort</span>
+                <ChevronDown size={16} className={cn("transition-transform", showSort && "rotate-180")} />
+              </button>
+
+              {showSort && (
+                <div className="absolute top-full mt-4 right-0 w-56 bg-white dark:bg-[#1A1A1A] rounded-3xl shadow-2xl border border-brand-text/10 dark:border-white/10 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="py-2">
+                    {sortOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => {
+                          updateQueryParams({ sort: option.value });
+                          setShowSort(false);
+                        }}
+                        className="w-full px-6 py-3 text-left flex items-center justify-between hover:bg-brand-bg dark:hover:bg-white/5 transition-colors group"
+                      >
+                        <span className={cn(
+                          "text-[11px] font-bold uppercase tracking-widest",
+                          sort === option.value ? "text-brand-gold" : "text-brand-text/60 dark:text-white/60 group-hover:text-brand-text dark:group-hover:text-white"
+                        )}>
+                          {option.label}
+                        </span>
+                        {sort === option.value && <Check size={14} className="text-brand-gold" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-4 w-full md:w-auto">
-          <button className="flex items-center space-x-2 px-6 py-3 bg-brand-bg dark:bg-white/5 text-brand-text/60 dark:text-white/60 rounded-2xl border border-transparent hover:border-brand-gold/20 transition-all text-[12px] font-bold uppercase tracking-widest flex-1 md:flex-none justify-center">
-            <Filter size={16} />
-            <span>Filters</span>
-          </button>
-          <button className="px-6 py-3 bg-brand-bg dark:bg-white/5 text-brand-text/60 dark:text-white/60 rounded-2xl border border-transparent hover:border-brand-gold/20 transition-all text-[12px] font-bold uppercase tracking-widest flex-1 md:flex-none justify-center">
-            Sort
-          </button>
-        </div>
+
+        {/* Active Filters Bar */}
+        {(category || metal || stockStatus || isActive || searchTerm) && (
+          <div className="flex flex-wrap items-center gap-2 px-2">
+            <span className="text-[9px] uppercase tracking-widest font-black text-brand-text/40 mr-2">Active:</span>
+            {searchTerm && (
+              <button 
+                onClick={() => handleSearch('')}
+                className="flex items-center space-x-2 px-3 py-1.5 bg-brand-gold/10 text-brand-gold border border-brand-gold/20 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-brand-gold/20 transition-all"
+              >
+                <span>"{searchTerm}"</span>
+                <X size={12} />
+              </button>
+            )}
+            {category && (
+              <button 
+                onClick={() => updateQueryParams({ category: '' })}
+                className="flex items-center space-x-2 px-3 py-1.5 bg-brand-gold/10 text-brand-gold border border-brand-gold/20 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-brand-gold/20 transition-all"
+              >
+                <span>{category}</span>
+                <X size={12} />
+              </button>
+            )}
+            {metal && (
+              <button 
+                onClick={() => updateQueryParams({ metal: '' })}
+                className="flex items-center space-x-2 px-3 py-1.5 bg-brand-gold/10 text-brand-gold border border-brand-gold/20 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-brand-gold/20 transition-all"
+              >
+                <span>{metal}</span>
+                <X size={12} />
+              </button>
+            )}
+            {stockStatus && (
+              <button 
+                onClick={() => updateQueryParams({ stockStatus: '' })}
+                className="flex items-center space-x-2 px-3 py-1.5 bg-brand-gold/10 text-brand-gold border border-brand-gold/20 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-brand-gold/20 transition-all"
+              >
+                <span>{stockStatus === 'in-stock' ? 'Available' : 'Sold Out'}</span>
+                <X size={12} />
+              </button>
+            )}
+            {isActive && (
+              <button 
+                onClick={() => updateQueryParams({ isActive: '' })}
+                className="flex items-center space-x-2 px-3 py-1.5 bg-brand-gold/10 text-brand-gold border border-brand-gold/20 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-brand-gold/20 transition-all"
+              >
+                <span>{isActive === 'true' ? 'Live' : 'Hidden'}</span>
+                <X size={12} />
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Product Grid/Table */}
-      <div className="bg-white dark:bg-white/5 rounded-[40px] border border-brand-text/5 dark:border-white/5 overflow-hidden">
+      <div className="bg-white dark:bg-white/5 rounded-[40px] border border-brand-text/5 dark:border-white/5 overflow-hidden shadow-premium">
         {loading ? (
           <div className="py-40 flex flex-col items-center justify-center space-y-4">
             <Loader2 className="text-brand-gold animate-spin" size={40} />
@@ -127,27 +358,27 @@ function AdminProductsPageContent() {
           </div>
         ) : products.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full border-collapse">
               <thead>
                 <tr className="text-left bg-brand-bg/50 dark:bg-white/2">
-                  <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Masterpiece</th>
-                  <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Category</th>
-                  <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Price (Base)</th>
-                  <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Stock Status</th>
-                  <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Visibility</th>
-                  <th className="px-8 py-4 text-[10px] uppercase tracking-widest font-black text-brand-text/50 text-right">Actions</th>
+                  <th className="px-8 py-5 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Masterpiece</th>
+                  <th className="px-8 py-5 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Category</th>
+                  <th className="px-8 py-5 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Price (Base)</th>
+                  <th className="px-8 py-5 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Stock Status</th>
+                  <th className="px-8 py-5 text-[10px] uppercase tracking-widest font-black text-brand-text/50">Visibility</th>
+                  <th className="px-8 py-5 text-[10px] uppercase tracking-widest font-black text-brand-text/50 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-brand-text/5 dark:divide-white/5">
                 {products.map((product) => (
-                  <tr key={product._id} className="group hover:bg-brand-bg/30 dark:hover:bg-white/2 transition-colors">
+                  <tr key={product._id} className="group hover:bg-brand-bg/30 dark:hover:bg-white/2 transition-all duration-300">
                     <td className="px-8 py-6">
                       <div className="flex items-center space-x-4">
-                        <div className="w-14 h-14 rounded-xl bg-brand-bg dark:bg-white/5 overflow-hidden border border-brand-text/5 dark:border-white/10 p-2">
+                        <div className="w-14 h-14 rounded-2xl bg-brand-bg dark:bg-white/5 overflow-hidden border border-brand-text/5 dark:border-white/10 p-2 group-hover:border-brand-gold/30 transition-colors">
                           <img 
                             src={resolveProductImage(product.images?.[0])} 
                             alt={product.name}
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-700"
                           />
                         </div>
                         <div className="flex flex-col">
@@ -157,7 +388,10 @@ function AdminProductsPageContent() {
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                      <span className="text-[11px] font-bold text-brand-text/60 dark:text-white/60 uppercase tracking-widest">{product.category}</span>
+                      <div className="flex flex-col">
+                        <span className="text-[11px] font-bold text-brand-text/60 dark:text-white/60 uppercase tracking-widest">{product.category}</span>
+                        <span className="text-[9px] text-brand-text/30 uppercase tracking-widest font-medium mt-1">{product.specs?.metal}</span>
+                      </div>
                     </td>
                     <td className="px-8 py-6">
                       <span className="text-[14px] font-black text-brand-gold">₹{(product.basePrice || product.price || 0).toLocaleString()}</span>
@@ -234,14 +468,14 @@ function AdminProductsPageContent() {
             <div className="space-y-2">
               <h3 className="text-xl font-serif font-bold text-brand-text dark:text-white italic">No Masterpieces Found</h3>
               <p className="text-[11px] text-brand-text/40 uppercase tracking-widest font-medium max-w-xs mx-auto">
-                Your search did not match any items in our exclusive catalog.
+                Your filters did not match any items in our exclusive catalog.
               </p>
             </div>
             <button 
-              onClick={() => setSearchTerm('')}
+              onClick={() => updateQueryParams({ category: '', metal: '', stockStatus: '', isActive: '', q: '' })}
               className="px-10 py-4 bg-brand-text dark:bg-white/5 text-white text-[10px] font-bold uppercase tracking-[0.2em] rounded-2xl hover:bg-brand-gold transition-all"
             >
-              Clear Search
+              Clear All Filters
             </button>
           </div>
         )}
@@ -254,7 +488,7 @@ function AdminProductsPageContent() {
             </p>
             <div className="flex items-center space-x-4">
               <button 
-                onClick={() => setPage(p => Math.max(1, p - 1))}
+                onClick={() => updateQueryParams({ page: Math.max(1, page - 1).toString() })}
                 disabled={page === 1}
                 className="p-3 bg-brand-bg dark:bg-white/5 text-brand-text/40 rounded-xl disabled:opacity-30 transition-all hover:text-brand-gold"
               >
@@ -262,7 +496,7 @@ function AdminProductsPageContent() {
               </button>
               <span className="text-[11px] font-black uppercase tracking-widest text-brand-gold">Page {page}</span>
               <button 
-                onClick={() => setPage(p => p + 1)}
+                onClick={() => updateQueryParams({ page: (page + 1).toString() })}
                 disabled={page * limit >= totalProducts}
                 className="p-3 bg-brand-bg dark:bg-white/5 text-brand-text/40 rounded-xl disabled:opacity-30 transition-all hover:text-brand-gold"
               >

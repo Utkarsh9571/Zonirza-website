@@ -12,7 +12,17 @@ export async function GET(req: NextRequest) {
     }
 
     await dbConnect();
-    const coupons = await Coupon.find().sort({ createdAt: -1 });
+    const { searchParams } = new URL(req.url);
+    const query = searchParams.get("q") || "";
+    const isActive = searchParams.get("isActive");
+
+    const filter: any = {};
+    if (isActive) filter.isActive = isActive === "true";
+    if (query) {
+      filter.code = { $regex: query, $options: "i" };
+    }
+
+    const coupons = await Coupon.find(filter).sort({ createdAt: -1 });
     return NextResponse.json({ success: true, data: coupons });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
