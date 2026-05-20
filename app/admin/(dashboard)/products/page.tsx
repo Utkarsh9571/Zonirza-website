@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { 
   Plus, 
@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils';
 import { resolveProductImage } from '@/lib/imageResolver';
 import { useSearchParams } from 'next/navigation';
 
-export default function AdminProductsPage() {
+function AdminProductsPageContent() {
   const searchParams = useSearchParams();
   const filterType = searchParams.get('filter') || '';
 
@@ -281,5 +281,18 @@ export default function AdminProductsPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function AdminProductsPage() {
+  return (
+    <Suspense fallback={
+      <div className="py-40 flex flex-col items-center justify-center space-y-4">
+        <Loader2 className="text-brand-gold animate-spin" size={40} />
+        <p className="text-[11px] uppercase tracking-[0.4em] font-bold text-brand-text/40">Loading Page...</p>
+      </div>
+    }>
+      <AdminProductsPageContent />
+    </Suspense>
   );
 }

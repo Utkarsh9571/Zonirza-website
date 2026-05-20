@@ -77,7 +77,7 @@ export default function OnboardingPage() {
               fill
               className="object-cover"
             />
-            <div className="absolute inset-0 bg-brand-text/20 backdrop-grayscale-[0.5]" />
+            <div className="absolute inset-0 bg-[#1c1816]/30 backdrop-grayscale-[0.5]" />
             <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-center text-white space-y-6">
               <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30">
                 <Diamond size={32} />

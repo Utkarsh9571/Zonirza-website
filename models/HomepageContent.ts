@@ -1,4 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import './Product';
+import './Collection';
 
 export interface IHomepageContent extends Document {
   hero: {

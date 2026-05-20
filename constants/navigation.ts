@@ -89,7 +89,7 @@ export const NAVIGATION_DATA: TopCategory[] = [
     bottomBanner: {
       title: 'Jewellery for Every Moment—See It All Here!',
       description: '14,000+ designs to choose from',
-      image: 'https://images.unsplash.com/photo-1573408302185-9127b542303c?auto=format&fit=crop&q=80&w=300',
+      image: '/images/site/jewellery_guide.png',
       href: '/products'
     }
   },
@@ -253,7 +253,7 @@ export const NAVIGATION_DATA: TopCategory[] = [
       {
         title: 'Effortless style to make everyday sparkle.',
         description: 'Shop now',
-        image: 'https://images.unsplash.com/photo-1573408302185-9127b542303c?auto=format&fit=crop&q=80&w=800',
+        image: '/images/site/daily-wear.png',
         href: '/collections/daily-wear',
       }
     ],
@@ -300,10 +300,10 @@ export const NAVIGATION_DATA: TopCategory[] = [
       { title: 'Metal', options: [{ name: 'Gold', href: '/products?metal=gold' }] },
     ],
     subCategories: [
-      { name: 'All Rivaah', href: '/products?tag=wedding', image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=400' },
+      { name: 'All Rivaah', href: '/products?tag=wedding', image: '/images/site/wedding.png' },
       { name: 'Wedding Choker', href: '/products?category=choker&tag=wedding', image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=400' },
       { name: 'Wedding Haram', href: '/products?category=haram&tag=wedding', image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=400' },
-      { name: 'Wedding Bangles', href: '/products?category=bangles&tag=wedding', image: 'https://images.unsplash.com/photo-1573408302185-9127b542303c?auto=format&fit=crop&q=80&w=400' },
+      { name: 'Wedding Bangles', href: '/products?category=bangles&tag=wedding', image: '/images/site/bracelets_category.png' },
       { name: 'Wedding Diamond', href: '/products?category=diamond&tag=wedding', image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=400' },
       { name: 'Wedding Mangalsutra', href: '/products?category=mangalsutra&tag=wedding', image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=400' },
       { name: 'Accessories', href: '/products?category=accessories&tag=wedding', image: 'https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&q=80&w=400' },
@@ -323,9 +323,9 @@ export const NAVIGATION_DATA: TopCategory[] = [
       { title: 'Corporate Gifting', options: [{ name: 'Bulk Orders', href: '/corporate' }] },
     ],
     subCategories: [
-      { name: 'Her', href: '/products?tag=gifting&gender=women', image: 'https://images.unsplash.com/photo-1573408302185-9127b542303c?auto=format&fit=crop&q=80&w=400' },
-      { name: 'Him', href: '/products?tag=gifting&gender=men', image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=400' },
-      { name: 'Kids', href: '/products?tag=gifting&gender=kids', image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=400' },
+      { name: 'Her', href: '/products?tag=gifting&gender=women', image: '/images/site/women_jewelry.png' },
+      { name: 'Him', href: '/products?tag=gifting&gender=men', image: '/images/site/men_jewelry.png' },
+      { name: 'Kids', href: '/products?tag=gifting&gender=kids', image: '/images/site/kids_jewelry.png' },
     ],
     promotions: [
       {
@@ -358,7 +358,7 @@ export const NAVIGATION_DATA: TopCategory[] = [
       { title: 'Currency Selector', options: [{ name: 'INR', href: '#' }] },
     ],
     subCategories: [
-      { name: 'Gold Exchange', href: '/exchange', image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=400' },
+      { name: 'Gold Exchange', href: '/exchange', image: '/images/site/digi_gold.png' },
     ],
     promotions: [],
   }

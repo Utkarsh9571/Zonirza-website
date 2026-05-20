@@ -106,7 +106,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
         </button>
 
         {/* LEFT PANEL: Branding & Visuals */}
-        <div className="hidden md:flex w-[45%] bg-[#fff7e9] dark:bg-brand-accent p-12 flex-col items-center justify-center text-center relative overflow-hidden transition-colors">
+        <div className="hidden md:flex w-[45%] bg-[#ffeed0] dark:bg-brand-accent p-12 flex-col items-center justify-center text-center relative overflow-hidden transition-colors">
           {/* Decorative Blobs */}
           <div className="absolute top-[-10%] left-[-10%] w-64 h-64 bg-brand-gold/10 rounded-full blur-[80px]" />
           <div className="absolute bottom-[-10%] right-[-10%] w-64 h-64 bg-brand-gold/5 rounded-full blur-[80px]" />

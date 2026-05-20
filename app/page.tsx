@@ -286,7 +286,7 @@ export default function Home() {
             </div>
             <Link href="/products?collection=heritage" className="relative rounded-4xl overflow-hidden shadow-soft group h-full min-h-[400px] block">
               <Image src="/images/images/product/default-16345651242469.jpg" alt="Heritage World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
-              <div className="absolute inset-0 bg-brand-text/20 flex flex-col items-center justify-center text-center p-8 rounded-4xl border border-brand-gold">
+              <div className="absolute inset-0 bg-[#1c1816]/30 flex flex-col items-center justify-center text-center p-8 rounded-4xl border border-brand-gold">
                 <h3 className="text-5xl font-serif text-white mb-4 italic">The Heritage</h3>
                 <p className="text-white/90 text-sm max-w-sm uppercase tracking-widest">Crafting brilliance for generations.</p>
               </div>

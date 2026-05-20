@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { Plus, Minus, ChevronRight, MessageCircle, Phone, Mail, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 
 const CATEGORIES = [
   { id: 'delivery', name: 'Order Delivery and Shopping' },
@@ -478,9 +479,9 @@ function HelpContent() {
                 <span className="text-xs tracking-wide">10 AM - 7 PM (Mon-Sat)</span>
               </div>
             </div>
-            <button className="w-full py-4 bg-brand-gold text-brand-text rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-colors">
-              Chat With Us
-            </button>
+            <Link href="/contact" className="block text-center w-full py-4 bg-brand-gold text-brand-text rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-colors">
+              Contact Us
+            </Link>
           </div>
         </div>
       </aside>

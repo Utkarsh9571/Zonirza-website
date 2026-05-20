@@ -78,7 +78,7 @@ export default function HeroSlider() {
               <div className="absolute bottom-0 left-0 right-0 p-8 md:p-10 text-white space-y-4 pointer-events-none">
                 <div className="space-y-1">
                   <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-brand-gold opacity-90">{item.subtitle}</p>
-                  <h3 className="text-3xl md:text-4xl font-serif leading-tight">{item.title}</h3>
+                  <h3 className="text-3xl md:text-4xl font-serif leading-tight text-brand-gold">{item.title}</h3>
                 </div>
                 
                 <div className="flex items-center space-x-3 text-[10px] uppercase tracking-widest font-bold group/btn">

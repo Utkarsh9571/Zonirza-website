@@ -2,9 +2,33 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image, { ImageProps } from 'next/image';
 import { X, ChevronRight, ArrowRight, Tag, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NAVIGATION_DATA, TopCategory } from '@/constants/navigation';
+
+interface SafeImageProps extends Omit<ImageProps, 'onError'> {
+  fallbackSrc?: string;
+}
+
+const SafeImage: React.FC<SafeImageProps> = ({ src, fallbackSrc = '/images/images/default-image.png', alt, ...props }) => {
+  const [imgSrc, setImgSrc] = useState<any>(src);
+
+  useEffect(() => {
+    setImgSrc(src);
+  }, [src]);
+
+  return (
+    <Image
+      {...props}
+      src={imgSrc}
+      alt={alt}
+      onError={() => {
+        setImgSrc(fallbackSrc);
+      }}
+    />
+  );
+};
 
 export type MegaMenuProps = {
   isOpen: boolean;
@@ -132,10 +156,12 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
                         {sub.image ? (
                           <>
                             <div className="aspect-square rounded-[20px] overflow-hidden border border-brand-text/5 dark:border-white/5 shadow-soft bg-brand-bg dark:bg-brand-bg/50 relative">
-                              <img 
+                              <SafeImage 
                                 src={sub.image} 
                                 alt={sub.name}
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                fill
+                                sizes="(max-width: 1024px) 100vw, 20vw"
+                                className="object-cover transition-transform duration-700 group-hover:scale-110"
                               />
                               <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300" />
                             </div>
@@ -185,8 +211,14 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
               <div className="mt-auto pt-8 border-t border-brand-text/5">
                 <div className="bg-[#FAF7F5] dark:bg-brand-bg/40 rounded-3xl p-6 flex items-center justify-between group overflow-hidden relative">
                   <div className="flex items-center space-x-6 relative z-10">
-                    <div className="w-20 h-14 rounded-xl overflow-hidden shadow-soft">
-                      <img src={activeTab.bottomBanner.image} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <div className="w-20 h-14 rounded-xl overflow-hidden shadow-soft relative">
+                      <SafeImage 
+                        src={activeTab.bottomBanner.image} 
+                        alt="" 
+                        fill
+                        sizes="80px"
+                        className="object-cover group-hover:scale-110 transition-transform duration-500" 
+                      />
                     </div>
                     <div>
                       <h4 className="text-[13px] font-bold text-brand-text mb-1">{activeTab.bottomBanner.title}</h4>
@@ -213,10 +245,12 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
               <div key={idx} className="flex flex-col h-full">
                 <Link href={promo.href} className="group flex-1 flex flex-col" onClick={onClose}>
                   <div className="flex-1 rounded-[30px] overflow-hidden mb-6 relative">
-                    <img 
+                    <SafeImage 
                       src={promo.image} 
                       alt={promo.title}
-                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                      fill
+                      sizes="(max-width: 1280px) 100vw, 320px"
+                      className="object-cover transition-transform duration-1000 group-hover:scale-105"
                     />
                   </div>
                   <div className="space-y-3">

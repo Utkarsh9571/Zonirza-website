@@ -378,8 +378,8 @@ const Navbar = () => {
         {activeMenu === 'shop' && (
           <div 
             className={cn(
-              "left-0 w-full pt-12 flex justify-center px-6 animate-in slide-in-from-top-2 duration-300 z-[110] pointer-events-auto",
-              isScrolled ? "fixed top-16" : "absolute top-full"
+              "left-0 w-full flex justify-center px-6 animate-in slide-in-from-top-2 duration-300 z-[110] pointer-events-auto",
+              isScrolled ? "fixed top-14" : "absolute top-full"
             )}
             onMouseEnter={() => handleShopInteraction('hover')}
             onMouseLeave={handleMouseLeave}

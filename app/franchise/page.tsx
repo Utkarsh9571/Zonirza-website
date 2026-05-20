@@ -62,7 +62,7 @@ export default function FranchisePage() {
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-brand-text/40 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-[#1c1816]/50 backdrop-blur-[2px]" />
         <div className="relative z-10 text-center px-6 max-w-5xl space-y-8">
           <p className="text-white/80 text-xs md:text-sm uppercase tracking-[0.5em] font-black animate-in fade-in slide-in-from-bottom-4 duration-700">
             Business Expansion Opportunity
@@ -84,12 +84,12 @@ export default function FranchisePage() {
             { icon: Globe, title: "Global Reach", desc: "A leading exporter and wholesaler with a footprint spanning major jewelry hubs." },
             { icon: Users, title: "Partner Support", desc: "Comprehensive operational support, marketing leverage, and inventory management." }
           ].map((item, i) => (
-            <div key={i} className="bg-white p-12 rounded-[40px] border border-brand-border shadow-soft space-y-6 group hover:shadow-premium transition-all duration-500">
-              <div className="w-16 h-16 rounded-2xl bg-brand-bg flex items-center justify-center text-brand-gold group-hover:bg-brand-text group-hover:text-white transition-colors duration-500">
+            <div key={i} className="bg-white dark:bg-brand-white p-12 rounded-[40px] border border-brand-gold shadow-soft space-y-6 group hover:shadow-premium transition-all duration-500">
+              <div className="w-16 h-16 rounded-2xl bg-brand-bg dark:bg-brand-accent flex items-center justify-center text-brand-gold group-hover:bg-brand-text group-hover:text-white transition-colors duration-500">
                 <item.icon size={28} />
               </div>
               <h3 className="text-2xl font-serif text-brand-text">{item.title}</h3>
-              <p className="text-brand-muted text-sm leading-relaxed">{item.desc}</p>
+              <p className="text-brand-text/80 text-sm leading-relaxed">{item.desc}</p>
             </div>
           ))}
         </div>
@@ -97,7 +97,7 @@ export default function FranchisePage() {
 
       {/* Main Inquiry Section */}
       <Section className="!pb-32">
-        <div className="bg-white rounded-[60px] overflow-hidden border border-brand-border shadow-premium flex flex-col lg:flex-row">
+        <div className="bg-white dark:bg-brand-white rounded-[60px] overflow-hidden border border-brand-gold shadow-premium flex flex-col lg:flex-row">
           
           {/* Left Column - Info */}
           <div className="lg:w-2/5 bg-[#3A1C16] p-12 md:p-20 text-[#EAE1D5] space-y-12">
@@ -133,7 +133,7 @@ export default function FranchisePage() {
           </div>
 
           {/* Right Column - Form */}
-          <div className="lg:w-3/5 p-12 md:p-20">
+          <div className="lg:w-3/5 p-12 md:p-20 text-brand-text">
             {isSuccess ? (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-6 animate-in fade-in zoom-in-95 duration-700">
                 <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center text-green-600 mb-4">
@@ -156,7 +156,7 @@ export default function FranchisePage() {
                       required
                       type="text" 
                       placeholder="Enter your name"
-                      className="w-full bg-brand-bg/50 border-b border-brand-border py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm"
+                      className="w-full bg-brand-bg/50 border rounded-lg border-brand-gold py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm text-brand-text placeholder:text-brand-text/30"
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
                     />
@@ -167,7 +167,7 @@ export default function FranchisePage() {
                       required
                       type="email" 
                       placeholder="email@example.com"
-                      className="w-full bg-brand-bg/50 border-b border-brand-border py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm"
+                      className="w-full bg-brand-bg/50 border rounded-lg border-brand-gold py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm text-brand-text placeholder:text-brand-text/30"
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
                     />
@@ -178,7 +178,7 @@ export default function FranchisePage() {
                       required
                       type="tel" 
                       placeholder="+91 XXXXX XXXXX"
-                      className="w-full bg-brand-bg/50 border-b border-brand-border py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm"
+                      className="w-full bg-brand-bg/50 border rounded-lg border-brand-gold py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm text-brand-text placeholder:text-brand-text/30"
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     />
@@ -189,7 +189,7 @@ export default function FranchisePage() {
                       required
                       type="text" 
                       placeholder="Preferred location"
-                      className="w-full bg-brand-bg/50 border-b border-brand-border py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm"
+                      className="w-full bg-brand-bg/50 border rounded-lg border-brand-gold py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm text-brand-text placeholder:text-brand-text/30"
                       value={formData.city}
                       onChange={(e) => setFormData({...formData, city: e.target.value})}
                     />
@@ -200,15 +200,15 @@ export default function FranchisePage() {
                   <div className="space-y-2">
                     <label className="text-[10px] uppercase tracking-widest font-black text-brand-text/40">Investment Budget</label>
                     <select 
-                      className="w-full bg-brand-bg/50 border-b border-brand-border py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm appearance-none"
+                      className="w-full bg-brand-bg/50 border rounded-lg border-brand-gold py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm appearance-none text-brand-text placeholder:text-brand-text/30"
                       value={formData.investmentRange}
                       onChange={(e) => setFormData({...formData, investmentRange: e.target.value})}
                     >
-                      <option value="">Select Range</option>
-                      <option value="50L - 1Cr">50L - 1Cr</option>
-                      <option value="1Cr - 3Cr">1Cr - 3Cr</option>
-                      <option value="3Cr - 5Cr">3Cr - 5Cr</option>
-                      <option value="5Cr+">5Cr+</option>
+                      <option value="" className="dark:bg-brand-white">Select Range</option>
+                      <option value="50L - 1Cr" className="dark:bg-brand-white">50L - 1Cr</option>
+                      <option value="1Cr - 3Cr" className="dark:bg-brand-white">1Cr - 3Cr</option>
+                      <option value="3Cr - 5Cr" className="dark:bg-brand-white">3Cr - 5Cr</option>
+                      <option value="5Cr+" className="dark:bg-brand-white">5Cr+</option>
                     </select>
                   </div>
                   <div className="space-y-2">
@@ -216,7 +216,7 @@ export default function FranchisePage() {
                     <input 
                       type="text" 
                       placeholder="e.g. Retail, Real Estate"
-                      className="w-full bg-brand-bg/50 border-b border-brand-border py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm"
+                      className="w-full bg-brand-bg/50 border rounded-lg border-brand-gold py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm text-brand-text placeholder:text-brand-text/30"
                       value={formData.experience}
                       onChange={(e) => setFormData({...formData, experience: e.target.value})}
                     />
@@ -228,7 +228,7 @@ export default function FranchisePage() {
                   <textarea 
                     rows={4}
                     placeholder="Tell us about your vision for a Zoniraz franchise..."
-                    className="w-full bg-brand-bg/50 border-b border-brand-border py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm resize-none"
+                    className="w-full bg-brand-bg/50 border rounded-lg border-brand-gold py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm resize-none text-brand-text placeholder:text-brand-text/30"
                     value={formData.message}
                     onChange={(e) => setFormData({...formData, message: e.target.value})}
                   />
@@ -236,7 +236,7 @@ export default function FranchisePage() {
 
                 <Button 
                   type="submit" 
-                  className="w-full !py-6 text-xs uppercase tracking-[0.3em] font-black group"
+                  className="w-full !py-6 text-xs uppercase tracking-[0.3em] font-black group dark:text-brand-bg"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? "Processing..." : (

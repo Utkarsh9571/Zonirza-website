@@ -52,7 +52,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white pt-32 pb-24 font-serif">
+    <div className="min-h-screen bg-white dark:bg-brand-bg pt-32 pb-24 font-serif text-brand-text">
       {/* HEADER SECTION */}
       <div className="max-w-[1400px] mx-auto px-6 text-center mb-16">
         <nav className="flex items-center justify-center space-x-2 text-[10px] uppercase tracking-[0.2em] font-bold text-brand-gold mb-8">
@@ -62,7 +62,7 @@ export default function ContactPage() {
         </nav>
         <h1 className="text-5xl md:text-6xl text-brand-text mb-12">Help & Contact</h1>
         
-        <div className="max-w-4xl mx-auto text-left bg-[#FDF9F6] p-8 md:p-12 rounded-[40px] border border-brand-gold/10 mb-20">
+        <div className="max-w-4xl mx-auto text-left bg-[#FDF9F6] dark:bg-brand-accent p-8 md:p-12 rounded-[40px] border border-brand-gold/10 mb-20">
           <h2 className="text-2xl mb-6 text-brand-text border-b border-brand-gold/20 pb-4 inline-block">About Zoniraz Jewellers</h2>
           <p className="text-sm md:text-base leading-relaxed text-brand-text/80 mb-8 font-sans">
             Zoniraz Jewel house Pvt LTD. is one of the leading Jewellery manufacturer, wholesaler, retailer and exporter in the international Jewels, Gems and Precious stones market. For the last 50 Years we have been serving our loyal customers and delivering them not only qualitative and best designs of Jewellery but also a trustful and responsible brand. Launching our new jewellery brand of real gold and diamond jewellery silver jewellery birthstones. We speak about quality, experience, customer satisfaction, trust, honesty, belief and relationship. Our product gives you royal life experience and a high lifestyle. We believe in trust and honesty in our relationships with our customers, that is why trust is part of our policy. Our strong and elegant designs of jewellery raise grace and build personality and also serve a royal look as most of our designs are derived from Indian culture. We have varied ranges of unique collections of our products to satisfy various demands of different customers.
@@ -89,19 +89,10 @@ export default function ContactPage() {
       <div className="max-w-[1200px] mx-auto px-6 mb-32">
         <h2 className="text-3xl text-center text-brand-text mb-16">Have A Question</h2>
         
-        <div className="grid md:grid-cols-3 gap-0 border border-brand-text/5 rounded-[40px] overflow-hidden shadow-premium">
-          {/* Chat */}
-          <div className="p-12 flex flex-col items-center text-center bg-white border-r border-brand-text/5 hover:bg-brand-bg transition-colors group">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-8 border border-brand-gold/20 group-hover:bg-brand-gold group-hover:text-white transition-all duration-500">
-              <MessageSquare size={28} strokeWidth={1} />
-            </div>
-            <h3 className="text-2xl text-brand-text mb-4">Chat with Us</h3>
-            <p className="text-xs text-brand-text/40 uppercase tracking-widest font-bold">24/7 Availability</p>
-          </div>
-          
+        <div className="grid md:grid-cols-2 gap-0 border border-brand-text/5 rounded-[40px] overflow-hidden shadow-premium">
           {/* Call */}
-          <div className="p-12 flex flex-col items-center text-center bg-white border-r border-brand-text/5 hover:bg-brand-bg transition-colors group">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-8 border border-brand-gold/20 group-hover:bg-brand-gold group-hover:text-white transition-all duration-500">
+          <div className="p-12 flex flex-col items-center text-center bg-white dark:bg-brand-white border rounded-l-[40px] border-brand-gold hover:bg-brand-bg dark:hover:bg-brand-accent transition-colors group">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-8 border border-brand-gold  group-hover:bg-brand-gold group-hover:text-white transition-all duration-500">
               <Phone size={28} strokeWidth={1} />
             </div>
             <h3 className="text-2xl text-brand-text mb-4">Call Us At</h3>
@@ -110,8 +101,8 @@ export default function ContactPage() {
           </div>
           
           {/* Write */}
-          <div className="p-12 flex flex-col items-center text-center bg-white hover:bg-brand-bg transition-colors group">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-8 border border-brand-gold/20 group-hover:bg-brand-gold group-hover:text-white transition-all duration-500">
+          <div className="p-12 flex flex-col items-center border border-brand-gold rounded-r-[40px] text-center bg-white dark:bg-brand-white hover:bg-brand-bg dark:hover:bg-brand-accent transition-colors group">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-8 border border-brand-gold group-hover:bg-brand-gold group-hover:text-white transition-all duration-500">
               <Mail size={28} strokeWidth={1} />
             </div>
             <h3 className="text-2xl text-brand-text mb-4">Write to Us</h3>
@@ -119,14 +110,14 @@ export default function ContactPage() {
           </div>
         </div>
         
-        <p className="mt-12 text-center text-xs text-brand-text/40 max-w-2xl mx-auto leading-relaxed italic">
-          The toll free number is only applicable for domestic orders within India. For international customers or deliveries please reach us out through whatsapp, Live chat or email.
+        <p className="mt-12 text-center text-xs text-brand-text/80 max-w-2xl mx-auto leading-relaxed italic">
+          The toll free number is only applicable for domestic orders within India. For international customers or deliveries please reach us out through whatsapp or email.
         </p>
       </div>
 
       {/* CONTACT FORM */}
       <div className="max-w-[800px] mx-auto px-6">
-        <div className="bg-white p-10 md:p-16 rounded-[48px] border border-brand-text/5 shadow-2xl relative overflow-hidden">
+        <div className="bg-white dark:bg-brand-white p-10 md:p-16 rounded-[48px] border border-brand-gold shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-2 bg-brand-gold"></div>
           
           <div className="text-center mb-12">
@@ -142,7 +133,7 @@ export default function ContactPage() {
                   required
                   type="text" 
                   placeholder="Enter Name"
-                  className="w-full px-6 py-4 rounded-2xl bg-brand-bg border border-brand-text/5 focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none"
+                  className="w-full px-6 py-4 rounded-2xl bg-brand-bg border border-brand-gold focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none text-brand-text placeholder:text-brand-text/30"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                 />
@@ -153,7 +144,7 @@ export default function ContactPage() {
                   required
                   type="tel" 
                   placeholder="Enter Mobile"
-                  className="w-full px-6 py-4 rounded-2xl bg-brand-bg border border-brand-text/5 focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none"
+                  className="w-full px-6 py-4 rounded-2xl bg-brand-bg border border-brand-gold focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none text-brand-text placeholder:text-brand-text/30"
                   value={formData.mobile}
                   onChange={(e) => setFormData({...formData, mobile: e.target.value})}
                 />
@@ -166,7 +157,7 @@ export default function ContactPage() {
                 required
                 type="email" 
                 placeholder="Enter Email"
-                className="w-full px-6 py-4 rounded-2xl bg-brand-bg border border-brand-text/5 focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none"
+                className="w-full px-6 py-4 rounded-2xl bg-brand-bg border border-brand-gold focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none text-brand-text placeholder:text-brand-text/30"
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
               />
@@ -178,7 +169,7 @@ export default function ContactPage() {
                 required
                 rows={4}
                 placeholder="Enter Query"
-                className="w-full px-6 py-4 rounded-2xl bg-brand-bg border border-brand-text/5 focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none resize-none"
+                className="w-full px-6 py-4 rounded-2xl bg-brand-bg border border-brand-gold focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none resize-none text-brand-text placeholder:text-brand-text/30"
                 value={formData.message}
                 onChange={(e) => setFormData({...formData, message: e.target.value})}
               />
@@ -186,7 +177,7 @@ export default function ContactPage() {
 
             <button 
               disabled={isSubmitting}
-              className="w-full py-5 bg-brand-text text-white rounded-full font-bold uppercase tracking-[0.2em] text-xs hover:bg-brand-gold transition-all shadow-lg flex items-center justify-center space-x-3 disabled:opacity-50"
+              className="w-full py-5 bg-brand-text text-white dark:text-brand-bg rounded-full font-bold uppercase tracking-[0.2em] text-xs hover:bg-brand-gold transition-all shadow-lg flex items-center justify-center space-x-3 disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
@@ -204,8 +195,8 @@ export default function ContactPage() {
       {/* SUCCESS POPUP */}
       {showPopup && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-6">
-          <div className="absolute inset-0 bg-brand-text/40 backdrop-blur-sm" onClick={() => setShowPopup(false)}></div>
-          <div className="bg-white rounded-[40px] p-12 text-center max-w-sm w-full relative z-10 shadow-premium animate-in zoom-in-95 duration-300">
+          <div className="absolute inset-0 bg-[#1c1816]/60 backdrop-blur-sm" onClick={() => setShowPopup(false)}></div>
+          <div className="bg-white dark:bg-brand-white rounded-[40px] p-12 text-center max-w-sm w-full relative z-10 shadow-premium animate-in zoom-in-95 duration-300">
             <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 className="text-green-500" size={40} />
             </div>
@@ -215,7 +206,7 @@ export default function ContactPage() {
             </p>
             <button 
               onClick={() => setShowPopup(false)}
-              className="w-full py-4 bg-brand-text text-white rounded-full text-xs font-bold uppercase tracking-widest hover:bg-brand-gold transition-all"
+              className="w-full py-4 bg-brand-text text-white dark:text-brand-bg rounded-full text-xs font-bold uppercase tracking-widest hover:bg-brand-gold transition-all"
             >
               Close
             </button>
