@@ -1,0 +1,29 @@
+{
+  "originalCount": 644,
+  "splitCount": 569,
+  "totalCount": 1339,
+  "categoryStats": {
+    "rings": 864,
+    "pendants": 281,
+    "nose-pin": 27,
+    "Nose Pins": 2,
+    "Zodiac": 37,
+    "Initial": 78,
+    "test1": 1,
+    "Religious": 15,
+    "Color Stone": 1,
+    "Couple Bands": 3,
+    "Love & Heart": 18,
+    "CLUSTER STUDS": 6,
+    "earrings": 6
+  },
+  "emptyCategories": [
+    "necklaces",
+    "bangles",
+    "bracelets",
+    "mangalsutra",
+    "chains",
+    "necklace-set"
+  ],
+  "unmatchedProducts": []
+}

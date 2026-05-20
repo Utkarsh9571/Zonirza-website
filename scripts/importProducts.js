@@ -21,7 +21,7 @@ if (!MONGODB_URI) {
   process.exit(1);
 }
 
-const DATA_FILE = path.join(__dirname, '../cleanProducts.json');
+const DATA_FILE = path.join(__dirname, '../normalizedProducts.json');
 const CATEGORY_DATA_FILE = path.join(__dirname, '../cleanCategories.json');
 
 // --- Schemas (Matching models/*.ts) ---
