@@ -33,11 +33,42 @@ export async function GET(req: NextRequest) {
     // Build filter
     const filter: any = {};
     
-    if (category) filter.category = category;
-    if (metal) filter["specs.metal"] = metal;
+    if (category) {
+      // Handle case-insensitive category matches and common slug variations
+      const categorySlug = category.toLowerCase().replace(/\s+/g, '-');
+      const categoryPatterns = [
+        new RegExp(`^${category}$`, 'i'),
+        new RegExp(`^${categorySlug}$`, 'i')
+      ];
+      
+      // Special mappings for categories
+      if (categorySlug === 'nose-pins') {
+        categoryPatterns.push(new RegExp(`^nose-pin$`, 'i'));
+      }
+      
+      filter.category = { $in: categoryPatterns };
+    }
+
+    if (metal) {
+      // Map display metal names to DB slugs
+      let metalSlug = metal.toLowerCase().replace(/\s+/g, '-');
+      
+      // Broaden "gold" to include "yellow-gold" if specifically requested or if it's the common term
+      if (metalSlug === 'gold') {
+        filter["specs.metal"] = { $in: ['gold', 'yellow-gold'] };
+      } else {
+        filter["specs.metal"] = metalSlug;
+      }
+    }
+
     if (stockStatus) filter.stockStatus = stockStatus;
     if (isActive) filter.isActive = isActive === "true";
-    if (tags) filter.tags = { $in: tags.split(",").map(t => t.trim()) };
+    
+    if (tags) {
+      // Handle case-insensitive tag matches
+      const tagList = tags.split(",").map(t => t.trim().toLowerCase());
+      filter.tags = { $in: tagList.map(t => new RegExp(`^${t}$`, 'i')) };
+    }
     
     if (minPrice || maxPrice) {
       filter.basePrice = {};
@@ -54,6 +85,10 @@ export async function GET(req: NextRequest) {
       ];
     }
 
+    // Debug logging for query construction
+    console.log("Admin Product Filter Params:", { category, metal, stockStatus, isActive, tags, query });
+    console.log("Admin Product Filter Query:", JSON.stringify(filter, null, 2));
+
     // Build sort
     let sortObj: any = { createdAt: -1 };
     if (sort === "oldest") sortObj = { createdAt: 1 };
@@ -68,6 +103,7 @@ export async function GET(req: NextRequest) {
       .limit(limit);
 
     const total = await Product.countDocuments(filter);
+    console.log("Admin Product Match Count:", total);
 
     return NextResponse.json({
       success: true,

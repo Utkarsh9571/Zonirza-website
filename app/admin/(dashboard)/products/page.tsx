@@ -34,6 +34,7 @@ function AdminProductsPageContent() {
   const metal = searchParams.get('metal') || '';
   const stockStatus = searchParams.get('stockStatus') || '';
   const isActive = searchParams.get('isActive') || '';
+  const tags = searchParams.get('tags') || '';
   const sort = searchParams.get('sort') || 'newest';
 
   const [products, setProducts] = useState<any[]>([]);
@@ -71,6 +72,7 @@ function AdminProductsPageContent() {
         metal,
         stockStatus,
         isActive,
+        tags,
         sort
       });
       const res = await fetch(`/api/admin/products?${queryParams.toString()}`);
@@ -88,7 +90,7 @@ function AdminProductsPageContent() {
 
   useEffect(() => {
     fetchProducts();
-  }, [page, searchTerm, category, metal, stockStatus, isActive, sort]);
+  }, [page, searchTerm, category, metal, stockStatus, isActive, tags, sort]);
 
   const handleSearch = (val: string) => {
     updateQueryParams({ q: val });
@@ -117,7 +119,20 @@ function AdminProductsPageContent() {
     }
   };
 
-  const categories = ['Rings', 'Earrings', 'Necklaces', 'Bracelets', 'Bangles', 'Pendants'];
+  const categories = [
+    'Rings', 
+    'Earrings', 
+    'Necklaces', 
+    'Bracelets', 
+    'Bangles', 
+    'Pendants',
+    'Nose Pins',
+    'Religious',
+    'Zodiac',
+    'Initial',
+    'Love & Heart',
+    'Cluster Studs'
+  ];
   const metals = ['Yellow Gold', 'Rose Gold', 'White Gold', 'Platinum', 'Silver'];
   const sortOptions = [
     { label: 'Newest First', value: 'newest' },
@@ -174,14 +189,14 @@ function AdminProductsPageContent() {
                 onClick={() => { setShowFilters(!showFilters); setShowSort(false); }}
                 className={cn(
                   "flex items-center space-x-2 px-6 py-3 rounded-2xl border transition-all text-[12px] font-bold uppercase tracking-widest w-full md:w-auto justify-center",
-                  showFilters || category || metal || stockStatus || isActive
+                  showFilters || category || metal || stockStatus || isActive || tags
                     ? "bg-brand-gold text-brand-bg border-brand-gold" 
                     : "bg-brand-bg dark:bg-white/5 text-brand-text/60 dark:text-white/60 border-transparent hover:border-brand-gold/20"
                 )}
               >
                 <Filter size={16} />
                 <span>Filters</span>
-                {(category || metal || stockStatus || isActive) && (
+                {(category || metal || stockStatus || isActive || tags) && (
                   <span className="ml-1 w-2 h-2 bg-white rounded-full" />
                 )}
               </button>
@@ -191,7 +206,7 @@ function AdminProductsPageContent() {
                   <div className="flex items-center justify-between">
                     <h4 className="text-[10px] uppercase tracking-[0.2em] font-black text-brand-gold">Refine Catalog</h4>
                     <button 
-                      onClick={() => updateQueryParams({ category: '', metal: '', stockStatus: '', isActive: '' })}
+                      onClick={() => updateQueryParams({ category: '', metal: '', stockStatus: '', isActive: '', tags: '' })}
                       className="text-[9px] uppercase tracking-widest font-bold text-brand-text/40 hover:text-brand-gold"
                     >
                       Reset All
@@ -221,6 +236,17 @@ function AdminProductsPageContent() {
                         <option value="">All Metals</option>
                         {metals.map(m => <option key={m} value={m}>{m}</option>)}
                       </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[9px] uppercase tracking-widest font-bold text-brand-text/40 ml-1">Tags (Comma separated)</label>
+                      <input 
+                        type="text"
+                        value={tags}
+                        onChange={(e) => updateQueryParams({ tags: e.target.value })}
+                        placeholder="diamond, gold..."
+                        className="w-full bg-slate-100 dark:bg-white/5 border-none rounded-xl py-2 px-3 text-[12px] focus:ring-1 focus:ring-brand-gold/50 placeholder:text-brand-text/20"
+                      />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
@@ -297,7 +323,7 @@ function AdminProductsPageContent() {
         </div>
 
         {/* Active Filters Bar */}
-        {(category || metal || stockStatus || isActive || searchTerm) && (
+        {(category || metal || stockStatus || isActive || tags || searchTerm) && (
           <div className="flex flex-wrap items-center gap-2 px-2">
             <span className="text-[9px] uppercase tracking-widest font-black text-brand-text/40 mr-2">Active:</span>
             {searchTerm && (
@@ -324,6 +350,15 @@ function AdminProductsPageContent() {
                 className="flex items-center space-x-2 px-3 py-1.5 bg-brand-gold/10 text-brand-gold border border-brand-gold/20 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-brand-gold/20 transition-all"
               >
                 <span>{metal}</span>
+                <X size={12} />
+              </button>
+            )}
+            {tags && (
+              <button 
+                onClick={() => updateQueryParams({ tags: '' })}
+                className="flex items-center space-x-2 px-3 py-1.5 bg-brand-gold/10 text-brand-gold border border-brand-gold/20 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-brand-gold/20 transition-all"
+              >
+                <span>Tags: {tags}</span>
                 <X size={12} />
               </button>
             )}
