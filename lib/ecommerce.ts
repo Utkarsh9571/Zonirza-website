@@ -30,6 +30,11 @@ export function validateProductConfiguration(
     requiredKeys.push('stone');
   }
 
+  // 4. Custom Color Request
+  if (selectedOptions.isCustomColor) {
+    requiredKeys.push('customColorNotes');
+  }
+
   // Check each required key against selectedOptions
   requiredKeys.forEach(key => {
     if (!selectedOptions[key] || selectedOptions[key] === '' || selectedOptions[key] === 'None') {

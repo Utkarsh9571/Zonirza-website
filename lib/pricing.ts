@@ -9,6 +9,8 @@ export interface ProductConfiguration {
   size?: string;
   stone?: string;
   customization?: string[];
+  isCustomColor?: boolean;
+  customColorNotes?: string;
 }
 
 export interface PricingBreakdown {

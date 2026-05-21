@@ -126,6 +126,18 @@ export function ProductInteractiveUI({ product }: { product: any }) {
   // Configuration State - Always initialized with valid defaults
   const [config, setConfig] = useState<ProductConfiguration>(getInitialConfiguration());
 
+  // Derive current images based on selected metal
+  const currentImages = useMemo(() => {
+    const metalSlug = config.metal.toLowerCase().replace(/\s+/g, '-');
+    const filtered = product.images.filter((img: string) => img.toLowerCase().includes(metalSlug));
+    return filtered.length > 0 ? filtered : product.images;
+  }, [product.images, config.metal]);
+
+  // Reset selected image when metal changes
+  useEffect(() => {
+    setSelectedImage(0);
+  }, [config.metal]);
+
   // 2. Dynamic Pricing Calculation
   const pricing = useMemo(() => {
     return calculatePricing({
@@ -165,7 +177,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
     // Generate a unique ID based on productId and current configuration
     const cartItemId = `${product._id}-${config.purity}-${config.metal}-${config.size}-${config.stone}`.replace(/\s+/g, '-').toLowerCase();
 
-    const resolvedImage = resolveProductImage(product.images[selectedImage]);
+    const resolvedImage = resolveProductImage(currentImages[selectedImage] || currentImages[0]);
 
     cartAddItem({
       cartItemId,
@@ -184,6 +196,29 @@ export function ProductInteractiveUI({ product }: { product: any }) {
     setTimeout(() => setIsAdded(false), 2000);
   };
 
+  const handleShare = async () => {
+    const shareData = {
+      title: `${product.name} | Zoniraz`,
+      text: `Check out this ${product.name} on Zoniraz.`,
+      url: window.location.href,
+    };
+    
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.error('Error sharing:', err);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Link copied to clipboard!');
+      } catch (err) {
+        console.error('Failed to copy link:', err);
+      }
+    }
+  };
+
   return (
     <div className="bg-brand-bg text-brand-text min-h-screen pb-24 transition-colors duration-500">
       {/* Top 2-Column Section */}
@@ -194,7 +229,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
           <div className="w-full lg:w-[50%] flex flex-col space-y-3 animate-in fade-in slide-in-from-left-8 duration-1000">
             <div className="relative aspect-square w-full max-h-[350px] md:max-h-[420px] rounded-[40px] overflow-hidden bg-white dark:bg-[#1a1614] border border-brand-gold/10 shadow-soft group mx-auto transition-colors">
               <ProductImageZoom 
-                image={resolveProductImage(product.images?.[selectedImage])} 
+                image={resolveProductImage(currentImages[selectedImage] || currentImages[0])} 
                 name={product.name} 
               />
               
@@ -210,15 +245,18 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                 >
                   <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} className={cn(isWishlisted && "animate-pulse")} />
                 </button>
-                <button className="w-9 h-9 rounded-full bg-white/90 dark:bg-black/40 backdrop-blur-md flex items-center justify-center border border-brand-border dark:border-white/10 text-brand-text hover:bg-brand-gold hover:text-white transition-all shadow-soft">
+                <button 
+                  onClick={handleShare}
+                  className="w-9 h-9 rounded-full bg-white/90 dark:bg-black/40 backdrop-blur-md flex items-center justify-center border border-brand-border dark:border-white/10 text-brand-text hover:bg-brand-gold hover:text-white transition-all shadow-soft"
+                >
                   <Share2 size={16} />
                 </button>
               </div>
             </div>
 
-            {product.images.length > 1 && (
+            {currentImages.length > 1 && (
               <div className="flex justify-center space-x-2.5 overflow-x-auto pb-2 scrollbar-hide">
-                {product.images.map((img: string, i: number) => (
+                {currentImages.map((img: string, i: number) => (
                   <button
                     key={i}
                     onClick={() => setSelectedImage(i)}
@@ -253,7 +291,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                   <div className="flex flex-col">
                     <span className="text-[10px] uppercase tracking-widest text-brand-text/40 dark:text-brand-text/60">MRP Incl. Taxes</span>
                     <span className="text-[9px] text-brand-gold font-black uppercase tracking-widest mt-0.5">
-                      {config.purity} {config.metal} {config.size ? `| Size ${config.size}` : ''} {config.stone !== 'None' ? `| ${config.stone}` : ''}
+                      {config.purity} {config.isCustomColor ? 'Custom Color Request' : config.metal} {config.size ? `| Size ${config.size}` : ''} {config.stone !== 'None' ? `| ${config.stone}` : ''}
                     </span>
                   </div>
                 </div>
@@ -272,10 +310,10 @@ export function ProductInteractiveUI({ product }: { product: any }) {
             {/* Configurable Selectors */}
             <div className="space-y-8">
               
-              {/* Purity & Metal Selector */}
+              {/* Metal Selector */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Select Purity & Gold</span>
+                  <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Select Metal / Color</span>
                   {showValidation && isFieldMissing('metal', validation.missingFields) && (
                     <span className="text-[9px] text-red-500 font-bold uppercase tracking-widest flex items-center animate-pulse">
                       <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2" /> Incomplete
@@ -283,24 +321,114 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                   )}
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  {['18K Yellow Gold', '18K Rose Gold', '18K White Gold', '22K Yellow Gold'].map((option) => (
-                    <button
-                      key={option}
-                      onClick={() => {
-                        setConfig({ ...config, metal: option.split(' ').slice(1).join(' '), purity: option.split(' ')[0] });
+                  {['White Gold', 'Rose Gold', 'Yellow Gold'].map((metalOption) => {
+                     return (
+                      <button
+                        key={metalOption}
+                        onClick={() => {
+                          setConfig({ 
+                            ...config, 
+                            metal: metalOption,
+                            isCustomColor: false 
+                          });
+                          if (showValidation) setShowValidation(false);
+                        }}
+                        className={cn(
+                          "px-5 py-3.5 rounded-2xl text-[10px] uppercase tracking-widest font-bold border transition-all duration-300 touch-safe-hit",
+                          !config.isCustomColor && config.metal === metalOption
+                            ? "bg-brand-gold text-white border-brand-gold shadow-premium" 
+                            : "bg-white dark:bg-[#1a1614] text-brand-muted border-brand-gold/10 dark:border-white/5 active:border-brand-gold",
+                          showValidation && isFieldMissing('metal', validation.missingFields) && "border-red-200 bg-red-50/30"
+                        )}
+                      >
+                        {metalOption}
+                      </button>
+                     );
+                  })}
+                  
+                  {/* Custom Request Button */}
+                  <button
+                    onClick={() => {
+                      setConfig({ ...config, isCustomColor: true });
+                      if (showValidation) setShowValidation(false);
+                    }}
+                    className={cn(
+                      "px-5 py-3.5 rounded-2xl text-[10px] uppercase tracking-widest font-bold border transition-all duration-300 touch-safe-hit",
+                      config.isCustomColor
+                        ? "bg-brand-gold text-white border-brand-gold shadow-premium" 
+                        : "bg-white dark:bg-[#1a1614] text-brand-muted border-brand-gold/10 dark:border-white/5 active:border-brand-gold"
+                    )}
+                  >
+                    Custom Request
+                  </button>
+                </div>
+                
+                {/* Custom Request Expandable Section */}
+                {config.isCustomColor && (
+                  <div className="mt-4 p-4 bg-brand-gold/5 border border-brand-gold/20 rounded-2xl animate-in fade-in slide-in-from-top-2 duration-300">
+                    <label className="block text-[11px] font-bold uppercase tracking-widest text-brand-text mb-2">
+                      Describe your preferred color/finish:
+                    </label>
+                    <textarea 
+                      className={cn(
+                        "w-full bg-white dark:bg-[#1a1614] border border-brand-border dark:border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-brand-gold transition-colors",
+                        showValidation && isFieldMissing('customColorNotes', validation.missingFields) && "border-red-500 bg-red-50/30"
+                      )}
+                      rows={2}
+                      placeholder="Examples: Champagne Gold, Matte Black, Dual Tone, Antique Finish..."
+                      value={config.customColorNotes || ''}
+                      onChange={(e) => {
+                        setConfig({ ...config, customColorNotes: e.target.value });
                         if (showValidation) setShowValidation(false);
                       }}
-                      className={cn(
-                        "px-5 py-3.5 rounded-2xl text-[10px] uppercase tracking-widest font-bold border transition-all duration-300 touch-safe-hit",
-                        `${config.purity} ${config.metal}` === option 
-                          ? "bg-brand-gold text-white border-brand-gold shadow-premium" 
-                          : "bg-white dark:bg-[#1a1614] text-brand-muted border-brand-gold/10 dark:border-white/5 active:border-brand-gold",
-                        showValidation && isFieldMissing('metal', validation.missingFields) && "border-red-200 bg-red-50/30"
-                      )}
-                    >
-                      {option}
-                    </button>
-                  ))}
+                    />
+                    {showValidation && isFieldMissing('customColorNotes', validation.missingFields) && (
+                      <p className="text-[10px] text-red-500 font-bold mt-2 uppercase tracking-widest flex items-center animate-pulse">
+                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2" /> Please provide your custom request details
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Purity Selector */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Select Purity</span>
+                  {showValidation && isFieldMissing('purity', validation.missingFields) && (
+                    <span className="text-[9px] text-red-500 font-bold uppercase tracking-widest flex items-center animate-pulse">
+                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2" /> Incomplete
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {['22K', '18K', '14K', '9K'].map((purityOption) => {
+                     const isDiamondProduct = product.tags?.some((t: string) => t.toLowerCase().includes('diamond')) || 
+                                              product.category?.toLowerCase().includes('diamond') || 
+                                              (configOptions.stones && configOptions.stones.length > 0 && configOptions.stones[0] !== 'None') ||
+                                              product.specs?.stone;
+                     
+                     if (isDiamondProduct && purityOption === '22K') return null;
+
+                     return (
+                      <button
+                        key={purityOption}
+                        onClick={() => {
+                          setConfig({ ...config, purity: purityOption });
+                          if (showValidation) setShowValidation(false);
+                        }}
+                        className={cn(
+                          "px-5 py-3.5 rounded-2xl text-[10px] uppercase tracking-widest font-bold border transition-all duration-300 touch-safe-hit",
+                          config.purity === purityOption
+                            ? "bg-brand-gold text-white border-brand-gold shadow-premium" 
+                            : "bg-white dark:bg-[#1a1614] text-brand-muted border-brand-gold/10 dark:border-white/5 active:border-brand-gold",
+                          showValidation && isFieldMissing('purity', validation.missingFields) && "border-red-200 bg-red-50/30"
+                        )}
+                      >
+                        {purityOption}
+                      </button>
+                     );
+                  })}
                 </div>
               </div>
 
@@ -386,7 +514,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
               <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-1">
                    <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Metal & Purity</p>
-                   <p className="text-[11px] font-bold text-brand-text">{config.purity} {config.metal}</p>
+                   <p className="text-[11px] font-bold text-brand-text">{config.isCustomColor ? `${config.purity} Custom Color Request` : `${config.purity} ${config.metal}`}</p>
                  </div>
                  <div className="space-y-1">
                    <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Stone Quality</p>
