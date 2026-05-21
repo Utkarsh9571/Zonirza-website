@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { useAuthModalStore } from '@/store/authModalStore';
-import { ShieldCheck, Truck, RotateCcw, Heart, Share2, Info, Check, Minus, Plus, Scale, Sparkles } from 'lucide-react';
+import { ShieldCheck, Truck, RotateCcw, Heart, Share2, Info, Check, Minus, Plus, Scale, Sparkles, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { Button } from './Button';
 import { Section } from './Section';
@@ -122,6 +122,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
+  const [activeTab, setActiveTab] = useState<'details' | 'breakup'>('details');
 
   // Configuration State - Always initialized with valid defaults
   const [config, setConfig] = useState<ProductConfiguration>(getInitialConfiguration());
@@ -189,7 +190,8 @@ export function ProductInteractiveUI({ product }: { product: any }) {
       quantity,
       estimatedWeight: pricing.estimatedWeight,
       lastUpdated: Date.now(),
-      configuration: { ...config }
+      configuration: { ...config },
+      pricingBreakdown: pricing
     });
     
     setIsAdded(true);
@@ -221,94 +223,98 @@ export function ProductInteractiveUI({ product }: { product: any }) {
 
   return (
     <div className="bg-brand-bg text-brand-text min-h-screen pb-24 transition-colors duration-500">
-      {/* Top 2-Column Section */}
-      <Section className="!pt-36 !pb-12">
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
-          
-          {/* LEFT COLUMN (50%) - Image Gallery */}
-          <div className="w-full lg:w-[50%] flex flex-col space-y-3 animate-in fade-in slide-in-from-left-8 duration-1000">
-            <div className="relative aspect-square w-full max-h-[350px] md:max-h-[420px] rounded-[40px] overflow-hidden bg-white dark:bg-[#1a1614] border border-brand-gold/10 shadow-soft group mx-auto transition-colors">
-              <ProductImageZoom 
-                image={resolveProductImage(currentImages[selectedImage] || currentImages[0])} 
-                name={product.name} 
-              />
-              
-              <div className="absolute top-4 right-4 flex flex-col space-y-2 z-30">
-                <button 
-                  onClick={handleWishlistToggle}
-                  className={cn(
-                    "w-9 h-9 rounded-full flex items-center justify-center border transition-all shadow-soft active:scale-90",
-                    isWishlisted 
-                      ? "bg-brand-gold border-brand-gold text-white" 
-                      : "bg-white/90 dark:bg-black/40 backdrop-blur-md border-brand-border dark:border-white/10 text-brand-text hover:bg-brand-gold hover:text-white"
-                  )}
-                >
-                  <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} className={cn(isWishlisted && "animate-pulse")} />
-                </button>
-                <button 
-                  onClick={handleShare}
-                  className="w-9 h-9 rounded-full bg-white/90 dark:bg-black/40 backdrop-blur-md flex items-center justify-center border border-brand-border dark:border-white/10 text-brand-text hover:bg-brand-gold hover:text-white transition-all shadow-soft"
-                >
-                  <Share2 size={16} />
-                </button>
-              </div>
-            </div>
-
-            {currentImages.length > 1 && (
-              <div className="flex justify-center space-x-2.5 overflow-x-auto pb-2 scrollbar-hide">
-                {currentImages.map((img: string, i: number) => (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedImage(i)}
-                    className={cn(
-                      "relative w-14 h-14 md:w-16 md:h-16 flex-shrink-0 rounded-[16px] overflow-hidden border-2 transition-all shadow-sm",
-                      selectedImage === i ? "border-brand-gold" : "border-brand-gold/5 bg-white dark:bg-[#1a1614] hover:border-brand-gold/20"
-                    )}
-                  >
-                    <Image src={resolveProductImage(img)} alt={`${product.name} ${i}`} fill className="object-cover p-1 rounded-2xl" sizes="64px" />
-                  </button>
-                ))}
-              </div>
-            )}
+      {/* Main Single-Column Layout */}
+      <Section className="!pt-36 !pb-12 w-full max-w-[1920px] mx-auto flex flex-col items-center px-4 md:px-8 lg:px-12">
+        
+        {/* 1. HEADER: Breadcrumbs, Title, Price */}
+        <div className="w-full flex flex-col items-center text-center space-y-4 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+          <p className="text-brand-gold text-[10px] uppercase tracking-[0.4em] font-bold">
+            Home &gt; Product &gt; {product.name}
+          </p>
+          <h1 className="text-4xl md:text-5xl font-serif text-brand-text leading-[1.1] tracking-tight">
+            {product.name}
+          </h1>
+          <div className="flex flex-col items-center">
+            <p className="text-3xl text-brand-text font-serif flex items-center space-x-2">
+              <span>{displayPrice(pricing.totalPrice, currentCurrency, rates)}</span>
+              <button 
+                onClick={() => {
+                  setActiveTab('breakup');
+                  document.getElementById('jewellery-details')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="hover:text-brand-gold transition-colors focus:outline-none flex items-center justify-center p-1"
+                aria-label="View Price Breakup"
+              >
+                <ChevronDown size={20} className="text-brand-text/50 hover:text-brand-gold hover:translate-y-0.5 transition-transform" />
+              </button>
+            </p>
+            <span className="text-[10px] uppercase tracking-widest text-brand-text/40 mt-1">Incl. taxes and charges</span>
           </div>
 
-          {/* RIGHT COLUMN (50%) - Details & Actions */}
-          <div className="w-full lg:w-[50%] space-y-6 lg:sticky lg:top-24 animate-in fade-in slide-in-from-right-8 duration-1000">
-            
-            <div className="space-y-4">
-              <p className="text-brand-gold text-[10px] uppercase tracking-[0.4em] font-bold">
-                {product.category} Collection
-              </p>
-              <h1 className="text-4xl md:text-5xl font-serif text-brand-text leading-[1.1] tracking-tight">
-                {product.name}
-              </h1>
-              
-              <div className="flex flex-col space-y-2 pt-2">
-                <div className="flex items-baseline space-x-3">
-                   <p className="text-4xl text-brand-gold font-bold font-serif italic transition-all duration-500">
-                    {displayPrice(pricing.totalPrice, currentCurrency, rates)}
-                  </p>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] uppercase tracking-widest text-brand-text/40 dark:text-brand-text/60">MRP Incl. Taxes</span>
-                    <span className="text-[9px] text-brand-gold font-black uppercase tracking-widest mt-0.5">
-                      {config.purity} {config.isCustomColor ? 'Custom Color Request' : config.metal} {config.size ? `| Size ${config.size}` : ''} {config.stone !== 'None' ? `| ${config.stone}` : ''}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-4 text-[10px] text-brand-text/50 dark:text-brand-text/70 uppercase tracking-widest font-bold">
-                  <div className="flex items-center space-x-1">
-                    <Scale size={12} className="text-brand-gold" />
-                    <span>Est. Weight: {pricing.estimatedWeight}g</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* 2. ACTION BUTTONS: Try It On (Hidden), Wishlist, Share */}
+          <div className="flex items-center justify-center space-x-4 pt-2">
+            {/* <button className="px-6 py-2.5 rounded-full border border-brand-border dark:border-white/10 text-[10px] uppercase tracking-widest font-bold flex items-center space-x-2 hover:bg-brand-gold hover:text-white hover:border-brand-gold transition-all text-brand-text shadow-sm">
+              <Sparkles size={14} />
+              <span>Try It On</span>
+            </button> */}
+            <button onClick={handleWishlistToggle} className="w-10 h-10 rounded-full flex items-center justify-center border border-brand-border dark:border-white/10 hover:bg-brand-gold hover:text-white hover:border-brand-gold transition-all text-brand-text shadow-sm active:scale-90">
+              <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} className={cn(isWishlisted && "text-brand-gold")} />
+            </button>
+            <button onClick={handleShare} className="w-10 h-10 rounded-full flex items-center justify-center border border-brand-border dark:border-white/10 hover:bg-brand-gold hover:text-white hover:border-brand-gold transition-all text-brand-text shadow-sm active:scale-90">
+              <Share2 size={16} />
+            </button>
+          </div>
+        </div>
 
-            <div className="w-full h-[1px] bg-brand-text/10"></div>
+        {/* 3. MASSIVE FULL-WIDTH DUAL IMAGE GALLERY */}
+        <div className="w-full relative bg-white dark:bg-[#1a1614] rounded-[40px] overflow-hidden mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150">
+          <div className="flex w-full aspect-[4/5] lg:aspect-[2.5/1] gap-4">
+             {/* Image 1 */}
+             <div className="w-full lg:w-1/2 relative h-full">
+                <ProductImageZoom 
+                  image={resolveProductImage(currentImages[selectedImage] || currentImages[0])} 
+                  name={product.name} 
+                />
+             </div>
+             
+             {/* Image 2 (Hidden on mobile, visible on desktop) */}
+             <div className="hidden lg:block w-1/2 relative h-full">
+               {currentImages.length > 1 ? (
+                  <ProductImageZoom 
+                    image={resolveProductImage(currentImages[(selectedImage + 1) % currentImages.length])} 
+                    name={product.name} 
+                  />
+               ) : (
+                  <div className="w-full h-full bg-brand-bg/50 flex items-center justify-center">
+                    <span className="text-brand-text/30 font-serif">No more images</span>
+                  </div>
+               )}
+             </div>
+          </div>
 
-            {/* Configurable Selectors */}
-            <div className="space-y-8">
+          {/* Navigation Arrows */}
+          {currentImages.length > 1 && (
+            <>
+              <button 
+                onClick={() => setSelectedImage((prev) => (prev - 1 + currentImages.length) % currentImages.length)}
+                className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-md shadow-premium border border-brand-gold/10 rounded-full flex items-center justify-center z-10 hover:bg-brand-gold hover:text-white hover:border-brand-gold transition-all text-brand-text"
+              >
+                 <ChevronLeft size={24} />
+              </button>
+              <button 
+                onClick={() => setSelectedImage((prev) => (prev + 1) % currentImages.length)}
+                className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-md shadow-premium border border-brand-gold/10 rounded-full flex items-center justify-center z-10 hover:bg-brand-gold hover:text-white hover:border-brand-gold transition-all text-brand-text"
+              >
+                 <ChevronRight size={24} />
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* 4. PRODUCT OPTIONS & DETAILS CONTAINER */}
+        <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+            {/* Left Column: Configurable Selectors */}
+            <div className="space-y-8 pr-0 lg:pr-8 lg:border-r lg:border-brand-text/10">
               
               {/* Metal Selector */}
               <div className="space-y-4">
@@ -508,8 +514,10 @@ export function ProductInteractiveUI({ product }: { product: any }) {
               </div>
             </div>
 
-            {/* Live Config Summary */}
-            <div className="p-6 rounded-[40px] bg-brand-bg dark:bg-[#1a1614] border border-brand-gold/10 space-y-3 transition-colors">
+            {/* Right Column: Live Config Summary, Cart, Guides */}
+            <div className="space-y-8 pl-0 lg:pl-4 flex flex-col justify-start">
+              {/* Live Config Summary */}
+              <div className="p-6 rounded-[40px] bg-brand-bg dark:bg-[#1a1614] border border-brand-gold/10 space-y-3 transition-colors">
               <h4 className="text-[10px] font-bold uppercase tracking-widest text-brand-gold">Configuration Summary</h4>
               <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-1">
@@ -557,43 +565,178 @@ export function ProductInteractiveUI({ product }: { product: any }) {
               <DiamondGuide />
               <GoldPurityGuide />
             </div>
-
-          </div>
-        </div>
-      </Section>
-
-      {/* Product Information */}
-      <Section className="!py-16">
-        <div className="bg-white dark:bg-brand-white rounded-[50px] p-10 md:p-16 border border-brand-text/5 shadow-premium transition-colors">
-          <div className="flex items-center space-x-6 mb-12 border-b border-brand-text/5 pb-8">
-            <Info size={24} className="text-brand-gold" />
-            <h2 className="text-2xl font-serif text-brand-text italic">Product Details</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-            <div className="space-y-6">
-              <h3 className="text-[11px] uppercase tracking-[0.3em] font-bold text-brand-text">The Design</h3>
-              <p className="text-brand-text/60 dark:text-brand-text/80 text-sm leading-relaxed">
-                {product.description} This masterfully crafted piece showcases the perfect balance of heritage techniques and contemporary aesthetics.
-              </p>
-            </div>
             
-            <div className="space-y-8">
-              <h3 className="text-[11px] uppercase tracking-[0.3em] font-bold text-brand-text">Specifications</h3>
-              <div className="grid grid-cols-2 gap-y-6 gap-x-8">
-                {Object.entries(specs || {}).map(([key, value]) => (
-                  key !== 'price' && (
-                    <div key={key} className="space-y-2 border-l-2 border-brand-text/5 dark:border-white/10 pl-4 transition-colors">
-                      <p className="text-brand-text/40 dark:text-brand-text/60 text-[9px] uppercase tracking-[0.2em] font-bold">{key}</p>
-                      <p className="text-brand-text text-sm font-medium">{value as string}</p>
+            </div> {/* End Right Column */}
+
+          </div>
+      </Section>
+
+      {/* Jewellery Details Section (Tanishq Inspired) */}
+      <Section id="jewellery-details" className="!py-20 bg-white dark:bg-brand-bg transition-colors">
+        <div className="max-w-4xl mx-auto space-y-12">
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl md:text-4xl font-serif text-brand-text">Jewellery Details</h2>
+            <div className="w-16 h-px bg-brand-gold mx-auto"></div>
+          </div>
+
+          <div className="flex justify-center space-x-4">
+            <button
+              onClick={() => setActiveTab('details')}
+              className={cn(
+                "px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-soft touch-safe-hit",
+                activeTab === 'details' 
+                  ? "bg-brand-text dark:bg-brand-gold text-white border border-transparent shadow-premium" 
+                  : "bg-white dark:bg-[#1a1614] text-brand-text/60 border border-brand-text/10 dark:border-white/5 hover:border-brand-gold hover:text-brand-text"
+              )}
+            >
+              Product Details
+            </button>
+            <button
+              onClick={() => setActiveTab('breakup')}
+              className={cn(
+                "px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-soft touch-safe-hit",
+                activeTab === 'breakup' 
+                  ? "bg-brand-text dark:bg-brand-gold text-white border border-transparent shadow-premium" 
+                  : "bg-white dark:bg-[#1a1614] text-brand-text/60 border border-brand-text/10 dark:border-white/5 hover:border-brand-gold hover:text-brand-text"
+              )}
+            >
+              Price Breakup
+            </button>
+          </div>
+
+          <div className="bg-white dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-[40px] p-8 md:p-12 shadow-premium min-h-[300px] transition-colors relative overflow-hidden">
+            {/* Background Accent */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/5 blur-3xl rounded-full pointer-events-none" />
+
+            {activeTab === 'details' && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-8">
+                  {/* Default Info */}
+                  <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
+                    <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Selected Metal</p>
+                    <p className="text-sm font-bold text-brand-text">{config.isCustomColor ? `${config.purity} Custom Color` : `${config.purity} ${config.metal}`}</p>
+                  </div>
+                  <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
+                    <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Estimated Weight</p>
+                    <p className="text-sm font-bold text-brand-text">{pricing.estimatedWeight}g</p>
+                  </div>
+                  {config.stone && config.stone !== 'None' && (
+                    <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
+                      <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Diamond/Stone Quality</p>
+                      <p className="text-sm font-bold text-brand-text">{config.stone.replace('-', ' ')}</p>
                     </div>
-                  )
-                ))}
+                  )}
+                  {/* Dynamic Specs */}
+                  {Object.entries(specs || {}).map(([key, value]) => (
+                    key !== 'price' && (
+                      <div key={key} className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
+                        <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">{key}</p>
+                        <p className="text-sm font-bold text-brand-text">{value as string}</p>
+                      </div>
+                    )
+                  ))}
+                </div>
+                <div className="pt-8">
+                  <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60 mb-2">Description</p>
+                  <p className="text-brand-text/80 text-sm leading-relaxed">{product.description}</p>
+                </div>
               </div>
-            </div>
+            )}
+
+            {activeTab === 'breakup' && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-2xl mx-auto relative z-10">
+                <div className="space-y-6">
+                  {/* Header */}
+                  <div className="grid grid-cols-2 text-[10px] font-bold uppercase tracking-widest text-brand-text/40 dark:text-brand-text/60 pb-4 border-b border-brand-text/10 dark:border-white/10">
+                    <div>Component</div>
+                    <div className="text-right">Value</div>
+                  </div>
+                  
+                  {/* Rows */}
+                  <div className="grid grid-cols-2 items-center text-sm py-2">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-6 h-6 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
+                        <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                      </div>
+                      <span className="font-bold text-brand-text">Gold Value ({config.purity})</span>
+                    </div>
+                    <span className="text-right font-medium text-brand-text">{displayPrice(pricing.metalPrice, currentCurrency, rates)}</span>
+                  </div>
+
+                  {pricing.stonePrice > 0 && (
+                    <div className="grid grid-cols-2 items-center text-sm py-2">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                          <Sparkles size={12} className="text-blue-500" />
+                        </div>
+                        <span className="font-bold text-brand-text">Diamond/Stone Value</span>
+                      </div>
+                      <span className="text-right font-medium text-brand-text">{displayPrice(pricing.stonePrice, currentCurrency, rates)}</span>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 items-center text-sm py-2">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-6 h-6 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold">
+                        <RotateCcw size={12} />
+                      </div>
+                      <span className="font-bold text-brand-text">Making Charges</span>
+                    </div>
+                    <span className="text-right font-medium text-brand-text">{displayPrice(pricing.makingCharges, currentCurrency, rates)}</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 items-center text-sm py-2">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-6 h-6 rounded-full bg-brand-text/5 dark:bg-white/5 flex items-center justify-center text-brand-text">
+                        <Scale size={12} />
+                      </div>
+                      <span className="font-bold text-brand-text">GST (3%)</span>
+                    </div>
+                    <span className="text-right font-medium text-brand-text">{displayPrice(pricing.gst, currentCurrency, rates)}</span>
+                  </div>
+
+                  {/* Total */}
+                  <div className="pt-6 mt-4 border-t-2 border-brand-text/10 dark:border-white/10">
+                    <div className="grid grid-cols-2 items-center">
+                      <span className="text-sm font-bold uppercase tracking-widest text-brand-text">Grand Total</span>
+                      <span className="text-right text-2xl font-serif font-bold text-brand-gold italic">
+                        {displayPrice(pricing.totalPrice, currentCurrency, rates)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </Section>
+
+      {/* Floating Sticky Purchase Pill */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[90%] md:w-auto max-w-lg bg-white/95 dark:bg-[#1a1614]/95 backdrop-blur-xl border border-brand-gold/20 p-2.5 rounded-[100px] shadow-[0_20px_60px_rgba(0,0,0,0.15)] flex items-center justify-between transition-all duration-500">
+        <div className="flex items-center pl-4 pr-6 space-x-6">
+          <div className="flex flex-col">
+            <span className="text-2xl font-bold font-serif text-brand-gold italic leading-none">{displayPrice(pricing.totalPrice, currentCurrency, rates)}</span>
+            <span className="text-[9px] uppercase tracking-widest text-brand-text/60 mt-1">Total Price</span>
+          </div>
+          <div className="hidden md:block w-px h-8 bg-brand-text/10 dark:bg-white/10"></div>
+          <div className="hidden md:flex flex-col">
+            <span className="text-sm font-bold text-brand-text leading-none">{pricing.estimatedWeight}g</span>
+            <span className="text-[9px] uppercase tracking-widest text-brand-text/60 mt-1">Weight</span>
+          </div>
+        </div>
+        <Button 
+          size="lg"
+          className={cn(
+            "!rounded-[100px] !py-4 px-8 shadow-premium transition-all duration-300 min-w-[140px]", 
+            isAdded ? "bg-green-600 hover:bg-green-700" : "",
+            !validation.isValid && showValidation ? "bg-brand-text/40 opacity-70" : ""
+          )} 
+          onClick={handleAddToCart}
+        >
+          {isAdded ? <><Check size={16} className="mr-2 inline" /> Added</> : 
+           (!validation.isValid && showValidation) ? 'Select Options' : 'Add to Cart'}
+        </Button>
+      </div>
     </div>
   );
 }

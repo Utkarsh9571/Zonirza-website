@@ -17,6 +17,8 @@ export interface PricingBreakdown {
   metalPrice: number;
   makingCharges: number;
   stonePrice: number;
+  subTotal: number;
+  gst: number;
   totalPrice: number;
   estimatedWeight: number;
 }
@@ -90,12 +92,16 @@ export function calculatePricing(
   const makingCharges = product.makingCharges || (metalPrice * 0.15); // Default 15% if not set
   const stonePrice = STONE_PRICES[config.stone || 'None'] || 0;
   
-  const totalPrice = metalPrice + makingCharges + stonePrice;
+  const subTotal = metalPrice + makingCharges + stonePrice;
+  const gst = subTotal * 0.03; // 3% GST standard in India
+  const totalPrice = subTotal + gst;
   
   return {
     metalPrice: Math.round(metalPrice),
     makingCharges: Math.round(makingCharges),
     stonePrice: Math.round(stonePrice),
+    subTotal: Math.round(subTotal),
+    gst: Math.round(gst),
     totalPrice: Math.round(totalPrice),
     estimatedWeight: parseFloat(estimatedWeight.toFixed(2)),
   };

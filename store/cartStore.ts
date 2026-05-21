@@ -31,6 +31,15 @@ export interface CartItem {
     stone?: string;
     customization?: string[];
   };
+  pricingBreakdown?: {
+    metalPrice: number;
+    makingCharges: number;
+    stonePrice: number;
+    subTotal: number;
+    gst: number;
+    totalPrice: number;
+    estimatedWeight: number;
+  };
 }
 
 interface CartStore {

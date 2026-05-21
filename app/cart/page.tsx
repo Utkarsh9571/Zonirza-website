@@ -45,6 +45,9 @@ export default function CartPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [pendingItem, setPendingItem] = useState<{ id: string, name: string, slug: string } | null>(null);
 
+  // Breakup State
+  const [openBreakupIds, setOpenBreakupIds] = useState<string[]>([]);
+
   // Coupon State
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
@@ -251,7 +254,42 @@ export default function CartPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between border-t border-brand-text/5 dark:border-white/5 pt-6 transition-colors">
+                    <div className="flex flex-col space-y-4 pt-4 border-t border-brand-text/5 dark:border-white/5 transition-colors">
+                      {item.pricingBreakdown && (
+                        <div>
+                          <button 
+                            onClick={() => setOpenBreakupIds(prev => prev.includes(item.cartItemId) ? prev.filter(i => i !== item.cartItemId) : [...prev, item.cartItemId])}
+                            className="text-[9px] uppercase tracking-widest text-brand-text border-b border-brand-text/20 hover:border-brand-gold hover:text-brand-gold transition-all pb-0.5 mb-2"
+                          >
+                            {openBreakupIds.includes(item.cartItemId) ? 'Hide Price Breakup' : 'View Price Breakup'}
+                          </button>
+                          
+                          {openBreakupIds.includes(item.cartItemId) && (
+                            <div className="animate-in fade-in slide-in-from-top-2 duration-300 w-full rounded-2xl bg-brand-gold/5 border border-brand-gold/10 p-4 space-y-2 mb-4">
+                              <div className="flex justify-between items-center text-[10px] uppercase tracking-widest font-bold text-brand-text/70">
+                                <span>Gold Value</span>
+                                <span>{displayPrice(item.pricingBreakdown.metalPrice, currentCurrency, rates)}</span>
+                              </div>
+                              {item.pricingBreakdown.stonePrice > 0 && (
+                                <div className="flex justify-between items-center text-[10px] uppercase tracking-widest font-bold text-brand-text/70">
+                                  <span>Diamonds/Stones</span>
+                                  <span>{displayPrice(item.pricingBreakdown.stonePrice, currentCurrency, rates)}</span>
+                                </div>
+                              )}
+                              <div className="flex justify-between items-center text-[10px] uppercase tracking-widest font-bold text-brand-text/70">
+                                <span>Making Charges</span>
+                                <span>{displayPrice(item.pricingBreakdown.makingCharges, currentCurrency, rates)}</span>
+                              </div>
+                              <div className="flex justify-between items-center text-[10px] uppercase tracking-widest font-bold text-brand-text/70">
+                                <span>GST (3%)</span>
+                                <span>{displayPrice(item.pricingBreakdown.gst, currentCurrency, rates)}</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      
+                      <div className="flex items-center justify-between">
                       <div className="flex items-center bg-brand-bg dark:bg-brand-bg/50 rounded-full border border-brand-text/5 dark:border-white/5 p-1.5 transition-colors">
                         <button 
                           onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}
@@ -272,6 +310,7 @@ export default function CartPage() {
                     </div>
                   </div>
                 </div>
+              </div>
               ))}
             </div>
 

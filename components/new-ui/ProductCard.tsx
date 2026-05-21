@@ -29,12 +29,12 @@ export const ProductCard = ({ name, price, image, slug, oldPrice, className, var
       href={`/product/${slug}`} 
       className={cn('group block w-full touch-safe-hit', className)}
     >
-      <div className="relative aspect-[4/5] w-full rounded-[40px] overflow-hidden bg-white border border-brand-gold/10 shadow-soft transition-all duration-1000 group-hover:shadow-premium lg:group-hover:-translate-y-3">
+      <div className="relative aspect-[4/5] w-full rounded-[40px] overflow-hidden bg-white border border-brand-gold shadow-soft transition-all duration-1000 group-hover:shadow-premium lg:group-hover:-translate-y-3">
         <Image
           src={imageUrl}
           alt={name}
           fill
-          className="object-cover p-10 transition-transform duration-1000 group-hover:scale-110"
+          className="object-cover transition-transform duration-1000 group-hover:scale-110"
         />
         
         {/* Interaction Overlay - Optimized for Touch */}

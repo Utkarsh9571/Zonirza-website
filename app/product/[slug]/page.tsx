@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
 import { IProduct } from '@/models/Product';
 import { ProductInteractiveUI } from '@/components/new-ui/ProductInteractiveUI';
+import { ProductReviews } from '@/components/new-ui/ProductReviews';
+import { ProductRecommendations } from '@/components/new-ui/ProductRecommendations';
 
 async function getProduct(slug: string) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products/${slug}`, {
@@ -26,6 +28,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   return (
     <>
       <ProductInteractiveUI product={product} />
+      <ProductRecommendations productSlug={product.slug} />
+      <ProductReviews productId={product._id.toString()} />
     </>
   );
 }
