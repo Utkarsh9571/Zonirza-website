@@ -222,6 +222,59 @@ export default function AdminSettingsPage() {
                 />
               </div>
             </div>
+
+            {/* Advanced Pricing Matrix */}
+            <div className="pt-8 border-t border-brand-text/5 mt-8 space-y-6">
+              <h4 className="text-[11px] font-black uppercase tracking-widest text-brand-text dark:text-white">Advanced Pricing Matrix</h4>
+              
+              <div className="space-y-4">
+                <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2">Size Weight Offset (g per size)</label>
+                <input 
+                  type="number" 
+                  step="0.01"
+                  value={settings?.pricingFactors?.sizeWeightOffset ?? 0.15}
+                  onChange={(e) => setSettings({
+                    ...settings, 
+                    pricingFactors: { ...(settings?.pricingFactors || {}), sizeWeightOffset: parseFloat(e.target.value) }
+                  })}
+                  className="w-full bg-slate-50 border border-brand-text/15 rounded-2xl py-3 px-4 text-[13px] font-bold"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2">VVS1 Diamond (₹)</label>
+                  <input 
+                    type="number" 
+                    value={settings?.pricingFactors?.stonePrices?.['VVS1'] ?? 50000}
+                    onChange={(e) => setSettings({
+                      ...settings, 
+                      pricingFactors: { 
+                        ...(settings?.pricingFactors || {}), 
+                        stonePrices: { ...(settings?.pricingFactors?.stonePrices || {}), 'VVS1': parseInt(e.target.value) }
+                      }
+                    })}
+                    className="w-full bg-slate-50 border border-brand-text/15 rounded-2xl py-3 px-4 text-[13px] font-bold"
+                  />
+                </div>
+                <div className="space-y-4">
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2">18K Purity Multiplier</label>
+                  <input 
+                    type="number" 
+                    step="0.001"
+                    value={settings?.pricingFactors?.purityMultipliers?.['18K'] ?? 0.750}
+                    onChange={(e) => setSettings({
+                      ...settings, 
+                      pricingFactors: { 
+                        ...(settings?.pricingFactors || {}), 
+                        purityMultipliers: { ...(settings?.pricingFactors?.purityMultipliers || {}), '18K': parseFloat(e.target.value) }
+                      }
+                    })}
+                    className="w-full bg-slate-50 border border-brand-text/15 rounded-2xl py-3 px-4 text-[13px] font-bold"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="bg-white dark:bg-white/10 rounded-[48px] border border-brand-text/15 dark:border-white/15 p-10 space-y-8 shadow-md">

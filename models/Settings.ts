@@ -12,6 +12,14 @@ export interface ISettings extends Document {
     gstPercentage: number;
     shippingBaseCharge: number;
     freeShippingThreshold: number;
+    metalRates?: {
+      gold24k: number;
+      silver: number;
+      platinum: number;
+    };
+    stonePrices?: Record<string, number>;
+    purityMultipliers?: Record<string, number>;
+    sizeWeightOffset?: number;
   };
   socialLinks: {
     instagram?: string;
@@ -51,7 +59,24 @@ const SettingsSchema: Schema = new Schema({
       gold24k: { type: Number, default: 6500 },
       silver: { type: Number, default: 100 },
       platinum: { type: Number, default: 4000 }
-    }
+    },
+    stonePrices: { type: Map, of: Number, default: {
+      'VVS1': 50000,
+      'VVS2': 40000,
+      'VS1': 30000,
+      'VS2': 25000,
+      'SI1': 20000,
+      'Diamond-Standard': 15000,
+      'None': 0
+    }},
+    purityMultipliers: { type: Map, of: Number, default: {
+      '24K': 1.0,
+      '22K': 0.916,
+      '18K': 0.750,
+      '14K': 0.585,
+      '9K': 0.375
+    }},
+    sizeWeightOffset: { type: Number, default: 0.15 }
   },
   socialLinks: {
     instagram: { type: String },

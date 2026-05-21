@@ -47,33 +47,35 @@ const BASE_SIZE = 7;
 /**
  * Calculate the estimated weight based on ring size and metal density
  */
-export function calculateEstimatedWeight(baseWeight: number, size: string | undefined): number {
+export function calculateEstimatedWeight(baseWeight: number, size: string | undefined, sizeWeightOffset: number = SIZE_WEIGHT_OFFSET): number {
   if (!size) return baseWeight;
   
   const sizeNum = parseFloat(size.replace(/[^\d.]/g, ''));
   if (isNaN(sizeNum)) return baseWeight;
   
   const diff = sizeNum - BASE_SIZE;
-  return Math.max(0.1, baseWeight + (diff * SIZE_WEIGHT_OFFSET));
+  return Math.max(0.1, baseWeight + (diff * sizeWeightOffset));
 }
 
 /**
  * Calculate the metal price based on weight and purity
  */
 function calculateMetalPrice(weight: number, metal: string, purity: string, rates: any): number {
-  let rate = rates.gold24k || 6500;
+  const metalRates = rates?.metalRates || rates || { gold24k: 6500, silver: 100, platinum: 4000 };
+  let rate = metalRates.gold24k || 6500;
   
   if (metal.toLowerCase().includes('platinum')) {
-    rate = rates.platinum || 4000;
+    rate = metalRates.platinum || 4000;
     return weight * rate;
   }
   
   if (metal.toLowerCase().includes('silver')) {
-    rate = rates.silver || 100;
+    rate = metalRates.silver || 100;
     return weight * rate;
   }
   
-  const multiplier = PURITY_MULTIPLIERS[purity] || PURITY_MULTIPLIERS['18K'];
+  const multipliers = rates?.purityMultipliers || PURITY_MULTIPLIERS;
+  const multiplier = multipliers[purity] || multipliers['18K'] || 0.750;
   return weight * rate * multiplier;
 }
 
@@ -85,15 +87,18 @@ export function calculatePricing(
   config: ProductConfiguration,
   providedRates?: any
 ): PricingBreakdown {
-  const rates = providedRates || { gold24k: 6500, silver: 100, platinum: 4000 };
-  const estimatedWeight = calculateEstimatedWeight(product.baseWeight, config.size);
+  const rates = providedRates || {};
+  const estimatedWeight = calculateEstimatedWeight(product.baseWeight, config.size, rates.sizeWeightOffset);
   
   const metalPrice = calculateMetalPrice(estimatedWeight, config.metal, config.purity, rates);
   const makingCharges = product.makingCharges || (metalPrice * 0.15); // Default 15% if not set
-  const stonePrice = STONE_PRICES[config.stone || 'None'] || 0;
+  
+  const stonePrices = rates.stonePrices || STONE_PRICES;
+  const stonePrice = stonePrices[config.stone || 'None'] || 0;
   
   const subTotal = metalPrice + makingCharges + stonePrice;
-  const gst = subTotal * 0.03; // 3% GST standard in India
+  const gstRate = (rates.gstPercentage || 3) / 100;
+  const gst = subTotal * gstRate;
   const totalPrice = subTotal + gst;
   
   return {

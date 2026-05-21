@@ -25,7 +25,13 @@ export async function GET(req: NextRequest) {
       seo: settings.seo,
       announcement: settings.announcement,
       pricingFactors: {
-        freeShippingThreshold: settings.pricingFactors?.freeShippingThreshold || 5000
+        freeShippingThreshold: settings.pricingFactors?.freeShippingThreshold || 5000,
+        gstPercentage: settings.pricingFactors?.gstPercentage || 3,
+        shippingBaseCharge: settings.pricingFactors?.shippingBaseCharge || 0,
+        metalRates: settings.pricingFactors?.metalRates || { gold24k: 6500, silver: 100, platinum: 4000 },
+        stonePrices: settings.pricingFactors?.stonePrices ? Object.fromEntries(settings.pricingFactors.stonePrices) : undefined,
+        purityMultipliers: settings.pricingFactors?.purityMultipliers ? Object.fromEntries(settings.pricingFactors.purityMultipliers) : undefined,
+        sizeWeightOffset: settings.pricingFactors?.sizeWeightOffset
       }
     };
 
