@@ -43,6 +43,9 @@ function AdminProductsPageContent() {
   const [showFilters, setShowFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
   const limit = 10;
+  
+  const currentQueryString = searchParams.toString();
+  const createProductHref = currentQueryString ? `/admin/products/new?returnTo=${encodeURIComponent(currentQueryString)}` : '/admin/products/new';
 
   // Helper to update URL params
   const updateQueryParams = useCallback((updates: Record<string, string | null>) => {
@@ -154,7 +157,7 @@ function AdminProductsPageContent() {
           </h1>
         </div>
         <Link 
-          href="/admin/products/new"
+          href={createProductHref}
           className="flex items-center space-x-3 px-8 py-4 bg-brand-gold hover:bg-[#B4925A] text-[#12100e] rounded-2xl font-bold text-[12px] uppercase tracking-[0.3em] transition-all duration-500 shadow-premium active:scale-95"
         >
           <Plus size={18} />
@@ -475,7 +478,7 @@ function AdminProductsPageContent() {
                           <ExternalLink size={16} />
                         </Link>
                         <Link 
-                          href={`/admin/products/${product._id}`}
+                          href={currentQueryString ? `/admin/products/${product._id}?returnTo=${encodeURIComponent(currentQueryString)}` : `/admin/products/${product._id}`}
                           className="p-2 text-brand-text/30 hover:text-brand-gold transition-colors"
                           title="Edit Product"
                         >

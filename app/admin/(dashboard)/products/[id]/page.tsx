@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, use, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { 
   Save, 
@@ -30,8 +30,12 @@ interface ProductEditorProps {
   params: Promise<{ id: string }>;
 }
 
-export default function ProductEditor({ params }: ProductEditorProps) {
+function ProductEditorContent({ params }: ProductEditorProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get('returnTo');
+  const returnUrl = returnTo ? `/admin/products?${returnTo}` : '/admin/products';
+
   const { id } = use(params);
   const isNew = id === 'new';
 
@@ -163,7 +167,7 @@ export default function ProductEditor({ params }: ProductEditorProps) {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
           <Link 
-            href="/admin/products"
+            href={returnUrl}
             className="flex items-center space-x-2 text-[10px] uppercase tracking-widest text-brand-text/70 hover:text-brand-gold transition-colors font-bold mb-4"
           >
             <ArrowLeft size={14} />
@@ -527,5 +531,18 @@ export default function ProductEditor({ params }: ProductEditorProps) {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ProductEditor({ params }: ProductEditorProps) {
+  return (
+    <Suspense fallback={
+      <div className="py-40 flex flex-col items-center justify-center space-y-4">
+        <Loader2 className="text-brand-gold animate-spin" size={40} />
+        <p className="text-[11px] uppercase tracking-[0.4em] font-bold text-brand-text/40">Loading Editor...</p>
+      </div>
+    }>
+      <ProductEditorContent params={params} />
+    </Suspense>
   );
 }

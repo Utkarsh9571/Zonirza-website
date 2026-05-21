@@ -1,0 +1,15 @@
+{
+  "total": 1335,
+  "updated": 125,
+  "metalCounts": {
+    "silver": 125,
+    "yellow-gold": 630,
+    "rose-gold": 580,
+    "white-gold": 0,
+    "platinum": 0,
+    "unknown": 0
+  },
+  "missingSilverTagsAdded": 125,
+  "namesEnhanced": 125,
+  "errors": []
+}

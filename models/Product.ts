@@ -14,6 +14,7 @@ export interface IProduct extends Document {
   baseWeight: number;
   tags: string[];
   specs: Record<string, string>;
+  primaryMetal?: string;
   variantImages?: Record<string, string>;
   configurableOptions?: {
     metals?: string[];
@@ -39,6 +40,7 @@ const ProductSchema: Schema = new Schema({
   isActive: { type: Boolean, default: true },
   tags: { type: [String], default: [] },
   specs: { type: Map, of: String, default: {} },
+  primaryMetal: { type: String },
   configurableOptions: {
     metals: [String],
     purities: [String],

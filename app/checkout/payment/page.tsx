@@ -64,7 +64,7 @@ export default function PaymentPage() {
           shippingAddress: {
             fullName: selectedAddress?.fullName,
             phone: selectedAddress?.phone,
-            addressLine: `${selectedAddress?.addressLine1} ${selectedAddress?.addressLine2 || ''}`.trim(),
+            addressLine: selectedAddress?.addressLine || '',
             city: selectedAddress?.city,
             state: selectedAddress?.state,
             pincode: selectedAddress?.pincode,
