@@ -84,8 +84,6 @@ export async function GET(request: NextRequest) {
             { [`specs.${key}`]: { $in: values.map(v => new RegExp(`.*${v}.*`, 'i')) } },
             // Search in name as fallback for categories like "rings"
             { name: { $in: values.map(v => new RegExp(`.*${v}.*`, 'i')) } },
-            // Check primaryMetal generally
-            { primaryMetal: { $in: values.map(v => new RegExp(`.*${v}.*`, 'i')) } },
             // Check specs generally if key is metal/stone
             { "specs.metal": { $in: values.map(v => new RegExp(`.*${v}.*`, 'i')) } },
             { "specs.stone": { $in: values.map(v => new RegExp(`.*${v}.*`, 'i')) } }

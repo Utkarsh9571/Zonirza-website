@@ -55,9 +55,9 @@ export async function GET(req: NextRequest) {
       
       // Broaden "gold" to include "yellow-gold" if specifically requested or if it's the common term
       if (metalSlug === 'gold') {
-        filter.primaryMetal = { $in: ['gold', 'yellow-gold'] };
+        filter["specs.metal"] = { $regex: new RegExp('gold', 'i') };
       } else {
-        filter.primaryMetal = metalSlug;
+        filter["specs.metal"] = { $regex: new RegExp(metalSlug, 'i') };
       }
     }
 

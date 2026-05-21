@@ -28,7 +28,6 @@ export async function GET(request: NextRequest) {
         { name: { $regex: searchRegex } },
         { category: { $regex: searchRegex } },
         { tags: { $in: [searchRegex] } },
-        { primaryMetal: { $regex: searchRegex } },
         { "specs.metal": { $regex: searchRegex } },
         { "specs.stone": { $regex: searchRegex } }
       ]
