@@ -30,7 +30,18 @@ export interface IOrder extends Document {
     country: string;
   };
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
-  orderStatus: 'placed' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  orderStatus: 'placed' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'Order Placed' | 'Payment Confirmed' | 'In Production' | 'Stone Setting' | 'Quality Check' | 'Packed' | 'Out For Delivery' | 'Delivered' | 'Cancelled';
+  timeline: {
+    status: string;
+    date: Date;
+    notes?: string;
+  }[];
+  trackingDetails?: {
+    courierPartner?: string;
+    trackingId?: string;
+    trackingUrl?: string;
+    estimatedDeliveryDate?: Date;
+  };
   currency: string;
   exchangeRate: number;
   discountAmount: number;
@@ -77,8 +88,21 @@ const OrderSchema: Schema = new Schema(
     },
     orderStatus: {
       type: String,
-      enum: ['placed', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'],
-      default: 'placed',
+      enum: ['placed', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'Order Placed', 'Payment Confirmed', 'In Production', 'Stone Setting', 'Quality Check', 'Packed', 'Out For Delivery', 'Delivered', 'Cancelled'],
+      default: 'Order Placed',
+    },
+    timeline: [
+      {
+        status: { type: String, required: true },
+        date: { type: Date, required: true, default: Date.now },
+        notes: { type: String }
+      }
+    ],
+    trackingDetails: {
+      courierPartner: { type: String },
+      trackingId: { type: String },
+      trackingUrl: { type: String },
+      estimatedDeliveryDate: { type: Date }
     },
     currency: { type: String, required: true, default: 'INR' },
     exchangeRate: { type: Number, required: true, default: 1 },

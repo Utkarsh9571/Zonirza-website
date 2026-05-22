@@ -22,6 +22,7 @@ import { cn } from '@/lib/utils';
 
 export default function AdminMerchandisingPage() {
   const [content, setContent] = useState<any>(null);
+  const [searchAnalytics, setSearchAnalytics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -29,6 +30,7 @@ export default function AdminMerchandisingPage() {
 
   useEffect(() => {
     fetchContent();
+    fetchSearchAnalytics();
   }, []);
 
   const fetchContent = async () => {
@@ -40,6 +42,21 @@ export default function AdminMerchandisingPage() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSearchAnalytics = async () => {
+    try {
+      const res = await fetch('/api/admin/search-analytics');
+      const data = await res.json();
+      if (data.success) {
+        setSearchAnalytics({
+          popular: data.popularSearches,
+          zero: data.zeroResultSearches
+        });
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -96,7 +113,8 @@ export default function AdminMerchandisingPage() {
         {[
           { id: 'hero', icon: Sparkles, label: 'Hero Section' },
           { id: 'trending', icon: TrendingUp, label: 'Trending' },
-          { id: 'banners', icon: ImageIcon, label: 'Banners' }
+          { id: 'banners', icon: ImageIcon, label: 'Banners' },
+          { id: 'search', icon: Search, label: 'Search Insights' }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -361,6 +379,46 @@ export default function AdminMerchandisingPage() {
               <Plus size={32} />
               <span className="text-[10px] uppercase tracking-widest font-black">Add Promotional Banner</span>
             </button>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'search' && searchAnalytics && (
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white dark:bg-white/10 rounded-[48px] border border-brand-text/15 p-10 shadow-md">
+              <h3 className="text-[14px] font-black uppercase tracking-widest text-brand-text dark:text-white mb-6 flex items-center">
+                <TrendingUp size={18} className="mr-3 text-brand-gold" /> Popular Searches
+              </h3>
+              <div className="space-y-4">
+                {searchAnalytics.popular?.map((item: any, idx: number) => (
+                  <div key={idx} className="flex justify-between items-center p-4 bg-slate-50 dark:bg-black/20 rounded-2xl">
+                    <span className="text-[12px] font-bold capitalize text-brand-text dark:text-white">{item.query}</span>
+                    <span className="text-[10px] uppercase tracking-widest text-brand-text/40">{item.count} searches</span>
+                  </div>
+                ))}
+                {(!searchAnalytics.popular || searchAnalytics.popular.length === 0) && (
+                  <p className="text-center text-[10px] uppercase tracking-widest text-brand-text/40 py-8">No search data yet.</p>
+                )}
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-white/10 rounded-[48px] border border-brand-text/15 p-10 shadow-md">
+              <h3 className="text-[14px] font-black uppercase tracking-widest text-brand-text dark:text-white mb-6 flex items-center">
+                <AlertCircle size={18} className="mr-3 text-red-500" /> Zero-Result Searches
+              </h3>
+              <div className="space-y-4">
+                {searchAnalytics.zero?.map((item: any, idx: number) => (
+                  <div key={idx} className="flex justify-between items-center p-4 bg-red-50/50 dark:bg-red-500/10 rounded-2xl border border-red-100 dark:border-red-500/20">
+                    <span className="text-[12px] font-bold capitalize text-red-600 dark:text-red-400">{item.query}</span>
+                    <span className="text-[10px] uppercase tracking-widest text-red-500/60">{item.count} misses</span>
+                  </div>
+                ))}
+                {(!searchAnalytics.zero || searchAnalytics.zero.length === 0) && (
+                  <p className="text-center text-[10px] uppercase tracking-widest text-brand-text/40 py-8">No zero-result searches found.</p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -22,6 +22,11 @@ export interface IProduct extends Document {
     stones?: string[];
     customizations?: string[];
   };
+  pricingOverrides?: {
+    stonePrices?: Record<string, number>;
+    makingCharges?: number;
+    sizeWeightOffset?: number;
+  };
 }
 
 const ProductSchema: Schema = new Schema({
@@ -45,7 +50,19 @@ const ProductSchema: Schema = new Schema({
     sizes: [String],
     stones: [String],
     customizations: [String]
+  },
+  pricingOverrides: {
+    stonePrices: { type: Map, of: Number },
+    makingCharges: { type: Number },
+    sizeWeightOffset: { type: Number }
   }
 }, { timestamps: true });
+
+// Explicit Indexes for Performance
+ProductSchema.index({ category: 1, isActive: 1 });
+ProductSchema.index({ tags: 1 });
+ProductSchema.index({ 'specs.metal': 1 });
+ProductSchema.index({ 'specs.stone': 1 });
+ProductSchema.index({ name: 'text', description: 'text' }); // Allow robust text search fallback
 
 export default mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema);

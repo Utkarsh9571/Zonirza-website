@@ -1,7 +1,9 @@
 import { NextResponse, NextRequest } from 'next/server';
 import dbConnect from '@/lib/db';
 import Product from '@/models/Product';
+import SearchAnalytics from '@/models/SearchAnalytics';
 import { resolveCollectionMapping } from '@/lib/collectionMapper';
+import { parseSearchIntent, buildMongoQuery } from '@/lib/searchEngine';
 
 /**
  * Production-grade Search API
@@ -21,22 +23,30 @@ export async function GET(request: NextRequest) {
 
     const searchRegex = new RegExp(query, 'i');
 
-    // 1. Search Products with weighting (Name > Category > Tags)
-    // We use $or for broad matching
-    const products = await Product.find({
-      $or: [
-        { name: { $regex: searchRegex } },
-        { category: { $regex: searchRegex } },
-        { tags: { $in: [searchRegex] } },
-        { "specs.metal": { $regex: searchRegex } },
-        { "specs.stone": { $regex: searchRegex } }
-      ]
-    })
-    .limit(limit)
-    .select('name slug images variantImages basePrice category tags');
+    // Parse Intent and Build Query
+    const intent = parseSearchIntent(query);
+    const mongoQuery = buildMongoQuery(intent);
+
+    const products = await Product.find(mongoQuery)
+      .limit(limit)
+      .select('name slug images variantImages basePrice category tags')
+      .lean();
+
+    // Track Analytics
+    await SearchAnalytics.findOneAndUpdate(
+      { query: intent.rawQuery },
+      { 
+        $inc: { count: 1 }, 
+        $set: { 
+          lastSearchedAt: new Date(),
+          resultsFound: products.length,
+          isZeroResult: products.length === 0
+        } 
+      },
+      { upsert: true }
+    );
 
     // 2. Discover relevant Collections/Categories from our Mapping Layer
-    // Check if the query matches any of our curated collection names
     const collections = await resolveCollectionsFromQuery(query);
 
     return NextResponse.json({

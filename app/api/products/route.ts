@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const slugs = searchParams.get('slugs');
     if (slugs) {
       const slugList = slugs.split(',');
-      const products = await Product.find({ slug: { $in: slugList }, isActive: { $ne: false } });
+      const products = await Product.find({ slug: { $in: slugList }, isActive: { $ne: false } }).lean();
       return NextResponse.json({ success: true, data: products, total: products.length });
     }
 
@@ -123,7 +123,7 @@ export async function GET(request: NextRequest) {
     if (sortParam === 'price-high') sortOptions = { basePrice: -1 };
     if (sortParam === 'oldest') sortOptions = { createdAt: 1 };
 
-    let finalQuery = Product.find(mongoQuery).sort(sortOptions);
+    let finalQuery = Product.find(mongoQuery).sort(sortOptions).lean();
     if (limit > 0) {
       finalQuery = finalQuery.limit(limit);
     }

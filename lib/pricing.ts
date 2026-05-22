@@ -11,6 +11,7 @@ export interface ProductConfiguration {
   customization?: string[];
   isCustomColor?: boolean;
   customColorNotes?: string;
+  inspirationImages?: string[];
 }
 
 export interface PricingBreakdown {
@@ -21,6 +22,8 @@ export interface PricingBreakdown {
   gst: number;
   totalPrice: number;
   estimatedWeight: number;
+  estimatedGoldWeight?: number;
+  estimatedStoneWeight?: number;
 }
 
 const PURITY_MULTIPLIERS: Record<string, number> = {
@@ -83,17 +86,34 @@ function calculateMetalPrice(weight: number, metal: string, purity: string, rate
  * Main Pricing Engine Function - Client Side Friendly (Uses defaults or provided rates)
  */
 export function calculatePricing(
-  product: { basePrice: number; baseWeight: number; makingCharges: number },
+  product: { basePrice: number; baseWeight: number; makingCharges: number; pricingOverrides?: any },
   config: ProductConfiguration,
   providedRates?: any
 ): PricingBreakdown {
+  const overrides = product.pricingOverrides || {};
   const rates = providedRates || {};
-  const estimatedWeight = calculateEstimatedWeight(product.baseWeight, config.size, rates.sizeWeightOffset);
   
-  const metalPrice = calculateMetalPrice(estimatedWeight, config.metal, config.purity, rates);
-  const makingCharges = product.makingCharges || (metalPrice * 0.15); // Default 15% if not set
+  const sizeWeightOffset = overrides.sizeWeightOffset !== undefined ? overrides.sizeWeightOffset : rates.sizeWeightOffset;
+  const estimatedGoldWeight = calculateEstimatedWeight(product.baseWeight, config.size, sizeWeightOffset);
   
-  const stonePrices = rates.stonePrices || STONE_PRICES;
+  // Stone weights estimation (approximate calculation for display)
+  let estimatedStoneWeight = 0;
+  if (config.stone && config.stone !== 'None') {
+     // Placeholder estimation: VVS1/VS1 are assumed as standard carats that convert to grams (1 ct = 0.2g)
+     // A more robust system would map actual stone types to their carats.
+     estimatedStoneWeight = 0.2; // 1 carat default
+  }
+  
+  const estimatedTotalWeight = estimatedGoldWeight + estimatedStoneWeight;
+  
+  const metalPrice = calculateMetalPrice(estimatedGoldWeight, config.metal, config.purity, rates);
+  
+  // Making charges: Use product override, then product default, then fallback to 15%
+  const makingCharges = overrides.makingCharges !== undefined 
+    ? overrides.makingCharges 
+    : (product.makingCharges || (metalPrice * 0.15));
+  
+  const stonePrices = overrides.stonePrices || rates.stonePrices || STONE_PRICES;
   const stonePrice = stonePrices[config.stone || 'None'] || 0;
   
   const subTotal = metalPrice + makingCharges + stonePrice;
@@ -108,7 +128,9 @@ export function calculatePricing(
     subTotal: Math.round(subTotal),
     gst: Math.round(gst),
     totalPrice: Math.round(totalPrice),
-    estimatedWeight: parseFloat(estimatedWeight.toFixed(2)),
+    estimatedWeight: parseFloat(estimatedTotalWeight.toFixed(2)),
+    estimatedGoldWeight: parseFloat(estimatedGoldWeight.toFixed(2)),
+    estimatedStoneWeight: parseFloat(estimatedStoneWeight.toFixed(2)),
   };
 }
 

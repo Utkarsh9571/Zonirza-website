@@ -18,6 +18,7 @@ import { validateProductConfiguration, isFieldMissing } from '@/lib/ecommerce';
 import { RingSizeGuide } from '../product/guides/RingSizeGuide';
 import { DiamondGuide } from '../product/guides/DiamondGuide';
 import { GoldPurityGuide } from '../product/guides/GoldPurityGuide';
+import { useRulesEngine } from '@/hooks/useRulesEngine';
 
 // --- PREMIUM ZOOM COMPONENT ---
 function ProductImageZoom({ image, name }: { image: string, name: string }) {
@@ -94,27 +95,30 @@ function ProductImageZoom({ image, name }: { image: string, name: string }) {
 export function ProductInteractiveUI({ product }: { product: any }) {
   // 1. Initial State Calculation Logic
   const configOptions = product.configurableOptions || {};
+  
+  // Safe fallback arrays mapped dynamically
+  const metals = configOptions.metals?.length ? configOptions.metals : ['White Gold', 'Rose Gold', 'Yellow Gold'];
+  const purities = configOptions.purities?.length ? configOptions.purities : ['22K', '18K', '14K', '9K'];
+  const sizes = configOptions.sizes?.length ? configOptions.sizes : ['7', '8', '9', '10', '11'];
+  const stones = configOptions.stones?.length ? configOptions.stones : ['VVS1', 'VS1', 'SI1', 'Diamond-Standard'];
 
   // HELPER: Generate sensible defaults for every required option group
   const getInitialConfiguration = () => {
     const initialConfig: ProductConfiguration = {
-      metal: 'Yellow Gold', // Standard default
-      purity: '18K',        // Most popular choice
+      metal: metals[0] || 'Yellow Gold', 
+      purity: purities.includes('18K') ? '18K' : (purities[0] || '18K'),
       size: '',
-      stone: configOptions.stones?.length > 0 ? 'VS1' : 'None',
+      stone: stones.length > 0 ? stones[0] : 'None',
     };
 
     // Default Size for Rings/Bangles
     const category = product.category?.toLowerCase() || '';
     if (category.includes('ring')) {
-      initialConfig.size = '7'; // Standard base size
+      initialConfig.size = sizes.includes('7') ? '7' : sizes[0]; 
     } else if (category.includes('bangle') || category.includes('bracelet')) {
-      initialConfig.size = '2.4'; // Standard bangle size
+      initialConfig.size = sizes.includes('2.4') ? '2.4' : sizes[0]; 
     }
 
-    // Override with available options if defaults are not in list
-    // (In a real app, we'd check against actual product.configurableOptions if they existed)
-    
     return initialConfig;
   };
   
@@ -139,21 +143,30 @@ export function ProductInteractiveUI({ product }: { product: any }) {
     setSelectedImage(0);
   }, [config.metal]);
 
+  const { currentCurrency, rates } = useCurrencyStore();
+
+  const rulesEvaluation = useRulesEngine(product, config);
+
   // 2. Dynamic Pricing Calculation
   const pricing = useMemo(() => {
-    return calculatePricing({
+    const basePricing = calculatePricing({
       basePrice: product.basePrice || product.price || 0,
       baseWeight: product.baseWeight || 5.0,
-      makingCharges: product.makingCharges || 0
-    }, config);
-  }, [product.basePrice, product.price, product.baseWeight, product.makingCharges, config]);
+      makingCharges: product.makingCharges || 0,
+      pricingOverrides: product.pricingOverrides || {}
+    }, config, rates);
+    
+    // Inject rule-based surcharges
+    basePricing.totalPrice += (rulesEvaluation?.surcharges || 0) * (rates[currentCurrency] || 1);
+    
+    return basePricing;
+  }, [product.basePrice, product.price, product.baseWeight, product.makingCharges, product.pricingOverrides, config, rates, rulesEvaluation?.surcharges, currentCurrency]);
 
   const validation = useMemo(() => {
     return validateProductConfiguration(product, config as any);
   }, [product, config]);
 
   const cartAddItem = useCartStore((state) => state.addItem);
-  const { currentCurrency, rates } = useCurrencyStore();
   const specs = product.specs instanceof Map ? Object.fromEntries(product.specs) : product.specs;
   
   const { status } = useSession();
@@ -169,9 +182,51 @@ export function ProductInteractiveUI({ product }: { product: any }) {
     toggleItem(product.slug);
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
+    if (rulesEvaluation.isRestricted) {
+      alert(rulesEvaluation.restrictionMessage);
+      return;
+    }
+
     if (!validation.isValid) {
       setShowValidation(true);
+      return;
+    }
+
+    const requiresQuote = config.isCustomColor || rulesEvaluation.requiresConsultation;
+
+    if (requiresQuote) {
+      try {
+        const res = await fetch('/api/quotes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            product: product._id,
+            customerInfo: {
+              name: status === 'authenticated' ? 'Authenticated User' : 'Guest Customer',
+              email: 'guest@example.com', // In a real app, collect this via a modal if guest
+              phone: 'Not provided'
+            },
+            configuration: {
+              metal: config.metal,
+              purity: config.purity,
+              size: config.size,
+              stone: config.stone
+            },
+            customizationNotes: config.customColorNotes || 'No notes provided',
+            inspirationImages: config.inspirationImages || []
+          })
+        });
+
+        if (res.ok) {
+          setIsAdded(true);
+          setTimeout(() => setIsAdded(false), 2000);
+        } else {
+          alert('Failed to submit quote request. Please try again or sign in.');
+        }
+      } catch (err) {
+        console.error('Quote submission error:', err);
+      }
       return;
     }
 
@@ -327,7 +382,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                   )}
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  {['White Gold', 'Rose Gold', 'Yellow Gold'].map((metalOption) => {
+                  {metals.map((metalOption: string) => {
                      return (
                       <button
                         key={metalOption}
@@ -372,16 +427,17 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                 {/* Custom Request Expandable Section */}
                 {config.isCustomColor && (
                   <div className="mt-4 p-4 bg-brand-gold/5 border border-brand-gold/20 rounded-2xl animate-in fade-in slide-in-from-top-2 duration-300">
-                    <label className="block text-[11px] font-bold uppercase tracking-widest text-brand-text mb-2">
-                      Describe your preferred color/finish:
+                    <label className="block text-[11px] font-bold uppercase tracking-widest text-brand-text mb-2 flex items-center justify-between">
+                      <span>Describe your Customization:</span>
+                      <span className="text-[9px] text-brand-gold font-normal normal-case tracking-normal border border-brand-gold/30 px-2 py-0.5 rounded-full">Consultation</span>
                     </label>
                     <textarea 
                       className={cn(
                         "w-full bg-white dark:bg-[#1a1614] border border-brand-border dark:border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-brand-gold transition-colors",
                         showValidation && isFieldMissing('customColorNotes', validation.missingFields) && "border-red-500 bg-red-50/30"
                       )}
-                      rows={2}
-                      placeholder="Examples: Champagne Gold, Matte Black, Dual Tone, Antique Finish..."
+                      rows={3}
+                      placeholder="Examples: I want this in 18K Rose Gold, with a 2-carat center stone. Can you make the band slightly thicker? I have attached an inspiration image..."
                       value={config.customColorNotes || ''}
                       onChange={(e) => {
                         setConfig({ ...config, customColorNotes: e.target.value });
@@ -393,6 +449,51 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                         <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2" /> Please provide your custom request details
                       </p>
                     )}
+
+                    
+                    <div className="mt-4">
+                      <label className="block text-[10px] font-bold uppercase tracking-widest text-brand-text mb-2">
+                        Upload Inspiration Images
+                      </label>
+                      <div className="flex flex-wrap gap-3">
+                        {config.inspirationImages?.map((img, idx) => (
+                          <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-brand-gold/20">
+                            <img src={img} className="w-full h-full object-cover" />
+                            <button 
+                              onClick={() => {
+                                const newImages = [...(config.inspirationImages || [])];
+                                newImages.splice(idx, 1);
+                                setConfig({ ...config, inspirationImages: newImages });
+                              }}
+                              className="absolute top-1 right-1 bg-black/50 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px]"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                        <label className="w-16 h-16 border-2 border-dashed border-brand-text/20 dark:border-white/20 rounded-xl flex items-center justify-center cursor-pointer hover:border-brand-gold transition-colors">
+                          <input 
+                            type="file" 
+                            className="hidden" 
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onloadend = () => {
+                                  setConfig({ 
+                                    ...config, 
+                                    inspirationImages: [...(config.inspirationImages || []), reader.result as string] 
+                                  });
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                          <span className="text-[20px] text-brand-text/40">+</span>
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -408,14 +509,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                   )}
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  {['22K', '18K', '14K', '9K'].map((purityOption) => {
-                     const isDiamondProduct = product.tags?.some((t: string) => t.toLowerCase().includes('diamond')) || 
-                                              product.category?.toLowerCase().includes('diamond') || 
-                                              (configOptions.stones && configOptions.stones.length > 0 && configOptions.stones[0] !== 'None') ||
-                                              product.specs?.stone;
-                     
-                     if (isDiamondProduct && purityOption === '22K') return null;
-
+                  {purities.map((purityOption: string) => {
                      return (
                       <button
                         key={purityOption}
@@ -460,7 +554,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                    </button>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  {['7', '8', '9', '10', '11'].map((size) => (
+                  {sizes.map((size: string) => (
                     <button
                       key={size}
                       onClick={() => {
@@ -492,7 +586,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {['VVS1', 'VS1', 'SI1', 'Diamond-Standard'].map((q) => (
+                  {stones.map((q: string) => (
                     <button
                       key={q}
                       onClick={() => {
@@ -530,31 +624,51 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                  </div>
                  <div className="space-y-1">
                    <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Estimated Weight</p>
-                   <p className="text-[11px] font-bold text-brand-text">{pricing.estimatedWeight}g</p>
+                   <p className="text-[11px] font-bold text-brand-text">{pricing.estimatedGoldWeight}g Metal {pricing.estimatedStoneWeight ? ` + ${pricing.estimatedStoneWeight}g Stone` : ''}</p>
                  </div>
                  <div className="space-y-1">
                    <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Selected Size</p>
-                   <p className="text-[11px] font-bold text-brand-text">{config.size}</p>
+                   <p className="text-[11px] font-bold text-brand-text">{config.size || 'Base'}</p>
+                 </div>
+                 <div className="space-y-1 col-span-2 pt-2 border-t border-brand-gold/10">
+                   <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Estimated Total Weight</p>
+                   <p className="text-[13px] font-bold text-brand-gold">{pricing.estimatedWeight}g</p>
                  </div>
               </div>
             </div>
 
             <div className="flex flex-col space-y-4 pt-4">
+              {rulesEvaluation.isRestricted && (
+                <div className="p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl">
+                  <p className="text-xs text-red-600 dark:text-red-400 font-bold">{rulesEvaluation.restrictionMessage}</p>
+                </div>
+              )}
+              {rulesEvaluation.requiresConsultation && !rulesEvaluation.isRestricted && !config.isCustomColor && (
+                <div className="p-4 bg-brand-gold/10 border border-brand-gold/20 rounded-xl">
+                  <p className="text-xs text-brand-gold font-bold">{rulesEvaluation.consultationMessage}</p>
+                </div>
+              )}
               <Button 
                 size="lg" 
                 className={cn(
                   "w-full !py-5 shadow-premium transition-all duration-300", 
                   isAdded ? "bg-green-600 hover:bg-green-700" : "",
-                  !validation.isValid && showValidation ? "bg-brand-text/40 opacity-70" : ""
+                  (!validation.isValid && showValidation) || rulesEvaluation.isRestricted ? "bg-brand-text/40 opacity-70 cursor-not-allowed" : "",
+                  (config.isCustomColor || rulesEvaluation.requiresConsultation) ? "bg-[#12100e] dark:bg-white text-white dark:text-[#12100e] hover:opacity-90" : ""
                 )} 
                 onClick={handleAddToCart}
+                disabled={rulesEvaluation.isRestricted}
               >
-                {isAdded ? <><Check size={18} className="mr-2 inline" /> Added to Cart</> : 
-                 (!validation.isValid && showValidation) ? 'Complete Selection' : 'Add to Cart'}
+                {isAdded ? <><Check size={18} className="mr-2 inline" /> {(config.isCustomColor || rulesEvaluation.requiresConsultation) ? 'Request Added' : 'Added to Cart'}</> : 
+                 rulesEvaluation.isRestricted ? 'Selection Unavailable' :
+                 (!validation.isValid && showValidation) ? 'Complete Selection' : 
+                 (config.isCustomColor || rulesEvaluation.requiresConsultation) ? 'Request Consultation' : 'Add to Cart'}
               </Button>
-              <Button size="lg" variant="outline" className="w-full !py-5 shadow-soft border-brand-text dark:border-brand-gold text-brand-text dark:text-brand-gold hover:bg-brand-text dark:hover:bg-brand-gold hover:text-white" onClick={() => window.location.href = '/cart'}>
-                Buy It Now
-              </Button>
+              {!(config.isCustomColor || rulesEvaluation.requiresConsultation) && !rulesEvaluation.isRestricted && (
+                <Button size="lg" variant="outline" className="w-full !py-5 shadow-soft border-brand-text dark:border-brand-gold text-brand-text dark:text-brand-gold hover:bg-brand-text dark:hover:bg-brand-gold hover:text-white" onClick={() => window.location.href = '/cart'}>
+                  Buy It Now
+                </Button>
+              )}
             </div>
 
             {/* Educational Guides */}

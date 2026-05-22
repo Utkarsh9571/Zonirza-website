@@ -24,7 +24,8 @@ import {
   Trash2,
   Loader2,
   Heart,
-  X
+  X,
+  MessageSquare
 } from 'lucide-react';
 import { Section } from '@/components/new-ui/Section';
 import { Button } from '@/components/new-ui/Button';
@@ -71,6 +72,7 @@ function AccountContent() {
     addresses: [] as Address[],
     wishlist: [] as string[],
     orderHistory: [] as any[],
+    quotes: [] as any[],
     recentlyViewed: [] as string[],
     preferences: {
       preferredMetal: '',
@@ -116,6 +118,7 @@ function AccountContent() {
           addresses: data.user.addresses || [],
           wishlist: data.user.wishlist || [],
           orderHistory: [], // Will be populated by next fetch
+          quotes: [], // Will be populated by next fetch
           recentlyViewed: data.user.recentlyViewed || [],
           preferences: data.user.preferences || {
             preferredMetal: '',
@@ -132,6 +135,15 @@ function AccountContent() {
           setUserData(prev => ({
             ...prev,
             orderHistory: ordersData.orders
+          }));
+        }
+
+        const quotesRes = await fetch('/api/quotes');
+        const quotesData = await quotesRes.json();
+        if (quotesData.success) {
+          setUserData(prev => ({
+            ...prev,
+            quotes: quotesData.quotes
           }));
         }
       }
@@ -248,6 +260,7 @@ function AccountContent() {
   const tabs = [
     { id: 'profile', label: 'Personal Details', icon: <UserCircle size={18} /> },
     { id: 'orders', label: 'My Orders', icon: <Package size={18} /> },
+    { id: 'quotes', label: 'My Consultations', icon: <MessageSquare size={18} /> },
     { id: 'wishlist', label: 'My Wishlist', icon: <Heart size={18} /> },
     { id: 'addresses', label: 'Saved Addresses', icon: <MapPin size={18} /> },
   ];
@@ -619,6 +632,95 @@ function AccountContent() {
                       </div>
                       <Link href="/products" className="pt-4">
                         <Button variant="primary" className="shadow-premium px-10">Explore Masterpieces</Button>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Tab: Quotes */}
+            {activeTab === 'quotes' && (
+              <div className="space-y-8">
+                <h2 className="text-2xl md:text-3xl font-serif text-brand-text">My Consultations</h2>
+                
+                <div className="space-y-6">
+                  {userData.quotes?.map((quote: any) => (
+                    <div 
+                      key={quote._id}
+                      className="bg-white dark:bg-brand-white rounded-[40px] p-8 border border-brand-text/5 shadow-soft hover:shadow-premium transition-all group"
+                    >
+                      <div className="flex flex-col md:flex-row justify-between gap-6 mb-8 border-b border-brand-text/5 pb-8">
+                        <div className="space-y-2">
+                          <p className="text-[9px] uppercase tracking-widest text-brand-text/30 font-bold">Request Reference</p>
+                          <p className="text-sm font-bold text-brand-text tracking-widest"># {quote._id.slice(-8).toUpperCase()}</p>
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-[9px] uppercase tracking-widest text-brand-text/30 font-bold">Requested On</p>
+                          <p className="text-sm font-bold text-brand-text">{new Date(quote.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-[9px] uppercase tracking-widest text-brand-text/30 font-bold">Status</p>
+                          <span className={cn(
+                            "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest",
+                            quote.status === 'Converted To Order' ? "bg-green-50 dark:bg-green-500/10 text-green-600" : 
+                            quote.status === 'Rejected' ? "bg-red-50 dark:bg-red-500/10 text-red-600" :
+                            "bg-brand-gold/10 text-brand-gold"
+                          )}>
+                            {quote.status}
+                          </span>
+                        </div>
+                        <div className="space-y-2 md:text-right">
+                          <p className="text-[9px] uppercase tracking-widest text-brand-text/30 font-bold">Estimated Quote</p>
+                          <p className="text-sm font-bold text-brand-text tracking-widest">
+                            {quote.quotedPrice ? `₹ ${quote.quotedPrice.toLocaleString()}` : 
+                             quote.estimation ? `₹ ${quote.estimation.estimatedPriceMin.toLocaleString()} - ₹ ${quote.estimation.estimatedPriceMax.toLocaleString()}` : 'Pending'}
+                          </p>
+                          {quote.complexity && !quote.quotedPrice && (
+                            <p className="text-[8px] text-brand-gold uppercase tracking-widest font-bold mt-1">
+                              {quote.complexity}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-6">
+                        <div className="w-16 h-16 rounded-2xl bg-brand-bg flex items-center justify-center overflow-hidden border border-brand-text/5 shrink-0">
+                          <Image 
+                            src={resolveProductImage(quote.product?.images?.[0] || '')} 
+                            alt={quote.product?.name || 'Product'} 
+                            width={64} 
+                            height={64} 
+                            className="object-cover group-hover:scale-110 transition-transform duration-700" 
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0 space-y-4">
+                          <div>
+                            <p className="text-[13px] font-bold text-brand-text truncate">{quote.product?.name}</p>
+                            <p className="text-[10px] text-brand-text/40 uppercase tracking-widest font-bold mt-1">
+                              {quote.configuration.metal} • {quote.configuration.purity}
+                            </p>
+                          </div>
+                          
+                          <div className="bg-brand-bg/50 dark:bg-black/10 rounded-xl p-4 border border-brand-text/5 text-xs text-brand-text/80 italic line-clamp-2">
+                            "{quote.customizationNotes}"
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {(!userData.quotes || userData.quotes.length === 0) && (
+                    <div className="py-24 bg-white dark:bg-brand-white rounded-[60px] border border-brand-text/5 shadow-soft flex flex-col items-center justify-center text-center space-y-6 transition-colors">
+                      <div className="w-20 h-20 rounded-full bg-brand-bg dark:bg-brand-bg flex items-center justify-center text-brand-gold/30 border border-brand-text/5">
+                        <MessageSquare size={36} />
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-2xl font-serif italic text-brand-text">No custom requests</h3>
+                        <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-brand-text/30 max-w-[200px] leading-relaxed">Request a bespoke masterpiece today.</p>
+                      </div>
+                      <Link href="/products" className="pt-4">
+                        <Button variant="primary" className="shadow-premium px-10">Start Customizing</Button>
                       </Link>
                     </div>
                   )}

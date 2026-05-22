@@ -21,7 +21,8 @@ import {
   MoveDown,
   Eye,
   EyeOff,
-  ExternalLink
+  ExternalLink,
+  FileText
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { resolveProductImage } from '@/lib/imageResolver';
@@ -66,6 +67,11 @@ function ProductEditorContent({ params }: ProductEditorProps) {
       stones: [],
       sizes: [],
       customizations: []
+    },
+    pricingOverrides: {
+      makingCharges: '',
+      sizeWeightOffset: '',
+      stonePrices: {}
     }
   });
 
@@ -92,6 +98,11 @@ function ProductEditorContent({ params }: ProductEditorProps) {
             stones: product.configurableOptions?.stones || [],
             sizes: product.configurableOptions?.sizes || [],
             customizations: product.configurableOptions?.customizations || []
+          },
+          pricingOverrides: {
+            makingCharges: product.pricingOverrides?.makingCharges ?? '',
+            sizeWeightOffset: product.pricingOverrides?.sizeWeightOffset ?? '',
+            stonePrices: product.pricingOverrides?.stonePrices || {}
           }
         });
       } else {
@@ -219,8 +230,9 @@ function ProductEditorContent({ params }: ProductEditorProps) {
           { id: 'basic', label: 'Identity', icon: Settings },
           { id: 'pricing', label: 'Value & Inventory', icon: Coins },
           { id: 'media', label: 'Media Gallery', icon: ImageIcon },
-          { id: 'jewelry', label: 'Jewelry Spec', icon: Diamond },
-          { id: 'variants', label: 'Visual Variants', icon: Layers },
+          { id: 'jewelry', label: 'Variant Setup', icon: Layers },
+          { id: 'specs', label: 'Jewellery Details', icon: FileText },
+          { id: 'variants', label: 'Visual Variants', icon: Diamond },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -370,6 +382,43 @@ function ProductEditorContent({ params }: ProductEditorProps) {
                 </button>
               </div>
             </div>
+
+            <div className="pt-8 border-t border-brand-text/5 mt-8 space-y-6">
+              <div className="space-y-1">
+                <h4 className="text-[11px] font-black uppercase tracking-widest text-brand-text dark:text-white flex items-center"><Coins size={14} className="mr-2 text-brand-gold" /> Product-Level Pricing Overrides</h4>
+                <p className="text-[9px] text-brand-text/50 uppercase tracking-widest">Leave empty to use global pricing settings.</p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2">Override Making Charges (₹)</label>
+                  <input 
+                    type="number" 
+                    placeholder="e.g. 5000"
+                    value={formData.pricingOverrides?.makingCharges ?? ''}
+                    onChange={(e) => setFormData({
+                      ...formData, 
+                      pricingOverrides: { ...(formData.pricingOverrides || {}), makingCharges: e.target.value ? parseFloat(e.target.value) : '' }
+                    })}
+                    className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/15 dark:border-white/15 rounded-2xl py-3 px-4 text-[13px] font-bold shadow-inner"
+                  />
+                </div>
+                <div className="space-y-4">
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2">Override Size-Weight Offset (g/size)</label>
+                  <input 
+                    type="number" 
+                    step="0.01"
+                    placeholder="e.g. 0.2"
+                    value={formData.pricingOverrides?.sizeWeightOffset ?? ''}
+                    onChange={(e) => setFormData({
+                      ...formData, 
+                      pricingOverrides: { ...(formData.pricingOverrides || {}), sizeWeightOffset: e.target.value ? parseFloat(e.target.value) : '' }
+                    })}
+                    className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/15 dark:border-white/15 rounded-2xl py-3 px-4 text-[13px] font-bold shadow-inner"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -482,6 +531,47 @@ function ProductEditorContent({ params }: ProductEditorProps) {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {activeTab === 'specs' && (
+          <div className="bg-white dark:bg-white/10 rounded-[40px] border border-brand-text/15 dark:border-white/15 p-10 space-y-12 animate-in fade-in duration-700 shadow-md">
+            <div className="space-y-6">
+              <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Product Specifications</label>
+              <p className="text-[11px] text-brand-text/70 leading-relaxed uppercase tracking-widest">
+                Define the detailed specifications that will appear in the Jewellery Details section on the storefront.
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {[
+                  { id: 'dimensions', label: 'Dimensions (HxW)', placeholder: 'e.g. 15mm x 12mm' },
+                  { id: 'finish', label: 'Metal Finish', placeholder: 'e.g. High Polish, Matte' },
+                  { id: 'certification', label: 'Certification', placeholder: 'e.g. IGI Certified, SGL' },
+                  { id: 'occasion', label: 'Occasion', placeholder: 'e.g. Wedding, Everyday, Party' },
+                  { id: 'craftsmanship', label: 'Craftsmanship', placeholder: 'e.g. Handcrafted' },
+                  { id: 'settingType', label: 'Setting Type', placeholder: 'e.g. Prong, Bezel, Pave' },
+                  { id: 'careInstructions', label: 'Care Instructions', placeholder: 'e.g. Store in a dry place' },
+                  { id: 'sku', label: 'Base SKU', placeholder: 'e.g. ZON-RN-001' }
+                ].map((spec) => (
+                  <div key={spec.id} className="space-y-3">
+                    <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2">{spec.label}</label>
+                    <input 
+                      type="text" 
+                      value={formData.specs[spec.id] || ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        specs: {
+                          ...formData.specs,
+                          [spec.id]: e.target.value
+                        }
+                      })}
+                      placeholder={spec.placeholder}
+                      className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/15 dark:border-white/15 rounded-2xl py-3 px-6 text-[13px] text-brand-text dark:text-white focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
