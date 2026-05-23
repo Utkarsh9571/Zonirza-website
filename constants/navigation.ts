@@ -350,10 +350,12 @@ export const NAVIGATION_DATA: TopCategory[] = [
     icon: Star,
     filters: [
       { title: 'Plans', options: [{ name: 'Gold Mine (10+1)', href: '/plans/gold-mine' }, { name: 'Gold Reserve', href: '/plans/gold-reserve' }] },
+      { title: 'Digi Gold', options: [{ name: 'Buy Digital Gold', href: '/digi-gold' }] },
     ],
     subCategories: [
       { name: 'Gold Mine (10+1)', href: '/plans/gold-mine', thumbnail: '💰' },
       { name: 'Gold Reserve', href: '/plans/gold-reserve', thumbnail: '📈' },
+      { name: 'Digi Gold', href: '/digi-gold', thumbnail: '🪙' },
     ],
     promotions: [
       {

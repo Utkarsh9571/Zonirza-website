@@ -12,7 +12,7 @@ interface SectionProps {
 export const Section = ({ children, className, containerClassName, dark = false, id }: SectionProps) => {
   return (
     <section id={id} className={cn(
-      'py-24 md:py-32 lg:py-40 overflow-hidden',
+      'overflow-hidden', 
       dark ? 'bg-brand-text text-brand-bg' : 'bg-transparent text-brand-text',
       className
     )}>

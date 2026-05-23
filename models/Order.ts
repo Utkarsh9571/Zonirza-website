@@ -47,6 +47,9 @@ export interface IOrder extends Document {
   discountAmount: number;
   couponCode?: string;
   razorpayOrderId?: string;
+  digiGoldRedeemedAmount?: number;
+  digiGoldRedeemedGrams?: number;
+  digiGoldTransactionId?: mongoose.Types.ObjectId | string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -109,6 +112,9 @@ const OrderSchema: Schema = new Schema(
     discountAmount: { type: Number, default: 0 },
     couponCode: { type: String },
     razorpayOrderId: { type: String },
+    digiGoldRedeemedAmount: { type: Number, default: 0 },
+    digiGoldRedeemedGrams: { type: Number, default: 0 },
+    digiGoldTransactionId: { type: Schema.Types.ObjectId, ref: 'DigitalGoldTransaction' },
   },
   { timestamps: true }
 );

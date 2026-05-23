@@ -2,13 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, CreditCard, Landmark, Wallet, ShieldCheck, Lock } from 'lucide-react';
+import { ChevronLeft, CreditCard, Landmark, Wallet, ShieldCheck, Lock, Coins } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
+import useSWR from 'swr';
 import { CheckoutSteps } from '@/components/checkout/CheckoutSteps';
 import { Button } from '@/components/new-ui/Button';
 import { cn } from '@/lib/utils';
 import { useCurrencyStore } from '@/store/currencyStore';
 import { displayPrice } from '@/lib/currency';
+
+const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 const PAYMENT_METHODS = [
   { id: 'card', label: 'Credit / Debit Card', icon: <CreditCard size={20} />, description: 'Visa, Mastercard, AMEX, RuPay' },
@@ -23,6 +26,10 @@ export default function PaymentPage() {
   const { items, getTotal, selectedAddressId, savedAddresses } = useCartStore();
   const { currentCurrency, rates } = useCurrencyStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [applyDigiGold, setApplyDigiGold] = useState(false);
+
+  // Fetch user's digi gold wallet if they are logged in
+  const { data: digiGoldData } = useSWR('/api/digi-gold/wallet', fetcher);
 
   useEffect(() => {
     setIsMounted(true);
@@ -30,6 +37,11 @@ export default function PaymentPage() {
 
   const total = getTotal();
   const selectedAddress = savedAddresses.find(a => a.id === selectedAddressId);
+
+  // Calculate Digi Gold Deductions
+  const eligibleDigiGoldValue = digiGoldData?.success && digiGoldData.valuation?.currentValue ? digiGoldData.valuation.currentValue : 0;
+  const digiGoldDeduction = applyDigiGold ? Math.min(eligibleDigiGoldValue, total) : 0;
+  const finalPayable = total - digiGoldDeduction;
 
   const loadRazorpay = () => {
     return new Promise((resolve) => {
@@ -69,12 +81,19 @@ export default function PaymentPage() {
             state: selectedAddress?.state,
             pincode: selectedAddress?.pincode,
             country: selectedAddress?.country || 'India'
-          }
+          },
+          applyDigiGold
         })
       });
 
       const orderData = await orderRes.json();
       if (!orderData.success) throw new Error(orderData.error || 'Failed to create internal order');
+
+      // If fully redeemed via Digi Gold, order is done!
+      if (orderData.fullyRedeemed) {
+        router.push(`/success?order_id=${orderData.orderId}&payment_id=digigold_redemption`);
+        return;
+      }
 
       // 2. Open Razorpay Checkout
       const options = {
@@ -226,6 +245,33 @@ export default function PaymentPage() {
               ))}
             </div>
 
+            {/* DIGI GOLD REDEMPTION MODULE */}
+            {eligibleDigiGoldValue > 0 && (
+              <div className="bg-brand-gold/5 border border-brand-gold/20 rounded-[40px] p-8 flex items-center justify-between transition-colors">
+                <div className="flex items-center gap-6">
+                  <div className="w-14 h-14 rounded-2xl bg-brand-gold text-white flex items-center justify-center">
+                    <Coins size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-brand-gold">Redeem Digi Gold</h3>
+                    <p className="text-[10px] text-brand-text/60 uppercase tracking-widest font-medium mt-1">Available Balance: ₹{eligibleDigiGoldValue.toLocaleString()}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setApplyDigiGold(!applyDigiGold)}
+                  className={cn(
+                    "w-12 h-6 rounded-full transition-colors relative",
+                    applyDigiGold ? "bg-brand-gold" : "bg-brand-text/10"
+                  )}
+                >
+                  <div className={cn(
+                    "w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all shadow-sm",
+                    applyDigiGold ? "left-[26px]" : "left-0.5"
+                  )} />
+                </button>
+              </div>
+            )}
+
             <div className="bg-brand-gold/5 dark:bg-brand-gold/10 rounded-[40px] p-10 border border-brand-gold/10 flex flex-col items-center text-center space-y-4 transition-colors">
               <Lock className="text-brand-gold" size={32} />
               <div className="space-y-2">
@@ -244,9 +290,21 @@ export default function PaymentPage() {
               <h2 className="text-2xl font-serif text-brand-text dark:text-brand-text/90 text-center">Order Summary</h2>
               
               <div className="space-y-6">
+                <div className="flex justify-between items-end pb-4 border-b border-brand-text/5">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-brand-text/60">Cart Total</span>
+                  <span className="text-lg font-serif text-brand-text">{displayPrice(total, currentCurrency, rates)}</span>
+                </div>
+
+                {applyDigiGold && (
+                  <div className="flex justify-between items-end pb-4 border-b border-brand-text/5 animate-in fade-in">
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-brand-gold flex items-center"><Coins size={12} className="mr-1" /> Digi Gold Used</span>
+                    <span className="text-lg font-serif text-brand-gold">- {displayPrice(digiGoldDeduction, currentCurrency, rates)}</span>
+                  </div>
+                )}
+
                 <div className="flex justify-between items-end">
                   <span className="text-[11px] font-bold uppercase tracking-widest text-brand-text">Amount Payable</span>
-                  <span className="text-3xl font-serif text-brand-text italic">{displayPrice(total, currentCurrency, rates)}</span>
+                  <span className="text-3xl font-serif text-brand-text italic">{displayPrice(finalPayable, currentCurrency, rates)}</span>
                 </div>
 
                 <Button 

@@ -261,6 +261,7 @@ function AccountContent() {
     { id: 'profile', label: 'Personal Details', icon: <UserCircle size={18} /> },
     { id: 'orders', label: 'My Orders', icon: <Package size={18} /> },
     { id: 'savings', label: 'Savings Plans', icon: <ShieldCheck size={18} />, href: '/account/savings' },
+    { id: 'digigold', label: 'Digi Gold', icon: <Diamond size={18} />, href: '/account/digi-gold' },
     { id: 'quotes', label: 'My Consultations', icon: <MessageSquare size={18} /> },
     { id: 'wishlist', label: 'My Wishlist', icon: <Heart size={18} /> },
     { id: 'addresses', label: 'Saved Addresses', icon: <MapPin size={18} /> },

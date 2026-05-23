@@ -4,6 +4,13 @@ import dbConnect from '@/lib/db';
 import Order from '@/models/Order';
 import PlanTransaction from '@/models/PlanTransaction';
 import PlanEnrollment from '@/models/PlanEnrollment';
+import DigitalGoldSIP from '@/models/DigitalGoldSIP';
+import DigitalGoldSIPInstallment from '@/models/DigitalGoldSIPInstallment';
+import DigitalGoldTransaction from '@/models/DigitalGoldTransaction';
+import DigitalGoldWallet from '@/models/DigitalGoldWallet';
+import ProcessedWebhook from '@/models/ProcessedWebhook';
+import FinancialAuditLog from '@/models/FinancialAuditLog';
+import { finalizeRedemption, unlockWalletBalance } from '@/lib/digiGoldRedemption';
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,6 +35,15 @@ export async function POST(req: NextRequest) {
     const event = JSON.parse(rawBody);
     await dbConnect();
 
+    // Idempotency Check
+    const existingEvent = await ProcessedWebhook.findOne({ eventId: event.id });
+    if (existingEvent) {
+      console.log(`Webhook event ${event.id} already processed.`);
+      return NextResponse.json({ success: true, message: 'Event already processed' });
+    }
+
+    let isHandled = false;
+
     // Handle Ecommerce Payment Success
     if (event.event === 'payment.captured') {
       const paymentEntity = event.payload.payment.entity;
@@ -45,8 +61,18 @@ export async function POST(req: NextRequest) {
             notes: `Webhook verified Razorpay Payment ID: ${paymentEntity.id}`
           });
           await order.save();
+
+          // Finalize Digi Gold Redemption if applicable
+          if (order.digiGoldRedeemedAmount && order.digiGoldRedeemedAmount > 0) {
+            try {
+              await finalizeRedemption(order.userId.toString(), order._id.toString());
+              console.log(`Successfully finalized Digi Gold redemption for order ${order._id}`);
+            } catch (err) {
+              console.error(`Failed to finalize redemption for order ${order._id}:`, err);
+            }
+          }
         }
-        return NextResponse.json({ success: true, message: 'Ecommerce order updated' });
+        isHandled = true;
       }
 
       // 2. Check if it's a Finance Plan Transaction
@@ -68,7 +94,101 @@ export async function POST(req: NextRequest) {
             await enrollment.save();
           }
         }
-        return NextResponse.json({ success: true, message: 'Finance transaction updated' });
+        isHandled = true;
+      }
+
+      // 3. Check if it's a Digi Gold Wallet Buy Transaction
+      const digiGoldTx = await DigitalGoldTransaction.findOne({ razorpayOrderId: orderId });
+      if (digiGoldTx && digiGoldTx.status !== 'success') {
+        digiGoldTx.status = 'success';
+        digiGoldTx.razorpayPaymentId = paymentEntity.id;
+        await digiGoldTx.save();
+
+        const wallet = await DigitalGoldWallet.findById(digiGoldTx.walletId);
+        if (wallet) {
+          if (digiGoldTx.type === 'buy') {
+            wallet.totalGrams += digiGoldTx.goldGrams;
+            wallet.totalInvestment += digiGoldTx.rupeeAmount;
+            await wallet.save();
+
+            // Audit Log
+            await FinancialAuditLog.create({
+              actor: 'SYSTEM_WEBHOOK',
+              action: 'WALLET_CREDIT_BUY',
+              entityType: 'DigitalGoldWallet',
+              entityId: wallet._id.toString(),
+              beforeValue: wallet.totalGrams - digiGoldTx.goldGrams,
+              afterValue: wallet.totalGrams,
+              metadata: { transactionId: digiGoldTx._id, razorpayOrderId: orderId }
+            });
+          }
+        }
+        isHandled = true;
+      }
+
+      // 4. Check if it's a SIP Installment Payment
+      const sipInstallment = await DigitalGoldSIPInstallment.findOne({ razorpayOrderId: orderId });
+      if (sipInstallment && sipInstallment.status !== 'paid') {
+        sipInstallment.status = 'paid';
+        sipInstallment.paidAt = new Date();
+        await sipInstallment.save();
+
+        const sip = await DigitalGoldSIP.findById(sipInstallment.sipId);
+        if (sip) {
+          sip.installmentsPaid += 1;
+          
+          // Auto-generate next installment
+          const nextMonth = new Date(sip.nextDueDate);
+          nextMonth.setMonth(nextMonth.getMonth() + 1);
+          sip.nextDueDate = nextMonth;
+          
+          await sip.save();
+
+          // Calculate gold credited based on live rate (which is done via regular buy tx)
+          // To keep it clean, we create a DigitalGoldTransaction for the SIP payment
+          const { getLiveGoldRate } = await import('@/lib/goldRates');
+          const liveRate = await getLiveGoldRate();
+          const executionRate = liveRate ? liveRate.sellRate24K : 7000;
+          const gramsPurchased = sipInstallment.amount / executionRate;
+          
+          const wallet = await DigitalGoldWallet.findOne({ userId: sip.userId });
+          if (wallet) {
+            const tx = await DigitalGoldTransaction.create({
+              walletId: wallet._id,
+              userId: sip.userId,
+              type: 'buy',
+              rupeeAmount: sipInstallment.amount,
+              goldGrams: gramsPurchased,
+              goldRateAtExecution: executionRate,
+              status: 'success',
+              razorpayPaymentId: paymentEntity.id,
+              metadata: { source: 'SIP_INSTALLMENT', sipId: sip._id }
+            });
+            
+            sipInstallment.linkedTransactionId = tx._id;
+            await sipInstallment.save();
+
+            wallet.totalGrams += gramsPurchased;
+            wallet.totalInvestment += sipInstallment.amount;
+            await wallet.save();
+
+            sip.totalInvested += sipInstallment.amount;
+            sip.totalGramsAccumulated += gramsPurchased;
+            await sip.save();
+
+            // Audit Log
+            await FinancialAuditLog.create({
+              actor: 'SYSTEM_WEBHOOK',
+              action: 'WALLET_CREDIT_SIP',
+              entityType: 'DigitalGoldWallet',
+              entityId: wallet._id.toString(),
+              beforeValue: wallet.totalGrams - gramsPurchased,
+              afterValue: wallet.totalGrams,
+              metadata: { sipId: sip._id, installmentId: sipInstallment._id, transactionId: tx._id }
+            });
+          }
+        }
+        isHandled = true;
       }
     }
 
@@ -81,20 +201,64 @@ export async function POST(req: NextRequest) {
       if (order) {
         order.paymentStatus = 'failed';
         await order.save();
-        return NextResponse.json({ success: true, message: 'Ecommerce order marked as failed' });
+
+        // Unlock Digi Gold if it was locked for this order
+        if (order.digiGoldRedeemedAmount && order.digiGoldRedeemedAmount > 0) {
+          try {
+            await unlockWalletBalance(order.userId.toString(), order._id.toString());
+            console.log(`Successfully unlocked Digi Gold balance for failed order ${order._id}`);
+          } catch (err) {
+            console.error(`Failed to unlock Digi Gold balance for order ${order._id}:`, err);
+          }
+        }
+
+        isHandled = true;
       }
 
       const transaction = await PlanTransaction.findOne({ gatewayReference: orderId });
       if (transaction) {
         transaction.status = 'failed';
         await transaction.save();
-        return NextResponse.json({ success: true, message: 'Finance transaction marked as failed' });
+        isHandled = true;
+      }
+
+      const digiGoldTx = await DigitalGoldTransaction.findOne({ razorpayOrderId: orderId });
+      if (digiGoldTx) {
+        digiGoldTx.status = 'failed';
+        await digiGoldTx.save();
+        isHandled = true;
+      }
+
+      const sipInstallment = await DigitalGoldSIPInstallment.findOne({ razorpayOrderId: orderId });
+      if (sipInstallment) {
+        sipInstallment.status = 'failed';
+        await sipInstallment.save();
+        isHandled = true;
       }
     }
 
-    return NextResponse.json({ success: true, message: 'Event ignored' });
+    // Mark as processed
+    await ProcessedWebhook.create({
+      eventId: event.id,
+      event: event.event,
+      status: isHandled ? 'processed' : 'ignored'
+    });
+
+    return NextResponse.json({ success: true, message: isHandled ? 'Event processed' : 'Event ignored' });
   } catch (error: any) {
     console.error('Razorpay Webhook Error:', error);
+    
+    // Log fatal webhook error
+    try {
+      await dbConnect();
+      await FinancialAuditLog.create({
+        actor: 'SYSTEM',
+        action: 'WEBHOOK_FATAL_ERROR',
+        entityType: 'System',
+        metadata: { error: error.message }
+      });
+    } catch (e) {}
+
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

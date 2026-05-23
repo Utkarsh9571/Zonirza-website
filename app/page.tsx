@@ -466,7 +466,7 @@ export default function Home() {
               { img: '/images/site/visit_store.png', text: 'VISIT OUR STORE', hidden: true },
               { img: '/images/site/book_appointment.png', text: 'BOOK AN APPOINTMENT', link: '/contact' },
               { img: '/images/site/talk_expert.png', text: 'TALK TO AN EXPERT', hidden: true },
-              { img: '/images/site/digi_gold.png', text: 'DIGI GOLD' },
+              { img: '/images/site/digi_gold.png', text: 'DIGI GOLD', link: '/digi-gold' },
               { img: '/images/site/blogs.png', text: 'BLOGS', link: '/blog' },
               { img: '/images/site/jewellery_guide.png', text: 'JEWELLERY GUIDE', hidden: true }
             ].filter(store => !store.hidden).map((store, i) => {

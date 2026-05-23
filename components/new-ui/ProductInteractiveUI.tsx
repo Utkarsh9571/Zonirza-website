@@ -2,9 +2,10 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
+import useSWR from 'swr';
 import { useSession } from 'next-auth/react';
 import { useAuthModalStore } from '@/store/authModalStore';
-import { ShieldCheck, Truck, RotateCcw, Heart, Share2, Info, Check, Minus, Plus, Scale, Sparkles, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShieldCheck, Truck, RotateCcw, Heart, Share2, Info, Check, Minus, Plus, Scale, Sparkles, ChevronDown, ChevronLeft, ChevronRight, Coins } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { Button } from './Button';
 import { Section } from './Section';
@@ -93,6 +94,8 @@ function ProductImageZoom({ image, name }: { image: string, name: string }) {
   );
 }
 
+const fetcher = (url: string) => fetch(url).then(res => res.json());
+
 export function ProductInteractiveUI({ product }: { product: any }) {
   // 1. Initial State Calculation Logic
   const configOptions = product.configurableOptions || {};
@@ -175,6 +178,10 @@ export function ProductInteractiveUI({ product }: { product: any }) {
   const openAuthModal = useAuthModalStore(state => state.openAuthModal);
   const { toggleItem, isInWishlist } = useWishlistStore();
   const isWishlisted = isInWishlist(product.slug);
+
+  // Fetch Digi Gold Wallet
+  const { data: digiGoldData } = useSWR(status === 'authenticated' ? '/api/digi-gold/wallet' : null, fetcher);
+  const digiGoldValue = digiGoldData?.success && digiGoldData.valuation?.currentValue ? digiGoldData.valuation.currentValue : 0;
 
   const handleWishlistToggle = () => {
     if (status !== 'authenticated') {
@@ -307,6 +314,16 @@ export function ProductInteractiveUI({ product }: { product: any }) {
             </p>
             <span className="text-[10px] uppercase tracking-widest text-brand-text/40 mt-1">Incl. taxes and charges</span>
           </div>
+
+          {/* Digi Gold Eligibility Banner */}
+          {digiGoldValue > 0 && (
+            <div className="flex items-center space-x-2 bg-brand-gold/10 px-4 py-2 rounded-full border border-brand-gold/20 animate-in fade-in zoom-in duration-500 delay-200">
+              <Coins size={14} className="text-brand-gold" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-brand-gold">
+                Eligible for Digi Gold Redemption (₹{digiGoldValue.toLocaleString()})
+              </span>
+            </div>
+          )}
 
           {/* 2. ACTION BUTTONS: Try It On (Hidden), Wishlist, Share */}
           <div className="flex items-center justify-center space-x-4 pt-2">

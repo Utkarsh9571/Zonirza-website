@@ -15,7 +15,8 @@ import {
   Layers,
   Ticket,
   Briefcase,
-  Monitor
+  Monitor,
+  Coins
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { signOut } from 'next-auth/react';
@@ -30,6 +31,7 @@ const MENU_ITEMS = [
   { icon: Ticket, label: 'Coupons', href: '/admin/coupons' },
   { icon: Briefcase, label: 'Franchise Leads', href: '/admin/franchise-leads' },
   { icon: Monitor, label: 'Merchandising', href: '/admin/merchandising' },
+  { icon: Coins, label: 'Digi Gold', href: '/admin/digi-gold' },
   { icon: Settings, label: 'Settings', href: '/admin/settings' },
 ];
 

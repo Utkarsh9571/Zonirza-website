@@ -8,6 +8,7 @@ import { sendOrderConfirmationEmail, sendAdminNewOrderEmail } from '@/lib/mail';
 import { secureCalculateOrderTotal } from '@/lib/pricing.server';
 import { z } from 'zod';
 import { razorpay } from '@/lib/razorpay';
+import { getEligibleRedemptionAmount, lockWalletBalance } from '@/lib/digiGoldRedemption';
 
 // Input Validation Schema
 const OrderSchema = z.object({
@@ -33,6 +34,7 @@ const OrderSchema = z.object({
   couponCode: z.string().optional(),
   currency: z.string().default('INR'),
   exchangeRate: z.number().default(1),
+  applyDigiGold: z.boolean().default(false),
 });
 
 // POST: Create a new pending order
@@ -47,28 +49,52 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid order data', details: validation.error.format() }, { status: 400 });
     }
 
-    const { items: rawItems, shippingAddress, couponCode, currency, exchangeRate } = validation.data;
+    const { items: rawItems, shippingAddress, couponCode, currency, exchangeRate, applyDigiGold } = validation.data;
 
     await dbConnect();
 
     // 2. SECURE RE-CALCULATION (Server-Side Only)
-    // We ignore any price data from the client and re-calculate based on DB
     const pricingResult = await secureCalculateOrderTotal(rawItems, couponCode);
+    let finalPayableAmount = pricingResult.totalAmount;
+    let digiGoldRedeemedAmount = 0;
+    let digiGoldRedeemedGrams = 0;
+    let digiGoldTxId = null;
+
+    // 3. DIGI GOLD REDEMPTION LOGIC
+    if (applyDigiGold && session?.user) {
+      const userId = (session.user as any).id;
+      const eligible = await getEligibleRedemptionAmount(userId);
+      
+      if (eligible.amount > 0) {
+        // Can only redeem up to the total order amount
+        digiGoldRedeemedAmount = Math.min(eligible.amount, finalPayableAmount);
+        finalPayableAmount = finalPayableAmount - digiGoldRedeemedAmount;
+      }
+    }
 
     const orderData = {
       userId: session?.user ? (session.user as any).id : undefined,
-      items: pricingResult.items, // Use snapshot from pricing engine
-      totalAmount: pricingResult.totalAmount,
+      items: pricingResult.items,
+      totalAmount: pricingResult.totalAmount, // Original total
       discountAmount: pricingResult.discountAmount,
       couponCode: pricingResult.couponCode,
       currency: currency,
       exchangeRate: exchangeRate,
       shippingAddress,
-      paymentStatus: 'pending',
-      orderStatus: 'placed',
+      digiGoldRedeemedAmount,
+      paymentStatus: finalPayableAmount === 0 ? 'paid' : 'pending',
+      orderStatus: finalPayableAmount === 0 ? 'Payment Confirmed' : 'placed',
     };
 
     const order = await Order.create(orderData);
+
+    // Lock Digi Gold if used
+    if (digiGoldRedeemedAmount > 0 && session?.user) {
+      const lockResult = await lockWalletBalance((session.user as any).id, order._id.toString(), digiGoldRedeemedAmount);
+      order.digiGoldRedeemedGrams = lockResult.lockedGrams;
+      order.digiGoldTransactionId = lockResult.transactionId as any;
+      await order.save();
+    }
 
     // If a coupon was used, increment its usage count
     if (pricingResult.couponCode) {
@@ -78,9 +104,29 @@ export async function POST(req: Request) {
       );
     }
 
-    // Generate Razorpay Order
+    // Trigger Email Workflow (Async)
+    if (session?.user?.email) {
+      sendOrderConfirmationEmail(order, session.user.email).catch(err => console.error('Order Email Error:', err));
+      sendAdminNewOrderEmail(order).catch(err => console.error('Admin Email Error:', err));
+    }
+
+    // If 100% redeemed via Digi Gold, skip Razorpay!
+    if (finalPayableAmount === 0) {
+      // NOTE: Because Razorpay webhook won't fire, we must finalize the redemption immediately.
+      if (order.digiGoldRedeemedAmount > 0) {
+        const { finalizeRedemption } = await import('@/lib/digiGoldRedemption');
+        await finalizeRedemption(order.userId.toString(), order._id.toString());
+      }
+      return NextResponse.json({ 
+        success: true, 
+        orderId: order._id,
+        fullyRedeemed: true
+      });
+    }
+
+    // Otherwise, Generate Razorpay Order for remaining amount
     const options = {
-      amount: Math.round(pricingResult.totalAmount * 100), // Razorpay accepts smallest currency unit (paise)
+      amount: Math.round(finalPayableAmount * 100), // Razorpay accepts smallest currency unit (paise)
       currency: currency || 'INR',
       receipt: order._id.toString()
     };
@@ -89,12 +135,6 @@ export async function POST(req: Request) {
     // Save Razorpay Order ID to DB
     order.razorpayOrderId = razorpayOrder.id;
     await order.save();
-
-    // Trigger Email Workflow (Async)
-    if (session?.user?.email) {
-      sendOrderConfirmationEmail(order, session.user.email).catch(err => console.error('Order Email Error:', err));
-      sendAdminNewOrderEmail(order).catch(err => console.error('Admin Email Error:', err));
-    }
 
     return NextResponse.json({ 
       success: true, 

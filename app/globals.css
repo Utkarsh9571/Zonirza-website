@@ -4,8 +4,8 @@
 
 :root {
   /* Exact Colors from Reference Image - Refined for Contrast */
-  --brand-bg: #f9f5f0;
-  /* Light cream/beige */
+  --brand-bg: #efe6d8;
+  /* Slightly darker cream/beige to contrast with white cards */
   --brand-text: #2a2421;
   /* Deepened for better readability */
   --brand-gold: #bca07e;
