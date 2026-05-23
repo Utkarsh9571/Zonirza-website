@@ -21,6 +21,45 @@ export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise) as any,
   providers: [
     CredentialsProvider({
+      id: "otp",
+      name: "OTP Verification",
+      credentials: {
+        identifier: { label: "Email or Phone", type: "text" },
+        otp: { label: "OTP", type: "text" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.identifier || !credentials?.otp) return null;
+        
+        // Mock OTP Verification
+        if (credentials.otp !== "123456") {
+          throw new Error("Invalid OTP");
+        }
+        
+        await dbConnect();
+        
+        // Lookup user by email (or phone if we allowed phone only)
+        // Since email is required in the DB, we will treat identifier as email for now
+        let existingUser = await User.findOne({ email: credentials.identifier.toLowerCase() });
+        
+        if (!existingUser) {
+          existingUser = await User.create({
+            email: credentials.identifier.toLowerCase(),
+            onboardingCompleted: false,
+            lastLogin: new Date(),
+          });
+        } else {
+          existingUser.lastLogin = new Date();
+          await existingUser.save();
+        }
+        
+        return {
+          id: existingUser._id.toString(),
+          email: existingUser.email,
+          name: existingUser.name,
+        };
+      }
+    }),
+    CredentialsProvider({
       id: "admin-credentials",
       name: "Admin Access",
       credentials: {
@@ -89,6 +128,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "admin-credentials") return true;
+      if (account?.provider === "otp") return true; // OTP handles creation in authorize()
       if (!user.email) return false;
       
       await dbConnect();

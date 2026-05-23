@@ -19,7 +19,8 @@ import { RingSizeGuide } from '../product/guides/RingSizeGuide';
 import { DiamondGuide } from '../product/guides/DiamondGuide';
 import { GoldPurityGuide } from '../product/guides/GoldPurityGuide';
 import { useRulesEngine } from '@/hooks/useRulesEngine';
-
+import { MonthlyPlanButton } from '@/components/finance/MonthlyPlanButton';
+import { MonthlyPlanModal } from '@/components/finance/MonthlyPlanModal';
 // --- PREMIUM ZOOM COMPONENT ---
 function ProductImageZoom({ image, name }: { image: string, name: string }) {
   const [isZooming, setIsZooming] = useState(false);
@@ -126,6 +127,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
+  const [isPlanModalOpen, setPlanModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'details' | 'breakup'>('details');
 
   // Configuration State - Always initialized with valid defaults
@@ -664,6 +666,10 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                  (!validation.isValid && showValidation) ? 'Complete Selection' : 
                  (config.isCustomColor || rulesEvaluation.requiresConsultation) ? 'Request Consultation' : 'Add to Cart'}
               </Button>
+              <MonthlyPlanButton
+                onClick={() => setPlanModalOpen(true)}
+                disabled={rulesEvaluation.isRestricted || (!validation.isValid && showValidation)}
+              />
               {!(config.isCustomColor || rulesEvaluation.requiresConsultation) && !rulesEvaluation.isRestricted && (
                 <Button size="lg" variant="outline" className="w-full !py-5 shadow-soft border-brand-text dark:border-brand-gold text-brand-text dark:text-brand-gold hover:bg-brand-text dark:hover:bg-brand-gold hover:text-white" onClick={() => window.location.href = '/cart'}>
                   Buy It Now
@@ -851,6 +857,13 @@ export function ProductInteractiveUI({ product }: { product: any }) {
            (!validation.isValid && showValidation) ? 'Select Options' : 'Add to Cart'}
         </Button>
       </div>
+
+      <MonthlyPlanModal
+        isOpen={isPlanModalOpen}
+        onClose={() => setPlanModalOpen(false)}
+        product={product}
+        config={config}
+      />
     </div>
   );
 }

@@ -8,7 +8,8 @@ import {
   User, 
   Watch, 
   Mic, 
-  Menu 
+  Menu,
+  Star 
 } from 'lucide-react';
 
 export interface NavSubCategory {
@@ -341,6 +342,27 @@ export const NAVIGATION_DATA: TopCategory[] = [
       image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=300',
       href: '/products?tag=gifting'
     }
+  },
+  {
+    id: 'investments',
+    name: 'Investment Plans',
+    href: '/plans/gold-mine',
+    icon: Star,
+    filters: [
+      { title: 'Plans', options: [{ name: 'Gold Mine (10+1)', href: '/plans/gold-mine' }, { name: 'Gold Reserve', href: '/plans/gold-reserve' }] },
+    ],
+    subCategories: [
+      { name: 'Gold Mine (10+1)', href: '/plans/gold-mine', thumbnail: '💰' },
+      { name: 'Gold Reserve', href: '/plans/gold-reserve', thumbnail: '📈' },
+    ],
+    promotions: [
+      {
+        title: 'Smart Savings for Luxury',
+        description: 'Explore Plans',
+        image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=800',
+        href: '/plans/gold-mine',
+      }
+    ],
   },
   {
     id: 'more',
