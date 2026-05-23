@@ -37,8 +37,9 @@ export default function DigiGoldLandingPage() {
                 A secure, luxury savings experience. Build your gold portfolio with as little as ₹100, and redeem it for exquisite Zoniraz jewellery whenever you desire.
               </p>
               <div className="flex flex-wrap gap-4 pt-4">
-                <Button variant="primary" className="shadow-premium px-8 py-4 text-xs tracking-[0.2em]">Start Saving</Button>
-                <Button variant="outline" className="border-brand-text/20 hover:bg-brand-text/5 px-8 py-4 text-xs tracking-[0.2em]">Learn More</Button>
+                <a href="#faq">
+                  <Button variant="outline" className="border-brand-text/20 hover:bg-brand-text/5 px-8 py-4 text-xs tracking-[0.2em]">Learn More</Button>
+                </a>
               </div>
             </div>
 
@@ -110,22 +111,22 @@ export default function DigiGoldLandingPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-8">
                 <div className="space-y-3">
                   <Lock className="text-brand-gold mb-4" size={28} />
-                  <h4 className="font-bold tracking-wide">Secure Holdings</h4>
+                  <h4 className="font-bold text-white tracking-wide">Secure Holdings</h4>
                   <p className="text-sm text-white/50">Your wallet balances are meticulously tracked and protected.</p>
                 </div>
                 <div className="space-y-3">
                   <TrendingUp className="text-brand-gold mb-4" size={28} />
-                  <h4 className="font-bold tracking-wide">Live Gold Value</h4>
+                  <h4 className="font-bold text-white tracking-wide">Live Gold Value</h4>
                   <p className="text-sm text-white/50">Real-time valuation based on active market rates.</p>
                 </div>
                 <div className="space-y-3">
                   <RefreshCw className="text-brand-gold mb-4" size={28} />
-                  <h4 className="font-bold tracking-wide">Seamless Exchange</h4>
+                  <h4 className="font-bold text-white tracking-wide">Seamless Exchange</h4>
                   <p className="text-sm text-white/50">Instantly convert digital value into physical masterpieces.</p>
                 </div>
                 <div className="space-y-3">
                   <Star className="text-brand-gold mb-4" size={28} />
-                  <h4 className="font-bold tracking-wide">Luxury Experience</h4>
+                  <h4 className="font-bold text-white tracking-wide">Luxury Experience</h4>
                   <p className="text-sm text-white/50">A premium UI crafted for high-net-worth individuals.</p>
                 </div>
               </div>
@@ -135,9 +136,10 @@ export default function DigiGoldLandingPage() {
               <div className="aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl border border-white/10 relative">
                 <div className="absolute inset-0 bg-gradient-to-tr from-brand-gold/40 to-transparent mix-blend-overlay z-10" />
                 <Image 
-                  src="/images/categories/gold.jpg" // Using an existing premium gold image
+                  src="/images/images/product/yellow-gold-16010972111558.jpg" // Using an existing premium gold image
                   alt="Zoniraz Luxury Gold"
                   fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover scale-105 hover:scale-100 transition-transform duration-1000"
                 />
               </div>
@@ -147,7 +149,7 @@ export default function DigiGoldLandingPage() {
       </section>
 
       {/* FAQ */}
-      <section className="py-24 bg-brand-bg">
+      <section id="faq" className="py-24 bg-brand-bg">
         <Section className="max-w-3xl mx-auto px-6 space-y-12">
           <div className="text-center space-y-4">
             <h2 className="text-3xl md:text-5xl font-serif">Questions?</h2>
@@ -162,12 +164,12 @@ export default function DigiGoldLandingPage() {
               { q: "Are there any hidden charges?", a: "A standard 3% GST applies to your purchase, reflecting actual market conditions. There are no hidden storage fees." },
               { q: "How do I redeem my digital gold?", a: "At checkout, you will have the option to apply your Digi Gold wallet balance toward the purchase of any jewellery piece." }
             ].map((faq, i) => (
-              <details key={i} className="group bg-white rounded-2xl border border-brand-text/10 overflow-hidden [&_summary::-webkit-details-marker]:hidden">
-                <summary className="flex items-center justify-between p-6 cursor-pointer font-bold text-sm tracking-wide">
+              <details key={i} className="group bg-white rounded-[20px] border border-brand-gold overflow-hidden [&_summary::-webkit-details-marker]:hidden">
+                <summary className="flex items-center justify-between text-black p-6 cursor-pointer font-bold text-sm tracking-wide border border-brand-gold rounded-[20px]">
                   {faq.q}
                   <ChevronDown size={18} className="text-brand-gold group-open:rotate-180 transition-transform" />
                 </summary>
-                <div className="px-6 pb-6 text-sm text-brand-text/60 leading-relaxed border-t border-brand-text/5 pt-4">
+                <div className="px-6 pb-6 text-sm text-black leading-relaxed pt-4">
                   {faq.a}
                 </div>
               </details>

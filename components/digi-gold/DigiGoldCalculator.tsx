@@ -6,12 +6,14 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Loader2, Coins } from 'lucide-react';
 import { Button } from '@/components/new-ui/Button';
+import { useAuthModalStore } from '@/store/authModalStore';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export function DigiGoldCalculator() {
   const { data: session } = useSession();
   const router = useRouter();
+  const { openAuthModal } = useAuthModalStore();
   const { data, error, isLoading } = useSWR('/api/digi-gold/rate', fetcher);
   
   const [activeTab, setActiveTab] = useState<'buy' | 'sell' | 'exchange'>('buy');
@@ -56,7 +58,7 @@ export function DigiGoldCalculator() {
 
   const handlePurchase = async () => {
     if (!session) {
-      router.push('/signin');
+      openAuthModal();
       return;
     }
 
@@ -134,7 +136,7 @@ export function DigiGoldCalculator() {
   }
 
   return (
-    <div className="bg-white rounded-[40px] border border-brand-text/5 shadow-premium overflow-hidden">
+    <div className="bg-white rounded-[40px] border border-brand-gold shadow-premium overflow-hidden">
       <div className="flex border-b border-brand-text/10">
         <button 
           onClick={() => setActiveTab('buy')}
@@ -200,13 +202,13 @@ export function DigiGoldCalculator() {
 
             <Button 
               onClick={handlePurchase} 
-              disabled={isProcessing || !inrAmount || Number(inrAmount) < 100}
+              disabled={isProcessing || (session ? (!inrAmount || Number(inrAmount) < 100) : false)}
               className="w-full py-4 text-[12px] uppercase tracking-[0.2em]"
             >
               {isProcessing ? <Loader2 className="animate-spin" size={18} /> : (session ? 'Proceed to Pay' : 'Login to Buy')}
             </Button>
             
-            <p className="text-center text-[10px] text-brand-text/40">Minimum purchase amount is ₹100.</p>
+            <p className="text-center text-[10px] text-brand-text/80">Minimum purchase amount is ₹100.</p>
           </div>
         ) : (
           <div className="py-12 flex flex-col items-center justify-center text-center space-y-4 animate-in fade-in">

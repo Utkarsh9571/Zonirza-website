@@ -58,7 +58,7 @@ export async function POST(req: Request) {
       amount: Math.round(amount * 100), // paise
       currency: 'INR',
       receipt: `digigold_${transaction._id}`,
-      metadata: {
+      notes: {
         transactionId: transaction._id.toString(),
         type: 'digigold_buy'
       }
