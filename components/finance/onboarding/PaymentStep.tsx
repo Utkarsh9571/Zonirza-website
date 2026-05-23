@@ -25,13 +25,23 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
   const handlePay = async () => {
     setIsProcessing(true);
     
     try {
-      // In a real application, we would call /api/finance/enroll here
-      // and initialize Razorpay/Stripe subscription billing
-      
+      const isLoaded = await loadRazorpay();
+      if (!isLoaded) throw new Error('Razorpay SDK failed to load');
+
       const response = await fetch('/api/finance/enroll', {
         method: 'POST',
         headers: {
@@ -45,20 +55,76 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
           paymentMethod
         }),
       });
+
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error || 'Enrollment initiation failed');
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: data.amount,
+        currency: 'INR',
+        name: "Zoniraz Finance",
+        description: `${planType} Enrollment`,
+        image: "/images/ZONIRAZ LOGO.png",
+        order_id: data.razorpayOrderId,
+        handler: async function (response: any) {
+          try {
+            setIsProcessing(true);
+            const verifyRes = await fetch('/api/finance/razorpay/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                transactionId: data.transactionId,
+                enrollmentId: data.enrollmentId
+              })
+            });
+            const verifyData = await verifyRes.json();
+            
+            if (verifyData.success) {
+              setIsProcessing(false);
+              setIsSuccess(true);
+              setTimeout(() => {
+                router.push('/account/savings');
+              }, 4000);
+            } else {
+              alert('Payment verification failed: ' + verifyData.error);
+              setIsProcessing(false);
+            }
+          } catch (err) {
+            console.error('Verification error:', err);
+            alert('Verification process failed.');
+            setIsProcessing(false);
+          }
+        },
+        prefill: {
+          name: personalDetails?.fullName,
+          email: personalDetails?.email,
+          contact: personalDetails?.mobile,
+        },
+        theme: {
+          color: "#D4AF37", 
+        },
+      };
+
+      const paymentObject = new (window as any).Razorpay(options);
       
-      // Simulate network delay for realistic Sandbox feel
-      await new Promise(resolve => setTimeout(resolve, 3500));
+      // Handle when the Razorpay modal is closed without payment
+      paymentObject.on('payment.failed', function (response: any) {
+        setIsProcessing(false);
+        alert(response.error.description);
+      });
       
-      setIsProcessing(false);
-      setIsSuccess(true);
-      
-      // Graceful redirect to dashboard after 4 seconds of reading the receipt
-      setTimeout(() => {
-        router.push('/account/savings');
-      }, 4000);
-      
-    } catch (error) {
+      // This listener triggers if the user just closes the modal entirely
+      // Unfortunately Razorpay's modal close event is a bit tricky, but this handles most errors.
+
+      paymentObject.open();
+
+    } catch (error: any) {
       console.error("Enrollment failed:", error);
+      alert('Payment initialization failed: ' + error.message);
       setIsProcessing(false);
     }
   };
@@ -72,7 +138,7 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
             <ShieldCheck size={32} className="text-brand-gold" />
           </div>
         </div>
-        <h2 className="text-2xl font-serif font-bold text-brand-text dark:text-white mb-2">Sandbox Payment Simulation</h2>
+        <h2 className="text-2xl font-serif font-bold text-brand-text dark:text-white mb-2">Connecting to Secure Gateway</h2>
         <p className="text-brand-text/60 dark:text-white/60 mb-6 max-w-sm mx-auto">
           Simulating secure connection to Razorpay payment gateway...
         </p>
@@ -93,7 +159,7 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
           <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
             <CheckCircle2 size={40} />
           </div>
-          <h2 className="text-2xl font-serif font-bold text-brand-text dark:text-white mb-2">Demo Transaction Successful!</h2>
+          <h2 className="text-2xl font-serif font-bold text-brand-text dark:text-white mb-2">Payment Successful!</h2>
           <p className="text-brand-text/60 dark:text-white/60 max-w-md mx-auto">
             Your {planType} enrollment is complete and securely recorded in our operational database.
           </p>
@@ -113,13 +179,13 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
              </div>
              <div className="flex justify-between text-sm">
                <span className="text-brand-text/70 dark:text-white/70">Gateway Ref</span>
-               <span className="font-mono text-brand-text dark:text-white font-bold text-xs bg-black/5 dark:bg-white/5 px-2 py-1 rounded">ZON-DEMO-{Math.floor(Math.random() * 1000000)}</span>
+               <span className="font-mono text-brand-text dark:text-white font-bold text-xs bg-black/5 dark:bg-white/5 px-2 py-1 rounded">Razorpay Verified</span>
              </div>
            </div>
 
            <div className="flex items-center gap-3 p-3 bg-brand-gold/10 rounded-lg text-xs text-brand-text dark:text-white">
              <Info size={16} className="text-brand-gold shrink-0" />
-             <p>This was a simulated transaction for testing purposes. Real recurring billing will be enabled in production.</p>
+             <p>This was a secure test-mode transaction processed via Razorpay.</p>
            </div>
         </div>
 

@@ -2,7 +2,7 @@ import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
 export default withAuth(
-  function middleware(req) {
+  function proxy(req) {
     // If we are here, authorized() was true.
     // Additional logic can go here if needed.
     return NextResponse.next();

@@ -7,6 +7,7 @@ import Coupon from '@/models/Coupon';
 import { sendOrderConfirmationEmail, sendAdminNewOrderEmail } from '@/lib/mail';
 import { secureCalculateOrderTotal } from '@/lib/pricing.server';
 import { z } from 'zod';
+import { razorpay } from '@/lib/razorpay';
 
 // Input Validation Schema
 const OrderSchema = z.object({
@@ -77,6 +78,18 @@ export async function POST(req: Request) {
       );
     }
 
+    // Generate Razorpay Order
+    const options = {
+      amount: Math.round(pricingResult.totalAmount * 100), // Razorpay accepts smallest currency unit (paise)
+      currency: currency || 'INR',
+      receipt: order._id.toString()
+    };
+    const razorpayOrder = await razorpay.orders.create(options);
+
+    // Save Razorpay Order ID to DB
+    order.razorpayOrderId = razorpayOrder.id;
+    await order.save();
+
     // Trigger Email Workflow (Async)
     if (session?.user?.email) {
       sendOrderConfirmationEmail(order, session.user.email).catch(err => console.error('Order Email Error:', err));
@@ -86,7 +99,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ 
       success: true, 
       orderId: order._id,
-      amount: pricingResult.totalAmount // Return server-calculated amount for confirmation
+      razorpayOrderId: razorpayOrder.id,
+      amount: options.amount // Return in paise for frontend SDK
     });
   } catch (error: any) {
     console.error('Secure Order Creation Error:', error);

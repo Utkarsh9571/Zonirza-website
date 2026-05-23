@@ -8,6 +8,7 @@ import PlanTransaction from '@/models/PlanTransaction';
 import PlanConfig from '@/models/PlanConfig';
 import User from '@/models/User';
 import { calculateGoldReserve } from '@/lib/monthlyPlan';
+import { razorpay } from '@/lib/razorpay';
 
 export async function POST(req: NextRequest) {
   try {
@@ -76,11 +77,11 @@ export async function POST(req: NextRequest) {
     const enrollment = await PlanEnrollment.create({
       userId,
       planType,
-      status: 'active',
+      status: 'pending',
       pricingSnapshot,
-      installmentsPaid: 1, // First payment is made right now
-      totalAmountPaid: monthlyAmount,
-      accumulatedGoldGrams,
+      installmentsPaid: 0,
+      totalAmountPaid: 0,
+      accumulatedGoldGrams: 0,
       enrollmentDate: new Date(),
       nextPaymentDate,
       maturityDate
@@ -96,26 +97,38 @@ export async function POST(req: NextRequest) {
     });
 
     // 5. Create Transaction Document for the first installment
-    await PlanTransaction.create({
+    const transaction = await PlanTransaction.create({
       enrollmentId: enrollment._id,
       userId,
       installmentNumber: 1,
       amount: monthlyAmount,
-      status: 'success', // Simulated success
-      paymentMethod: paymentMethod || 'upi',
-      gatewayReference: `ZON-PAY-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+      status: 'pending',
+      paymentMethod: paymentMethod || 'card',
       dueDate: new Date(),
-      paidAt: new Date(),
       goldRateApplied: planType === 'gold_reserve' ? currentGoldRatePerGram : undefined,
       goldUnitsAdded: accumulatedGoldGrams > 0 ? accumulatedGoldGrams : undefined
     });
+
+    // 6. Generate Razorpay Order
+    const options = {
+      amount: Math.round(monthlyAmount * 100), // paise
+      currency: 'INR',
+      receipt: transaction._id.toString()
+    };
+    const razorpayOrder = await razorpay.orders.create(options);
+
+    transaction.gatewayReference = razorpayOrder.id;
+    await transaction.save();
 
     // Optionally: Update User document with personal details if not already complete
 
     return NextResponse.json({
       success: true,
       enrollmentId: enrollment._id,
-      message: 'Successfully enrolled in plan'
+      transactionId: transaction._id,
+      razorpayOrderId: razorpayOrder.id,
+      amount: options.amount,
+      message: 'Enrollment initiated'
     }, { status: 201 });
 
   } catch (error: any) {

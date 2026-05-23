@@ -243,10 +243,15 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
               ))}
             </div>
 
-            <div className="mt-8 pt-6 border-t border-brand-text/10 flex justify-between items-center">
-              <div>
+            <div className="mt-8 pt-6 border-t border-brand-text/10 flex justify-between items-end">
+              <div className="space-y-1">
                 <p className="text-[10px] uppercase tracking-widest text-brand-text/50 font-bold">Total Amount</p>
                 <p className="text-2xl font-serif text-brand-text dark:text-white mt-1">₹ {order.totalAmount?.toLocaleString()}</p>
+                {order.razorpayOrderId && (
+                  <p className="text-[9px] uppercase tracking-widest text-brand-text/40 font-bold flex items-center mt-2">
+                    <IndianRupee size={10} className="mr-1" /> Razorpay: {order.razorpayOrderId}
+                  </p>
+                )}
               </div>
               {order.discountAmount > 0 && (
                 <div className="text-right">

@@ -76,31 +76,42 @@ export default function PaymentPage() {
       const orderData = await orderRes.json();
       if (!orderData.success) throw new Error(orderData.error || 'Failed to create internal order');
 
-      // 2. Initiate Razorpay Order on Backend
-      // SECURE: Only send orderId, backend fetches amount from DB
-      const razorpayRes = await fetch('/api/razorpay', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          orderId: orderData.orderId
-        })
-      });
-
-      const razorpayData = await razorpayRes.json();
-      if (!razorpayData.success) throw new Error(razorpayData.error || 'Failed to initiate Razorpay');
-
-      // 3. Open Razorpay Checkout
+      // 2. Open Razorpay Checkout
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: razorpayData.amount,
-        currency: razorpayData.currency,
+        amount: orderData.amount, // amount from backend in paise
+        currency: currentCurrency || 'INR', // Note: backend defaults to INR
         name: "Zoniraz Jewellery",
         description: "Exquisite Luxury & Timeless Elegance",
-        image: "/favicon.ico",
-        order_id: razorpayData.id,
-        handler: function (response: any) {
-          // Success Callback
-          router.push(`/success?order_id=${orderData.orderId}&payment_id=${response.razorpay_payment_id}`);
+        image: "/images/ZONIRAZ LOGO.png",
+        order_id: orderData.razorpayOrderId,
+        handler: async function (response: any) {
+          try {
+            setIsLoading(true);
+            // Verify payment on backend
+            const verifyRes = await fetch('/api/checkout/razorpay/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                orderId: orderData.orderId
+              })
+            });
+            const verifyData = await verifyRes.json();
+            
+            if (verifyData.success) {
+              router.push(`/success?order_id=${orderData.orderId}&payment_id=${response.razorpay_payment_id}`);
+            } else {
+              alert('Payment verification failed: ' + verifyData.error);
+              setIsLoading(false);
+            }
+          } catch (err) {
+            console.error('Verification error:', err);
+            alert('Verification process failed.');
+            setIsLoading(false);
+          }
         },
         prefill: {
           name: selectedAddress?.fullName,
@@ -110,7 +121,7 @@ export default function PaymentPage() {
           internal_order_id: orderData.orderId
         },
         theme: {
-          color: "#3A1C16", // Consider making this dynamic if needed, but #3A1C16 is luxury base
+          color: "#D4AF37", // Brand Gold
         },
       };
 
@@ -229,6 +240,7 @@ export default function PaymentPage() {
 
           <div className="w-full lg:w-[480px]">
             <div className="bg-white dark:bg-brand-white rounded-[50px] p-10 md:p-12 border border-brand-text/5 shadow-premium sticky top-32 space-y-10 animate-in fade-in slide-in-from-right duration-1000 transition-colors">
+              <div className="absolute top-4 right-8 px-2 py-1 bg-red-100 text-red-700 text-[8px] font-black uppercase tracking-widest rounded-md animate-pulse">Test Mode</div>
               <h2 className="text-2xl font-serif text-brand-text dark:text-brand-text/90 text-center">Order Summary</h2>
               
               <div className="space-y-6">

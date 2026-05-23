@@ -14,7 +14,7 @@ export interface IPricingSnapshot {
 export interface IPlanEnrollment extends Document {
   userId: mongoose.Types.ObjectId | string;
   planType: 'gold_mine' | 'gold_reserve';
-  status: 'active' | 'completed' | 'suspended' | 'cancelled';
+  status: 'pending' | 'active' | 'completed' | 'suspended' | 'cancelled';
   
   // Financial Snapshot (Immutable at enrollment)
   pricingSnapshot: IPricingSnapshot;
@@ -51,8 +51,8 @@ const PlanEnrollmentSchema = new Schema<IPlanEnrollment>({
   planType: { type: String, enum: ['gold_mine', 'gold_reserve'], required: true },
   status: { 
     type: String, 
-    enum: ['active', 'completed', 'suspended', 'cancelled'], 
-    default: 'active' 
+    enum: ['pending', 'active', 'completed', 'suspended', 'cancelled'], 
+    default: 'pending' 
   },
   
   pricingSnapshot: { type: PricingSnapshotSchema, required: true },
