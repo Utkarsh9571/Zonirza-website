@@ -260,6 +260,7 @@ function AccountContent() {
   const tabs = [
     { id: 'profile', label: 'Personal Details', icon: <UserCircle size={18} /> },
     { id: 'orders', label: 'My Orders', icon: <Package size={18} /> },
+    { id: 'savings', label: 'Savings Plans', icon: <ShieldCheck size={18} />, href: '/account/savings' },
     { id: 'quotes', label: 'My Consultations', icon: <MessageSquare size={18} /> },
     { id: 'wishlist', label: 'My Wishlist', icon: <Heart size={18} /> },
     { id: 'addresses', label: 'Saved Addresses', icon: <MapPin size={18} /> },
@@ -285,24 +286,37 @@ function AccountContent() {
 
               <nav className="flex flex-row lg:flex-col overflow-x-auto lg:overflow-visible gap-2 pb-2 lg:pb-0 scrollbar-hide">
                 {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={cn(
-                      "flex items-center space-x-4 p-4 rounded-2xl transition-all whitespace-nowrap",
-                      activeTab === tab.id 
-                        ? "bg-brand-text dark:bg-brand-gold text-white shadow-premium w-auto lg:w-full" 
-                        : "hover:bg-brand-bg dark:hover:bg-brand-bg text-brand-text/60 dark:text-brand-text/80 w-auto lg:w-full"
-                    )}
-                  >
-                    <div className={cn(
-                      "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
-                      activeTab === tab.id ? "bg-white/10" : "bg-brand-bg"
-                    )}>
-                      {tab.icon}
-                    </div>
-                    <span className="text-[10px] font-bold uppercase tracking-widest">{tab.label}</span>
-                  </button>
+                  tab.href ? (
+                    <Link
+                      key={tab.id}
+                      href={tab.href}
+                      className="flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg dark:hover:bg-brand-bg text-brand-text/60 dark:text-brand-text/80 w-auto lg:w-full transition-all whitespace-nowrap"
+                    >
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-brand-bg">
+                        {tab.icon}
+                      </div>
+                      <span className="text-[10px] font-bold uppercase tracking-widest">{tab.label}</span>
+                    </Link>
+                  ) : (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={cn(
+                        "flex items-center space-x-4 p-4 rounded-2xl transition-all whitespace-nowrap",
+                        activeTab === tab.id 
+                          ? "bg-brand-text dark:bg-brand-gold text-white shadow-premium w-auto lg:w-full" 
+                          : "hover:bg-brand-bg dark:hover:bg-brand-bg text-brand-text/60 dark:text-brand-text/80 w-auto lg:w-full"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                        activeTab === tab.id ? "bg-white/10" : "bg-brand-bg"
+                      )}>
+                        {tab.icon}
+                      </div>
+                      <span className="text-[10px] font-bold uppercase tracking-widest">{tab.label}</span>
+                    </button>
+                  )
                 ))}
               </nav>
 

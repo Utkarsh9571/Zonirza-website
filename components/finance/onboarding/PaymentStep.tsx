@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CreditCard, Landmark, CheckCircle2, Loader2, QrCode } from 'lucide-react';
+import { CreditCard, Landmark, CheckCircle2, Loader2, QrCode, ShieldCheck, Download, Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { displayPrice } from '@/lib/currency';
 import { useCurrencyStore } from '@/store/currencyStore';
@@ -46,15 +46,16 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
         }),
       });
       
-      // Simulate network delay for realistic feel
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Simulate network delay for realistic Sandbox feel
+      await new Promise(resolve => setTimeout(resolve, 3500));
       
+      setIsProcessing(false);
       setIsSuccess(true);
       
-      // Redirect to dashboard after 3 seconds
+      // Graceful redirect to dashboard after 4 seconds of reading the receipt
       setTimeout(() => {
         router.push('/account/savings');
-      }, 3000);
+      }, 4000);
       
     } catch (error) {
       console.error("Enrollment failed:", error);
@@ -62,27 +63,71 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
     }
   };
 
+  if (isProcessing) {
+    return (
+      <div className="bg-white dark:bg-[#1A1A1A] p-12 rounded-xl border border-brand-text/10 dark:border-white/10 shadow-soft text-center animate-in zoom-in-95 duration-500 min-h-[400px] flex flex-col items-center justify-center">
+        <div className="relative mb-8">
+          <div className="absolute inset-0 bg-brand-gold/20 rounded-full animate-ping"></div>
+          <div className="relative w-20 h-20 bg-[#F9F9F9] dark:bg-[#222] border border-brand-gold/30 rounded-full flex items-center justify-center">
+            <ShieldCheck size={32} className="text-brand-gold" />
+          </div>
+        </div>
+        <h2 className="text-2xl font-serif font-bold text-brand-text dark:text-white mb-2">Sandbox Payment Simulation</h2>
+        <p className="text-brand-text/60 dark:text-white/60 mb-6 max-w-sm mx-auto">
+          Simulating secure connection to Razorpay payment gateway...
+        </p>
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 size={24} className="text-[#E55A44] animate-spin" />
+          <span className="text-xs font-bold tracking-wider text-brand-text/50 uppercase">Do not refresh</span>
+        </div>
+      </div>
+    );
+  }
+
   if (isSuccess) {
     return (
-      <div className="bg-white dark:bg-[#1A1A1A] p-12 rounded-xl border border-brand-text/10 dark:border-white/10 shadow-soft text-center animate-in zoom-in-95 duration-500">
-        <div className="w-24 h-24 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-          <CheckCircle2 size={48} />
+      <div className="bg-white dark:bg-[#1A1A1A] p-12 rounded-xl border border-brand-text/10 dark:border-white/10 shadow-soft animate-in zoom-in-95 duration-500 overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+        
+        <div className="text-center mb-8 relative z-10">
+          <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+            <CheckCircle2 size={40} />
+          </div>
+          <h2 className="text-2xl font-serif font-bold text-brand-text dark:text-white mb-2">Demo Transaction Successful!</h2>
+          <p className="text-brand-text/60 dark:text-white/60 max-w-md mx-auto">
+            Your {planType} enrollment is complete and securely recorded in our operational database.
+          </p>
         </div>
-        <h2 className="text-2xl font-serif font-bold text-brand-text dark:text-white mb-2">Enrollment Successful!</h2>
-        <p className="text-brand-text/60 dark:text-white/60 mb-8 max-w-md mx-auto">
-          Welcome to the Zoniraz {planType}. Your first payment has been securely processed.
-        </p>
-        <div className="p-4 bg-[#F9F9F9] dark:bg-[#222] rounded-lg max-w-sm mx-auto mb-8 text-left">
-           <div className="flex justify-between text-sm mb-2">
-             <span className="text-brand-text/60 dark:text-white/60">Amount Paid</span>
-             <span className="font-bold text-brand-text dark:text-white">{displayPrice(monthlyAmount, currentCurrency, rates)}</span>
+
+        <div className="bg-[#F9F9F9] dark:bg-[#222] rounded-xl border border-brand-text/5 dark:border-white/5 p-6 max-w-md mx-auto relative z-10 mb-8 shadow-inner">
+           <h3 className="text-xs font-bold uppercase tracking-wider text-brand-text/50 border-b border-brand-text/5 dark:border-white/5 pb-3 mb-4">Official Receipt</h3>
+           
+           <div className="space-y-3 mb-6">
+             <div className="flex justify-between text-sm">
+               <span className="text-brand-text/70 dark:text-white/70">Plan Type</span>
+               <span className="font-bold text-brand-text dark:text-white">{planType}</span>
+             </div>
+             <div className="flex justify-between text-sm">
+               <span className="text-brand-text/70 dark:text-white/70">Amount Paid</span>
+               <span className="font-bold text-[#E55A44] text-lg">{displayPrice(monthlyAmount, currentCurrency, rates)}</span>
+             </div>
+             <div className="flex justify-between text-sm">
+               <span className="text-brand-text/70 dark:text-white/70">Gateway Ref</span>
+               <span className="font-mono text-brand-text dark:text-white font-bold text-xs bg-black/5 dark:bg-white/5 px-2 py-1 rounded">ZON-DEMO-{Math.floor(Math.random() * 1000000)}</span>
+             </div>
            </div>
-           <div className="flex justify-between text-sm">
-             <span className="text-brand-text/60 dark:text-white/60">Reference ID</span>
-             <span className="font-mono text-brand-text dark:text-white">ZON-{Math.floor(Math.random() * 1000000)}</span>
+
+           <div className="flex items-center gap-3 p-3 bg-brand-gold/10 rounded-lg text-xs text-brand-text dark:text-white">
+             <Info size={16} className="text-brand-gold shrink-0" />
+             <p>This was a simulated transaction for testing purposes. Real recurring billing will be enabled in production.</p>
            </div>
         </div>
-        <p className="text-sm text-brand-gold animate-pulse">Redirecting to your dashboard...</p>
+
+        <div className="text-center relative z-10">
+          <p className="text-sm font-bold text-brand-gold flex items-center justify-center gap-2">
+            <Loader2 size={14} className="animate-spin" /> Redirecting to your Savings Dashboard...
+          </p>
+        </div>
       </div>
     );
   }
@@ -180,7 +225,7 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
             className="px-8 py-3 bg-[#E55A44] hover:bg-[#D44A34] text-white font-bold tracking-wider rounded-md transition-colors flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed w-48 justify-center"
           >
             {isProcessing ? (
-              <><Loader2 size={18} className="animate-spin" /> PROCESSING</>
+              <><Loader2 size={18} className="animate-spin" /> PAYING...</>
             ) : (
               `PAY ${displayPrice(monthlyAmount, currentCurrency, rates)}`
             )}

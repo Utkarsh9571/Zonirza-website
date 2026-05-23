@@ -1,16 +1,25 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Coins, Star, Users, TrendingUp } from 'lucide-react';
+import React from 'react';
+import { Coins, Star, Users, TrendingUp, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import useSWR from 'swr';
+
+const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function AdminPlansDashboard() {
-  const [stats, setStats] = useState({
-    activeGoldMine: 124,
-    activeGoldReserve: 89,
-    totalCollected: 4500000,
-    currentGoldRate: 6800
-  });
+  const { data, error, isLoading } = useSWR('/api/admin/finance/enrollments', fetcher);
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin text-brand-gold h-8 w-8" /></div>;
+  }
+
+  if (error || !data?.success) {
+    return <div className="text-red-500">Failed to load finance data.</div>;
+  }
+
+  const stats = data.stats;
+  const recentEnrollments = data.data.slice(0, 5); // Take top 5 recent
 
   return (
     <div className="space-y-6">
@@ -62,8 +71,8 @@ export default function AdminPlansDashboard() {
             <h3 className="text-sm font-bold text-brand-text/70">Current Gold Rate</h3>
             <Coins className="h-5 w-5 text-brand-gold" />
           </div>
-          <div className="text-3xl font-bold text-brand-text dark:text-white mb-1">₹{stats.currentGoldRate}/g</div>
-          <p className="text-xs text-brand-text/50">24KT - Last updated 2h ago</p>
+          <div className="text-3xl font-bold text-brand-text dark:text-white mb-1">Live</div>
+          <p className="text-xs text-brand-text/50">Calculated at payment</p>
         </div>
       </div>
 
@@ -84,28 +93,36 @@ export default function AdminPlansDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-brand-text/10">
-              <tr className="hover:bg-brand-text/5 transition-colors">
-                <td className="px-6 py-4 font-medium">Utkarsh Sharma</td>
-                <td className="px-6 py-4">
-                  <span className="inline-flex items-center rounded-full border border-brand-gold/20 px-2.5 py-0.5 text-xs font-bold bg-brand-gold/10 text-brand-gold">Gold Mine</span>
-                </td>
-                <td className="px-6 py-4 font-bold">₹2,000</td>
-                <td className="px-6 py-4">
-                  <span className="inline-flex items-center rounded-full border border-green-200 px-2.5 py-0.5 text-xs font-bold bg-green-100 text-green-700">Active</span>
-                </td>
-                <td className="px-6 py-4">Today</td>
-              </tr>
-              <tr className="hover:bg-brand-text/5 transition-colors">
-                <td className="px-6 py-4 font-medium">Amit Kumar</td>
-                <td className="px-6 py-4">
-                  <span className="inline-flex items-center rounded-full border border-blue-200 px-2.5 py-0.5 text-xs font-bold bg-blue-100 text-blue-700">Gold Reserve</span>
-                </td>
-                <td className="px-6 py-4 font-bold">₹5,000</td>
-                <td className="px-6 py-4">
-                  <span className="inline-flex items-center rounded-full border border-green-200 px-2.5 py-0.5 text-xs font-bold bg-green-100 text-green-700">Active</span>
-                </td>
-                <td className="px-6 py-4">Yesterday</td>
-              </tr>
+              {recentEnrollments.map((enrollment: any) => (
+                <tr key={enrollment._id} className="hover:bg-brand-text/5 transition-colors">
+                  <td className="px-6 py-4 font-medium">{enrollment.user?.name || 'Unknown User'}</td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-bold ${
+                      enrollment.planType === 'gold_mine' 
+                        ? 'border-brand-gold/20 bg-brand-gold/10 text-brand-gold' 
+                        : 'border-blue-200 bg-blue-100 text-blue-700'
+                    }`}>
+                      {enrollment.planType === 'gold_mine' ? 'Gold Mine' : 'Gold Reserve'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 font-bold">₹{(enrollment.pricingSnapshot?.monthlyAmount || 0).toLocaleString()}</td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-bold ${
+                      enrollment.status === 'active' ? 'border-green-200 bg-green-100 text-green-700' :
+                      enrollment.status === 'suspended' ? 'border-red-200 bg-red-100 text-red-700' :
+                      'border-gray-200 bg-gray-100 text-gray-700'
+                    }`}>
+                      {enrollment.status.charAt(0).toUpperCase() + enrollment.status.slice(1)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">{new Date(enrollment.createdAt).toLocaleDateString()}</td>
+                </tr>
+              ))}
+              {recentEnrollments.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-brand-text/50">No enrollments found</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
