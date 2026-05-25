@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function GoldReservePage() {
   return (
-    <div className="min-h-screen bg-[#FAFAFA] dark:bg-brand-bg pt-24 pb-20">
+    <div className="min-h-screen bg-[#FAFAFA] dark:bg-brand-bg pt-32 md:pt-40 pb-20">
       
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-[#0A192F] text-white py-20 px-6 sm:px-12 xl:px-24">

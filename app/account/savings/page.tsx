@@ -26,7 +26,8 @@ export default function CustomerSavingsDashboard() {
   const plans = data.data || [];
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="bg-brand-bg text-brand-text min-h-screen pt-32 pb-20 overflow-x-hidden transition-colors duration-500">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-6 space-y-8 animate-in fade-in duration-500">
       <div className="border-b border-brand-text/10 dark:border-white/10 pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
           <h1 className="text-3xl font-serif text-brand-text dark:text-white mb-2">My Investment Vault</h1>
@@ -192,6 +193,7 @@ export default function CustomerSavingsDashboard() {
           })}
         </div>
       )}
+      </div>
     </div>
   );
 }
