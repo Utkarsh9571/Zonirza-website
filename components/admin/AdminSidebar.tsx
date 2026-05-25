@@ -32,6 +32,8 @@ const MENU_ITEMS = [
   { icon: Briefcase, label: 'Franchise Leads', href: '/admin/franchise-leads' },
   { icon: Monitor, label: 'Merchandising', href: '/admin/merchandising' },
   { icon: Coins, label: 'Digi Gold', href: '/admin/digi-gold' },
+  { icon: Sparkles, label: 'Exchange Leads', href: '/admin/exchange' },
+  { icon: Coins, label: 'Sell Gold Leads', href: '/admin/sell-gold' },
   { icon: Settings, label: 'Settings', href: '/admin/settings' },
 ];
 

@@ -211,3 +211,62 @@ export async function sendExchangeInquiryAdminEmail(inquiry: any) {
     html: getLuxuryEmailTemplate(content)
   });
 }
+
+/**
+ * Sends a "Thank you for contacting us" email for Sell Gold inquiries
+ */
+export async function sendSellGoldInquiryCustomerEmail(inquiry: any) {
+  const content = `
+    <h2 style="font-size: 24px; font-weight: normal; font-style: italic; margin-bottom: 20px; text-align: center;">Sell Old Gold - Inquiry Received</h2>
+    
+    <p>Dear ${inquiry.fullName},</p>
+    <p>Thank you for showing interest in selling your old gold to Zoniraz. We have successfully received your inquiry.</p>
+    
+    <p>Our luxury jewellery experts are currently reviewing your details and will get in touch with you shortly via your preferred contact method (<strong>${inquiry.preferredContactMethod.toUpperCase()}</strong>) at <strong>${inquiry.preferredContactMethod === 'email' ? inquiry.email : inquiry.phone}</strong> to guide you through the next steps.</p>
+
+    <div style="background-color: #fdfaf5; border: 1px solid #f2ede4; border-radius: 12px; padding: 25px; margin: 30px 0; text-align: center;">
+      <p style="margin: 0; font-size: 14px; font-style: italic; color: #3A1C16;">"Unlock the true value of your gold with our transparent, scientific evaluation process."</p>
+      <p style="margin: 15px 0 0 0; font-size: 11px; font-weight: bold; color: #8B1D2F; text-transform: uppercase;">Please note: Physical valuation at our Alwar branch is mandatory for final pricing.</p>
+    </div>
+
+    <p>We look forward to welcoming you to our Alwar boutique.</p>
+    <p>Warm regards,<br>The Zoniraz Team</p>
+  `;
+
+  if (!inquiry.email) return { success: true, skipped: true };
+
+  return sendZonirazMail({
+    to: inquiry.email,
+    subject: "Zoniraz - Sell Gold Inquiry Received",
+    html: getLuxuryEmailTemplate(content)
+  });
+}
+
+/**
+ * Notifies the admin about a new Sell Gold inquiry
+ */
+export async function sendSellGoldInquiryAdminEmail(inquiry: any) {
+  const content = `
+    <h2 style="font-size: 24px; margin-bottom: 20px;">New Sell Gold Inquiry Received</h2>
+    <div style="background-color: #fdfaf5; border: 1px solid #f2ede4; border-radius: 12px; padding: 20px;">
+      <p><strong>Customer Name:</strong> ${inquiry.fullName}</p>
+      <p><strong>Phone Number:</strong> ${inquiry.phone}</p>
+      <p><strong>Email:</strong> ${inquiry.email || 'Not provided'}</p>
+      <p><strong>City:</strong> ${inquiry.city || 'Not provided'}</p>
+      <p><strong>Jewellery Type:</strong> ${inquiry.jewelleryType || 'Not specified'}</p>
+      <p><strong>Approx. Weight:</strong> ${inquiry.approximateWeight ? inquiry.approximateWeight + 'g' : 'Not specified'}</p>
+      <p><strong>Preferred Contact:</strong> ${inquiry.preferredContactMethod.toUpperCase()}</p>
+      <p><strong>Branch:</strong> ${inquiry.branch}</p>
+    </div>
+    
+    <div style="margin-top: 30px;">
+      <a href="https://zoniraz.com/admin/sell-gold" style="background-color: #3A1C16; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 12px; font-weight: bold; display: inline-block;">View in Admin Panel</a>
+    </div>
+  `;
+
+  return sendZonirazMail({
+    to: process.env.BUSINESS_EMAIL || "info@zoniraz.com",
+    subject: `New Sell Gold Lead: ${inquiry.fullName}`,
+    html: getLuxuryEmailTemplate(content)
+  });
+}

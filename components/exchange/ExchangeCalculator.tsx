@@ -5,7 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { calculateEstimatedExchangeValue, formatCurrencyINR } from '@/lib/exchangeCalculator';
 
-export default function ExchangeCalculator() {
+interface ExchangeCalculatorProps {
+  purpose: 'exchange' | 'sell';
+  onPurposeChange: (purpose: 'exchange' | 'sell') => void;
+}
+
+export default function ExchangeCalculator({ purpose, onPurposeChange }: ExchangeCalculatorProps) {
   const [purity, setPurity] = useState('');
   const [weight, setWeight] = useState('');
   const [unknownPurity, setUnknownPurity] = useState(false);
@@ -29,7 +34,8 @@ export default function ExchangeCalculator() {
   }, [purity, weight, unknownPurity, unknownWeight]);
 
   const scrollToConsultation = () => {
-    const el = document.getElementById('consultation-section');
+    const sectionId = purpose === 'sell' ? 'sell-consultation-section' : 'consultation-section';
+    const el = document.getElementById(sectionId);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -40,7 +46,7 @@ export default function ExchangeCalculator() {
       <div className="container mx-auto px-6 lg:px-12">
         
         <div className="text-center mb-12 space-y-2">
-          <p className="text-brand-gold text-[10px] uppercase tracking-[0.2em] font-bold">Exchange Value</p>
+          <p className="text-brand-gold text-[10px] uppercase tracking-[0.2em] font-bold">Value Calculator</p>
           <h2 className="text-3xl md:text-5xl font-serif font-bold text-brand-text dark:text-white">
             Calculate Your Old Gold Value
           </h2>
@@ -65,7 +71,7 @@ export default function ExchangeCalculator() {
                   Trusted by <span className="italic text-brand-gold">millions</span>,<br /> backed by legacy.
                 </h3>
                 <p className="text-white/80 italic text-sm">
-                  Join thousands of families who chose Zoniraz Exchange.
+                  Join thousands of families who chose Zoniraz.
                 </p>
               </div>
             </div>
@@ -73,6 +79,33 @@ export default function ExchangeCalculator() {
 
           {/* Right: Form */}
           <div className="lg:w-1/2 p-10 lg:p-14 space-y-8">
+
+            {/* Purpose Selector */}
+            <div className="space-y-4">
+              <label className="text-lg font-serif font-bold text-[#6d3d3d] dark:text-[#e08686]">Purpose</label>
+              <div className="flex bg-white dark:bg-white/5 border border-brand-text/10 dark:border-white/10 rounded-xl overflow-hidden p-1">
+                <button
+                  onClick={() => onPurposeChange('exchange')}
+                  className={`flex-1 py-3 text-sm font-bold uppercase tracking-wider rounded-lg transition-all ${
+                    purpose === 'exchange' 
+                      ? 'bg-brand-gold text-white shadow-sm' 
+                      : 'text-brand-text/60 dark:text-white/60 hover:text-brand-text dark:hover:text-white hover:bg-black/5'
+                  }`}
+                >
+                  Exchange
+                </button>
+                <button
+                  onClick={() => onPurposeChange('sell')}
+                  className={`flex-1 py-3 text-sm font-bold uppercase tracking-wider rounded-lg transition-all ${
+                    purpose === 'sell' 
+                      ? 'bg-brand-gold text-white shadow-sm' 
+                      : 'text-brand-text/60 dark:text-white/60 hover:text-brand-text dark:hover:text-white hover:bg-black/5'
+                  }`}
+                >
+                  Sell
+                </button>
+              </div>
+            </div>
             
             {/* Purity */}
             <div className="space-y-4">
@@ -94,8 +127,6 @@ export default function ExchangeCalculator() {
                   </button>
                 ))}
               </div>
-
-              <p className="text-xs text-brand-text/50 dark:text-white/50 italic">Select the purity of your old gold</p>
 
               <label className="flex items-center space-x-2 cursor-pointer mt-2">
                 <input 
@@ -124,8 +155,6 @@ export default function ExchangeCalculator() {
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-gold font-bold text-sm">g</span>
               </div>
 
-              <p className="text-xs text-brand-text/50 dark:text-white/50 italic">Net weight in grams</p>
-
               <label className="flex items-center space-x-2 cursor-pointer mt-2">
                 <input 
                   type="checkbox" 
@@ -149,15 +178,22 @@ export default function ExchangeCalculator() {
                 </button>
               ) : estimatedValue ? (
                 <div className="space-y-4">
-                   <div className="bg-[#FAF9F6] dark:bg-white/5 border border-brand-gold/30 rounded-xl p-4 flex justify-between items-center">
-                     <span className="text-sm font-bold text-brand-text/70 dark:text-white/70">Estimated Value:</span>
-                     <span className="text-2xl font-serif font-bold text-[#8c5a5a] dark:text-[#e08686]">{formatCurrencyINR(estimatedValue)}</span>
+                   <div className="bg-[#FAF9F6] dark:bg-white/5 border border-brand-gold/30 rounded-xl p-4 flex flex-col items-center justify-center text-center space-y-2">
+                     <span className="text-sm font-bold text-brand-text/70 dark:text-white/70">
+                       {purpose === 'exchange' ? 'Estimated Exchange Value:' : 'Estimated In-Store Sell Value:'}
+                     </span>
+                     <span className="text-3xl font-serif font-bold text-[#8c5a5a] dark:text-[#e08686]">{formatCurrencyINR(estimatedValue)}</span>
+                     {purpose === 'sell' && (
+                       <span className="text-[10px] text-brand-text/50 uppercase tracking-widest font-bold mt-2">
+                         * Subject to physical verification at Alwar Branch
+                       </span>
+                     )}
                    </div>
                    <button 
                     onClick={scrollToConsultation}
                     className="w-full bg-[#8c5a5a] text-white py-4 rounded-xl font-bold text-sm hover:bg-[#6d3d3d] transition-colors flex items-center justify-between px-6"
                   >
-                    <span>Proceed to Exchange</span>
+                    <span>{purpose === 'exchange' ? 'Proceed to Exchange' : 'Book Valuation Visit'}</span>
                     <ChevronRight size={18} />
                   </button>
                 </div>
@@ -166,7 +202,7 @@ export default function ExchangeCalculator() {
                   disabled
                   className="w-full bg-[#bd9a9a] text-white py-4 rounded-xl font-bold text-sm flex items-center justify-between px-6 cursor-not-allowed"
                 >
-                  <span>Calculate Exchange Value</span>
+                  <span>{purpose === 'exchange' ? 'Calculate Exchange Value' : 'Calculate Sell Value'}</span>
                   <ChevronRight size={18} />
                 </button>
               )}

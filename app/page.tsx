@@ -421,25 +421,31 @@ export default function Home() {
       {/* 10. GIFTING & OLD GOLD */}
       <section className="py-16 bg-white dark:bg-brand-accent transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12 grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="relative aspect-square md:aspect-auto md:h-[400px] rounded-[40px] overflow-hidden bg-[#F6EDEB] group p-10 flex flex-col items-center justify-center text-center">
-            <div className="absolute top-0 bottom-0 left-12 w-8 bg-[#8B2332]"></div>
-            <div className="absolute left-0 right-0 bottom-12 h-8 bg-[#8B2332]"></div>
-            <div className="absolute left-12 bottom-12 w-12 h-12 bg-[#701C28] rounded-full transform -translate-x-2 translate-y-2"></div>
-
-            <div className="relative z-10 space-y-4 sm:ml-12 sm:mb-12 bg-white/80 backdrop-blur-sm p-6 rounded-[40px] w-full max-w-[280px]">
-              <h3 className="text-2xl sm:text-4xl font-serif text-[#8B2332]">#GiftOfChoice</h3>
-              <p className="text-brand-text/70 text-[10px] sm:text-xs leading-relaxed max-w-[200px] mx-auto">Breathtaking gifts for your loved one's</p>
-              <p className="text-[#8B2332] text-[9px] sm:text-[10px] font-bold uppercase tracking-widest">Starting at $10,000</p>
-              <button className="w-full mt-4 px-6 py-2 border border-[#8B2332]/20 bg-white rounded-full text-[10px] uppercase tracking-widest font-bold text-brand-text hover:bg-[#8B2332] hover:text-white transition-all flex items-center justify-center space-x-2">
-                <span>Explore Now</span>
+          <div className="relative aspect-square md:aspect-auto md:h-[400px] rounded-[40px] overflow-hidden bg-[#FAF9F6] dark:bg-[#12100e] group p-12 flex flex-col justify-center border-1 border-brand-gold/50 shadow-sm">
+            <div className="space-y-6 relative z-10">
+              <div className="w-16 h-16 border border-brand-gold rounded-full flex items-center justify-center mb-6 bg-brand-gold/10">
+                <Diamond size={24} className="text-brand-gold" />
+              </div>
+              <h3 className="text-4xl font-serif text-brand-text dark:text-white max-w-[250px] leading-tight">Sell Your Old Gold</h3>
+              <p className="text-brand-text/60 dark:text-white/60 text-xs leading-relaxed max-w-[250px]">Turn your unused gold into instant value with our transparent in-store valuation process.</p>
+              <p className="text-[9px] uppercase tracking-widest font-bold text-[#8B2332] dark:text-[#e08686]">* Alwar Branch Only</p>
+              <Link href="/exchange" onClick={(e) => {
+                // In a real app we'd pass state or use query params to trigger the tab. 
+                // We'll just link to /exchange for now.
+              }} className="w-full sm:w-max px-6 py-3 border border-brand-gold bg-brand-gold text-white rounded-full text-[10px] uppercase tracking-widest font-bold hover:bg-[#B38B36] transition-all flex items-center justify-center space-x-2">
+                <span>Book Valuation</span>
                 <ArrowRight size={10} />
-              </button>
+              </Link>
+            </div>
+            {/* Background decorative element */}
+            <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-x-1/4 translate-y-1/4">
+              <RotateCcw size={200} />
             </div>
           </div>
 
           <div className="relative aspect-square md:aspect-auto md:h-[400px] rounded-[40px] overflow-hidden bg-[#FFFBF0] dark:bg-brand-bg group p-12 flex flex-col justify-center border-1 border-brand-gold dark:border-brand-border/10 shadow-sm">
             <div className="space-y-6">
-              <div className="w-16 h-16 border border-brand-gold rounded-t-full flex items-center justify-center mb-6">
+              <div className="w-16 h-16 border border-brand-gold rounded-t-full flex items-center justify-center mb-6 bg-white dark:bg-black/20">
                 <RotateCcw size={24} className="text-brand-gold" />
               </div>
               <h3 className="text-4xl font-serif text-brand-text max-w-[250px] leading-tight">Exchange your Old Gold for 100% Value!</h3>
