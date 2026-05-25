@@ -158,3 +158,56 @@ export async function sendAdminNewOrderEmail(order: any) {
     html: getLuxuryEmailTemplate(content)
   });
 }
+
+/**
+ * Sends a "Thank you for contacting us" email for Exchange inquiries
+ */
+export async function sendExchangeInquiryCustomerEmail(inquiry: any) {
+  const content = `
+    <h2 style="font-size: 24px; font-weight: normal; font-style: italic; margin-bottom: 20px; text-align: center;">Thank You for Your Inquiry</h2>
+    
+    <p>Dear ${inquiry.fullName},</p>
+    <p>Thank you for showing interest in the Zoniraz Gold Exchange Program. We have successfully received your inquiry.</p>
+    
+    <p>Our luxury jewellery experts are currently reviewing your details and will get in touch with you shortly at <strong>${inquiry.phone}</strong> to guide you through the next steps of your exchange journey.</p>
+
+    <div style="background-color: #fdfaf5; border: 1px solid #f2ede4; border-radius: 12px; padding: 25px; margin: 30px 0; text-align: center;">
+      <p style="margin: 0; font-size: 14px; font-style: italic; color: #3A1C16;">"Transform your cherished memories into timeless new masterpieces."</p>
+    </div>
+
+    <p>We look forward to welcoming you to our Alwar boutique.</p>
+    <p>Warm regards,<br>The Zoniraz Team</p>
+  `;
+
+  return sendZonirazMail({
+    to: inquiry.email,
+    subject: "Zoniraz Exchange Program - Inquiry Received",
+    html: getLuxuryEmailTemplate(content)
+  });
+}
+
+/**
+ * Notifies the admin about a new Exchange inquiry
+ */
+export async function sendExchangeInquiryAdminEmail(inquiry: any) {
+  const content = `
+    <h2 style="font-size: 24px; margin-bottom: 20px;">New Exchange Inquiry Received</h2>
+    <div style="background-color: #fdfaf5; border: 1px solid #f2ede4; border-radius: 12px; padding: 20px;">
+      <p><strong>Customer Name:</strong> ${inquiry.fullName}</p>
+      <p><strong>Phone Number:</strong> ${inquiry.phone}</p>
+      <p><strong>Email:</strong> ${inquiry.email}</p>
+      <p><strong>City:</strong> ${inquiry.city || 'Not provided'}</p>
+      <p><strong>Consultation Type:</strong> ${inquiry.consultationType || 'Phone'}</p>
+    </div>
+    
+    <div style="margin-top: 30px;">
+      <a href="https://zoniraz.com/admin/exchange" style="background-color: #3A1C16; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 12px; font-weight: bold; display: inline-block;">View in Admin Panel</a>
+    </div>
+  `;
+
+  return sendZonirazMail({
+    to: process.env.BUSINESS_EMAIL || "info@zoniraz.com",
+    subject: `New Exchange Lead: ${inquiry.fullName}`,
+    html: getLuxuryEmailTemplate(content)
+  });
+}

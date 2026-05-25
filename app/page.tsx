@@ -390,10 +390,10 @@ export default function Home() {
               <p className="text-sm text-brand-text/50 dark:text-brand-text/70">Trusted by 2.8M+ families</p>
             </div>
 
-            <button className="w-full sm:w-auto px-8 py-3 border border-[#8B2332]/30 rounded-full text-[10px] uppercase tracking-widest font-bold text-brand-text hover:bg-brand-bg transition-colors flex items-center justify-center space-x-2">
+            <Link href="/exchange" className="w-full sm:w-auto px-8 py-3 border border-[#8B2332]/30 rounded-full text-[10px] uppercase tracking-widest font-bold text-brand-text hover:bg-brand-bg transition-colors flex items-center justify-center space-x-2">
               <span>Explore Now</span>
               <ArrowRight size={12} />
-            </button>
+            </Link>
 
             <div className="w-full flex items-center justify-center space-x-4">
               <div className="h-[1px] w-full max-w-[200px] bg-brand-text/10"></div>
@@ -444,10 +444,10 @@ export default function Home() {
               </div>
               <h3 className="text-4xl font-serif text-brand-text max-w-[250px] leading-tight">Exchange your Old Gold for 100% Value!</h3>
               <p className="text-brand-text/60 dark:text-brand-text/80 text-xs leading-relaxed max-w-[250px]">Unlock full value for your old gold today with our <span className="font-bold text-brand-text">Exchange Program!</span></p>
-              <button className="w-full sm:w-max px-6 py-3 border border-brand-gold bg-white rounded-full text-[10px] uppercase tracking-widest font-bold text-brand-text hover:bg-brand-gold hover:text-white transition-all flex items-center justify-center space-x-2">
+              <Link href="/exchange" className="w-full sm:w-max px-6 py-3 border border-brand-gold bg-white rounded-full text-[10px] uppercase tracking-widest font-bold text-brand-text hover:bg-brand-gold hover:text-white transition-all flex items-center justify-center space-x-2">
                 <span>Know more</span>
                 <ArrowRight size={10} />
-              </button>
+              </Link>
             </div>
           </div>
         </div>
