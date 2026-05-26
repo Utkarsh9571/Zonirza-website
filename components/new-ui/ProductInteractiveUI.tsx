@@ -136,12 +136,16 @@ export function ProductInteractiveUI({ product }: { product: any }) {
   // Configuration State - Always initialized with valid defaults
   const [config, setConfig] = useState<ProductConfiguration>(getInitialConfiguration());
 
-  // Derive current images based on selected metal
-  const currentImages = useMemo(() => {
+  // Derive current media (images + videos) based on selected metal
+  const currentMedia = useMemo(() => {
     const metalSlug = config.metal.toLowerCase().replace(/\s+/g, '-');
-    const filtered = product.images.filter((img: string) => img.toLowerCase().includes(metalSlug));
-    return filtered.length > 0 ? filtered : product.images;
-  }, [product.images, config.metal]);
+    const filteredImages = product.images.filter((img: string) => img.toLowerCase().includes(metalSlug));
+    const baseImages = filteredImages.length > 0 ? filteredImages : product.images;
+    const videos = product.productVideos || [];
+    return [...baseImages, ...videos];
+  }, [product.images, product.productVideos, config.metal]);
+
+  const isVideo = (url: string) => url.match(/\.(mp4|webm|mov)$/i);
 
   // Reset selected image when metal changes
   useEffect(() => {
@@ -242,7 +246,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
     // Generate a unique ID based on productId and current configuration
     const cartItemId = `${product._id}-${config.purity}-${config.metal}-${config.size}-${config.stone}`.replace(/\s+/g, '-').toLowerCase();
 
-    const resolvedImage = resolveProductImage(currentImages[selectedImage] || currentImages[0]);
+    const resolvedImage = resolveProductImage(currentMedia[selectedImage] || currentMedia[0]);
 
     cartAddItem({
       cartItemId,
@@ -343,40 +347,56 @@ export function ProductInteractiveUI({ product }: { product: any }) {
         {/* 3. MASSIVE FULL-WIDTH DUAL IMAGE GALLERY */}
         <div className="w-full relative bg-white dark:bg-[#1a1614] rounded-[40px] overflow-hidden mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150">
           <div className="flex w-full aspect-[4/5] lg:aspect-[2.5/1] gap-4">
-             {/* Image 1 */}
+             {/* Media 1 */}
              <div className="w-full lg:w-1/2 relative h-full">
-                <ProductImageZoom 
-                  image={resolveProductImage(currentImages[selectedImage] || currentImages[0])} 
-                  name={product.name} 
-                />
-             </div>
-             
-             {/* Image 2 (Hidden on mobile, visible on desktop) */}
-             <div className="hidden lg:block w-1/2 relative h-full">
-               {currentImages.length > 1 ? (
+                {isVideo(currentMedia[selectedImage] || '') ? (
+                  <video 
+                    src={currentMedia[selectedImage]} 
+                    autoPlay loop muted playsInline 
+                    className="w-full h-full object-cover rounded-[48px] border-2 border-brand-gold/90" 
+                  />
+                ) : (
                   <ProductImageZoom 
-                    image={resolveProductImage(currentImages[(selectedImage + 1) % currentImages.length])} 
+                    image={resolveProductImage(currentMedia[selectedImage] || currentMedia[0])} 
                     name={product.name} 
                   />
+                )}
+             </div>
+             
+             {/* Media 2 (Hidden on mobile, visible on desktop) */}
+             <div className="hidden lg:block w-1/2 relative h-full">
+               {currentMedia.length > 1 ? (
+                 isVideo(currentMedia[(selectedImage + 1) % currentMedia.length] || '') ? (
+                  <video 
+                    src={currentMedia[(selectedImage + 1) % currentMedia.length]} 
+                    autoPlay loop muted playsInline 
+                    className="w-full h-full object-cover rounded-[48px] border-2 border-brand-gold/90" 
+                  />
+                 ) : (
+                  <ProductImageZoom 
+                    image={resolveProductImage(currentMedia[(selectedImage + 1) % currentMedia.length])} 
+                    name={product.name} 
+                  />
+                 )
                ) : (
-                  <div className="w-full h-full bg-brand-bg/50 flex items-center justify-center">
-                    <span className="text-brand-text/30 font-serif">No more images</span>
+                  <div className="w-full h-full bg-brand-bg/50 flex items-center justify-center rounded-[48px]">
+                    <span className="text-brand-text/30 font-serif">No more media</span>
                   </div>
                )}
              </div>
           </div>
 
           {/* Navigation Arrows */}
-          {currentImages.length > 1 && (
+          {currentMedia.length > 1 && (
             <>
               <button 
-                onClick={() => setSelectedImage((prev) => (prev - 1 + currentImages.length) % currentImages.length)}
+                onClick={() => setSelectedImage((prev) => (prev - 1 + currentMedia.length) % currentMedia.length)}
                 className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-md shadow-premium border border-brand-gold/10 rounded-full flex items-center justify-center z-10 hover:bg-brand-gold hover:text-white hover:border-brand-gold transition-all text-brand-text"
               >
                  <ChevronLeft size={24} />
               </button>
               <button 
-                onClick={() => setSelectedImage((prev) => (prev + 1) % currentImages.length)}
+                onClick={() => setSelectedImage((prev) => (prev + 1) % currentMedia.length)}
                 className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-md shadow-premium border border-brand-gold/10 rounded-full flex items-center justify-center z-10 hover:bg-brand-gold hover:text-white hover:border-brand-gold transition-all text-brand-text"
               >
                  <ChevronRight size={24} />

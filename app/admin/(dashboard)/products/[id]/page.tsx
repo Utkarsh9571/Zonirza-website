@@ -22,7 +22,8 @@ import {
   Eye,
   EyeOff,
   ExternalLink,
-  FileText
+  FileText,
+  Video
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { resolveProductImage } from '@/lib/imageResolver';
@@ -59,6 +60,10 @@ function ProductEditorContent({ params }: ProductEditorProps) {
     stockStatus: 'in-stock',
     isActive: true,
     images: [],
+    productVideos: [],
+    enableCardVideoPreview: false,
+    cardPreviewVideo: '',
+    cardPreviewThumbnail: '',
     variantImages: {},
     specs: {},
     configurableOptions: {
@@ -90,6 +95,10 @@ function ProductEditorContent({ params }: ProductEditorProps) {
         const product = data.data;
         setFormData({
           ...product,
+          productVideos: product.productVideos || [],
+          enableCardVideoPreview: product.enableCardVideoPreview || false,
+          cardPreviewVideo: product.cardPreviewVideo || '',
+          cardPreviewThumbnail: product.cardPreviewThumbnail || '',
           variantImages: product.variantImages || {},
           specs: product.specs || {},
           configurableOptions: {
@@ -488,6 +497,109 @@ function ProductEditorContent({ params }: ProductEditorProps) {
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Video Assets Section */}
+            <div className="space-y-6 pt-10 border-t border-brand-text/10 dark:border-white/10">
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold flex items-center gap-2">
+                  <Video size={14} /> Product Videos
+                </label>
+                <button 
+                  onClick={() => setFormData({...formData, productVideos: [...(formData.productVideos || []), '']})}
+                  className="text-[10px] font-bold text-brand-gold uppercase tracking-widest flex items-center space-x-2"
+                >
+                  <Plus size={14} />
+                  <span>Add Video</span>
+                </button>
+              </div>
+              <p className="text-[9px] text-brand-text/40 italic mt-0">Add URLs for product videos to show in the PDP gallery.</p>
+              
+              <div className="grid grid-cols-1 gap-4">
+                {(formData.productVideos || []).map((vid: string, idx: number) => (
+                  <div key={idx} className="flex items-center space-x-4 p-4 bg-slate-50 dark:bg-white/5 rounded-2xl group border border-brand-text/10 hover:border-brand-gold/20 transition-all shadow-sm">
+                    <Video className="text-brand-text/40" size={20} />
+                    <input 
+                      type="url" 
+                      value={vid}
+                      onChange={(e) => {
+                        const newVideos = [...formData.productVideos];
+                        newVideos[idx] = e.target.value;
+                        setFormData({...formData, productVideos: newVideos});
+                      }}
+                      placeholder="https://..."
+                      className="flex-1 bg-transparent border-none text-[13px] text-brand-text dark:text-white focus:ring-0"
+                    />
+                    <button 
+                      onClick={() => {
+                        const newVideos = formData.productVideos.filter((_:any, i:number) => i !== idx);
+                        setFormData({...formData, productVideos: newVideos});
+                      }}
+                      className="p-2 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Card Video Preview Settings */}
+            <div className="space-y-6 pt-10 border-t border-brand-text/10 dark:border-white/10">
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Product Card Autoplay</label>
+                <p className="text-[9px] text-brand-text/40 italic">Enable cinematic video preview when user hovers or scrolls to the product card.</p>
+              </div>
+
+              <div className="flex items-center space-x-6 h-[60px]">
+                <button 
+                  onClick={() => setFormData({...formData, enableCardVideoPreview: true})}
+                  className={cn(
+                    "flex-1 flex items-center justify-center space-x-3 px-6 py-3 rounded-xl border transition-all duration-500",
+                    formData.enableCardVideoPreview ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-500" : "bg-white/2 border-white/5 text-brand-text/20"
+                  )}
+                >
+                  <Eye size={16} />
+                  <span className="text-[11px] font-bold uppercase tracking-widest">Enabled</span>
+                </button>
+                <button 
+                  onClick={() => setFormData({...formData, enableCardVideoPreview: false})}
+                  className={cn(
+                    "flex-1 flex items-center justify-center space-x-3 px-6 py-3 rounded-xl border transition-all duration-500",
+                    !formData.enableCardVideoPreview ? "bg-red-500/10 border-red-500/30 text-red-500" : "bg-white/2 border-white/5 text-brand-text/20"
+                  )}
+                >
+                  <EyeOff size={16} />
+                  <span className="text-[11px] font-bold uppercase tracking-widest">Disabled</span>
+                </button>
+              </div>
+
+              {formData.enableCardVideoPreview && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-50 dark:bg-white/5 p-6 rounded-2xl border border-brand-gold/20">
+                  <div className="space-y-3">
+                    <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 flex items-center gap-2"><Video size={12}/> Preview Video URL</label>
+                    <input 
+                      type="url" 
+                      value={formData.cardPreviewVideo || ''}
+                      onChange={(e) => setFormData({...formData, cardPreviewVideo: e.target.value})}
+                      placeholder="https://..."
+                      className="w-full bg-white dark:bg-[#1A1A1A] border border-brand-text/15 dark:border-white/15 rounded-2xl py-3 px-4 text-[13px] shadow-inner"
+                    />
+                    <p className="text-[8px] text-brand-text/40 ml-2">Must be muted WebM/MP4 under 3MB</p>
+                  </div>
+                  <div className="space-y-3">
+                    <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 flex items-center gap-2"><ImageIcon size={12}/> Fallback Thumbnail URL</label>
+                    <input 
+                      type="url" 
+                      value={formData.cardPreviewThumbnail || ''}
+                      onChange={(e) => setFormData({...formData, cardPreviewThumbnail: e.target.value})}
+                      placeholder="https://..."
+                      className="w-full bg-white dark:bg-[#1A1A1A] border border-brand-text/15 dark:border-white/15 rounded-2xl py-3 px-4 text-[13px] shadow-inner"
+                    />
+                    <p className="text-[8px] text-brand-text/40 ml-2">Shown while loading or low power mode</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

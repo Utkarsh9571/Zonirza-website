@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { resolveProductImage } from '@/lib/imageResolver';
@@ -9,6 +11,7 @@ import { useSession } from 'next-auth/react';
 import { useAuthModalStore } from '@/store/authModalStore';
 import { cn } from '@/lib/utils';
 import { getProductThumbnail } from '@/lib/productImage';
+import { useRef, useEffect, useState } from 'react';
 
 interface ProductCardProps {
   name: string;
@@ -19,9 +22,24 @@ interface ProductCardProps {
   variantImages?: Record<string, string>;
   images?: string[];
   context?: { search?: string; metal?: string };
+  enableCardVideoPreview?: boolean;
+  cardPreviewVideo?: string;
+  cardPreviewThumbnail?: string;
 }
 
-const ProductCard = ({ name, price, image, slug, oldPrice, variantImages, images, context }: ProductCardProps) => {
+const ProductCard = ({ 
+  name, 
+  price, 
+  image, 
+  slug, 
+  oldPrice, 
+  variantImages, 
+  images, 
+  context,
+  enableCardVideoPreview,
+  cardPreviewVideo,
+  cardPreviewThumbnail 
+}: ProductCardProps) => {
   const selectedImage = getProductThumbnail({ images, variantImages }, context) || image;
   const imageUrl = resolveProductImage(selectedImage);
   const { currentCurrency, rates } = useCurrencyStore();
@@ -30,6 +48,37 @@ const ProductCard = ({ name, price, image, slug, oldPrice, variantImages, images
   const { toggleItem, isInWishlist } = useWishlistStore();
   
   const isWishlisted = isInWishlist(slug);
+
+  const cardRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    if (!enableCardVideoPreview || !cardPreviewVideo) return;
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        setIsVisible(entry.isIntersecting);
+      });
+    }, { threshold: 0.5 }); // 50% visible
+
+    if (cardRef.current) observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, [enableCardVideoPreview, cardPreviewVideo]);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    
+    const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+    const shouldPlay = isDesktop ? (isVisible || isHovered) : isVisible;
+
+    if (shouldPlay) {
+      videoRef.current.play().catch(() => {});
+    } else {
+      videoRef.current.pause();
+    }
+  }, [isVisible, isHovered]);
 
   const handleWishlistClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -42,15 +91,43 @@ const ProductCard = ({ name, price, image, slug, oldPrice, variantImages, images
   };
 
   return (
-    <Link href={`/product/${slug}`} className="group block h-full">
-      <div className="bg-white dark:bg-[#1a1614] rounded-[40px] overflow-hidden aspect-square relative mb-4 border border-brand-gold/90 shadow-soft transition-all duration-700 group-hover:shadow-premium group-hover:-translate-y-2 group-hover:border-brand-gold/100">
+    <Link 
+      href={`/product/${slug}`} 
+      className="group block h-full"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div ref={cardRef} className="bg-white dark:bg-[#1a1614] rounded-[40px] overflow-hidden aspect-square relative mb-4 border border-brand-gold/90 shadow-soft transition-all duration-700 group-hover:shadow-premium group-hover:-translate-y-2 group-hover:border-brand-gold/100">
+        
+        {/* Main Image or Fallback Thumbnail */}
         <Image
-          src={imageUrl}
+          src={enableCardVideoPreview && cardPreviewThumbnail ? cardPreviewThumbnail : imageUrl}
           alt={name}
           fill
-          className="object-cover p-6 sm:p-8 transition-transform duration-700 group-hover:scale-110 rounded-[50px]"
+          className={cn(
+            "object-cover p-6 sm:p-8 transition-opacity duration-700 rounded-[50px] group-hover:scale-110",
+            (enableCardVideoPreview && cardPreviewVideo && (isVisible || isHovered)) ? "opacity-0" : "opacity-100"
+          )}
           sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
         />
+
+        {/* Cinematic Video Layer */}
+        {enableCardVideoPreview && cardPreviewVideo && (
+          <video
+            ref={videoRef}
+            muted
+            loop
+            playsInline
+            preload="none"
+            poster={cardPreviewThumbnail}
+            className={cn(
+              "absolute inset-0 w-full h-full object-cover transition-opacity duration-700",
+              (isVisible || isHovered) ? "opacity-100" : "opacity-0"
+            )}
+          >
+            <source src={cardPreviewVideo} type="video/mp4" />
+          </video>
+        )}
 
         {/* Wishlist Button */}
         <button 

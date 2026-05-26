@@ -2,13 +2,14 @@ import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import ExchangeInquiry from '@/models/ExchangeInquiry';
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     if (mongoose.connection.readyState !== 1) {
       await mongoose.connect(process.env.MONGODB_URI as string);
     }
 
-    const inquiry = await ExchangeInquiry.findById(params.id);
+    const { id } = await params;
+    const inquiry = await ExchangeInquiry.findById(id);
 
     if (!inquiry) {
       return NextResponse.json({ success: false, error: 'Inquiry not found' }, { status: 404 });
@@ -24,7 +25,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     if (mongoose.connection.readyState !== 1) {
       await mongoose.connect(process.env.MONGODB_URI as string);
@@ -32,9 +33,10 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
     const body = await req.json();
     const { status, adminNotes } = body;
+    const { id } = await params;
 
     const updatedInquiry = await ExchangeInquiry.findByIdAndUpdate(
-      params.id,
+      id,
       { $set: { status, adminNotes } },
       { new: true }
     );

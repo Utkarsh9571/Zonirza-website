@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { PLACEHOLDER_IMAGE, getValidImageUrl } from '@/lib/constants';
 import { IProduct } from '@/models/Product';
 import { ArrowRight, Star, ShieldCheck, Diamond, Heart, CheckCircle2, Video, Store, Gift, RotateCcw } from 'lucide-react';
-import HeroSlider from '@/components/HeroSlider';
+import CinematicHero from '@/components/home/CinematicHero';
 import StylingVideoSlider from '@/components/StylingVideoSlider';
 import { resolveProductImage } from '@/lib/imageResolver';
 import { useAuthModalStore } from '@/store/authModalStore';
@@ -63,57 +63,7 @@ export default function Home() {
     <div className="flex flex-col bg-brand-bg text-brand-text min-h-screen overflow-x-hidden transition-colors duration-500">
 
       {/* 1. HERO SECTION */}
-      <section className="relative h-screen min-h-[700px] w-full flex items-center justify-center p-4 md:p-6 lg:p-8 overflow-hidden">
-        <div className="absolute inset-0 w-full h-full">
-          <Image
-            src={homeContent?.hero?.imageUrl || "/images/hero-bg.avif"}
-            alt="Luxury Jewelry Background"
-            fill
-            sizes="100vw"
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0"></div>
-        </div>
-
-        <div className="relative z-10 w-full h-full hero-glass rounded-[30px] md:rounded-[50px] overflow-hidden flex flex-col md:flex-row items-center justify-between p-8 md:p-16 lg:p-24 pt-24 md:pt-32 lg:pt-32 animate-in fade-in zoom-in duration-1000">
-          {/* Removed light gradient overlay */}
-          
-          <div className="flex-1 flex flex-col items-start justify-center space-y-12 max-w-2xl">
-            <div className="space-y-4">
-              <h1 
-                className="text-7xl md:text-[110px] font-serif text-white leading-[0.85] tracking-tighter"
-                dangerouslySetInnerHTML={{ __html: homeContent?.hero?.title?.replace(/\n/g, '<br />') || 'Our Luxury <br /> Collections' }}
-              />
-            </div>
-
-            <button 
-              onClick={openAuthModal}
-              className="flex items-center space-x-4 group bg-transparent border-none outline-none p-0"
-            >
-              <div className="bg-brand-text dark:bg-brand-gold text-brand-bg dark:text-white px-12 py-5 rounded-full text-[11px] uppercase tracking-[0.2em] font-bold hover:bg-brand-gold hover:text-white transition-all shadow-none cursor-pointer">
-                {homeContent?.hero?.buttonText || "Let's Get Started"}
-              </div>
-              <div className="w-14 h-14 rounded-full bg-brand-text dark:bg-brand-gold text-brand-bg dark:text-white flex items-center justify-center shadow-none group-hover:bg-brand-gold group-hover:text-white transition-all cursor-pointer">
-                <ArrowRight size={20} />
-              </div>
-            </button>
-
-            <div className="space-y-4 pt-6 border-l-2 border-brand-gold pl-8">
-              <p className="text-white text-xs uppercase tracking-[0.4em] font-bold italic opacity-80">
-                # Zoniraz Jewelry Store
-              </p>
-              <p className="text-white/60 text-sm leading-relaxed max-w-sm font-medium">
-                {homeContent?.hero?.subtitle || "Discover the artistry of fine jewellery at Zoniraz. From timeless diamond necklaces to contemporary gold collections, our pieces are crafted to celebrate your most precious moments."}
-              </p>
-            </div>
-          </div>
-
-          <div className="relative flex-1 flex flex-col items-center justify-center w-full mt-12 md:mt-8 min-h-[200px] md:min-h-0">
-            <HeroSlider />
-          </div>
-        </div>
-      </section>
+      <CinematicHero />
 
       {/* 2. SHOP BY COLLECTION */}
       <section className="py-8 sm:py-12">

@@ -15,6 +15,10 @@ export interface IProduct extends Document {
   tags: string[];
   specs: Record<string, string>;
   variantImages?: Record<string, string>;
+  productVideos?: string[];
+  enableCardVideoPreview?: boolean;
+  cardPreviewVideo?: string;
+  cardPreviewThumbnail?: string;
   configurableOptions?: {
     metals?: string[];
     purities?: string[];
@@ -44,6 +48,10 @@ const ProductSchema: Schema = new Schema({
   isActive: { type: Boolean, default: true },
   tags: { type: [String], default: [] },
   specs: { type: Map, of: String, default: {} },
+  productVideos: { type: [String], default: [] },
+  enableCardVideoPreview: { type: Boolean, default: false },
+  cardPreviewVideo: { type: String },
+  cardPreviewThumbnail: { type: String },
   configurableOptions: {
     metals: [String],
     purities: [String],

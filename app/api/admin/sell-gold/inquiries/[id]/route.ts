@@ -4,7 +4,7 @@ import SellGoldInquiry from '@/models/SellGoldInquiry';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -15,7 +15,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       await mongoose.connect(process.env.MONGODB_URI as string);
     }
 
-    const inquiry = await SellGoldInquiry.findById(params.id);
+    const { id } = await params;
+    const inquiry = await SellGoldInquiry.findById(id);
     if (!inquiry) {
       return NextResponse.json({ success: false, error: 'Not found' }, { status: 404 });
     }
@@ -27,7 +28,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -39,8 +40,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     }
 
     const body = await req.json();
+    const { id } = await params;
     const updatedInquiry = await SellGoldInquiry.findByIdAndUpdate(
-      params.id,
+      id,
       { $set: body },
       { new: true, runValidators: true }
     );
