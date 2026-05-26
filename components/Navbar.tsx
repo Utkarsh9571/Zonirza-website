@@ -129,10 +129,10 @@ const Navbar = () => {
     return (
       <>
       <nav ref={navRef} className={cn(
-        "fixed w-full z-[100] flex justify-between items-center transition-all duration-500 pointer-events-auto",
+        "fixed top-0 left-0 right-0 z-[100] flex justify-between items-center transition-all duration-500 pointer-events-auto",
         isScrolled 
-          ? "top-0 py-4 px-6 md:px-12 bg-white/90 dark:bg-brand-bg/90 backdrop-blur-xl shadow-premium border-b border-brand-border dark:border-white/5" 
-          : "top-0 py-6 px-6 md:px-12 bg-transparent"
+          ? "py-4 px-6 md:px-12 bg-white/90 dark:bg-brand-bg/90 backdrop-blur-xl shadow-premium border-b border-brand-border dark:border-white/5" 
+          : "py-6 px-6 md:px-12 bg-transparent"
       )}>
         
         <div className="flex items-center space-x-4">
@@ -383,7 +383,7 @@ const Navbar = () => {
         {activeMenu === 'shop' && (
           <div 
             className={cn(
-              "left-0 w-full flex justify-center px-6 animate-in slide-in-from-top-2 duration-300 z-[110] pointer-events-auto",
+              "left-0 right-0 flex justify-center px-4 md:px-6 lg:px-12 animate-in slide-in-from-top-2 duration-300 z-[110] pointer-events-auto",
               isScrolled ? "fixed top-14" : "absolute top-full"
             )}
             onMouseEnter={() => handleShopInteraction('hover')}

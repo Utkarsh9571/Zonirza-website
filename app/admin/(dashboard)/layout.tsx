@@ -13,7 +13,7 @@ export default function AdminLayout({
         <AdminSidebar />
 
         {/* Main Content Area */}
-        <div className="pl-72 flex flex-col min-h-screen">
+        <div className="lg:pl-72 flex flex-col min-h-screen pt-16 lg:pt-0">
           {/* Dynamic Content */}
           <main className="flex-1 p-8 lg:p-12 animate-in fade-in duration-700">
             <div className="max-w-7xl mx-auto">

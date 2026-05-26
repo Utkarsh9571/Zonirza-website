@@ -174,7 +174,7 @@ export default function CreateSIP() {
                     </div>
                   </div>
 
-                  <div className="h-[200px] w-full mt-auto">
+                  <div className="h-[200px] w-full mt-auto overflow-hidden">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={forecast.milestones} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                         <defs>

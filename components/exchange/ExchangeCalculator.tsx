@@ -55,10 +55,10 @@ export default function ExchangeCalculator({ purpose, onPurposeChange }: Exchang
           </p>
         </div>
 
-        <div className="max-w-5xl mx-auto rounded-[32px] overflow-hidden border border-brand-text/10 dark:border-white/10 shadow-lg flex flex-col lg:flex-row bg-white dark:bg-[#12100e]">
+        <div className="max-w-5xl mx-auto rounded-[32px] overflow-hidden border border-brand-text/10 dark:border-white/10 shadow-lg flex flex-col xl:flex-row bg-white dark:bg-[#12100e]">
 
           {/* Left: Image Card */}
-          <div className="lg:w-1/2 relative min-h-[400px] bg-[url('https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center">
+          <div className="xl:w-1/2 relative min-h-[400px] bg-[url('https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center">
             <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
             <div className="absolute inset-0 p-10 flex flex-col justify-between">
               <div className="inline-flex items-center space-x-2 border border-brand-gold/30 rounded-full px-4 py-1.5 w-fit bg-black/20 backdrop-blur-sm">
@@ -78,7 +78,7 @@ export default function ExchangeCalculator({ purpose, onPurposeChange }: Exchang
           </div>
 
           {/* Right: Form */}
-          <div className="lg:w-1/2 p-10 lg:p-14 space-y-8">
+          <div className="xl:w-1/2 p-10 xl:p-14 space-y-8">
 
             {/* Purpose Selector */}
             <div className="space-y-4">

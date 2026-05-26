@@ -53,6 +53,13 @@ const ProductCard = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [hasLoadedVideo, setHasLoadedVideo] = useState(false);
+
+  useEffect(() => {
+    if (isVisible || isHovered) {
+      setHasLoadedVideo(true);
+    }
+  }, [isVisible, isHovered]);
 
   useEffect(() => {
     if (!enableCardVideoPreview || !cardPreviewVideo) return;
@@ -93,11 +100,11 @@ const ProductCard = ({
   return (
     <Link
       href={`/product/${slug}`}
-      className="group block h-full"
+      className="product-card-wrapper group block h-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div ref={cardRef} className="bg-white dark:bg-[#1a1614] rounded-[40px] overflow-hidden aspect-square relative mb-4 border border-brand-gold/90 shadow-soft transition-all duration-700 group-hover:shadow-premium group-hover:-translate-y-2 group-hover:border-brand-gold/100">
+      <div ref={cardRef} className="product-card-inner bg-white dark:bg-[#1a1614] rounded-[40px] overflow-hidden aspect-square relative mb-4 border border-brand-gold/90 shadow-soft transition-all duration-700">
 
         {/* Main Image or Fallback Thumbnail */}
         <Image
@@ -105,7 +112,7 @@ const ProductCard = ({
           alt={name}
           fill
           className={cn(
-            "object-cover p-6 sm:p-8 transition-opacity duration-700 rounded-[50px] group-hover:scale-110",
+            "product-card-img object-cover p-6 sm:p-8 transition-transform transition-opacity duration-700 rounded-[50px]",
             (enableCardVideoPreview && cardPreviewVideo && (isVisible || isHovered)) ? "opacity-0" : "opacity-100"
           )}
           sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
@@ -125,7 +132,7 @@ const ProductCard = ({
               (isVisible || isHovered) ? "opacity-100" : "opacity-0"
             )}
           >
-            <source src={cardPreviewVideo} type="video/mp4" />
+            {hasLoadedVideo && <source src={cardPreviewVideo} type="video/mp4" />}
           </video>
         )}
 
@@ -144,7 +151,7 @@ const ProductCard = ({
 
         {/* Mobile: Always visible, Desktop: Hover visible */}
         <button
-          className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-brand-gold text-white flex items-center justify-center opacity-100 md:opacity-0 translate-y-0 md:translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 active:bg-brand-gold z-10 shadow-soft active:scale-95 touch-safe-hit"
+          className="product-card-btn absolute bottom-4 right-4 w-10 h-10 rounded-full bg-brand-gold text-white flex items-center justify-center opacity-100 md:opacity-0 translate-y-0 md:translate-y-4 transition-all duration-500 active:bg-brand-gold z-10 shadow-soft touch-safe-hit"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -153,8 +160,8 @@ const ProductCard = ({
           <span className="text-xl font-light">+</span>
         </button>
       </div>
-      <div className="space-y-1 text-center px-2">
-        <h3 className="text-[12px] sm:text-[13px] font-medium text-brand-muted group-hover:text-brand-text transition-colors duration-300 line-clamp-1">
+      <div className="space-y-1 text-center px-2 pt-2">
+        <h3 className="product-card-title text-[12px] sm:text-[13px] font-medium text-brand-muted transition-colors duration-300 line-clamp-1">
           {name}
         </h3>
         <div className="flex items-center justify-center space-x-2 sm:space-x-3">

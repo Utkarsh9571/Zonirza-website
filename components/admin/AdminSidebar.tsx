@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -16,7 +17,9 @@ import {
   Ticket,
   Briefcase,
   Monitor,
-  Coins
+  Coins,
+  Menu,
+  X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { signOut } from 'next-auth/react';
@@ -40,9 +43,42 @@ const MENU_ITEMS = [
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Close sidebar on mobile when navigating
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-72 bg-[#1a1614] border-r border-white/5 flex flex-col z-50">
+    <>
+      {/* Mobile Top Navigation Bar */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#1a1614] border-b border-white/5 z-40 flex items-center justify-between px-6">
+        <Link href="/admin" className="flex items-center space-x-2">
+          <Sparkles className="text-brand-gold" size={16} />
+          <span className="text-white font-serif tracking-widest uppercase italic text-sm">Zoniraz Admin</span>
+        </Link>
+        <button 
+          onClick={() => setIsOpen(!isOpen)} 
+          className="p-2 -mr-2 text-brand-gold hover:text-white transition-colors"
+        >
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden transition-opacity"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Sidebar Container */}
+      <aside className={cn(
+        "fixed left-0 top-0 h-screen w-72 bg-[#1a1614] border-r border-white/5 flex flex-col z-50 transition-transform duration-300 ease-in-out",
+        isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+      )}>
       {/* Brand Header */}
       <div className="p-8 border-b border-white/5">
         <Link href="/admin" className="flex items-center space-x-3 group">
@@ -95,5 +131,6 @@ export function AdminSidebar() {
         </button>
       </div>
     </aside>
+    </>
   );
 }

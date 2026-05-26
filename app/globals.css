@@ -143,6 +143,44 @@
     .btn-outline:hover {
       @apply border-brand-text bg-brand-text text-white shadow-md -translate-y-0.5;
     }
+
+    /* Product Card Interactive Styles - Only apply on true hover devices to prevent sticky hover on touch */
+    .product-card-wrapper:hover .product-card-inner {
+      @apply shadow-premium -translate-y-2 border-brand-gold;
+    }
+    .product-card-wrapper:hover .product-card-img {
+      @apply scale-110;
+    }
+    .product-card-wrapper:hover .product-card-btn {
+      @apply opacity-100 translate-y-0;
+    }
+    .product-card-wrapper:hover .product-card-title {
+      @apply text-brand-text;
+    }
+
+    /* Cinematic Hero Interactive Styles */
+    .hero-btn-primary:hover {
+      @apply bg-[#B4925A] shadow-premium scale-105;
+    }
+    .hero-btn-secondary:hover {
+      @apply bg-white/20 scale-105;
+    }
+    
+    .hero-card-interactive:hover {
+      @apply bg-black/60 border-brand-gold/50;
+    }
+    .hero-card-interactive:hover .hero-card-bg {
+      @apply opacity-100;
+    }
+    .hero-card-interactive:hover .hero-card-icon {
+      @apply scale-110;
+    }
+    .hero-card-interactive:hover .hero-card-title {
+      @apply text-brand-gold;
+    }
+    .hero-card-interactive:hover .hero-card-arrow {
+      @apply translate-x-0 opacity-100 text-brand-gold;
+    }
   }
 
   .no-scrollbar::-webkit-scrollbar {
@@ -181,5 +219,13 @@
     .touch-grid {
       @apply gap-6;
     }
+  }
+}
+
+/* iOS Input Auto-Zoom Fix */
+/* Forces inputs to 16px minimum on mobile to prevent Safari auto-zoom, without breaking desktop */
+@media screen and (max-width: 768px) {
+  input, textarea, select {
+    font-size: 16px !important;
   }
 }

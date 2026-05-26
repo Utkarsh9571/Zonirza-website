@@ -43,16 +43,7 @@ const floatingCards = [
 export default function CinematicHero() {
   const [slides, setSlides] = useState<any[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
   const { openAuthModal } = useAuthModalStore();
-
-  useEffect(() => {
-    // Detect viewport for video source
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   useEffect(() => {
     async function fetchSlides() {
@@ -84,7 +75,7 @@ export default function CinematicHero() {
   const slide = slides[currentSlide];
 
   return (
-    <section className="relative h-screen min-h-[750px] w-full overflow-hidden bg-[#12100e]">
+    <section className="relative min-h-[100dvh] md:h-screen md:min-h-[750px] w-full overflow-hidden bg-[#12100e]">
 
       {/* Background Videos with Crossfade */}
       <AnimatePresence initial={false}>
@@ -97,23 +88,29 @@ export default function CinematicHero() {
           className="absolute inset-0 w-full h-full"
         >
           {(() => {
-            const videoUrl = isMobile ? slide.videoMobile : slide.videoDesktop;
-            const isYouTube = videoUrl?.includes('youtube.com') || videoUrl?.includes('youtu.be');
+            const isYouTube = slide.videoDesktop?.includes('youtube.com') || slide.videoDesktop?.includes('youtu.be');
+            const hasMobileVideo = slide.videoMobile && slide.videoMobile !== slide.videoDesktop;
 
             if (isYouTube) {
-              const videoIdMatch = videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
-              const videoId = videoIdMatch ? videoIdMatch[1] : null;
-
-              if (videoId) {
+              const renderIframe = (url: string, className: string) => {
+                const match = url?.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+                if (!match) return null;
                 return (
                   <iframe
-                    src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
+                    src={`https://www.youtube.com/embed/${match[1]}?autoplay=1&mute=1&loop=1&playlist=${match[1]}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
                     allow="autoplay; encrypted-media"
-                    className="object-cover w-full h-full scale-150 pointer-events-none"
+                    className={cn("absolute inset-0 object-cover w-full h-full scale-150 pointer-events-none", className)}
                     style={{ border: 'none' }}
                   />
                 );
-              }
+              };
+
+              return (
+                <>
+                  {renderIframe(slide.videoDesktop, hasMobileVideo ? "hidden md:block" : "block")}
+                  {hasMobileVideo && renderIframe(slide.videoMobile, "block md:hidden")}
+                </>
+              );
             }
 
             return (
@@ -123,10 +120,11 @@ export default function CinematicHero() {
                 muted
                 playsInline
                 poster={slide.posterImage}
-                className="object-cover w-full h-full scale-105"
-                style={{ transform: "scale(1.05)" }} // Slight scale to prevent edge bleeding on transition
+                className="absolute inset-0 object-cover w-full h-full scale-105"
+                style={{ transform: "scale(1.05)" }}
               >
-                <source src={videoUrl} type="video/mp4" />
+                {hasMobileVideo && <source src={slide.videoMobile} media="(max-width: 767px)" type="video/mp4" />}
+                <source src={slide.videoDesktop} type="video/mp4" />
               </video>
             );
           })()}
@@ -164,7 +162,7 @@ export default function CinematicHero() {
                 {slide.primaryCTA && (
                   <Link
                     href={slide.primaryCTA.link}
-                    className="w-full sm:w-auto px-8 py-4 bg-brand-gold hover:bg-[#B4925A] text-[#12100e] rounded-full text-[11px] uppercase tracking-[0.2em] font-bold transition-all flex items-center justify-center space-x-3 shadow-premium group"
+                    className="hero-btn-primary w-full sm:w-auto px-8 py-4 bg-brand-gold text-[#12100e] rounded-full text-[11px] uppercase tracking-[0.2em] font-bold transition-all flex items-center justify-center space-x-3 shadow-premium group"
                   >
                     <span>{slide.primaryCTA.label}</span>
                     <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -173,7 +171,7 @@ export default function CinematicHero() {
                 {slide.secondaryCTA?.label && (
                   <Link
                     href={slide.secondaryCTA.link}
-                    className="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full text-[11px] uppercase tracking-[0.2em] font-bold transition-all flex items-center justify-center"
+                    className="hero-btn-secondary w-full sm:w-auto px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full text-[11px] uppercase tracking-[0.2em] font-bold transition-all flex items-center justify-center"
                   >
                     {slide.secondaryCTA.label}
                   </Link>
@@ -194,19 +192,19 @@ export default function CinematicHero() {
             >
               <Link
                 href={card.href}
-                className="group flex items-center p-4 rounded-2xl bg-black/40 hover:bg-black/60 backdrop-blur-xl border border-white/10 hover:border-brand-gold/50 transition-all duration-500 shadow-2xl overflow-hidden relative"
+                className="hero-card-interactive group flex items-center p-4 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 transition-all duration-500 shadow-2xl overflow-hidden relative"
               >
                 {/* Subtle hover gradient inside card */}
-                <div className="absolute inset-0 bg-gradient-to-r from-brand-gold/0 to-brand-gold/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="hero-card-bg absolute inset-0 bg-gradient-to-r from-brand-gold/0 to-brand-gold/10 opacity-0 transition-opacity duration-500" />
 
-                <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-brand-gold group-hover:scale-110 transition-transform duration-500 z-10">
+                <div className="hero-card-icon w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-brand-gold transition-transform duration-500 z-10">
                   <card.icon size={20} />
                 </div>
                 <div className="ml-4 z-10 flex-1">
-                  <h3 className="text-white text-sm font-bold group-hover:text-brand-gold transition-colors">{card.title}</h3>
+                  <h3 className="hero-card-title text-white text-sm font-bold transition-colors">{card.title}</h3>
                   <p className="text-white/50 text-[10px] uppercase tracking-widest mt-1">{card.subtitle}</p>
                 </div>
-                <ArrowRight size={16} className="text-white/20 group-hover:text-brand-gold transform -translate-x-2 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all duration-500 z-10" />
+                <ArrowRight size={16} className="hero-card-arrow text-white/20 transform -translate-x-2 opacity-0 transition-all duration-500 z-10" />
               </Link>
             </motion.div>
           ))}

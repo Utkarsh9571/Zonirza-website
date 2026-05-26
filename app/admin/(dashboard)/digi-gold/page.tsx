@@ -206,7 +206,7 @@ export default function AdminDigiGold() {
         <div className="bg-white dark:bg-[#111] p-8 rounded-[30px] border border-brand-text/10 shadow-sm flex flex-col">
           <h2 className="text-xl font-serif mb-6">Historical Rate Trends</h2>
           
-          <div className="h-[300px] w-full mt-4">
+          <div className="h-[300px] w-full mt-4 overflow-hidden">
             {rateChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={rateChartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
