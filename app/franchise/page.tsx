@@ -205,10 +205,10 @@ export default function FranchisePage() {
                       onChange={(e) => setFormData({...formData, investmentRange: e.target.value})}
                     >
                       <option value="" className="dark:bg-brand-white">Select Range</option>
-                      <option value="50L - 1Cr" className="dark:bg-brand-white">50L - 1Cr</option>
-                      <option value="1Cr - 3Cr" className="dark:bg-brand-white">1Cr - 3Cr</option>
-                      <option value="3Cr - 5Cr" className="dark:bg-brand-white">3Cr - 5Cr</option>
-                      <option value="5Cr+" className="dark:bg-brand-white">5Cr+</option>
+                      <option value="5cr to 10cr" className="dark:bg-brand-white">5cr to 10cr</option>
+                      <option value="10cr to 20cr" className="dark:bg-brand-white">10cr to 20cr</option>
+                      <option value="20cr to 30cr" className="dark:bg-brand-white">20cr to 30cr</option>
+                      <option value="30+cr" className="dark:bg-brand-white">30+cr</option>
                     </select>
                   </div>
                   <div className="space-y-2">
