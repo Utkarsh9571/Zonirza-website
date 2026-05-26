@@ -136,7 +136,7 @@ const Navbar = () => {
       )}>
         
         <div className="flex items-center space-x-4">
-          <Link href="/" className="flex items-center group relative z-[110] bg-white/80 dark:bg-brand-white/80 backdrop-blur-md px-6 py-4 rounded-full border-2 border-brand-gold shadow-premium transition-all duration-500">
+          <Link href="/" className="flex items-center group relative z-[110] bg-white dark:bg-brand-white/80 backdrop-blur-md px-6 py-4 rounded-full border-2 border-brand-gold shadow-premium transition-all duration-500">
             <div className="relative w-32 md:w-40 h-10 md:h-12">
               <Image 
                 src="/images/ZONIRAZ LOGO.png" 
@@ -151,7 +151,7 @@ const Navbar = () => {
         </div>
   
         {/* 2. RIGHT: Floating Pill Navbar */}
-        <div className="hidden md:flex items-center bg-white/80 dark:bg-brand-white/80 backdrop-blur-md rounded-full shadow-premium border-2 border-brand-gold pl-4 pr-3 py-2.5 relative transition-colors">
+        <div className="hidden md:flex items-center bg-white dark:bg-brand-white/80 backdrop-blur-md rounded-full shadow-premium border-2 border-brand-gold pl-4 pr-3 py-2.5 relative transition-colors">
           
           {/* SEARCH BAR */}
           <div ref={searchRef} className="relative flex items-center mr-6 border-r border-brand-border dark:border-white/10 pr-6 transition-colors">
