@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  LayoutDashboard, 
-  Package, 
-  ShoppingBag, 
-  Users, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingBag,
+  Users,
+  Settings,
   LogOut,
   ChevronRight,
   Sparkles,
@@ -66,8 +66,8 @@ export function AdminSidebar() {
               href={item.href}
               className={cn(
                 "group flex items-center justify-between px-4 py-4 rounded-2xl transition-all duration-500 w-full text-left",
-                isActive 
-                  ? "bg-brand-gold/10 text-brand-gold cursor-default" 
+                isActive
+                  ? "bg-brand-gold/10 text-brand-gold cursor-default"
                   : "text-brand-gold hover:text-white hover:bg-white/5"
               )}
             >
@@ -86,7 +86,7 @@ export function AdminSidebar() {
 
       {/* Logout Button */}
       <div className="p-6 border-t border-white/5">
-        <button 
+        <button
           onClick={() => signOut({ callbackUrl: '/' })}
           className="flex items-center space-x-4 px-4 py-4 w-full text-brand-gold hover:text-red-400 hover:bg-red-400/5 rounded-2xl transition-all duration-500 group"
         >

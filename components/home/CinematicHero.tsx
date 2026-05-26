@@ -85,7 +85,7 @@ export default function CinematicHero() {
 
   return (
     <section className="relative h-screen min-h-[750px] w-full overflow-hidden bg-[#12100e]">
-      
+
       {/* Background Videos with Crossfade */}
       <AnimatePresence initial={false}>
         <motion.div
@@ -99,11 +99,11 @@ export default function CinematicHero() {
           {(() => {
             const videoUrl = isMobile ? slide.videoMobile : slide.videoDesktop;
             const isYouTube = videoUrl?.includes('youtube.com') || videoUrl?.includes('youtu.be');
-            
+
             if (isYouTube) {
               const videoIdMatch = videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
               const videoId = videoIdMatch ? videoIdMatch[1] : null;
-              
+
               if (videoId) {
                 return (
                   <iframe
@@ -130,7 +130,7 @@ export default function CinematicHero() {
               </video>
             );
           })()}
-          
+
           {/* Cinematic Overlays */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10 pointer-events-none" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 z-10 pointer-events-none" />
@@ -138,7 +138,7 @@ export default function CinematicHero() {
       </AnimatePresence>
 
       <div className="relative z-20 h-full max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24 pt-32 pb-24 flex flex-col lg:flex-row items-center justify-between">
-        
+
         {/* Left Content Area */}
         <div className="flex-1 max-w-2xl text-white space-y-8 self-center lg:self-center mt-12 lg:mt-0">
           <AnimatePresence mode="wait">
@@ -154,15 +154,15 @@ export default function CinematicHero() {
                 <Sparkles size={14} className="text-brand-gold" />
                 <span className="text-[10px] uppercase tracking-widest font-bold text-brand-gold">{slide.subtitle}</span>
               </div>
-              
-              <h1 
+
+              <h1
                 className="text-5xl md:text-7xl lg:text-8xl font-serif leading-[1.1] tracking-tight"
                 dangerouslySetInnerHTML={{ __html: slide.title }}
               />
 
               <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
                 {slide.primaryCTA && (
-                  <Link 
+                  <Link
                     href={slide.primaryCTA.link}
                     className="w-full sm:w-auto px-8 py-4 bg-brand-gold hover:bg-[#B4925A] text-[#12100e] rounded-full text-[11px] uppercase tracking-[0.2em] font-bold transition-all flex items-center justify-center space-x-3 shadow-premium group"
                   >
@@ -171,7 +171,7 @@ export default function CinematicHero() {
                   </Link>
                 )}
                 {slide.secondaryCTA?.label && (
-                  <Link 
+                  <Link
                     href={slide.secondaryCTA.link}
                     className="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white rounded-full text-[11px] uppercase tracking-[0.2em] font-bold transition-all flex items-center justify-center"
                   >
@@ -192,13 +192,13 @@ export default function CinematicHero() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 1 + card.delay, duration: 0.8 }}
             >
-              <Link 
+              <Link
                 href={card.href}
                 className="group flex items-center p-4 rounded-2xl bg-black/40 hover:bg-black/60 backdrop-blur-xl border border-white/10 hover:border-brand-gold/50 transition-all duration-500 shadow-2xl overflow-hidden relative"
               >
                 {/* Subtle hover gradient inside card */}
                 <div className="absolute inset-0 bg-gradient-to-r from-brand-gold/0 to-brand-gold/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                
+
                 <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-brand-gold group-hover:scale-110 transition-transform duration-500 z-10">
                   <card.icon size={20} />
                 </div>

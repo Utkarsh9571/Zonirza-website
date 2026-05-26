@@ -27,18 +27,18 @@ interface ProductCardProps {
   cardPreviewThumbnail?: string;
 }
 
-const ProductCard = ({ 
-  name, 
-  price, 
-  image, 
-  slug, 
-  oldPrice, 
-  variantImages, 
-  images, 
+const ProductCard = ({
+  name,
+  price,
+  image,
+  slug,
+  oldPrice,
+  variantImages,
+  images,
   context,
   enableCardVideoPreview,
   cardPreviewVideo,
-  cardPreviewThumbnail 
+  cardPreviewThumbnail
 }: ProductCardProps) => {
   const selectedImage = getProductThumbnail({ images, variantImages }, context) || image;
   const imageUrl = resolveProductImage(selectedImage);
@@ -46,7 +46,7 @@ const ProductCard = ({
   const { status } = useSession();
   const openAuthModal = useAuthModalStore(state => state.openAuthModal);
   const { toggleItem, isInWishlist } = useWishlistStore();
-  
+
   const isWishlisted = isInWishlist(slug);
 
   const cardRef = useRef<HTMLDivElement>(null);
@@ -56,7 +56,7 @@ const ProductCard = ({
 
   useEffect(() => {
     if (!enableCardVideoPreview || !cardPreviewVideo) return;
-    
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         setIsVisible(entry.isIntersecting);
@@ -69,12 +69,12 @@ const ProductCard = ({
 
   useEffect(() => {
     if (!videoRef.current) return;
-    
+
     const isDesktop = window.matchMedia("(min-width: 768px)").matches;
     const shouldPlay = isDesktop ? (isVisible || isHovered) : isVisible;
 
     if (shouldPlay) {
-      videoRef.current.play().catch(() => {});
+      videoRef.current.play().catch(() => { });
     } else {
       videoRef.current.pause();
     }
@@ -91,14 +91,14 @@ const ProductCard = ({
   };
 
   return (
-    <Link 
-      href={`/product/${slug}`} 
+    <Link
+      href={`/product/${slug}`}
       className="group block h-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div ref={cardRef} className="bg-white dark:bg-[#1a1614] rounded-[40px] overflow-hidden aspect-square relative mb-4 border border-brand-gold/90 shadow-soft transition-all duration-700 group-hover:shadow-premium group-hover:-translate-y-2 group-hover:border-brand-gold/100">
-        
+
         {/* Main Image or Fallback Thumbnail */}
         <Image
           src={enableCardVideoPreview && cardPreviewThumbnail ? cardPreviewThumbnail : imageUrl}
@@ -130,12 +130,12 @@ const ProductCard = ({
         )}
 
         {/* Wishlist Button */}
-        <button 
+        <button
           onClick={handleWishlistClick}
           className={cn(
             "absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-500 z-10 shadow-soft active:scale-90",
-            isWishlisted 
-              ? "bg-brand-gold text-white" 
+            isWishlisted
+              ? "bg-brand-gold text-white"
               : "bg-white/80 dark:bg-black/40 backdrop-blur-sm text-brand-text/40 dark:text-brand-text/80 hover:text-brand-gold"
           )}
         >
@@ -143,7 +143,7 @@ const ProductCard = ({
         </button>
 
         {/* Mobile: Always visible, Desktop: Hover visible */}
-        <button 
+        <button
           className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-brand-gold text-white flex items-center justify-center opacity-100 md:opacity-0 translate-y-0 md:translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 active:bg-brand-gold z-10 shadow-soft active:scale-95 touch-safe-hit"
           onClick={(e) => {
             e.preventDefault();

@@ -14,17 +14,17 @@ export default function RulesDashboard() {
   const [name, setName] = useState('');
   const [type, setType] = useState('restriction');
   const [isActive, setIsActive] = useState(true);
-  
+
   // Scope
   const [categories, setCategories] = useState('');
   const [productIds, setProductIds] = useState('');
-  
+
   // Triggers
   const [metals, setMetals] = useState('');
   const [purities, setPurities] = useState('');
   const [stones, setStones] = useState('');
   const [sizes, setSizes] = useState('');
-  
+
   // Result
   const [message, setMessage] = useState('');
   const [surcharge, setSurcharge] = useState(0);
@@ -83,7 +83,7 @@ export default function RulesDashboard() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const payload = {
       name,
       type,
@@ -142,7 +142,7 @@ export default function RulesDashboard() {
 
   return (
     <div className="max-w-7xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      
+
       <div className="flex justify-between items-center bg-white dark:bg-[#1a1614] p-6 rounded-[32px] border border-brand-text/10 shadow-sm">
         <div>
           <h1 className="text-2xl font-serif text-brand-text dark:text-white">Configuration Rules Engine</h1>
@@ -220,9 +220,9 @@ export default function RulesDashboard() {
           <div className="absolute inset-0 bg-brand-text/40 dark:bg-black/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
           <div className="relative bg-white dark:bg-[#1a1614] rounded-[40px] w-full max-w-3xl max-h-[90vh] overflow-y-auto p-8 shadow-premium animate-in zoom-in-95 duration-300">
             <h2 className="text-2xl font-serif text-brand-text dark:text-white mb-6">{editingRule ? 'Edit Rule' : 'Create New Rule'}</h2>
-            
+
             <form onSubmit={handleSubmit} className="space-y-8">
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-[10px] uppercase tracking-widest font-bold text-brand-text/60 mb-2">Rule Name</label>

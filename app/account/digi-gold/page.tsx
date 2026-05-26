@@ -62,7 +62,7 @@ export default function UserDigiGold() {
         body: JSON.stringify({ installmentId })
       });
       const data = await res.json();
-      
+
       if (data.success) {
         const options = {
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -90,7 +90,7 @@ export default function UserDigiGold() {
   return (
     <div className="bg-brand-bg text-brand-text min-h-screen pt-32 pb-20 overflow-x-hidden">
       <Section className="max-w-[1200px] mx-auto px-4 md:px-6 space-y-8">
-        
+
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
@@ -132,16 +132,16 @@ export default function UserDigiGold() {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
+
             {/* Left Column: Top Metrics & Chart */}
             <div className="lg:col-span-2 space-y-8">
-              
+
               {/* Premium Valuation Card */}
               <div className="bg-[#1a1614] rounded-[40px] p-8 md:p-10 text-white shadow-premium relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-8 opacity-5">
                   <Coins size={200} />
                 </div>
-                
+
                 <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
                   <div>
                     <h3 className="text-[10px] uppercase tracking-widest text-white/50 font-bold mb-2">Total Portfolio Value</h3>
@@ -178,7 +178,7 @@ export default function UserDigiGold() {
                   <h3 className="text-xl font-serif">Performance History</h3>
                   <div className="flex gap-2">
                     {['7D', '30D', 'YTD'].map(range => (
-                      <button 
+                      <button
                         key={range}
                         onClick={() => setTimeRange(range)}
                         className={`text-[10px] uppercase tracking-widest font-bold px-4 py-2 rounded-full transition-colors ${timeRange === range ? 'bg-brand-text text-white' : 'bg-brand-bg text-brand-text/50 hover:bg-brand-text/5'}`}
@@ -199,17 +199,17 @@ export default function UserDigiGold() {
                       <AreaChart data={chartData.data} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                         <defs>
                           <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.3}/>
-                            <stop offset="95%" stopColor="#D4AF37" stopOpacity={0}/>
+                            <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#D4AF37" stopOpacity={0} />
                           </linearGradient>
                           <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.1}/>
-                            <stop offset="95%" stopColor="#94a3b8" stopOpacity={0}/>
+                            <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.1} />
+                            <stop offset="95%" stopColor="#94a3b8" stopOpacity={0} />
                           </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
                         <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#A0A0A0' }} dy={10} />
-                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#A0A0A0' }} tickFormatter={(val) => `₹${val/1000}k`} />
+                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#A0A0A0' }} tickFormatter={(val) => `₹${val / 1000}k`} />
                         <Tooltip content={<CustomTooltip />} />
                         <Area type="monotone" dataKey="value" stroke="#D4AF37" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
                         <Area type="monotone" dataKey="invested" stroke="#94a3b8" strokeWidth={2} strokeDasharray="5 5" fillOpacity={1} fill="url(#colorInvested)" />
@@ -245,15 +245,15 @@ export default function UserDigiGold() {
                             </span>
                           </div>
                         </div>
-                        
+
                         <div className="flex justify-between items-end border-t border-white/5 pt-4">
                           <div>
                             <p className="text-[9px] uppercase tracking-widest text-white/40 mb-1">Accumulated</p>
                             <p className="text-sm font-bold">{sip.totalGramsAccumulated.toFixed(4)} g</p>
                           </div>
                           {sipData.upcomingInstallments?.find((i: any) => i.sipId === sip._id) && (
-                            <Button 
-                              size="sm" 
+                            <Button
+                              size="sm"
                               onClick={() => handlePayInstallment(sipData.upcomingInstallments.find((i: any) => i.sipId === sip._id)._id, sip._id)}
                               className="text-[10px] h-8 px-4"
                             >
@@ -270,7 +270,7 @@ export default function UserDigiGold() {
 
             {/* Right Column: Transactions & Insights */}
             <div className="space-y-8">
-              
+
               {/* Intelligence Summary */}
               <div className="bg-brand-gold/5 rounded-[30px] p-6 border border-brand-gold/20 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-4 opacity-5"><Star size={100} /></div>
@@ -286,7 +286,7 @@ export default function UserDigiGold() {
                       {valuation.unrealizedGainLoss > 0 ? '+' : ''}₹{valuation.unrealizedGainLoss.toLocaleString()}
                     </span>
                   </div>
-                  
+
                   {chartData?.insights?.map((insight: string, idx: number) => (
                     <div key={idx} className="p-3 bg-white dark:bg-[#1a1614] rounded-xl border border-brand-gold/10 text-xs text-brand-text/80 shadow-soft">
                       {insight}
@@ -319,7 +319,7 @@ export default function UserDigiGold() {
                   <h3 className="text-xl font-serif">Recent Activity</h3>
                   <button className="text-[10px] uppercase tracking-widest font-bold text-brand-gold hover:underline">View All</button>
                 </div>
-                
+
                 <div className="overflow-y-auto pr-2 custom-scrollbar space-y-4">
                   {transactions.length === 0 ? (
                     <p className="text-sm text-brand-text/50 text-center py-10">No recent transactions.</p>
@@ -328,14 +328,13 @@ export default function UserDigiGold() {
                       <div key={tx._id} className="p-4 rounded-2xl border border-brand-text/5 hover:border-brand-text/10 transition-colors group">
                         <div className="flex justify-between items-start mb-3">
                           <div className="flex items-center gap-3">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                              tx.type === 'buy' ? 'bg-green-50 text-green-600' : 
-                              tx.type === 'redeem' ? 'bg-brand-gold/10 text-brand-gold' : 
-                              'bg-brand-bg text-brand-text/50'
-                            }`}>
-                              {tx.type === 'buy' ? <TrendingUp size={16} /> : 
-                               tx.type === 'redeem' ? <ShoppingBag size={16} /> : 
-                               <Calendar size={16} />}
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === 'buy' ? 'bg-green-50 text-green-600' :
+                                tx.type === 'redeem' ? 'bg-brand-gold/10 text-brand-gold' :
+                                  'bg-brand-bg text-brand-text/50'
+                              }`}>
+                              {tx.type === 'buy' ? <TrendingUp size={16} /> :
+                                tx.type === 'redeem' ? <ShoppingBag size={16} /> :
+                                  <Calendar size={16} />}
                             </div>
                             <div>
                               <p className="text-sm font-bold uppercase tracking-widest">{tx.type} GOLD</p>
@@ -352,16 +351,16 @@ export default function UserDigiGold() {
                             </p>
                           </div>
                         </div>
-                        
+
                         {/* Transaction Details Enhancements */}
                         {tx.type === 'redeem' && tx.linkedOrderId && (
                           <div className="pt-3 border-t border-brand-text/5 mt-2">
-                             <Link href={`/account/orders`} className="text-[9px] uppercase tracking-widest font-bold text-brand-gold hover:underline flex items-center">
-                               <ArrowUpRight size={10} className="mr-1" /> View Linked Order
-                             </Link>
+                            <Link href={`/account/orders`} className="text-[9px] uppercase tracking-widest font-bold text-brand-gold hover:underline flex items-center">
+                              <ArrowUpRight size={10} className="mr-1" /> View Linked Order
+                            </Link>
                           </div>
                         )}
-                        
+
                         {/* Transaction Performance Enrichments */}
                         {tx.performance && (
                           <div className="pt-3 border-t border-brand-text/5 flex justify-between items-center bg-brand-bg/50 px-3 py-2 rounded-xl">
