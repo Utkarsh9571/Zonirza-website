@@ -5,11 +5,13 @@ import { Section } from '@/components/new-ui/Section';
 import { Button } from '@/components/new-ui/Button';
 import { ShieldCheck, TrendingUp, RefreshCw, Lock, Star, ChevronDown } from 'lucide-react';
 import { DigiGoldCalculator } from '@/components/digi-gold/DigiGoldCalculator';
+import { constructMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Digi Gold | Zoniraz Jewellery',
+export const metadata: Metadata = constructMetadata({
+  title: 'Digi Gold',
   description: 'Start your luxury digital gold savings journey with Zoniraz. Secure holdings, live rates, and easy redemption.',
-};
+  path: '/digi-gold',
+});
 
 export default function DigiGoldLandingPage() {
   return (

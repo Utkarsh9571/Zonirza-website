@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import Script from 'next/script';
 import { IProduct } from '@/models/Product';
 import { ProductInteractiveUI } from '@/components/new-ui/ProductInteractiveUI';
 import { ProductReviews } from '@/components/new-ui/ProductReviews';
 import { ProductRecommendations } from '@/components/new-ui/ProductRecommendations';
+import { constructMetadata } from '@/lib/seo';
 
 async function getProduct(slug: string) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products/${slug}`, {
@@ -24,34 +24,19 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const product = await getProduct(slug);
 
   if (!product) {
-    return {
-      title: 'Product Not Found | Zoniraz',
-    };
+    return constructMetadata({
+      title: 'Product Not Found',
+      noIndex: true,
+    });
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zoniraz.com';
-
-  return {
-    title: `${product.name} | Zoniraz Luxury Jewelry`,
+  const ogImage = product.images?.[0] || 'https://zoniraz.com/images/og-image.jpg';
+  return constructMetadata({
+    title: product.name,
     description: product.description.substring(0, 160),
-    openGraph: {
-      title: product.name,
-      description: product.description.substring(0, 160),
-      url: `${baseUrl}/product/${product.slug}`,
-      images: [
-        {
-          url: product.images[0] || '',
-          width: 800,
-          height: 800,
-          alt: product.name,
-        },
-      ],
-      siteName: 'Zoniraz',
-    },
-    twitter: {
-      card: 'summary_large_image',
-    },
-  };
+    path: `/product/${product.slug}`,
+    ogImage,
+  });
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -64,8 +49,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zoniraz.com';
 
-  // Generate JSON-LD Structured Data
-  const jsonLd = {
+  // Generate Product JSON-LD Structured Data
+  const productJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
@@ -86,12 +71,44 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     },
   };
 
+  // Generate BreadcrumbList JSON-LD Structured Data
+  const categoryTitle = product.category.charAt(0).toUpperCase() + product.category.slice(1).replace(/-/g, ' ');
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      {
+        '@type': 'ListItem',
+        'position': 1,
+        'name': 'Home',
+        'item': `${baseUrl}`
+      },
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': categoryTitle,
+        'item': `${baseUrl}/category/${product.category}`
+      },
+      {
+        '@type': 'ListItem',
+        'position': 3,
+        'name': product.name,
+        'item': `${baseUrl}/product/${product.slug}`
+      }
+    ]
+  };
+
   return (
     <>
-      <Script
+      <script
         id={`product-jsonld-${product.slug}`}
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        id={`product-breadcrumb-jsonld-${product.slug}`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <ProductInteractiveUI product={product} />
       <ProductRecommendations productSlug={product.slug} />

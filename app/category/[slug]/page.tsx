@@ -1,8 +1,10 @@
 import Image from 'next/image';
+import { Metadata } from 'next';
 import { ProductCard } from '@/components/new-ui/ProductCard';
 import { Section } from '@/components/new-ui/Section';
 import { IProduct } from '@/models/Product';
 import { PLACEHOLDER_IMAGE, getValidImageUrl } from '@/lib/constants';
+import { constructMetadata } from '@/lib/seo';
 
 async function getProducts(category: string) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products?category=${category}`, {
@@ -17,14 +19,50 @@ async function getProducts(category: string) {
   return json.data as IProduct[];
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const categoryTitle = slug === 'all' ? 'All Collections' : slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' ');
+  return constructMetadata({
+    title: categoryTitle,
+    description: `Explore the exclusive ${categoryTitle} collection from Zoniraz. Handcrafted luxury designs with Timeless Elegance.`,
+    path: `/category/${slug}`,
+  });
+}
+
 export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const products = await getProducts(slug);
   
   const categoryTitle = slug === 'all' ? 'The Full Collection' : slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' ');
 
+  // Breadcrumb Schema
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://zoniraz.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": categoryTitle,
+        "item": `https://zoniraz.com/category/${slug}`
+      }
+    ]
+  };
+
   return (
     <div className="bg-brand-bg min-h-screen">
+      {/* Dynamic Breadcrumb Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+
       {/* Category Header Banner */}
       <section className="relative h-[60vh] min-h-[500px] w-full flex items-center justify-center overflow-hidden">
         <Image

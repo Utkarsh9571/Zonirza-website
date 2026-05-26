@@ -15,6 +15,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://zoniraz.com'),
   title: {
     default: "Zoniraz Jewellery | Exquisite Luxury & Timeless Elegance",
     template: "%s | Zoniraz Jewellery"
@@ -38,7 +39,7 @@ export const metadata: Metadata = {
     description: "Exquisite jewelry collections crafted for timeless beauty. Explore our heritage and find your perfect masterpiece.",
     images: [
       {
-        url: "/images/og-image.jpg",
+        url: "/images/ZONIRAZ-favicon.png",
         width: 1200,
         height: 630,
         alt: "Zoniraz Luxury Jewellery Collection",
@@ -75,9 +76,38 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Zoniraz Jewellery",
+    "url": "https://zoniraz.com",
+    "logo": "https://zoniraz.com/images/ZONIRAZ%20LOGO.png",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "1800-572-26599",
+      "contactType": "customer service",
+      "areaServed": "IN",
+      "availableLanguage": ["en", "hi"]
+    },
+    "sameAs": [
+      "https://www.facebook.com/zonirazjewel/",
+      "https://www.instagram.com/zonirazjewel/",
+      "https://x.com/zonirazjewel/",
+      "https://www.linkedin.com/company/zonirazjewel/",
+      "https://in.pinterest.com/zonirazjewel/",
+      "https://www.youtube.com/channel/UCdmIX6L96IV_WsbXEqZGlcw",
+      "https://www.tumblr.com/zonirazjewel"
+    ]
+  };
+
   return (
     <html lang="en" className={`${geistSans.variable} ${playfair.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans bg-white">
+        <script
+          id="organization-jsonld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         <Providers>
           <ConditionalLayout>
             {children}
