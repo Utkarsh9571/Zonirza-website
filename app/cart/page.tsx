@@ -104,6 +104,7 @@ export default function CartPage() {
 
   const handleProceedToCheckout = () => {
     if (status !== 'authenticated') {
+      sessionStorage.setItem('post_auth_redirect', '/checkout/shipping');
       openAuthModal();
       return;
     }

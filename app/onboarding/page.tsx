@@ -27,7 +27,9 @@ export default function OnboardingPage() {
     if (status === 'unauthenticated') {
       router.push('/');
     } else if (session?.user && (session.user as any).onboardingCompleted) {
-      router.push('/account');
+      const redirectUrl = sessionStorage.getItem('post_auth_redirect') || '/account';
+      sessionStorage.removeItem('post_auth_redirect');
+      router.push(redirectUrl);
     }
   }, [status, session, router]);
 
@@ -51,7 +53,9 @@ export default function OnboardingPage() {
       if (res.ok) {
         // Update session to reflect onboarding completed
         await update();
-        router.push('/');
+        const redirectUrl = sessionStorage.getItem('post_auth_redirect') || '/';
+        sessionStorage.removeItem('post_auth_redirect');
+        router.push(redirectUrl);
       }
     } catch (err) {
       console.error(err);
@@ -91,7 +95,7 @@ export default function OnboardingPage() {
           <div className="flex-1 p-10 md:p-16 flex flex-col justify-center space-y-10">
             <div className="space-y-4">
               <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-brand-gold">Step 01 of 01</p>
-              <h1 className="text-4xl font-serif text-brand-text">Welcome, <br /> <span className="italic text-brand-text/60">{session?.user?.email}</span></h1>
+              <h1 className="text-4xl font-serif text-brand-text">Welcome, <br /> <span className="italic text-brand-text/60">{(session?.user as any)?.mobileNumber ? `+${(session?.user as any)?.mobileNumber}` : session?.user?.email}</span></h1>
               <p className="text-sm text-brand-text/50 max-w-md">Help us tailor our masterpieces to your exquisite style and preference.</p>
             </div>
 

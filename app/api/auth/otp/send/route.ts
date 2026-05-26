@@ -1,29 +1,72 @@
 import { NextRequest, NextResponse } from 'next/server';
+import dbConnect from '@/lib/db';
+import OTPRequest from '@/models/OTPRequest';
+import { otpService, normalizePhoneNumber } from '@/lib/otpService';
 
 export async function POST(req: NextRequest) {
   try {
     const { identifier } = await req.json();
 
     if (!identifier) {
-      return NextResponse.json({ error: 'Email or Mobile number is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Mobile number is required' }, { status: 400 });
     }
 
-    // In a real application, we would generate a random 6 digit code
-    // and send it via AWS SNS / Twilio / Nodemailer
-    // const otp = Math.floor(100000 + Math.random() * 900000);
-    
-    // For this mock implementation, we log the action and expect '123456' on verification.
-    console.log(`[MOCK OTP] Sent mock OTP '123456' to ${identifier}`);
+    const normalizedMobile = normalizePhoneNumber(identifier);
+    if (!normalizedMobile) {
+      return NextResponse.json({ error: 'Invalid mobile number format' }, { status: 400 });
+    }
 
-    // Simulate network delay for realistic UX
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await dbConnect();
+
+    // Enforce rate limiting & cooldown
+    const rateLimit = await OTPRequest.findOne({ mobileNumber: normalizedMobile });
+    const now = new Date();
+
+    if (rateLimit) {
+      // 1. Enforce 60-second resend cooldown
+      const diffMs = now.getTime() - rateLimit.lastRequestedAt.getTime();
+      if (diffMs < 60000) {
+        const remainingSec = Math.ceil((60000 - diffMs) / 1000);
+        return NextResponse.json({ 
+          error: `Please wait ${remainingSec} seconds before requesting another OTP.` 
+        }, { status: 429 });
+      }
+
+      // 2. Enforce max 5 attempts per hour
+      if (rateLimit.attempts >= 5) {
+        return NextResponse.json({ 
+          error: 'Too many OTP requests. Please try again in an hour.' 
+        }, { status: 429 });
+      }
+
+      // Update attempts and last requested timestamp
+      rateLimit.attempts += 1;
+      rateLimit.lastRequestedAt = now;
+      rateLimit.expiresAt = new Date(now.getTime() + 3600000); // 1 hour window
+      await rateLimit.save();
+    } else {
+      // Create new request tracker
+      await OTPRequest.create({
+        mobileNumber: normalizedMobile,
+        attempts: 1,
+        lastRequestedAt: now,
+        expiresAt: new Date(now.getTime() + 3600000)
+      });
+    }
+
+    // Call service to send OTP via MSG91 (or sandbox)
+    const result = await otpService.sendOTP(normalizedMobile);
+
+    if (!result.success) {
+      return NextResponse.json({ error: result.message }, { status: 500 });
+    }
 
     return NextResponse.json({ 
       success: true, 
-      message: 'OTP sent successfully. Please enter 123456 for testing.' 
+      message: result.message 
     });
   } catch (error: any) {
-    console.error('OTP Send Error:', error);
+    console.error('OTP Send Route Error:', error);
     return NextResponse.json({ error: 'Failed to send OTP' }, { status: 500 });
   }
 }

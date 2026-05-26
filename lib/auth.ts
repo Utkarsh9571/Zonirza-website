@@ -7,6 +7,7 @@ import clientPromise from "./mongodb";
 import dbConnect from "./db";
 import User from "@/models/User";
 import { verifyAdminCredentials, hashPassword } from "./adminAuth";
+import { otpService, normalizePhoneNumber } from "./otpService";
 
 // Custom transporter for Gmail
 const transporter = nodemailer.createTransport({
@@ -30,32 +31,70 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.identifier || !credentials?.otp) return null;
         
-        // Mock OTP Verification
-        if (credentials.otp !== "123456") {
-          throw new Error("Invalid OTP");
-        }
-        
         await dbConnect();
         
-        // Lookup user by email (or phone if we allowed phone only)
-        // Since email is required in the DB, we will treat identifier as email for now
-        let existingUser = await User.findOne({ email: credentials.identifier.toLowerCase() });
+        const isMobile = /^\+?\d{8,15}$/.test(credentials.identifier.replace(/[^\d+]/g, ''));
+        let existingUser;
         
-        if (!existingUser) {
-          existingUser = await User.create({
-            email: credentials.identifier.toLowerCase(),
-            onboardingCompleted: false,
-            lastLogin: new Date(),
+        if (isMobile) {
+          const normalizedMobile = normalizePhoneNumber(credentials.identifier);
+          
+          // Verify OTP with MSG91
+          const verification = await otpService.verifyOTP(normalizedMobile, credentials.otp);
+          if (!verification.success) {
+            throw new Error(verification.message || "Invalid OTP");
+          }
+          
+          // Find user by normalized mobileNumber or existing normalized phone
+          existingUser = await User.findOne({
+            $or: [
+              { mobileNumber: normalizedMobile },
+              { phone: normalizedMobile }
+            ]
           });
+          
+          if (existingUser) {
+            if (!existingUser.mobileNumber) {
+              existingUser.mobileNumber = normalizedMobile;
+            }
+            existingUser.mobileVerified = true;
+            existingUser.lastLogin = new Date();
+            await existingUser.save();
+          } else {
+            existingUser = await User.create({
+              mobileNumber: normalizedMobile,
+              mobileVerified: true,
+              authProvider: 'otp',
+              onboardingCompleted: false,
+              lastLogin: new Date(),
+            });
+          }
         } else {
-          existingUser.lastLogin = new Date();
-          await existingUser.save();
+          // Email OTP fallback / testing
+          if (credentials.otp !== "123456") {
+            throw new Error("Invalid OTP");
+          }
+          
+          const emailLower = credentials.identifier.toLowerCase();
+          existingUser = await User.findOne({ email: emailLower });
+          
+          if (!existingUser) {
+            existingUser = await User.create({
+              email: emailLower,
+              authProvider: 'email',
+              onboardingCompleted: false,
+              lastLogin: new Date(),
+            });
+          } else {
+            existingUser.lastLogin = new Date();
+            await existingUser.save();
+          }
         }
         
         return {
           id: existingUser._id.toString(),
-          email: existingUser.email,
-          name: existingUser.name,
+          email: existingUser.email || undefined,
+          name: existingUser.name || undefined,
         };
       }
     }),
@@ -159,11 +198,15 @@ export const authOptions: NextAuthOptions = {
         return session;
       }
 
-      const dbUser = await User.findOne({ email: session.user?.email });
+      const dbUser = await User.findById(token.id || token.sub);
       if (dbUser && session.user) {
         session.user.name = dbUser.name;
         // @ts-ignore
-        session.user.id = dbUser._id;
+        session.user.id = dbUser._id.toString();
+        // @ts-ignore
+        session.user.email = dbUser.email;
+        // @ts-ignore
+        session.user.mobileNumber = dbUser.mobileNumber;
         // @ts-ignore
         session.user.onboardingCompleted = dbUser.onboardingCompleted;
       }
@@ -174,6 +217,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         // @ts-ignore
         token.role = user.role || "user";
+        token.id = user.id;
       }
       return token;
     },

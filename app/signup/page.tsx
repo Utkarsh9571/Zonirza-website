@@ -46,6 +46,24 @@ export default function SignUpPage() {
           subtitle="Join the world of Zoniraz luxury"
           className="max-w-xl"
         >
+          {/* Mobile OTP Quick Sign Up */}
+          <div className="mb-8 p-6 bg-brand-gold/5 border border-brand-gold/15 rounded-3xl text-center space-y-3">
+            <p className="text-[10px] uppercase tracking-widest font-black text-brand-gold">Recommended</p>
+            <h4 className="text-sm font-serif text-brand-text font-bold">Instant Registration via Mobile OTP</h4>
+            <p className="text-[10px] text-brand-text/50 uppercase tracking-wider max-w-xs mx-auto">No passwords required. Secure your account, Digi Gold wallet, and SIPs in seconds.</p>
+            <Link href="/signin" className="block">
+              <Button type="button" variant="primary" size="full" className="!py-4 text-[10px] tracking-[0.3em] shadow-soft">
+                Register via Mobile OTP
+              </Button>
+            </Link>
+          </div>
+
+          <div className="flex items-center my-6 opacity-30">
+            <div className="flex-grow border-t border-brand-text" />
+            <span className="px-4 text-[10px] font-black uppercase tracking-widest text-brand-text">or use email signup</span>
+            <div className="flex-grow border-t border-brand-text" />
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <AuthInput 

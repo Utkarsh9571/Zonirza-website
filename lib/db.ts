@@ -37,8 +37,22 @@ async function dbConnect() {
       bufferCommands: false,
     };
 
-    cached!.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose;
+    cached!.promise = mongoose.connect(MONGODB_URI, opts).then((mongooseInstance) => {
+      mongooseInstance.connection.once('open', async () => {
+        try {
+          const userCol = mongooseInstance.connection.collection('users');
+          const indexes = await userCol.indexes();
+          const emailIdx = indexes.find(idx => idx.name === 'email_1');
+          if (emailIdx && !emailIdx.sparse) {
+            console.log('[DB MIGRATION] Dropping non-sparse email_1 index...');
+            await userCol.dropIndex('email_1');
+            console.log('[DB MIGRATION] Dropped non-sparse email_1 index successfully.');
+          }
+        } catch (err) {
+          console.log('[DB MIGRATION] Index check skipped/not required:', (err as any).message);
+        }
+      });
+      return mongooseInstance;
     });
   }
 

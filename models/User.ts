@@ -15,8 +15,12 @@ export interface IUserAddress {
 
 export interface IUser extends Document {
   name?: string;
-  email: string;
+  email?: string;
   phone?: string;
+  mobileNumber?: string;
+  mobileVerified?: boolean;
+  lastOTPRequest?: Date;
+  authProvider?: string;
   gender?: 'Male' | 'Female' | 'Other' | 'Prefer not to say';
   addresses: IUserAddress[];
   cart: any[];
@@ -54,12 +58,29 @@ const UserSchema = new Schema<IUser>({
   name: { type: String },
   email: { 
     type: String, 
-    required: true, 
     unique: true, 
+    sparse: true, 
     lowercase: true, 
     trim: true 
   },
   phone: { type: String },
+  mobileNumber: {
+    type: String,
+    unique: true,
+    sparse: true,
+    trim: true
+  },
+  mobileVerified: {
+    type: Boolean,
+    default: false
+  },
+  lastOTPRequest: {
+    type: Date
+  },
+  authProvider: {
+    type: String,
+    default: 'email'
+  },
   gender: { 
     type: String, 
     enum: ['Male', 'Female', 'Other', 'Prefer not to say'] 

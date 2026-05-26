@@ -3,34 +3,42 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
+import { normalizePhoneNumber } from "@/lib/otpService";
 
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
+    const userId = (session?.user as any)?.id;
     
-    if (!session || !session.user?.email) {
+    if (!session || !userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const data = await req.json();
-    const { name, phone, gender, addresses, cart, wishlist, orderHistory, recentlyViewed, preferences } = data;
+    const { name, phone, mobileNumber, gender, addresses, cart, wishlist, orderHistory, recentlyViewed, preferences } = data;
 
     await dbConnect();
     
     // Construct update object dynamically
     const updateData: any = {};
     if (name !== undefined) updateData.name = name;
-    if (phone !== undefined) updateData.phone = phone;
+    if (phone !== undefined) updateData.phone = phone ? normalizePhoneNumber(phone) : phone;
+    if (mobileNumber !== undefined) updateData.mobileNumber = mobileNumber ? normalizePhoneNumber(mobileNumber) : mobileNumber;
     if (gender !== undefined) updateData.gender = gender;
-    if (addresses !== undefined) updateData.addresses = addresses;
+    if (addresses !== undefined) {
+      updateData.addresses = addresses.map((addr: any) => ({
+        ...addr,
+        phone: addr.phone ? normalizePhoneNumber(addr.phone) : addr.phone
+      }));
+    }
     if (cart !== undefined) updateData.cart = cart;
     if (wishlist !== undefined) updateData.wishlist = wishlist;
     if (orderHistory !== undefined) updateData.orderHistory = orderHistory;
     if (recentlyViewed !== undefined) updateData.recentlyViewed = recentlyViewed;
     if (preferences !== undefined) updateData.preferences = preferences;
 
-    const updatedUser = await User.findOneAndUpdate(
-      { email: session.user.email },
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
       { $set: updateData },
       { new: true, runValidators: true }
     );
@@ -66,14 +74,15 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
     try {
       const session = await getServerSession(authOptions);
+      const userId = (session?.user as any)?.id;
       
-      if (!session || !session.user?.email) {
+      if (!session || !userId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
   
       await dbConnect();
       
-      const user = await User.findOne({ email: session.user.email });
+      const user = await User.findById(userId);
   
       if (!user) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });

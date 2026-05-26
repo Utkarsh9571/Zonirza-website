@@ -7,8 +7,9 @@ import User from "@/models/User";
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
+    const userId = (session?.user as any)?.id;
     
-    if (!session || !session.user?.email) {
+    if (!session || !userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -20,11 +21,11 @@ export async function POST(req: Request) {
 
     await dbConnect();
     
-    const updatedUser = await User.findOneAndUpdate(
-      { email: session.user.email },
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
       { 
         name, 
-        phone, 
+        phone: phone || (session.user as any).mobileNumber, 
         gender,
         onboardingCompleted: true 
       },
