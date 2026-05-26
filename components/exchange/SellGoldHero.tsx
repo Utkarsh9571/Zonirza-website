@@ -18,7 +18,7 @@ export default function SellGoldHero() {
       </div>
 
       <div className="container mx-auto px-6 lg:px-12 relative z-20">
-        <div className="max-w-2xl space-y-8">
+        <div className="max-w-2xl space-y-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -33,7 +33,7 @@ export default function SellGoldHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
-            className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white leading-[1.1]"
+            className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white leading-[1.1]"
           >
             Turn your <span className="italic text-brand-gold">unused gold</span> into instant value.
           </motion.h1>
@@ -42,12 +42,12 @@ export default function SellGoldHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-            className="space-y-4"
+            className="space-y-3"
           >
-            <p className="text-lg md:text-xl text-white/80 max-w-xl font-light leading-relaxed">
+            <p className="text-base md:text-lg text-white/80 max-w-xl font-light leading-relaxed">
               A trusted, secure, and fully transparent process. We assess your old gold's purity right in front of you for the highest market value.
             </p>
-            <p className="text-xs uppercase tracking-widest font-bold text-[#e08686]">
+            <p className="text-[10px] uppercase tracking-widest font-bold text-[#e08686]">
               * Currently available ONLY at our Alwar branch
             </p>
           </motion.div>
@@ -56,7 +56,7 @@ export default function SellGoldHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center gap-4 pt-4 pb-8"   
+            className="flex flex-col sm:flex-row items-center gap-4 pt-2 pb-4"   
           >
             <button
               onClick={() => scrollToSection('sell-consultation-section')}

@@ -20,7 +20,7 @@ export default function ExchangeHero() {
       </div>
 
       <div className="container mx-auto px-6 lg:px-12 relative z-20">
-        <div className="max-w-2xl space-y-8">
+        <div className="max-w-2xl space-y-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -35,7 +35,7 @@ export default function ExchangeHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
-            className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white leading-[1.1]"
+            className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white leading-[1.1]"
           >
             Upgrade your <span className="italic text-brand-gold">old gold</span> into timeless jewellery.
           </motion.h1>
@@ -44,7 +44,7 @@ export default function ExchangeHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-            className="text-lg md:text-xl text-white/70 max-w-xl font-light leading-relaxed"
+            className="text-base md:text-lg text-white/70 max-w-xl font-light leading-relaxed"
           >
             Experience the most transparent, rewarding, and luxurious exchange process. We accept gold of any purity, transforming your memories into magnificent new masterpieces.
           </motion.p>
@@ -53,7 +53,7 @@ export default function ExchangeHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center gap-4 pt-4 pb-8"   
+            className="flex flex-col sm:flex-row items-center gap-4 pt-2 pb-4"   
           >
             <button
               onClick={() => scrollToSection('calculator-section')}

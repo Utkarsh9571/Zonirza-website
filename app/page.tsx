@@ -429,10 +429,7 @@ export default function Home() {
               <h3 className="text-4xl font-serif text-brand-text dark:text-white max-w-[250px] leading-tight">Sell Your Old Gold</h3>
               <p className="text-brand-text/60 dark:text-white/60 text-xs leading-relaxed max-w-[250px]">Turn your unused gold into instant value with our transparent in-store valuation process.</p>
               <p className="text-[9px] uppercase tracking-widest font-bold text-[#8B2332] dark:text-[#e08686]">* Alwar Branch Only</p>
-              <Link href="/exchange" onClick={(e) => {
-                // In a real app we'd pass state or use query params to trigger the tab. 
-                // We'll just link to /exchange for now.
-              }} className="w-full sm:w-max px-6 py-3 border border-brand-gold bg-brand-gold text-white rounded-full text-[10px] uppercase tracking-widest font-bold hover:bg-[#B38B36] transition-all flex items-center justify-center space-x-2">
+              <Link href="/exchange?tab=sell" className="w-full sm:w-max px-6 py-3 border border-brand-gold bg-brand-gold text-white rounded-full text-[10px] uppercase tracking-widest font-bold hover:bg-[#B38B36] transition-all flex items-center justify-center space-x-2">
                 <span>Book Valuation</span>
                 <ArrowRight size={10} />
               </Link>

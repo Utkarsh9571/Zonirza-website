@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Exchange Components
@@ -19,8 +19,14 @@ import SellGoldConsultation from '@/components/exchange/SellGoldConsultation';
 // Shared Components
 import ExchangeCalculator from '@/components/exchange/ExchangeCalculator';
 
-export default function ExchangeTabController() {
-  const [activeTab, setActiveTab] = useState<'exchange' | 'sell'>('exchange');
+export default function ExchangeTabController({ initialTab = 'exchange' }: { initialTab?: 'exchange' | 'sell' }) {
+  const [activeTab, setActiveTab] = useState<'exchange' | 'sell'>(initialTab);
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
 
   const handleTabChange = (tab: 'exchange' | 'sell') => {
     setActiveTab(tab);
