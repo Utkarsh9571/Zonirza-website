@@ -33,10 +33,106 @@ export async function sendZonirazMail({ to, subject, html }: MailOptions) {
   }
 }
 
+export interface ThemeStyle {
+  primaryColor: string;
+  accentColor: string;
+  bgColor: string;
+  textColor: string;
+  headerBg: string;
+  logoInvert: string;
+  cardBg: string;
+  cardText: string;
+  cardAccent: string;
+  fontFamily: string;
+  title: string;
+}
+
+export const THEME_STYLES: Record<string, ThemeStyle> = {
+  'Minimal Luxury': {
+    primaryColor: '#3A1C16',
+    accentColor: '#C5A880',
+    bgColor: '#f9f5f0',
+    textColor: '#3A1C16',
+    headerBg: '#3A1C16',
+    logoInvert: 'brightness(0) invert(1)',
+    cardBg: '#3A1C16',
+    cardText: '#ffffff',
+    cardAccent: '#EAE1D5',
+    fontFamily: "'Playfair Display', serif",
+    title: 'A Gift of Timeless Elegance',
+  },
+  'Wedding Gold': {
+    primaryColor: '#6B1724',
+    accentColor: '#D4AF37',
+    bgColor: '#FDF7F7',
+    textColor: '#6B1724',
+    headerBg: '#6B1724',
+    logoInvert: 'brightness(0) invert(1)',
+    cardBg: '#6B1724',
+    cardText: '#ffffff',
+    cardAccent: '#F3C623',
+    fontFamily: "'Playfair Display', serif",
+    title: 'A Royal Blessing For Your Union',
+  },
+  'Anniversary Velvet': {
+    primaryColor: '#0A1D37',
+    accentColor: '#E5E5E5',
+    bgColor: '#F4F7F9',
+    textColor: '#0A1D37',
+    headerBg: '#0A1D37',
+    logoInvert: 'brightness(0) invert(1)',
+    cardBg: '#0A1D37',
+    cardText: '#ffffff',
+    cardAccent: '#E5E5E5',
+    fontFamily: "'Playfair Display', serif",
+    title: 'Celebrating Your Timeless Love',
+  },
+  'Birthday Blush': {
+    primaryColor: '#6F3843',
+    accentColor: '#C5A880',
+    bgColor: '#FDF8F9',
+    textColor: '#6F3843',
+    headerBg: '#6F3843',
+    logoInvert: 'brightness(0) invert(1)',
+    cardBg: '#6F3843',
+    cardText: '#ffffff',
+    cardAccent: '#C5A880',
+    fontFamily: "'Playfair Display', serif",
+    title: 'Wishing You A Beautiful Year Ahead',
+  },
+  'Diwali Spark': {
+    primaryColor: '#7D1D09',
+    accentColor: '#F3C623',
+    bgColor: '#FFFBF0',
+    textColor: '#7D1D09',
+    headerBg: '#7D1D09',
+    logoInvert: 'brightness(0) invert(1)',
+    cardBg: '#7D1D09',
+    cardText: '#ffffff',
+    cardAccent: '#F3C623',
+    fontFamily: "'Playfair Display', serif",
+    title: 'A Bright Gift Of Prosperity',
+  },
+  'Festive Gold': {
+    primaryColor: '#1C1917',
+    accentColor: '#E2B855',
+    bgColor: '#FAF9F6',
+    textColor: '#1C1917',
+    headerBg: '#1C1917',
+    logoInvert: 'brightness(0) invert(1)',
+    cardBg: '#1C1917',
+    cardText: '#ffffff',
+    cardAccent: '#E2B855',
+    fontFamily: "'Playfair Display', serif",
+    title: 'An Imperial Gift Of Gold & Light',
+  },
+};
+
 /**
  * Generates a premium luxury-themed email wrapper
  */
-export function getLuxuryEmailTemplate(content: string, previewText: string = "Zoniraz Luxury Branding") {
+export function getLuxuryEmailTemplate(content: string, previewText: string = "Zoniraz Luxury Branding", themeName: string = "Minimal Luxury") {
+  const style = THEME_STYLES[themeName] || THEME_STYLES['Minimal Luxury'];
   return `
     <!DOCTYPE html>
     <html>
@@ -44,24 +140,24 @@ export function getLuxuryEmailTemplate(content: string, previewText: string = "Z
         <meta charset="utf-8">
         <style>
           @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
-          body { margin: 0; padding: 0; background-color: #f9f5f0; }
+          body { margin: 0; padding: 0; background-color: ${style.bgColor}; }
         </style>
       </head>
-      <body style="margin: 0; padding: 0; background-color: #f9f5f0; font-family: 'Playfair Display', serif;">
-        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f9f5f0;">
+      <body style="margin: 0; padding: 0; background-color: ${style.bgColor}; font-family: ${style.fontFamily};">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: ${style.bgColor};">
           <tr>
             <td align="center" style="padding: 40px 20px;">
               <table width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 40px; overflow: hidden; box-shadow: 0 20px 50px rgba(58, 28, 22, 0.05);">
                 <!-- Header -->
                 <tr>
-                  <td align="center" style="padding: 60px 40px 40px 40px; background-color: #3A1C16;">
-                    <img src="https://zoniraz.com/images/ZONIRAZ%20LOGO.png" alt="Zoniraz Logo" width="200" style="display: block; filter: brightness(0) invert(1);" />
-                    <p style="color: #EAE1D5; opacity: 0.6; margin: 15px 0 0 0; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4em;">Timeless Luxury & Craftsmanship</p>
+                  <td align="center" style="padding: 60px 40px 40px 40px; background-color: ${style.headerBg};">
+                    <img src="https://zoniraz.com/images/ZONIRAZ%20LOGO.png" alt="Zoniraz Logo" width="200" style="display: block; filter: ${style.logoInvert};" />
+                    <p style="color: ${style.accentColor}; opacity: 0.6; margin: 15px 0 0 0; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4em;">Timeless Luxury & Craftsmanship</p>
                   </td>
                 </tr>
                 <!-- Content -->
                 <tr>
-                  <td style="padding: 60px 50px; color: #3A1C16; line-height: 1.8; font-size: 16px;">
+                  <td style="padding: 60px 50px; color: ${style.textColor}; line-height: 1.8; font-size: 16px;">
                     ${content}
                   </td>
                 </tr>
@@ -270,3 +366,65 @@ export async function sendSellGoldInquiryAdminEmail(inquiry: any) {
     html: getLuxuryEmailTemplate(content)
   });
 }
+
+export async function sendGiftCardEmail(giftCard: any, senderName: string) {
+  const themeName = giftCard.theme || 'Minimal Luxury';
+  const style = THEME_STYLES[themeName] || THEME_STYLES['Minimal Luxury'];
+  const trackingUrl = `${process.env.NEXTAUTH_URL || 'https://zoniraz.com'}/api/gift-cards/track/open?id=${giftCard._id}`;
+
+  const content = `
+    <h2 style="font-size: 28px; font-weight: normal; font-style: italic; margin-bottom: 20px; text-align: center; color: ${style.textColor};">${style.title}</h2>
+    <p style="text-align: center; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3em; color: ${style.textColor}; opacity: 0.6; margin-bottom: 40px;">Zoniraz Luxury Gift Card</p>
+    
+    <p>Dear <strong>${giftCard.recipientName}</strong>,</p>
+    <p>We are delighted to inform you that <strong>${senderName}</strong> has sent you a Zoniraz Luxury Gift Card, reserving a piece of our handcrafted masterpieces for your collection.</p>
+    
+    ${giftCard.personalMessage ? `
+      <div style="background-color: ${style.bgColor}; border: 1px solid #f2ede4; border-radius: 20px; padding: 25px; margin: 35px 0; font-style: italic; text-align: center; color: ${style.textColor}; font-size: 15px; line-height: 1.6;">
+        "${giftCard.personalMessage}"
+      </div>
+    ` : ''}
+    
+    <div style="background-color: ${style.primaryColor}; border-radius: 24px; padding: 40px; margin: 40px 0; text-align: center; color: ${style.cardText}; box-shadow: 0 15px 35px rgba(58, 28, 22, 0.15);">
+      <p style="margin: 0; font-size: 9px; text-transform: uppercase; tracking: 0.3em; color: ${style.cardAccent}; opacity: 0.8;">Gift Card Value</p>
+      <h3 style="margin: 10px 0 30px 0; font-size: 38px; font-family: 'Playfair Display', serif; font-weight: bold; color: #ffffff;">${giftCard.currency} ${giftCard.initialAmount.toLocaleString('en-IN')}</h3>
+      
+      <div style="border-top: 1px solid rgba(255, 255, 255, 0.15); padding-top: 25px;">
+        <p style="margin: 0; font-size: 9px; text-transform: uppercase; tracking: 0.2em; color: ${style.cardAccent}; opacity: 0.8;">Your Exclusive Code</p>
+        <p style="margin: 5px 0 20px 0; font-size: 22px; font-weight: bold; letter-spacing: 0.15em; color: #ffffff; font-family: monospace;">${giftCard.code}</p>
+        
+        <p style="margin: 0; font-size: 9px; text-transform: uppercase; tracking: 0.2em; color: ${style.cardAccent}; opacity: 0.8;">Your Security PIN</p>
+        <p style="margin: 5px 0 0 0; font-size: 20px; font-weight: bold; letter-spacing: 0.25em; color: #ffffff; font-family: monospace;">${giftCard.pin}</p>
+      </div>
+    </div>
+    
+    <div style="margin-bottom: 40px; border-top: 1px solid #f2ede4; padding-top: 30px;">
+      <h4 style="margin: 0 0 15px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.2em; color: ${style.textColor};">How to Redeem Your Gift:</h4>
+      <p style="font-size: 13px; color: ${style.textColor}; opacity: 0.8; line-height: 1.8; margin-bottom: 20px;">
+        To reveal your interactive virtual envelope and claim this gift card to your account, click the button below:
+      </p>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${process.env.NEXTAUTH_URL || 'https://zoniraz.com'}/gift-cards/redeem?code=${giftCard.code}&pin=${giftCard.pin}" style="background-color: ${style.primaryColor}; color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3em; font-weight: bold; display: inline-block; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">Reveal Your Gift</a>
+      </div>
+      <ol style="margin: 0; padding-left: 20px; font-size: 13px; color: ${style.textColor}; opacity: 0.8; line-height: 1.8;">
+        <li>Alternatively, explore our collections at <a href="${process.env.NEXTAUTH_URL || 'https://zoniraz.com'}" style="color: ${style.textColor}; font-weight: bold; text-decoration: underline;">zoniraz.com</a>.</li>
+        <li>On the checkout payment page, apply your **Gift Card Code** and **Security PIN**.</li>
+        <li>The card value will be applied to your order instantly. Any remaining balance will be saved.</li>
+      </ol>
+    </div>
+    
+    <p style="font-size: 10px; color: ${style.textColor}; opacity: 0.5; text-align: center; margin-top: 40px; text-transform: uppercase; letter-spacing: 0.1em;">
+      Valid Until: ${new Date(giftCard.expirationDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+    </p>
+
+    <!-- Tracking Pixel -->
+    <img src="${trackingUrl}" width="1" height="1" style="display:none !important;" />
+  `;
+
+  return sendZonirazMail({
+    to: giftCard.recipientEmail,
+    subject: `${senderName} has sent you a Zoniraz Luxury Gift Card!`,
+    html: getLuxuryEmailTemplate(content, "Zoniraz Luxury Gift Card", themeName)
+  });
+}
+

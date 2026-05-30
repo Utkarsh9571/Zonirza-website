@@ -35,6 +35,8 @@ const OrderSchema = z.object({
   currency: z.string().default('INR'),
   exchangeRate: z.number().default(1),
   applyDigiGold: z.boolean().default(false),
+  giftCardCode: z.string().optional(),
+  giftCardPin: z.string().optional(),
 });
 
 // POST: Create a new pending order
@@ -49,7 +51,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid order data', details: validation.error.format() }, { status: 400 });
     }
 
-    const { items: rawItems, shippingAddress, couponCode, currency, exchangeRate, applyDigiGold } = validation.data;
+    const { items: rawItems, shippingAddress, couponCode, currency, exchangeRate, applyDigiGold, giftCardCode, giftCardPin } = validation.data;
 
     await dbConnect();
 
@@ -72,6 +74,66 @@ export async function POST(req: Request) {
       }
     }
 
+    // 4. GIFT CARD REDEMPTION LOGIC
+    let giftCardRedeemedAmount = 0;
+    let appliedGiftCardCode = '';
+
+    if (giftCardCode && giftCardPin) {
+      const GiftCard = (await import('@/models/GiftCard')).default;
+
+      const gc = await GiftCard.findOne({ 
+        code: giftCardCode.trim().toUpperCase(),
+        pin: giftCardPin.trim()
+      });
+
+      if (!gc) {
+        return NextResponse.json({ error: 'Invalid Gift Card code or PIN' }, { status: 400 });
+      }
+
+      if (gc.status === 'pending') {
+        return NextResponse.json({ error: 'This gift card is not yet activated' }, { status: 400 });
+      }
+      if (gc.status === 'redeemed' || gc.currentBalance <= 0) {
+        return NextResponse.json({ error: 'This gift card has already been fully redeemed' }, { status: 400 });
+      }
+      if (['cancelled', 'expired'].includes(gc.status)) {
+        return NextResponse.json({ error: `This gift card is ${gc.status}` }, { status: 400 });
+      }
+      if (gc.expirationDate && new Date(gc.expirationDate) < new Date()) {
+        return NextResponse.json({ error: 'This gift card has expired' }, { status: 400 });
+      }
+      if (gc.currency !== currency) {
+        return NextResponse.json({ error: `Currency mismatch: Gift Card is in ${gc.currency}` }, { status: 400 });
+      }
+
+      giftCardRedeemedAmount = Math.min(gc.currentBalance, finalPayableAmount);
+
+      if (giftCardRedeemedAmount > 0) {
+        // Atomic deduction
+        const updatedGC = await GiftCard.findOneAndUpdate(
+          {
+            _id: gc._id,
+            currentBalance: { $gte: giftCardRedeemedAmount }
+          },
+          {
+            $inc: { currentBalance: -giftCardRedeemedAmount },
+            $set: {
+              status: (gc.currentBalance - giftCardRedeemedAmount === 0) ? 'redeemed' : 'partially_redeemed',
+              lastUsedAt: new Date()
+            }
+          },
+          { new: true }
+        );
+
+        if (!updatedGC) {
+          return NextResponse.json({ error: 'Gift card balance check failed (potential double spend)' }, { status: 400 });
+        }
+
+        finalPayableAmount -= giftCardRedeemedAmount;
+        appliedGiftCardCode = gc.code;
+      }
+    }
+
     const orderData = {
       userId: session?.user ? (session.user as any).id : undefined,
       items: pricingResult.items,
@@ -82,14 +144,50 @@ export async function POST(req: Request) {
       exchangeRate: exchangeRate,
       shippingAddress,
       digiGoldRedeemedAmount,
+      giftCardCode: appliedGiftCardCode || undefined,
+      giftCardAmountRedeemed: giftCardRedeemedAmount || undefined,
       paymentStatus: finalPayableAmount === 0 ? 'paid' : 'pending',
       orderStatus: finalPayableAmount === 0 ? 'Payment Confirmed' : 'placed',
     };
 
-    const order = await Order.create(orderData);
+    let order;
+    try {
+      order = await Order.create(orderData);
+    } catch (createErr: any) {
+      // Revert Gift Card balance on creation failure
+      if (giftCardRedeemedAmount > 0 && appliedGiftCardCode) {
+        const GiftCard = (await import('@/models/GiftCard')).default;
+        await GiftCard.findOneAndUpdate(
+          { code: appliedGiftCardCode },
+          {
+            $inc: { currentBalance: giftCardRedeemedAmount },
+            $set: { status: 'active' } // Fallback to active
+          }
+        );
+      }
+      throw createErr;
+    }
+
+    // Log Gift Card transaction if used successfully
+    if (giftCardRedeemedAmount > 0 && appliedGiftCardCode && order) {
+      const GiftCard = (await import('@/models/GiftCard')).default;
+      const GiftCardTransaction = (await import('@/models/GiftCardTransaction')).default;
+      const gc = await GiftCard.findOne({ code: appliedGiftCardCode });
+
+      await GiftCardTransaction.create({
+        giftCardId: gc._id,
+        type: 'redeemed',
+        amount: giftCardRedeemedAmount,
+        balanceBefore: gc.currentBalance + giftCardRedeemedAmount,
+        balanceAfter: gc.currentBalance,
+        relatedOrderId: order._id,
+        actorUserId: session?.user ? (session.user as any).id : undefined,
+        metadata: { notes: 'Redeemed at checkout' }
+      });
+    }
 
     // Lock Digi Gold if used
-    if (digiGoldRedeemedAmount > 0 && session?.user) {
+    if (digiGoldRedeemedAmount > 0 && session?.user && order) {
       const lockResult = await lockWalletBalance((session.user as any).id, order._id.toString(), digiGoldRedeemedAmount);
       order.digiGoldRedeemedGrams = lockResult.lockedGrams;
       order.digiGoldTransactionId = lockResult.transactionId as any;

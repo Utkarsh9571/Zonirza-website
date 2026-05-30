@@ -59,6 +59,16 @@ export async function POST(req: NextRequest) {
 
     await order.save();
 
+    // Activate Gift Card if it is a virtual gift card purchase
+    if (order.items[0]?.productId === 'giftcard_virtual') {
+      const { activateGiftCardForOrder } = await import('@/lib/giftCardHelper');
+      try {
+        await activateGiftCardForOrder(order._id.toString());
+      } catch (gcErr) {
+        console.error('[GIFT CARD] Activation error in verification route:', gcErr);
+      }
+    }
+
     return NextResponse.json({ success: true, message: 'Payment verified successfully' });
   } catch (error: any) {
     console.error('Razorpay Verification Error:', error);

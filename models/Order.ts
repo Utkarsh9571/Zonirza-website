@@ -50,6 +50,8 @@ export interface IOrder extends Document {
   digiGoldRedeemedAmount?: number;
   digiGoldRedeemedGrams?: number;
   digiGoldTransactionId?: mongoose.Types.ObjectId | string;
+  giftCardCode?: string;
+  giftCardAmountRedeemed?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -115,6 +117,8 @@ const OrderSchema: Schema = new Schema(
     digiGoldRedeemedAmount: { type: Number, default: 0 },
     digiGoldRedeemedGrams: { type: Number, default: 0 },
     digiGoldTransactionId: { type: Schema.Types.ObjectId, ref: 'DigitalGoldTransaction' },
+    giftCardCode: { type: String },
+    giftCardAmountRedeemed: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

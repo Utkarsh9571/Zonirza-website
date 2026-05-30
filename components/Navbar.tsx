@@ -290,6 +290,11 @@ const Navbar = () => {
                             <p className="text-[11px] font-bold uppercase tracking-widest">Savings Plans</p>
                           </Link>
 
+                          <Link href="/account/gift-cards" className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg dark:hover:bg-brand-bg/50 text-brand-text dark:text-brand-text transition-all group" onClick={() => setActiveMenu('none')}>
+                            <div className="w-8 h-8 rounded-full bg-white dark:bg-brand-bg flex items-center justify-center text-brand-text/40 dark:text-brand-text/60 group-hover:text-brand-gold shadow-soft transition-all"><Gift size={18} /></div>
+                            <p className="text-[11px] font-bold uppercase tracking-widest">Gift Cards</p>
+                          </Link>
+
                           <Link href="/account?tab=addresses" className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg dark:hover:bg-brand-bg/50 text-brand-text dark:text-brand-text transition-all group" onClick={() => setActiveMenu('none')}>
                             <div className="w-8 h-8 rounded-full bg-white dark:bg-brand-bg flex items-center justify-center text-brand-text/40 dark:text-brand-text/60 group-hover:text-brand-gold shadow-soft transition-all"><MapPinIcon size={18} /></div>
                             <p className="text-[11px] font-bold uppercase tracking-widest">Saved Addresses</p>
@@ -443,6 +448,7 @@ const Navbar = () => {
 
             <Link href="/blog" className="text-sm uppercase tracking-widest font-bold text-brand-text dark:text-brand-text/90 py-4" onClick={() => setIsOpen(false)}>Blog</Link>
             <Link href="/franchise" className="text-sm uppercase tracking-widest font-bold text-brand-text dark:text-brand-text/90 py-4" onClick={() => setIsOpen(false)}>Franchise</Link>
+            <Link href="/gift-cards" className="text-sm uppercase tracking-widest font-bold text-brand-text dark:text-brand-text/90 py-4" onClick={() => setIsOpen(false)}>Gift Cards</Link>
             
             <div className="pt-6 border-t border-brand-text/5 space-y-4">
                <button onClick={() => { setActiveMenu('search'); setIsOpen(false); }} className="w-full flex items-center justify-center space-x-3 p-5 rounded-2xl bg-brand-bg dark:bg-brand-bg/80 text-brand-text dark:text-brand-text/90 font-bold uppercase tracking-widest text-[11px] active:bg-brand-gold active:text-white transition-all">

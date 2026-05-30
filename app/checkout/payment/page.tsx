@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, CreditCard, Landmark, Wallet, ShieldCheck, Lock, Coins } from 'lucide-react';
+import { ChevronLeft, CreditCard, Landmark, Wallet, ShieldCheck, Lock, Coins, Gift } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import useSWR from 'swr';
 import { CheckoutSteps } from '@/components/checkout/CheckoutSteps';
@@ -27,6 +27,11 @@ export default function PaymentPage() {
   const { currentCurrency, rates } = useCurrencyStore();
   const [isLoading, setIsLoading] = useState(false);
   const [applyDigiGold, setApplyDigiGold] = useState(false);
+  const [giftCardCode, setGiftCardCode] = useState('');
+  const [giftCardPin, setGiftCardPin] = useState('');
+  const [appliedGiftCard, setAppliedGiftCard] = useState<{ code: string; pin: string; balance: number } | null>(null);
+  const [giftCardError, setGiftCardError] = useState<string | null>(null);
+  const [isGiftCardValidating, setIsGiftCardValidating] = useState(false);
 
   // Fetch user's digi gold wallet if they are logged in
   const { data: digiGoldData } = useSWR('/api/digi-gold/wallet', fetcher);
@@ -41,7 +46,53 @@ export default function PaymentPage() {
   // Calculate Digi Gold Deductions
   const eligibleDigiGoldValue = digiGoldData?.success && digiGoldData.valuation?.currentValue ? digiGoldData.valuation.currentValue : 0;
   const digiGoldDeduction = applyDigiGold ? Math.min(eligibleDigiGoldValue, total) : 0;
-  const finalPayable = total - digiGoldDeduction;
+
+  // Calculate Gift Card Deductions
+  const giftCardDeduction = appliedGiftCard ? Math.min(appliedGiftCard.balance, total - digiGoldDeduction) : 0;
+  const finalPayable = total - digiGoldDeduction - giftCardDeduction;
+
+  const handleApplyGiftCard = async () => {
+    if (!giftCardCode || !giftCardPin) {
+      setGiftCardError('Please enter both code and PIN.');
+      return;
+    }
+    setIsGiftCardValidating(true);
+    setGiftCardError(null);
+    try {
+      const res = await fetch('/api/gift-cards/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: giftCardCode, pin: giftCardPin }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        if (data.currency !== currentCurrency) {
+          setGiftCardError(`Gift Card currency (${data.currency}) does not match cart currency (${currentCurrency}).`);
+          setIsGiftCardValidating(false);
+          return;
+        }
+        setAppliedGiftCard({
+          code: data.code,
+          pin: giftCardPin,
+          balance: data.currentBalance
+        });
+        setGiftCardError(null);
+        setGiftCardCode('');
+        setGiftCardPin('');
+      } else {
+        setGiftCardError(data.error || 'Failed to validate gift card.');
+      }
+    } catch (err) {
+      setGiftCardError('Network error. Please try again.');
+    } finally {
+      setIsGiftCardValidating(false);
+    }
+  };
+
+  const handleRemoveGiftCard = () => {
+    setAppliedGiftCard(null);
+    setGiftCardError(null);
+  };
 
   const loadRazorpay = () => {
     return new Promise((resolve) => {
@@ -82,16 +133,19 @@ export default function PaymentPage() {
             pincode: selectedAddress?.pincode,
             country: selectedAddress?.country || 'India'
           },
-          applyDigiGold
+          applyDigiGold,
+          giftCardCode: appliedGiftCard?.code || undefined,
+          giftCardPin: appliedGiftCard?.pin || undefined
         })
       });
 
       const orderData = await orderRes.json();
       if (!orderData.success) throw new Error(orderData.error || 'Failed to create internal order');
 
-      // If fully redeemed via Digi Gold, order is done!
+      // If fully redeemed, order is done!
       if (orderData.fullyRedeemed) {
-        router.push(`/success?order_id=${orderData.orderId}&payment_id=digigold_redemption`);
+        const redemptionType = giftCardDeduction > 0 ? 'giftcard_redemption' : 'digigold_redemption';
+        router.push(`/success?order_id=${orderData.orderId}&payment_id=${redemptionType}`);
         return;
       }
 
@@ -272,6 +326,66 @@ export default function PaymentPage() {
               </div>
             )}
 
+            {/* LUXURY GIFT CARD REDEMPTION MODULE */}
+            <div className="bg-white/40 dark:bg-white/5 border border-brand-text/5 dark:border-white/5 rounded-[40px] p-8 space-y-6 transition-colors">
+              <div className="flex items-center gap-6">
+                <div className="w-14 h-14 rounded-2xl bg-brand-gold/10 text-brand-gold flex items-center justify-center shrink-0">
+                  <Gift size={24} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-brand-text">Apply Gift Card</h3>
+                  <p className="text-[10px] text-brand-text/40 dark:text-brand-text/60 uppercase tracking-widest font-medium mt-1">Redeem store-value vouchers</p>
+                </div>
+              </div>
+
+              {appliedGiftCard ? (
+                <div className="bg-brand-gold/5 border border-brand-gold/25 rounded-2xl p-4 flex items-center justify-between animate-in fade-in duration-300">
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-brand-gold">Active Gift Voucher Applied</p>
+                    <p className="text-xs font-bold font-mono tracking-widest text-brand-text">{appliedGiftCard.code}</p>
+                    <p className="text-[9px] uppercase tracking-widest text-brand-text/40 font-bold">Deductible Balance: ₹{appliedGiftCard.balance.toLocaleString()}</p>
+                  </div>
+                  <button 
+                    onClick={handleRemoveGiftCard}
+                    className="text-[10px] font-bold uppercase tracking-widest text-red-500 hover:underline px-4 py-2 bg-red-500/5 hover:bg-red-500/10 rounded-xl transition-all"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input 
+                      type="text"
+                      placeholder="GIFT CARD CODE (e.g. ZGFT-ABCD-EFGH)"
+                      value={giftCardCode}
+                      onChange={(e) => setGiftCardCode(e.target.value.toUpperCase())}
+                      className="w-full h-12 bg-white dark:bg-brand-white border border-brand-text/5 rounded-xl px-4 text-xs font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 dark:text-brand-text"
+                    />
+                    <input 
+                      type="password"
+                      placeholder="6-DIGIT PIN"
+                      maxLength={6}
+                      value={giftCardPin}
+                      onChange={(e) => setGiftCardPin(e.target.value.replace(/\D/g, ''))}
+                      className="w-full h-12 bg-white dark:bg-brand-white border border-brand-text/5 rounded-xl px-4 text-xs font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 dark:text-brand-text"
+                    />
+                  </div>
+                  {giftCardError && (
+                    <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest px-2">{giftCardError}</p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleApplyGiftCard}
+                    disabled={isGiftCardValidating}
+                    className="w-full py-3.5 bg-brand-text hover:bg-brand-gold text-white font-bold uppercase tracking-[0.2em] text-[10px] rounded-xl transition-all shadow-soft"
+                  >
+                    {isGiftCardValidating ? 'Validating Voucher...' : 'Apply Voucher'}
+                  </button>
+                </div>
+              )}
+            </div>
+
             <div className="bg-brand-gold/5 dark:bg-brand-gold/10 rounded-[40px] p-10 border border-brand-gold/10 flex flex-col items-center text-center space-y-4 transition-colors">
               <Lock className="text-brand-gold" size={32} />
               <div className="space-y-2">
@@ -299,6 +413,13 @@ export default function PaymentPage() {
                   <div className="flex justify-between items-end pb-4 border-b border-brand-text/5 animate-in fade-in">
                     <span className="text-[11px] font-bold uppercase tracking-widest text-brand-gold flex items-center"><Coins size={12} className="mr-1" /> Digi Gold Used</span>
                     <span className="text-lg font-serif text-brand-gold">- {displayPrice(digiGoldDeduction, currentCurrency, rates)}</span>
+                  </div>
+                )}
+
+                {appliedGiftCard && (
+                  <div className="flex justify-between items-end pb-4 border-b border-brand-text/5 animate-in fade-in">
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-brand-gold flex items-center"><Gift size={12} className="mr-1" /> Gift Card Applied</span>
+                    <span className="text-lg font-serif text-brand-gold">- {displayPrice(giftCardDeduction, currentCurrency, rates)}</span>
                   </div>
                 )}
 

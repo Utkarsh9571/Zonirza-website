@@ -71,6 +71,17 @@ export async function POST(req: NextRequest) {
               console.error(`Failed to finalize redemption for order ${order._id}:`, err);
             }
           }
+
+          // Activate Gift Card if it's a virtual gift card purchase
+          if (order.items[0]?.productId === 'giftcard_virtual') {
+            try {
+              const { activateGiftCardForOrder } = await import('@/lib/giftCardHelper');
+              await activateGiftCardForOrder(order._id.toString());
+              console.log(`Successfully activated Gift Card for order ${order._id}`);
+            } catch (err) {
+              console.error(`Failed to activate Gift Card for order ${order._id}:`, err);
+            }
+          }
         }
         isHandled = true;
       }
@@ -209,6 +220,17 @@ export async function POST(req: NextRequest) {
             console.log(`Successfully unlocked Digi Gold balance for failed order ${order._id}`);
           } catch (err) {
             console.error(`Failed to unlock Digi Gold balance for order ${order._id}:`, err);
+          }
+        }
+
+        // Refund Gift Card if it was applied to this failed order
+        if (order.giftCardCode && order.giftCardAmountRedeemed > 0) {
+          try {
+            const { refundGiftCardForOrder } = await import('@/lib/giftCardHelper');
+            await refundGiftCardForOrder(order._id.toString());
+            console.log(`Successfully refunded Gift Card balance for failed order ${order._id}`);
+          } catch (err) {
+            console.error(`Failed to refund Gift Card balance for order ${order._id}:`, err);
           }
         }
 

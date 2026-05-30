@@ -47,6 +47,7 @@ export default function Footer() {
               <li><LinkNext href="/help?tab=international" className="hover:text-white transition-colors">International Shipping</LinkNext></li>
               <li><LinkNext href="/help?tab=payment" className="hover:text-white transition-colors">Payment Options</LinkNext></li>
               <li><LinkNext href="/help?tab=returns" className="hover:text-white transition-colors">Returns</LinkNext></li>
+              <li><LinkNext href="/gift-cards" className="hover:text-white transition-colors">Gift Cards</LinkNext></li>
             </ul>
           </div>
 
