@@ -41,6 +41,7 @@ export interface ISettings extends Document {
     link?: string;
     isActive: boolean;
   };
+  spinWinEnabled: boolean;
 }
 
 const SettingsSchema: Schema = new Schema({
@@ -97,7 +98,8 @@ const SettingsSchema: Schema = new Schema({
     text: { type: String, default: '' },
     link: { type: String, default: '' },
     isActive: { type: Boolean, default: false }
-  }
+  },
+  spinWinEnabled: { type: Boolean, default: true }
 }, { timestamps: true });
 
 export default mongoose.models.Settings || mongoose.model<ISettings>('Settings', SettingsSchema);

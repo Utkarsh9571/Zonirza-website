@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from "next-auth/react";
-import { Menu, X, ChevronDown, Search, ShoppingCart, User, LogIn, UserPlus, Gift, MessageSquare, LogOut, Package, MapPin as MapPinIcon, UserCircle, ArrowRight, Heart, Moon, Sun, ShieldCheck } from 'lucide-react';
+import { Menu, X, ChevronDown, Search, ShoppingCart, User, LogIn, UserPlus, Gift, MessageSquare, LogOut, Package, MapPin as MapPinIcon, UserCircle, ArrowRight, Heart, Moon, Sun, ShieldCheck, Ticket } from 'lucide-react';
 import { MegaMenu } from './MegaMenu';
 import { AuthModal } from './auth/AuthModal';
 import { cn } from '@/lib/utils';
@@ -293,6 +293,11 @@ const Navbar = () => {
                           <Link href="/account/gift-cards" className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg dark:hover:bg-brand-bg/50 text-brand-text dark:text-brand-text transition-all group" onClick={() => setActiveMenu('none')}>
                             <div className="w-8 h-8 rounded-full bg-white dark:bg-brand-bg flex items-center justify-center text-brand-text/40 dark:text-brand-text/60 group-hover:text-brand-gold shadow-soft transition-all"><Gift size={18} /></div>
                             <p className="text-[11px] font-bold uppercase tracking-widest">Gift Cards</p>
+                          </Link>
+
+                          <Link href="/account/rewards" className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg dark:hover:bg-brand-bg/50 text-brand-text dark:text-brand-text transition-all group" onClick={() => setActiveMenu('none')}>
+                            <div className="w-8 h-8 rounded-full bg-white dark:bg-brand-bg flex items-center justify-center text-brand-text/40 dark:text-brand-text/60 group-hover:text-brand-gold shadow-soft transition-all"><Ticket size={18} /></div>
+                            <p className="text-[11px] font-bold uppercase tracking-widest">My Rewards</p>
                           </Link>
 
                           <Link href="/account?tab=addresses" className="w-full flex items-center space-x-4 p-4 rounded-2xl hover:bg-brand-bg dark:hover:bg-brand-bg/50 text-brand-text dark:text-brand-text transition-all group" onClick={() => setActiveMenu('none')}>

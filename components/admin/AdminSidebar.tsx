@@ -20,7 +20,8 @@ import {
   Coins,
   Menu,
   X,
-  Gift
+  Gift,
+  RotateCcw
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { signOut } from 'next-auth/react';
@@ -34,6 +35,7 @@ const MENU_ITEMS = [
   { icon: Layers, label: 'Collections', href: '/admin/collections' },
   { icon: Ticket, label: 'Coupons', href: '/admin/coupons' },
   { icon: Gift, label: 'Gift Cards', href: '/admin/gift-cards' },
+  { icon: RotateCcw, label: 'Lucky Wheel', href: '/admin/spin-win' },
   { icon: Briefcase, label: 'Franchise Leads', href: '/admin/franchise-leads' },
   { icon: Monitor, label: 'Merchandising', href: '/admin/merchandising' },
   { icon: Monitor, label: 'Cinematic Hero', href: '/admin/hero' },

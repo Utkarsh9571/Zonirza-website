@@ -25,7 +25,8 @@ import {
   Loader2,
   Heart,
   X,
-  MessageSquare
+  MessageSquare,
+  Ticket
 } from 'lucide-react';
 import { Section } from '@/components/new-ui/Section';
 import { Button } from '@/components/new-ui/Button';
@@ -260,6 +261,7 @@ function AccountContent() {
   const tabs = [
     { id: 'profile', label: 'Personal Details', icon: <UserCircle size={18} /> },
     { id: 'orders', label: 'My Orders', icon: <Package size={18} /> },
+    { id: 'rewards', label: 'My Rewards', icon: <Ticket size={18} />, href: '/account/rewards' },
     { id: 'savings', label: 'Savings Plans', icon: <ShieldCheck size={18} />, href: '/account/savings' },
     { id: 'digigold', label: 'Digi Gold', icon: <Diamond size={18} />, href: '/account/digi-gold' },
     { id: 'quotes', label: 'My Consultations', icon: <MessageSquare size={18} /> },
