@@ -45,8 +45,8 @@ export default function ExchangeHowItWorks() {
                 <span className="text-5xl mb-4 block">🏛️</span>
                 <h5 className="text-xl font-bold text-[#8c3a3a] dark:text-[#e08686] mb-2">Zoniraz Alwar</h5>
                 <p className="text-sm text-brand-text/70 dark:text-white/70 mb-6">
-                  123 Luxury Avenue,<br />
-                  Alwar, Rajasthan 301001
+                  SHOP NO. 7, HANUMAN BURJ,<br />
+                  ALWAR, Alwar, Rajasthan, 301001
                 </p>
                 
                 <button 

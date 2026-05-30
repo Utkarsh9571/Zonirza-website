@@ -66,15 +66,15 @@ export default function Footer() {
               <div className="space-y-1">
                 <p className="flex items-center space-x-2">
                   <Phone size={14} className="text-[#EAE1D5]" />
-                  <a href={`tel:${settings?.supportPhone || "18005726599"}`} className="hover:text-white transition-colors tracking-widest">
-                    {settings?.supportPhone || "1800 572 6599"}
+                  <a href={`tel:${settings?.supportPhone || "9784836060"}`} className="hover:text-white transition-colors tracking-widest">
+                    {settings?.supportPhone || "97848 36060"}
                   </a>
                 </p>
               </div>
               <div className="space-y-3">
                 <div className="flex items-center space-x-4">
                   <a href={`mailto:${settings?.supportEmail || "zonirazjewelhouse@gmail.com"}`} className="hover:text-white transition-colors border border-[#EAE1D5]/30 rounded-full p-2" title="Email Us"><Mail size={16} /></a>
-                  <a href={`tel:${settings?.supportPhone || "18005726599"}`} className="hover:text-white transition-colors border border-[#EAE1D5]/30 rounded-full p-2" title="Call Us"><Phone size={16} /></a>
+                  <a href={`tel:${settings?.supportPhone || "9784836060"}`} className="hover:text-white transition-colors border border-[#EAE1D5]/30 rounded-full p-2" title="Call Us"><Phone size={16} /></a>
                 </div>
               </div>
             </div>

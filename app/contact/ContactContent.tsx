@@ -96,7 +96,7 @@ export default function ContactContent() {
               <Phone size={28} strokeWidth={1} />
             </div>
             <h3 className="text-2xl text-brand-text mb-4">Call Us At</h3>
-            <p className="text-sm font-bold text-brand-gold tracking-widest mb-2 font-sans">{settings?.supportPhone || "1800 572 6599"}</p>
+            <p className="text-sm font-bold text-brand-gold tracking-widest mb-2 font-sans">{settings?.supportPhone || "97848 36060"}</p>
             <p className="text-[10px] text-brand-text/40">{settings?.businessHours || "10 AM - 7 PM (Mon-Sat)"}</p>
           </div>
           
