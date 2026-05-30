@@ -53,6 +53,7 @@ function ProductsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [products, setProducts] = useState<any[]>([]);
+  const [recommendations, setRecommendations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -70,6 +71,7 @@ function ProductsContent() {
         if (data.success) {
           setProducts(data.data);
           setTotalCount(data.total);
+          setRecommendations(data.recommendations || []);
         }
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -371,6 +373,40 @@ function ProductsContent() {
                 >
                   Clear All Filters
                 </button>
+              </div>
+            )}
+
+            {/* Recommendations ("Explore More") section */}
+            {!loading && recommendations.length > 0 && products.length < 12 && (
+              <div className="pt-16 border-t border-brand-text/10 dark:border-white/10 space-y-8 mt-16">
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-serif text-brand-text dark:text-brand-text/90">Explore More</h2>
+                  <p className="text-brand-text/50 dark:text-brand-text/70 text-xs uppercase tracking-widest">
+                    Here are some curated recommendations you might love
+                  </p>
+                </div>
+                <div className={cn(
+                  "grid gap-8",
+                  gridCols === 2 ? "grid-cols-2" : 
+                  gridCols === 3 ? "grid-cols-2 md:grid-cols-3" : 
+                  "grid-cols-2 md:grid-cols-4"
+                )}>
+                  {recommendations.map((product) => (
+                    <ProductCard 
+                      key={product.slug}
+                      name={product.name}
+                      price={product.basePrice || product.price || 0}
+                      image={product.images?.[0] || ''}
+                      slug={product.slug}
+                      variantImages={product.variantImages}
+                      images={product.images}
+                      context={{ 
+                        metal: searchParams.get('metal') || undefined,
+                        search: searchParams.get('q') || undefined
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
             )}
           </div>

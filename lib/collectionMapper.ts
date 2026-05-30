@@ -16,51 +16,51 @@ export interface CollectionMapping {
 export const COLLECTION_MAPPINGS: Record<string, CollectionMapping> = {
   'bridal': {
     tags: ['wedding', 'engagement', 'bridal'],
-    categories: ['engagement-rings', 'diamond-necklace-set', 'necklace-set', 'bangles-bangles'],
+    categories: ['rings', 'necklace-set', 'bangles'],
     specs: { stone: ['diamond', 'emerald', 'ruby'] },
     fallbackTags: ['diamond', 'premium']
   },
   'everyday-luxury': {
     tags: ['office wear', 'dailywear', 'minimal', 'everyday'],
-    categories: ['office-wear', 'plain-gold', 'studs-earrings', 'pendants'],
+    categories: ['earrings', 'pendants'],
     maxPrice: 40000,
     fallbackTags: ['plain-gold', 'minimal']
   },
   'statement': {
     tags: ['premium', 'luxury', 'cocktail', 'statement'],
-    categories: ['cocktail', 'diamond-rings', 'necklace-set'],
+    categories: ['rings', 'necklace-set'],
     minPrice: 60000,
     fallbackTags: ['diamond', 'luxury']
   },
   'office-wear': {
     tags: ['office wear', 'minimal', 'workwear'],
-    categories: ['office-wear', 'studs-earrings', 'plain-gold-pendants'],
+    categories: ['earrings', 'pendants'],
     gender: ['women'],
     maxPrice: 25000
   },
   'modern-classics': {
     tags: ['classic', 'modern', 'timeless'],
-    categories: ['diamond-rings', 'solitaire-rings-solitaires', 'plain-gold-earrings'],
+    categories: ['rings', 'earrings'],
     fallbackTags: ['gold', 'diamond']
   },
   'trending': {
     tags: ['trending', 'bestseller', 'new'],
-    categories: ['diamond-rings', 'hoops-earrings'],
+    categories: ['rings', 'earrings'],
     fallbackTags: ['featured', 'new']
   },
   'minimal': {
     tags: ['minimal', 'simple', 'sleek'],
-    categories: ['plain-gold', 'studs-earrings', 'nose-pins-all-jewellery'],
+    categories: ['earrings', 'nose-pin'],
     maxPrice: 20000
   },
   'solitaire': {
     tags: ['solitaire', 'premium', 'diamond'],
-    categories: ['solitaire-rings-solitaires', 'solitaire-pendants-solitaires', 'ring-solitaires'],
+    categories: ['rings', 'pendants'],
     fallbackTags: ['diamond']
   },
   'heritage': {
     tags: ['vintage', 'heritage', 'traditional'],
-    categories: ['religious-pendants', 'gold-mangalsutras', 'antique'],
+    categories: ['pendants', 'mangalsutra'],
     specs: { metal: ['yellow-gold'] },
     fallbackTags: ['gold', 'traditional']
   },

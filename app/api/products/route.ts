@@ -92,6 +92,16 @@ export async function GET(request: NextRequest) {
       }
     });
 
+    // Price boundary filtering
+    const priceMin = searchParams.get('price_min');
+    const priceMax = searchParams.get('price_max');
+    if (priceMin || priceMax) {
+      const priceQuery: any = {};
+      if (priceMin) priceQuery.$gte = Number(priceMin);
+      if (priceMax) priceQuery.$lte = Number(priceMax);
+      conditions.push({ basePrice: priceQuery });
+    }
+
     if (conditions.length > 0) {
       mongoQuery.$and = conditions;
     }
@@ -130,12 +140,74 @@ export async function GET(request: NextRequest) {
     
     const products = await finalQuery;
     const total = await Product.countDocuments(mongoQuery);
+
+    // 4. Fallback Recommendation Engine (when products count < 12)
+    let recommendations: any[] = [];
+    if (products.length < 12) {
+      const needed = 12;
+      const matchedIds = products.map((p: any) => p._id);
+      const recConditions: any[] = [];
+
+      const catVal = searchParams.get('category');
+      if (catVal) {
+        const cats = catVal.split(',').map(c => new RegExp(`^${c.trim()}$`, 'i'));
+        recConditions.push({ category: { $in: cats } });
+      }
+
+      const stoneVal = searchParams.get('stone');
+      if (stoneVal) {
+        const stones = stoneVal.split(',').map(s => new RegExp(`.*${s.trim()}.*`, 'i'));
+        recConditions.push({ "specs.stone": { $in: stones } });
+      }
+
+      const metalVal = searchParams.get('metal');
+      if (metalVal) {
+        const metals = metalVal.split(',').map(m => new RegExp(`.*${m.trim()}.*`, 'i'));
+        recConditions.push({ "specs.metal": { $in: metals } });
+      }
+
+      const collectionVal = searchParams.get('collection');
+      if (collectionVal) {
+        const mapping = resolveCollectionMapping(collectionVal);
+        if (mapping) {
+          if (mapping.categories) {
+            recConditions.push({ category: { $in: mapping.categories.map(c => new RegExp(`^${c.replace(/-/g, ' ')}$`, 'i')) } });
+          }
+          if (mapping.tags) {
+            recConditions.push({ tags: { $in: mapping.tags } });
+          }
+        }
+      }
+
+      let recQuery: any = {
+        _id: { $nin: matchedIds },
+        isActive: { $ne: false }
+      };
+
+      if (recConditions.length > 0) {
+        recQuery.$or = recConditions;
+      }
+
+      recommendations = await Product.find(recQuery).limit(needed).lean();
+
+      // If still less than needed, fill the rest with any active products
+      if (recommendations.length < needed) {
+        const currentRecIds = [...matchedIds, ...recommendations.map((p: any) => p._id)];
+        const fillCount = needed - recommendations.length;
+        const fillProducts = await Product.find({
+          _id: { $nin: currentRecIds },
+          isActive: { $ne: false }
+        }).limit(fillCount).lean();
+        recommendations = [...recommendations, ...fillProducts];
+      }
+    }
     
     return NextResponse.json({ 
       success: true, 
       count: products.length,
       total,
-      data: products 
+      data: products,
+      recommendations
     });
   } catch (error) {
     return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 });

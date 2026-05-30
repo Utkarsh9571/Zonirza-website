@@ -6,17 +6,20 @@ import { IProduct } from '@/models/Product';
 import { PLACEHOLDER_IMAGE, getValidImageUrl } from '@/lib/constants';
 import { constructMetadata } from '@/lib/seo';
 
-async function getProducts(category: string) {
+async function getProductsAndRecommendations(category: string) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products?category=${category}`, {
     next: { revalidate: 60 }
   });
   
   if (!res.ok) {
-    return [];
+    return { products: [], recommendations: [] };
   }
   
   const json = await res.json();
-  return json.data as IProduct[];
+  return {
+    products: (json.data || []) as IProduct[],
+    recommendations: (json.recommendations || []) as IProduct[]
+  };
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -31,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const products = await getProducts(slug);
+  const { products, recommendations } = await getProductsAndRecommendations(slug);
   
   const categoryTitle = slug === 'all' ? 'The Full Collection' : slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' ');
 
@@ -115,6 +118,30 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
             <p className="text-brand-text/20 text-[11px] uppercase tracking-[0.4em] font-bold">
               Our artisans are crafting new pieces. Check back soon.
             </p>
+          </div>
+        )}
+
+        {/* Recommendations ("Explore More") section */}
+        {recommendations.length > 0 && products.length < 12 && (
+          <div className="mt-32 pt-24 border-t border-brand-gold/10">
+            <div className="space-y-4 mb-16">
+              <p className="text-brand-gold text-[12px] uppercase tracking-[0.5em] font-bold">Curated for you</p>
+              <h2 className="text-4xl md:text-5xl font-serif font-light text-brand-text italic">Explore More</h2>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-24">
+              {recommendations.map((product) => (
+                <ProductCard
+                  key={product.slug}
+                  name={product.name}
+                  price={product.basePrice || 0}
+                  image={product.images?.[0] || ''}
+                  slug={product.slug}
+                  variantImages={product.variantImages}
+                  images={product.images}
+                  className="animate-in fade-in slide-in-from-bottom-12 duration-1000"
+                />
+              ))}
+            </div>
           </div>
         )}
       </Section>

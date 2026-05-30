@@ -21,12 +21,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 const PERFECT_MATCH_CATEGORIES = [
   { name: 'Rings', image: '/images/site/rings_category.png', href: '/products?category=rings' },
   { name: 'Earrings', image: '/images/site/earrings_category.png', href: '/products?category=earrings' },
-  { name: 'Necklaces', image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=600', href: '/products?category=necklaces' },
-  { name: 'Bracelets', image: '/images/site/bracelets_category.png', href: '/products?category=bracelets' },
   { name: 'Pendants', image: '/images/site/pendants_category.png', href: '/products?category=pendants' },
-  { name: 'Bangles', image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=600', href: '/products?category=bangles' },
-  { name: 'Solitaires', image: 'https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&q=80&w=600', href: '/products?category=solitaires' },
-  { name: 'Nose Pins', image: '/images/site/nose_pins_category.png', href: '/products?category=nose-pins' },
+  { name: 'Nose Pins', image: '/images/site/nose_pins_category.png', href: '/products?category=nose-pin' },
 ];
 
 export default function HomeContent() {

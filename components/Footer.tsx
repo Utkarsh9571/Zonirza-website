@@ -57,7 +57,6 @@ export default function Footer() {
               <li><LinkNext href="/blog" className="hover:text-white transition-colors">Blog</LinkNext></li>
               <li><LinkNext href="/contact" className="hover:text-white transition-colors">Contact Us</LinkNext></li>
               <li><LinkNext href="/about" className="hover:text-white transition-colors">About Zoniraz</LinkNext></li>
-              <li><LinkNext href="/franchise" className="hover:text-white transition-colors">Career</LinkNext></li>
             </ul>
           </div>
 
