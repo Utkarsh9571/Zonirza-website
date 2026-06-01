@@ -409,7 +409,7 @@ export default function HomeContent() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Zoniraz Experience</h2>
             <p className="text-[10px] sm:text-sm text-brand-text/60 dark:text-brand-text/80 uppercase tracking-widest">Find a Boutique or Book a Consultation</p>
           </div>
-
+          {/* Zoniraz Experience Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-6">
             {[
               { img: '/images/site/visit_store.png', text: 'VISIT OUR STORE', hidden: true },
