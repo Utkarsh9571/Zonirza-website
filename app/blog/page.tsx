@@ -347,7 +347,7 @@ export default function BlogPage() {
         </div>
       </section>
 
-      {/* ====== NEWSLETTER CTA ====== */}
+      {/* ====== NEWSLETTER CTA ====== 
       <section className="bg-gradient-to-br from-[#3A1C16] to-[#5A2C20] py-24 rounded-t-[40px]">
         <div className="max-w-3xl mx-auto px-6 text-center space-y-8">
           <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-brand-gold">Stay Inspired</p>
@@ -368,7 +368,7 @@ export default function BlogPage() {
             </button>
           </div>
         </div>
-      </section>
+      </section>*/}
     </div>
   );
 }

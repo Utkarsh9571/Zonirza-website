@@ -18,7 +18,7 @@ export const MonthlyPlanButton: React.FC<MonthlyPlanButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'inline-flex items-center justify-center px-8 py-4 rounded-full border border-brand-gold/30 text-brand-gold font-semibold text-sm uppercase tracking-wider transition-all duration-300 hover:bg-brand-gold/10 hover:border-brand-gold hover:text-white disabled:opacity-50 disabled:cursor-not-allowed',
+        'inline-flex items-center justify-center px-8 py-4 rounded-full border border-brand-text dark:border-brand-gold/40 bg-brand-text/5 dark:bg-brand-gold/5 text-brand-text dark:text-brand-gold font-semibold text-sm uppercase tracking-wider transition-all duration-300 hover:bg-brand-text hover:text-white dark:hover:bg-brand-gold dark:hover:text-[#12100e] hover:border-brand-text dark:hover:border-brand-gold disabled:opacity-50 disabled:cursor-not-allowed shadow-soft hover:shadow-premium',
         disabled ? 'opacity-50 cursor-not-allowed' : ''
       )}
     >
