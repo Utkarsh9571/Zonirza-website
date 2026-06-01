@@ -3,7 +3,6 @@ import { Metadata } from 'next';
 import { ProductCard } from '@/components/new-ui/ProductCard';
 import { Section } from '@/components/new-ui/Section';
 import { IProduct } from '@/models/Product';
-import { PLACEHOLDER_IMAGE, getValidImageUrl } from '@/lib/constants';
 import { constructMetadata } from '@/lib/seo';
 
 async function getProductsAndRecommendations(category: string) {
@@ -62,6 +61,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
     <div className="bg-brand-bg min-h-screen">
       {/* Dynamic Breadcrumb Schema */}
       <script
+        id="category-breadcrumb-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />

@@ -85,6 +85,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: '/terms', priority: 0.5, changeFrequency: 'monthly' as const },
     { url: '/privacy', priority: 0.5, changeFrequency: 'monthly' as const },
     { url: '/help', priority: 0.6, changeFrequency: 'weekly' as const },
+    { url: '/blog', priority: 0.7, changeFrequency: 'weekly' as const },
+    { url: '/franchise', priority: 0.6, changeFrequency: 'monthly' as const },
+    { url: '/gift-cards', priority: 0.7, changeFrequency: 'monthly' as const },
+    { url: '/spin-win', priority: 0.6, changeFrequency: 'monthly' as const },
   ];
 
   const staticUrls = staticPaths.filter(path => !(path as any).hidden).map((path) => ({

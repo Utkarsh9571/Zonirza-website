@@ -125,7 +125,7 @@ export default function AboutContent() {
                </div>
                <div className="col-span-2 bg-brand-gold text-white p-8 rounded-3xl text-center space-y-4">
                   <p className="text-[10px] uppercase tracking-[0.3em] font-bold">Customer Helpline</p>
-                  <a href="tel:180057226599" className="text-2xl font-serif block hover:underline tracking-widest">1800-572-26599</a>
+                  <a href="tel:+919784836060" className="text-2xl font-serif block hover:underline tracking-widest">97848 36060</a>
                </div>
             </div>
           </div>

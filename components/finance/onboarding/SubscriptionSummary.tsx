@@ -35,7 +35,7 @@ export const SubscriptionSummary: React.FC<SubscriptionSummaryProps> = ({ planTy
 
       <div className="mt-6 pt-6 border-t border-brand-text/10 dark:border-white/10 text-center">
         <p className="text-xs text-brand-text/60 dark:text-white/60">
-          Any Questions? Please call us at <a href="tel:18001234567" className="text-brand-gold font-bold hover:underline">1800 123 4567</a>
+          Any Questions? Please call us at <a href="tel:+919784836060" className="text-brand-gold font-bold hover:underline">97848 36060</a>
         </p>
       </div>
     </div>

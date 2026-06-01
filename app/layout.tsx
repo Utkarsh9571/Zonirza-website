@@ -84,7 +84,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     "logo": "https://zoniraz.com/images/ZONIRAZ%20LOGO.png",
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "1800-572-26599",
+      "telephone": "+919784836060",
       "contactType": "customer service",
       "areaServed": "IN",
       "availableLanguage": ["en", "hi"]
