@@ -394,7 +394,7 @@ const Navbar = () => {
           <div 
             className={cn(
               "left-0 right-0 flex justify-center px-4 md:px-6 lg:px-12 animate-in slide-in-from-top-2 duration-300 z-[110] pointer-events-auto",
-              isScrolled ? "fixed top-14" : "absolute top-full"
+              "absolute top-full"
             )}
             onMouseEnter={() => handleShopInteraction('hover')}
             onMouseLeave={handleMouseLeave}
