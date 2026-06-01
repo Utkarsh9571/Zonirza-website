@@ -300,7 +300,7 @@ export default function PaymentPage() {
             </div>
 
             {/* DIGI GOLD REDEMPTION MODULE */}
-            {eligibleDigiGoldValue > 0 && (
+            {eligibleDigiGoldValue > 0 && false && (
               <div className="bg-brand-gold/5 border border-brand-gold/20 rounded-[40px] p-8 flex items-center justify-between transition-colors">
                 <div className="flex items-center gap-6">
                   <div className="w-14 h-14 rounded-2xl bg-brand-gold text-white flex items-center justify-center">

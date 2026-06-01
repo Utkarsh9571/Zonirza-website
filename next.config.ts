@@ -29,6 +29,50 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/digi-gold',
+        destination: '/',
+        permanent: false,
+      },
+      {
+        source: '/digi-gold/:path*',
+        destination: '/',
+        permanent: false,
+      },
+      {
+        source: '/account/digi-gold',
+        destination: '/account',
+        permanent: false,
+      },
+      {
+        source: '/account/digi-gold/:path*',
+        destination: '/account',
+        permanent: false,
+      },
+      {
+        source: '/admin/digi-gold',
+        destination: '/admin',
+        permanent: false,
+      },
+      {
+        source: '/admin/digi-gold/:path*',
+        destination: '/admin',
+        permanent: false,
+      },
+      {
+        source: '/plans/gold-reserve',
+        destination: '/plans/gold-mine',
+        permanent: false,
+      },
+      {
+        source: '/plans/gold-reserve/:path*',
+        destination: '/plans/gold-mine',
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

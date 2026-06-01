@@ -17,6 +17,7 @@ export interface NavSubCategory {
   href: string;
   image?: string;
   thumbnail?: string; // Small circular icon/thumbnail
+  hidden?: boolean;
 }
 
 export interface NavFilterGroup {
@@ -24,7 +25,9 @@ export interface NavFilterGroup {
   options: {
     name: string;
     href: string;
+    hidden?: boolean;
   }[];
+  hidden?: boolean;
 }
 
 export interface NavPromotion {
@@ -54,7 +57,7 @@ export interface TopCategory {
   bottomBanner?: BottomBanner;
 }
 
-export const NAVIGATION_DATA: TopCategory[] = [
+const RAW_NAVIGATION_DATA: TopCategory[] = [
   {
     id: 'all',
     name: 'All Jewellery',
@@ -313,13 +316,13 @@ export const NAVIGATION_DATA: TopCategory[] = [
     href: '/plans/gold-mine',
     icon: Star,
     filters: [
-      { title: 'Plans', options: [{ name: 'Gold Mine (10+1)', href: '/plans/gold-mine' }, { name: 'Gold Reserve', href: '/plans/gold-reserve' }] },
-      { title: 'Digi Gold', options: [{ name: 'Buy Digital Gold', href: '/digi-gold' }] },
+      { title: 'Plans', options: [{ name: 'Gold Mine (10+1)', href: '/plans/gold-mine' }, { name: 'Gold Reserve', href: '/plans/gold-reserve', hidden: true }] },
+      { title: 'Digi Gold', options: [{ name: 'Buy Digital Gold', href: '/digi-gold', hidden: true }], hidden: true },
     ],
     subCategories: [
       { name: 'Gold Mine (10+1)', href: '/plans/gold-mine', thumbnail: '💰' },
-      { name: 'Gold Reserve', href: '/plans/gold-reserve', thumbnail: '📈' },
-      { name: 'Digi Gold', href: '/digi-gold', thumbnail: '🪙' },
+      { name: 'Gold Reserve', href: '/plans/gold-reserve', thumbnail: '📈', hidden: true },
+      { name: 'Digi Gold', href: '/digi-gold', thumbnail: '🪙', hidden: true },
     ],
     promotions: [
       {
@@ -347,3 +350,14 @@ export const NAVIGATION_DATA: TopCategory[] = [
     promotions: [],
   }
 ];
+
+export const NAVIGATION_DATA: TopCategory[] = RAW_NAVIGATION_DATA.map(category => ({
+  ...category,
+  filters: category.filters
+    .filter(f => !f.hidden)
+    .map(f => ({
+      ...f,
+      options: f.options.filter(o => !o.hidden)
+    })),
+  subCategories: category.subCategories.filter(s => !s.hidden)
+}));

@@ -263,7 +263,7 @@ function AccountContent() {
     { id: 'orders', label: 'My Orders', icon: <Package size={18} /> },
     { id: 'rewards', label: 'My Rewards', icon: <Ticket size={18} />, href: '/account/rewards' },
     { id: 'savings', label: 'Savings Plans', icon: <ShieldCheck size={18} />, href: '/account/savings' },
-    { id: 'digigold', label: 'Digi Gold', icon: <Diamond size={18} />, href: '/account/digi-gold' },
+    { id: 'digigold', label: 'Digi Gold', icon: <Diamond size={18} />, href: '/account/digi-gold', hidden: true },
     { id: 'quotes', label: 'My Consultations', icon: <MessageSquare size={18} /> },
     { id: 'wishlist', label: 'My Wishlist', icon: <Heart size={18} /> },
     { id: 'addresses', label: 'Saved Addresses', icon: <MapPin size={18} /> },
@@ -288,7 +288,7 @@ function AccountContent() {
               </div>
 
               <nav className="flex flex-row lg:flex-col overflow-x-auto lg:overflow-visible gap-2 pb-2 lg:pb-0 scrollbar-hide">
-                {tabs.map((tab) => (
+                {tabs.filter(tab => !(tab as any).hidden).map((tab) => (
                   tab.href ? (
                     <Link
                       key={tab.id}

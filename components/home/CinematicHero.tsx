@@ -29,7 +29,8 @@ const floatingCards = [
     subtitle: 'Save in 24K',
     icon: Coins,
     href: '/digi-gold',
-    delay: 0.3
+    delay: 0.3,
+    hidden: true
   },
   {
     title: 'Book Appointment',
@@ -183,7 +184,7 @@ export default function CinematicHero() {
 
         {/* Right Floating Cards (Desktop/Tablet mainly) */}
         <div className="hidden lg:flex flex-col gap-4 max-w-sm ml-auto">
-          {floatingCards.map((card, idx) => (
+          {floatingCards.filter(card => !(card as any).hidden).map((card, idx) => (
             <motion.div
               key={card.title}
               initial={{ opacity: 0, x: 20 }}

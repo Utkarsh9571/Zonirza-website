@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 export default function AboutContent() {
   return (
-    <div className="min-h-screen bg-[#FDF9F6] pb-24 pt-32">
+    <div className="min-h-screen bg-brand-bg text-brand-text pb-24 pt-32 transition-colors duration-500">
       <div className="max-w-[1200px] mx-auto px-6 md:px-12">
         
         {/* HERO SECTION */}
@@ -75,7 +75,7 @@ export default function AboutContent() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {['Rings', 'Earrings', 'Pendants'].map((item, i) => (
-              <div key={i} className="bg-white p-12 rounded-[40px] border border-brand-text/5 text-center group hover:border-brand-gold/30 transition-all shadow-soft">
+              <div key={i} className="bg-white dark:bg-brand-white p-12 rounded-[40px] border border-brand-text/10 dark:border-brand-gold/30 text-center group hover:border-brand-gold/50 transition-all shadow-soft">
                 <Gem size={32} className="text-brand-gold mx-auto mb-6 group-hover:scale-110 transition-transform" />
                 <h3 className="font-serif text-xl text-brand-text mb-2">{item}</h3>
                 <p className="text-[10px] uppercase tracking-widest text-brand-text/40">Designer Collection</p>
@@ -133,7 +133,7 @@ export default function AboutContent() {
 
         {/* MISSION & VISION */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-32">
-          <div className="bg-white p-12 md:p-16 rounded-[50px] border border-brand-text/5 shadow-premium group">
+          <div className="bg-white dark:bg-brand-white p-12 md:p-16 rounded-[50px] border border-brand-text/10 dark:border-brand-gold/30 shadow-premium group">
             <Target size={40} className="text-brand-gold mb-8 group-hover:rotate-45 transition-transform duration-500" />
             <h3 className="text-3xl font-serif text-brand-text mb-6">Our Mission</h3>
             <div className="space-y-4 text-sm text-brand-text/60 leading-relaxed">
@@ -141,7 +141,7 @@ export default function AboutContent() {
               <p>We dedicatedly begin our work at early stage and search for rough Diamonds in the most remote parts of the world, ensuring every client has a reason to smile.</p>
             </div>
           </div>
-          <div className="bg-white p-12 md:p-16 rounded-[50px] border border-brand-text/5 shadow-premium group">
+          <div className="bg-white dark:bg-brand-white p-12 md:p-16 rounded-[50px] border border-brand-text/10 dark:border-brand-gold/30 shadow-premium group">
             <Eye size={40} className="text-brand-gold mb-8 group-hover:scale-110 transition-transform duration-500" />
             <h3 className="text-3xl font-serif text-brand-text mb-6">Our Vision</h3>
             <div className="space-y-4 text-sm text-brand-text/60 leading-relaxed">
@@ -155,18 +155,13 @@ export default function AboutContent() {
         <motion.div 
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          className="text-center p-20 bg-brand-bg rounded-[60px] border border-brand-text/5"
+          className="text-center p-20 bg-white dark:bg-brand-white rounded-[60px] border border-brand-text/10 dark:border-brand-gold/30 shadow-premium"
         >
           <Users size={48} className="text-brand-gold mx-auto mb-8" />
           <h3 className="text-3xl font-serif text-brand-text mb-6">Stay Connected</h3>
-          <p className="text-brand-text/60 max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-brand-text/60 max-w-2xl mx-auto leading-relaxed">
             Our customer can connect with us all around the world, no matter where you are and how much time you have been our customer.
           </p>
-          <div className="flex justify-center space-x-4">
-             <div className="w-12 h-12 rounded-full border border-brand-text/10 flex items-center justify-center text-brand-text/40 hover:bg-brand-text hover:text-white transition-all cursor-pointer">in</div>
-             <div className="w-12 h-12 rounded-full border border-brand-text/10 flex items-center justify-center text-brand-text/40 hover:bg-brand-text hover:text-white transition-all cursor-pointer">X</div>
-             <div className="w-12 h-12 rounded-full border border-brand-text/10 flex items-center justify-center text-brand-text/40 hover:bg-brand-text hover:text-white transition-all cursor-pointer">f</div>
-          </div>
         </motion.div>
 
       </div>

@@ -410,12 +410,12 @@ export default function HomeContent() {
             <p className="text-[10px] sm:text-sm text-brand-text/60 dark:text-brand-text/80 uppercase tracking-widest">Find a Boutique or Book a Consultation</p>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-6">
             {[
               { img: '/images/site/visit_store.png', text: 'VISIT OUR STORE', hidden: true },
               { img: '/images/site/book_appointment.png', text: 'BOOK AN APPOINTMENT', link: '/contact' },
               { img: '/images/site/talk_expert.png', text: 'TALK TO AN EXPERT', hidden: true },
-              { img: '/images/site/digi_gold.png', text: 'DIGI GOLD', link: '/digi-gold' },
+              { img: '/images/site/digi_gold.png', text: 'DIGI GOLD', link: '/digi-gold', hidden: true },
               { img: '/images/site/blogs.png', text: 'BLOGS', link: '/blog' },
               { img: '/images/site/jewellery_guide.png', text: 'JEWELLERY GUIDE', hidden: true }
             ].filter(store => !store.hidden).map((store, i) => {

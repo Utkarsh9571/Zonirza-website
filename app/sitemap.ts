@@ -80,14 +80,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: '/about', priority: 0.8, changeFrequency: 'monthly' as const },
     { url: '/contact', priority: 0.8, changeFrequency: 'monthly' as const },
     { url: '/exchange', priority: 0.8, changeFrequency: 'monthly' as const },
-    { url: '/digi-gold', priority: 0.9, changeFrequency: 'daily' as const },
-    { url: '/digi-gold/sip', priority: 0.9, changeFrequency: 'daily' as const },
+    { url: '/digi-gold', priority: 0.9, changeFrequency: 'daily' as const, hidden: true },
+    { url: '/digi-gold/sip', priority: 0.9, changeFrequency: 'daily' as const, hidden: true },
     { url: '/terms', priority: 0.5, changeFrequency: 'monthly' as const },
     { url: '/privacy', priority: 0.5, changeFrequency: 'monthly' as const },
     { url: '/help', priority: 0.6, changeFrequency: 'weekly' as const },
   ];
 
-  const staticUrls = staticPaths.map((path) => ({
+  const staticUrls = staticPaths.filter(path => !(path as any).hidden).map((path) => ({
     url: `${baseUrl}${path.url}`,
     lastModified: new Date(),
     changeFrequency: path.changeFrequency,

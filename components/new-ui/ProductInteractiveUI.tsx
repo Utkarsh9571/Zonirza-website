@@ -320,7 +320,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
           </div>
 
           {/* Digi Gold Eligibility Banner */}
-          {digiGoldValue > 0 && (
+          {digiGoldValue > 0 && false && (
             <div className="flex items-center space-x-2 bg-brand-gold/10 px-4 py-2 rounded-full border border-brand-gold/20 animate-in fade-in zoom-in duration-500 delay-200">
               <Coins size={14} className="text-brand-gold" />
               <span className="text-[10px] font-bold uppercase tracking-widest text-brand-gold">

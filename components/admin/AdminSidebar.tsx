@@ -39,7 +39,7 @@ const MENU_ITEMS = [
   { icon: Briefcase, label: 'Franchise Leads', href: '/admin/franchise-leads' },
   { icon: Monitor, label: 'Merchandising', href: '/admin/merchandising' },
   { icon: Monitor, label: 'Cinematic Hero', href: '/admin/hero' },
-  { icon: Coins, label: 'Digi Gold', href: '/admin/digi-gold' },
+  { icon: Coins, label: 'Digi Gold', href: '/admin/digi-gold', hidden: true },
   { icon: Sparkles, label: 'Exchange Leads', href: '/admin/exchange' },
   { icon: Coins, label: 'Sell Gold Leads', href: '/admin/sell-gold' },
   { icon: Settings, label: 'Settings', href: '/admin/settings' },
@@ -98,7 +98,7 @@ export function AdminSidebar() {
 
       {/* Navigation Links */}
       <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto custom-scrollbar">
-        {MENU_ITEMS.map((item) => {
+        {MENU_ITEMS.filter(item => !(item as any).hidden).map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link
