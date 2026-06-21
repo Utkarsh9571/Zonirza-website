@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { AuthCard } from '@/components/auth/AuthCard';
 import { AuthInput } from '@/components/auth/AuthInput';
+import { PasswordField } from '@/components/auth/PasswordField';
 import { Button } from '@/components/new-ui/Button';
-import { Diamond, Phone, Mail, ArrowRight, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { Diamond, Mail, ArrowRight, ArrowLeft, KeyRound } from 'lucide-react';
 import { signIn } from 'next-auth/react';
 
 function SignInContent() {
@@ -15,81 +16,28 @@ function SignInContent() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
 
-  const [step, setStep] = useState<'mobile-input' | 'mobile-otp' | 'email-input' | 'email-sent'>('mobile-input');
-  const [mobile, setMobile] = useState('');
+  const [step, setStep] = useState<'login' | 'forgot-password' | 'forgot-password-sent'>('login');
   const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [cooldown, setCooldown] = useState(0);
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
-  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (cooldown > 0) {
-      interval = setInterval(() => {
-        setCooldown((prev) => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [cooldown]);
-
-  useEffect(() => {
-    if (step === 'mobile-otp') {
-      setTimeout(() => {
-        otpRefs.current[0]?.focus();
-      }, 100);
-    }
-  }, [step]);
-
-  const handleSendMobileOtp = async (e: React.FormEvent) => {
+  const handleCredentialsLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!mobile) return;
+    if (!email || !password) return;
     setIsLoading(true);
     setError('');
 
     try {
-      const response = await fetch('/api/auth/otp/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: mobile }),
-      });
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setStep('mobile-otp');
-        setCooldown(60);
-        setOtp(['', '', '', '', '', '']);
-      } else {
-        setError(data.error || 'Failed to send OTP. Please try again.');
-      }
-    } catch (err) {
-      setError('An unexpected error occurred.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleVerifyMobileOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const otpCode = otp.join('');
-    if (otpCode.length < 6) {
-      setError('Please enter a 6-digit verification code.');
-      return;
-    }
-    setIsLoading(true);
-    setError('');
-
-    try {
-      const res = await signIn('otp', {
-        identifier: mobile,
-        otp: otpCode,
+      const res = await signIn('credentials', {
+        email,
+        password,
         redirect: false,
       });
 
       if (res?.error) {
-        setError(res.error || 'Invalid OTP. Please check the code and try again.');
+        setError(res.error || 'Invalid credentials. Please check your email and password.');
       } else {
         const sessionRes = await fetch('/api/auth/session');
         const sessionData = await sessionRes.json();
@@ -106,55 +54,31 @@ function SignInContent() {
         }
       }
     } catch (err) {
-      setError('Verification failed. Please try again.');
+      setError('Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleResendOtp = async () => {
-    if (cooldown > 0 || !mobile) return;
-    setIsLoading(true);
-    setError('');
-
-    try {
-      const response = await fetch('/api/auth/otp/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: mobile }),
-      });
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setCooldown(60);
-        setError('');
-      } else {
-        setError(data.error || 'Failed to resend OTP.');
-      }
-    } catch (err) {
-      setError('An unexpected error occurred.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleRequestEmailLink = async (e: React.FormEvent) => {
+  const handleRequestResetLink = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     setIsLoading(true);
     setError('');
     
     try {
-      const res = await signIn('email', { 
-        email, 
-        redirect: false,
-        callbackUrl: window.location.origin + '/onboarding'
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
       });
+      const data = await response.json();
       
-      if (res?.error) {
-        setError('Failed to send verification link. Please try again.');
+      if (response.ok && data.success) {
+        setSuccessMessage(data.message);
+        setStep('forgot-password-sent');
       } else {
-        setStep('email-sent');
+        setError(data.error || 'Failed to request reset link.');
       }
     } catch (err) {
       setError('An unexpected error occurred.');
@@ -163,58 +87,65 @@ function SignInContent() {
     }
   };
 
-  const handleOtpChange = (index: number, value: string) => {
-    if (value && !/^\d$/.test(value)) return;
-
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-
-    if (value !== '' && index < 5) {
-      otpRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace') {
-      if (otp[index] === '' && index > 0) {
-        const newOtp = [...otp];
-        newOtp[index - 1] = '';
-        setOtp(newOtp);
-        otpRefs.current[index - 1]?.focus();
-      } else {
-        const newOtp = [...otp];
-        newOtp[index] = '';
-        setOtp(newOtp);
-      }
-    }
-  };
-
   return (
     <AuthCard 
-      title={step === 'email-sent' ? "Check Your Inbox" : "Sign In"} 
-      subtitle={step === 'email-sent' ? "We've sent an exclusive link" : "Access the world of Zoniraz"}
+      title={
+        step === 'login' ? "Sign In" : 
+        step === 'forgot-password' ? "Reset Password" : 
+        "Check Your Inbox"
+      } 
+      subtitle={
+        step === 'login' ? "Access the world of Zoniraz" : 
+        step === 'forgot-password' ? "Request a password recovery link" : 
+        "We've sent recovery instructions"
+      }
       className="max-w-md w-full bg-white/75 dark:bg-[#0f0d0c]/75 backdrop-blur-3xl shadow-premium border border-white/20 rounded-[40px] p-8 md:p-12 relative transition-colors"
     >
-      {step === 'mobile-input' && (
-        <form onSubmit={handleSendMobileOtp} className="space-y-8">
+      {error && (
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/25 rounded-2xl">
+          <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest text-center leading-relaxed">{error}</p>
+        </div>
+      )}
+
+      {step === 'login' && (
+        <form onSubmit={handleCredentialsLogin} className="space-y-6">
           <div className="relative">
             <AuthInput 
-              label="Mobile Number" 
-              type="tel" 
-              placeholder="+91 99999 88888"
-              value={mobile}
-              onChange={(e) => setMobile(e.target.value)}
+              label="Email Address" 
+              type="email" 
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
               className="pl-12"
               disabled={isLoading}
             />
-            <Phone size={18} className="absolute left-4 top-[46px] text-brand-gold/60" />
+            <Mail size={18} className="absolute left-4 top-[46px] text-brand-gold/60" />
           </div>
 
-          {error && (
-            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{error}</p>
-          )}
+          <div className="relative">
+            <PasswordField 
+              label="Password" 
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              disabled={isLoading}
+            />
+          </div>
+
+          <div className="text-right">
+            <button 
+              type="button"
+              onClick={() => {
+                setError('');
+                setStep('forgot-password');
+              }}
+              className="text-[10px] uppercase tracking-widest text-brand-gold font-bold hover:underline"
+            >
+              Forgot Password?
+            </button>
+          </div>
 
           <div className="space-y-6">
             <Button 
@@ -222,106 +153,26 @@ function SignInContent() {
               variant="primary" 
               size="full" 
               className="shadow-premium !py-6 text-[12px] tracking-[0.4em]"
-              disabled={isLoading || !mobile}
+              disabled={isLoading}
             >
-              {isLoading ? "Sending OTP..." : "Verify via Mobile"} <ArrowRight size={18} className="ml-3" />
+              {isLoading ? "Signing In..." : "Sign In"} <ArrowRight size={18} className="ml-3" />
             </Button>
-            
-            <div className="text-center pt-2">
-              <button 
-                type="button"
-                onClick={() => {
-                  setError('');
-                  setStep('email-input');
-                }}
-                className="text-[10px] uppercase tracking-widest text-brand-gold font-bold hover:underline"
-              >
-                Fallback to Email Login
-              </button>
-            </div>
           </div>
         </form>
       )}
 
-      {step === 'mobile-otp' && (
-        <form onSubmit={handleVerifyMobileOtp} className="space-y-8">
+      {step === 'forgot-password' && (
+        <form onSubmit={handleRequestResetLink} className="space-y-6">
           <button 
             type="button" 
             onClick={() => {
               setError('');
-              setStep('mobile-input');
+              setStep('login');
             }}
             className="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest text-brand-text/40 hover:text-brand-text mb-4"
           >
             <ArrowLeft size={14} />
-            <span>Back to Mobile</span>
-          </button>
-
-          <p className="text-sm text-brand-text/60">
-            We've sent a 6-digit verification code to <span className="font-bold text-brand-text">{mobile}</span>
-          </p>
-
-          <div className="flex justify-between gap-2">
-            {otp.map((digit, index) => (
-              <input
-                key={index}
-                ref={(el) => { otpRefs.current[index] = el; }}
-                type="text"
-                maxLength={1}
-                value={digit}
-                onChange={(e) => handleOtpChange(index, e.target.value)}
-                onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                className="w-12 h-14 md:w-14 md:h-16 text-center text-xl font-bold bg-brand-bg/30 dark:bg-white/5 border border-brand-text/10 dark:border-white/10 rounded-2xl focus:border-brand-gold focus:ring-4 focus:ring-brand-gold/5 transition-all outline-none"
-              />
-            ))}
-          </div>
-
-          {error && (
-            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{error}</p>
-          )}
-
-          <div className="space-y-6">
-            <Button 
-              type="submit" 
-              variant="primary" 
-              size="full" 
-              className="shadow-premium !py-6 text-[12px] tracking-[0.4em]"
-              disabled={isLoading || otp.join('').length < 6}
-            >
-              {isLoading ? "Verifying..." : "Verify & Continue"} <ShieldCheck size={18} className="ml-3" />
-            </Button>
-            
-            <div className="text-center flex flex-col space-y-2">
-              {cooldown > 0 ? (
-                <span className="text-[10px] uppercase tracking-widest text-brand-text/40">
-                  Resend Code in {cooldown}s
-                </span>
-              ) : (
-                <button 
-                  type="button"
-                  onClick={handleResendOtp}
-                  className="text-[10px] uppercase tracking-widest text-brand-gold font-bold hover:underline"
-                >
-                  Resend Verification Code
-                </button>
-              )}
-            </div>
-          </div>
-        </form>
-      )}
-
-      {step === 'email-input' && (
-        <form onSubmit={handleRequestEmailLink} className="space-y-8">
-          <button 
-            type="button" 
-            onClick={() => {
-              setError('');
-              setStep('mobile-input');
-            }}
-            className="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest text-brand-text/40 hover:text-brand-text mb-4"
-          >
-            <ArrowLeft size={14} />
-            <span>Back to Mobile Login</span>
+            <span>Back to Login</span>
           </button>
 
           <div className="relative">
@@ -338,10 +189,6 @@ function SignInContent() {
             <Mail size={18} className="absolute left-4 top-[46px] text-brand-gold/60" />
           </div>
 
-          {error && (
-            <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{error}</p>
-          )}
-
           <div className="space-y-6">
             <Button 
               type="submit" 
@@ -350,31 +197,31 @@ function SignInContent() {
               className="shadow-premium !py-6 text-[12px] tracking-[0.4em]"
               disabled={isLoading || !email}
             >
-              {isLoading ? "Sending Link..." : "Request Access Link"} <ArrowRight size={18} className="ml-3" />
+              {isLoading ? "Sending Link..." : "Request Reset Link"} <ArrowRight size={18} className="ml-3" />
             </Button>
           </div>
         </form>
       )}
 
-      {step === 'email-sent' && (
+      {step === 'forgot-password-sent' && (
         <div className="space-y-6 text-center">
           <div className="w-20 h-20 bg-brand-bg dark:bg-brand-bg/50 rounded-full flex items-center justify-center mx-auto shadow-premium border border-brand-gold/5">
-            <Mail className="text-brand-gold" size={32} />
+            <KeyRound className="text-brand-gold" size={32} />
           </div>
           <div className="space-y-2">
             <p className="text-sm font-bold text-brand-text dark:text-brand-text/90">{email}</p>
             <p className="text-[10px] uppercase tracking-[0.2em] text-brand-text/40 dark:text-brand-text/60 leading-relaxed">
-              Please click the link in the email to verify your identity and enter our collection.
+              {successMessage || "We've sent a password reset link to your email."}
             </p>
           </div>
           <button 
             onClick={() => {
               setError('');
-              setStep('email-input');
+              setStep('login');
             }}
             className="text-[10px] uppercase tracking-widest text-brand-gold font-bold hover:underline"
           >
-            Use a different email
+            Back to Login
           </button>
         </div>
       )}

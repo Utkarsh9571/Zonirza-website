@@ -1,105 +1,49 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { X, Diamond, ArrowRight, Mail, ShieldCheck, Phone, ArrowLeft } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Diamond, ArrowRight, Mail, ArrowLeft, KeyRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/new-ui/Button';
 import { AuthInput } from './AuthInput';
-import { signIn, useSession } from "next-auth/react";
+import { PasswordField } from './PasswordField';
+import { signIn } from "next-auth/react";
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-type AuthStep = 'mobile-input' | 'mobile-otp' | 'email-input' | 'email-sent';
+type AuthStep = 'login' | 'forgot-password' | 'forgot-password-sent';
 
 export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
-  const { data: session } = useSession();
   const router = useRouter();
   
-  const [step, setStep] = useState<AuthStep>('mobile-input');
-  const [mobile, setMobile] = useState('');
+  const [step, setStep] = useState<AuthStep>('login');
   const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [cooldown, setCooldown] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-
-  // Ref array for OTP inputs auto-focusing
-  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
-
-  // Resend cooldown timer countdown
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (cooldown > 0) {
-      interval = setInterval(() => {
-        setCooldown((prev) => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [cooldown]);
-
-  // Focus the first OTP input when reaching the OTP step
-  useEffect(() => {
-    if (step === 'mobile-otp') {
-      setTimeout(() => {
-        otpRefs.current[0]?.focus();
-      }, 100);
-    }
-  }, [step]);
+  const [successMessage, setSuccessMessage] = useState('');
 
   if (!isOpen) return null;
 
-  const handleSendMobileOtp = async (e: React.FormEvent) => {
+  const handleCredentialsLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!mobile) return;
+    if (!email || !password) return;
     setIsLoading(true);
     setError('');
 
     try {
-      const response = await fetch('/api/auth/otp/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: mobile }),
-      });
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setStep('mobile-otp');
-        setCooldown(60);
-        setOtp(['', '', '', '', '', '']);
-      } else {
-        setError(data.error || 'Failed to send OTP. Please try again.');
-      }
-    } catch (err) {
-      setError('An unexpected error occurred.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleVerifyMobileOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const otpCode = otp.join('');
-    if (otpCode.length < 6) {
-      setError('Please enter a 6-digit verification code.');
-      return;
-    }
-    setIsLoading(true);
-    setError('');
-
-    try {
-      const res = await signIn('otp', {
-        identifier: mobile,
-        otp: otpCode,
+      const res = await signIn('credentials', {
+        email,
+        password,
         redirect: false,
       });
 
       if (res?.error) {
-        setError(res.error || 'Invalid OTP. Please check the code and try again.');
+        setError(res.error || 'Invalid credentials. Please check your email and password.');
       } else {
         // Successful login! Fetch session details
         const sessionRes = await fetch('/api/auth/session');
@@ -119,90 +63,36 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
         onClose();
       }
     } catch (err) {
-      setError('Verification failed. Please try again.');
+      setError('Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleResendOtp = async () => {
-    if (cooldown > 0 || !mobile) return;
-    setIsLoading(true);
-    setError('');
-
-    try {
-      const response = await fetch('/api/auth/otp/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: mobile }),
-      });
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setCooldown(60);
-        setError('');
-      } else {
-        setError(data.error || 'Failed to resend OTP.');
-      }
-    } catch (err) {
-      setError('An unexpected error occurred.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleRequestEmailLink = async (e: React.FormEvent) => {
+  const handleRequestResetLink = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     setIsLoading(true);
     setError('');
     
     try {
-      const res = await signIn('email', { 
-        email, 
-        redirect: false,
-        callbackUrl: window.location.origin + '/onboarding'
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
       });
+      const data = await response.json();
       
-      if (res?.error) {
-        setError('Failed to send verification link. Please try again.');
+      if (response.ok && data.success) {
+        setSuccessMessage(data.message);
+        setStep('forgot-password-sent');
       } else {
-        setStep('email-sent');
+        setError(data.error || 'Failed to request reset link.');
       }
     } catch (err) {
       setError('An unexpected error occurred.');
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleOtpChange = (index: number, value: string) => {
-    // Only allow single digit numeric input
-    if (value && !/^\d$/.test(value)) return;
-
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-
-    // Auto-focus next input on entry
-    if (value !== '' && index < 5) {
-      otpRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Handle backspace navigation
-    if (e.key === 'Backspace') {
-      if (otp[index] === '' && index > 0) {
-        const newOtp = [...otp];
-        newOtp[index - 1] = '';
-        setOtp(newOtp);
-        otpRefs.current[index - 1]?.focus();
-      } else {
-        const newOtp = [...otp];
-        newOtp[index] = '';
-        setOtp(newOtp);
-      }
     }
   };
 
@@ -263,179 +153,24 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
 
         {/* RIGHT PANEL: Authentication Panel */}
         <div className="flex-1 bg-white dark:bg-[#0f0d0c] p-8 md:p-16 flex flex-col justify-center relative transition-colors">
-          <div className={cn(
-            "transition-all duration-500 transform",
-            isAnimating ? "opacity-0 scale-95" : "opacity-100 scale-100"
-          )}>
+          <div>
+            {error && (
+              <div className="mb-6 p-4 bg-red-500/10 border border-red-500/25 rounded-2xl">
+                <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest text-center leading-relaxed">{error}</p>
+              </div>
+            )}
             
-            {/* STEP 1: Enter Mobile (Primary Login) */}
-            {step === 'mobile-input' && (
-              <div className="space-y-10">
+            {/* STEP 1: Email + Password Login */}
+            {step === 'login' && (
+              <div className="space-y-8">
                 <div className="space-y-3">
                   <h3 className="text-3xl font-serif text-brand-text">Welcome to Zoniraz</h3>
                   <p className="text-sm text-brand-text/60 dark:text-brand-text/80 transition-colors">
-                    Access your account or register instantly using mobile verification.
+                    Access your account using your email and password.
                   </p>
                 </div>
 
-                <form onSubmit={handleSendMobileOtp} className="space-y-8">
-                  <div className="relative">
-                    <AuthInput 
-                      label="Mobile Number" 
-                      type="tel" 
-                      placeholder="+91 99999 88888 or 9876543210"
-                      value={mobile}
-                      onChange={(e) => setMobile(e.target.value)}
-                      required
-                      className="pl-12"
-                      disabled={isLoading}
-                    />
-                    <Phone size={18} className="absolute left-4 top-[46px] text-brand-gold/60" />
-                  </div>
-
-                  {error && (
-                    <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{error}</p>
-                  )}
-
-                  <div className="space-y-6">
-                    <Button 
-                      type="submit" 
-                      variant="primary" 
-                      size="full" 
-                      className="shadow-premium !py-6 text-[12px] tracking-[0.4em]"
-                      disabled={isLoading || !mobile}
-                    >
-                      {isLoading ? "Sending OTP..." : "Verify via Mobile"} <ArrowRight size={18} className="ml-3" />
-                    </Button>
-                    
-                    <div className="text-center pt-2">
-                      <button 
-                        type="button"
-                        onClick={() => {
-                          setError('');
-                          setStep('email-input');
-                        }}
-                        className="text-[10px] uppercase tracking-widest text-brand-gold font-bold hover:underline"
-                      >
-                        Fallback to Email login
-                      </button>
-                    </div>
-
-                    <p className="text-[10px] text-center text-brand-text/40 dark:text-brand-text/60 uppercase tracking-[0.2em] leading-relaxed transition-colors">
-                      By continuing, I agree to <span className="text-brand-gold font-bold">Terms of Use</span> & <span className="text-brand-gold font-bold">Privacy Policy</span>
-                    </p>
-                  </div>
-                </form>
-              </div>
-            )}
-
-            {/* STEP 2: Enter Mobile OTP */}
-            {step === 'mobile-otp' && (
-              <div className="space-y-10">
-                <button 
-                  type="button" 
-                  onClick={() => {
-                    setError('');
-                    setStep('mobile-input');
-                  }}
-                  className="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest text-brand-text/40 hover:text-brand-text"
-                >
-                  <ArrowLeft size={14} />
-                  <span>Back to Mobile</span>
-                </button>
-
-                <div className="space-y-3">
-                  <h3 className="text-3xl font-serif text-brand-text">Verify Identity</h3>
-                  <p className="text-sm text-brand-text/60">
-                    We've sent a 6-digit verification code to <span className="font-bold text-brand-text">{mobile}</span>
-                  </p>
-                </div>
-
-                <form onSubmit={handleVerifyMobileOtp} className="space-y-8">
-                  <div className="flex justify-between gap-2">
-                    {otp.map((digit, index) => (
-                      <input
-                        key={index}
-                        ref={(el) => { otpRefs.current[index] = el; }}
-                        type="text"
-                        maxLength={1}
-                        value={digit}
-                        onChange={(e) => handleOtpChange(index, e.target.value)}
-                        onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                        className="w-12 h-14 md:w-14 md:h-16 text-center text-xl font-bold bg-brand-bg/30 dark:bg-white/5 border border-brand-text/10 dark:border-white/10 rounded-2xl focus:border-brand-gold focus:ring-4 focus:ring-brand-gold/5 transition-all outline-none"
-                      />
-                    ))}
-                  </div>
-
-                  {error && (
-                    <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{error}</p>
-                  )}
-
-                  <div className="space-y-6">
-                    <Button 
-                      type="submit" 
-                      variant="primary" 
-                      size="full" 
-                      className="shadow-premium !py-6 text-[12px] tracking-[0.4em]"
-                      disabled={isLoading || otp.join('').length < 6}
-                    >
-                      {isLoading ? "Verifying..." : "Verify & Continue"} <ShieldCheck size={18} className="ml-3" />
-                    </Button>
-                    
-                    <div className="text-center flex flex-col space-y-2">
-                      {cooldown > 0 ? (
-                        <span className="text-[10px] uppercase tracking-widest text-brand-text/40">
-                          Resend Code in {cooldown}s
-                        </span>
-                      ) : (
-                        <button 
-                          type="button"
-                          onClick={handleResendOtp}
-                          className="text-[10px] uppercase tracking-widest text-brand-gold font-bold hover:underline"
-                        >
-                          Resend Verification Code
-                        </button>
-                      )}
-                      
-                      <button 
-                        type="button"
-                        onClick={() => {
-                          setError('');
-                          setStep('mobile-input');
-                        }}
-                        className="text-[10px] uppercase tracking-widest text-brand-text/40 hover:text-brand-text font-bold"
-                      >
-                        Change Mobile Number
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            )}
-
-            {/* STEP 3: Fallback Email Input */}
-            {step === 'email-input' && (
-              <div className="space-y-10">
-                <button 
-                  type="button" 
-                  onClick={() => {
-                    setError('');
-                    setStep('mobile-input');
-                  }}
-                  className="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest text-brand-text/40 hover:text-brand-text"
-                >
-                  <ArrowLeft size={14} />
-                  <span>Back to Mobile Login</span>
-                </button>
-
-                <div className="space-y-3">
-                  <h3 className="text-3xl font-serif text-brand-text">Email Fallback Login</h3>
-                  <p className="text-sm text-brand-text/60 dark:text-brand-text/80 transition-colors">
-                    Access using a passwordless magic verification link sent to your inbox.
-                  </p>
-                </div>
-
-                <form onSubmit={handleRequestEmailLink} className="space-y-8">
+                <form onSubmit={handleCredentialsLogin} className="space-y-6">
                   <div className="relative">
                     <AuthInput 
                       label="Email Address" 
@@ -450,9 +185,92 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                     <Mail size={18} className="absolute left-4 top-[46px] text-brand-gold/60" />
                   </div>
 
-                  {error && (
-                    <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{error}</p>
-                  )}
+                  <div className="relative">
+                    <PasswordField 
+                      label="Password" 
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      disabled={isLoading}
+                    />
+                  </div>
+
+                  <div className="text-right">
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        setError('');
+                        setStep('forgot-password');
+                      }}
+                      className="text-[10px] uppercase tracking-widest text-brand-gold font-bold hover:underline"
+                    >
+                      Forgot Password?
+                    </button>
+                  </div>
+
+                  <div className="space-y-6">
+                    <Button 
+                      type="submit" 
+                      variant="primary" 
+                      size="full" 
+                      className="shadow-premium !py-6 text-[12px] tracking-[0.4em]"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Signing In..." : "Sign In"} <ArrowRight size={18} className="ml-3" />
+                    </Button>
+                    
+                    <p className="text-[10px] text-center text-brand-text/40 dark:text-brand-text/60 uppercase tracking-[0.2em] leading-relaxed transition-colors">
+                      Don't have an account?{' '}
+                      <Link 
+                        href="/signup" 
+                        onClick={onClose}
+                        className="text-brand-gold font-bold hover:underline"
+                      >
+                        Sign Up
+                      </Link>
+                    </p>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* STEP 2: Forgot Password Request */}
+            {step === 'forgot-password' && (
+              <div className="space-y-8">
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setError('');
+                    setStep('login');
+                  }}
+                  className="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest text-brand-text/40 hover:text-brand-text"
+                >
+                  <ArrowLeft size={14} />
+                  <span>Back to Login</span>
+                </button>
+
+                <div className="space-y-3">
+                  <h3 className="text-3xl font-serif text-brand-text">Reset Password</h3>
+                  <p className="text-sm text-brand-text/60 dark:text-brand-text/80 transition-colors">
+                    Enter your email to receive recovery instructions.
+                  </p>
+                </div>
+
+                <form onSubmit={handleRequestResetLink} className="space-y-6">
+                  <div className="relative">
+                    <AuthInput 
+                      label="Email Address" 
+                      type="email" 
+                      placeholder="name@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="pl-12"
+                      disabled={isLoading}
+                    />
+                    <Mail size={18} className="absolute left-4 top-[46px] text-brand-gold/60" />
+                  </div>
 
                   <div className="space-y-6">
                     <Button 
@@ -462,41 +280,41 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                       className="shadow-premium !py-6 text-[12px] tracking-[0.4em]"
                       disabled={isLoading || !email}
                     >
-                      {isLoading ? "Sending Link..." : "Request Access Link"} <ArrowRight size={18} className="ml-3" />
+                      {isLoading ? "Sending Link..." : "Request Reset Link"} <ArrowRight size={18} className="ml-3" />
                     </Button>
                   </div>
                 </form>
               </div>
             )}
 
-            {/* STEP 4: Email Sent Screen */}
-            {step === 'email-sent' && (
-              <div className="space-y-10 animate-in fade-in zoom-in duration-700">
+            {/* STEP 3: Forgot Password Request Sent */}
+            {step === 'forgot-password-sent' && (
+              <div className="space-y-8 animate-in fade-in zoom-in duration-700">
                 <div className="space-y-3">
                   <h3 className="text-3xl font-serif text-brand-text">Check Your Inbox</h3>
                   <p className="text-sm text-brand-text/60 dark:text-brand-text/80">
-                    We've sent an exclusive passwordless magic link to your email.
+                    We've sent password reset instructions to your email.
                   </p>
                 </div>
 
                 <div className="bg-brand-bg/30 dark:bg-white/5 p-10 rounded-[35px] border border-brand-gold/10 text-center space-y-6 transition-colors">
                   <div className="w-20 h-20 bg-white dark:bg-brand-bg rounded-full flex items-center justify-center mx-auto shadow-premium border border-brand-gold/5 transition-colors">
-                    <Mail className="text-brand-gold" size={32} />
+                    <KeyRound className="text-brand-gold" size={32} />
                   </div>
                   <div className="space-y-2">
                     <p className="text-sm font-bold text-brand-text tracking-wide">{email}</p>
                     <p className="text-[10px] uppercase tracking-[0.2em] text-brand-text/40 dark:text-brand-text/60 leading-relaxed transition-colors">
-                      Please click the link in the email to verify your identity and enter our collection.
+                      {successMessage || "Please click the link in the email to set a new password."}
                     </p>
                   </div>
                   <button 
                     onClick={() => {
                       setError('');
-                      setStep('email-input');
+                      setStep('login');
                     }}
                     className="text-[10px] uppercase tracking-widest text-brand-gold font-bold hover:underline"
                   >
-                    Use a different email
+                    Back to Login
                   </button>
                 </div>
               </div>

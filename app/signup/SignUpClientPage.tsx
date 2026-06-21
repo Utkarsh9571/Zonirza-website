@@ -1,18 +1,78 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { AuthCard } from '@/components/auth/AuthCard';
 import { AuthInput } from '@/components/auth/AuthInput';
 import { PasswordField } from '@/components/auth/PasswordField';
 import { Button } from '@/components/new-ui/Button';
 import { Diamond, CheckCircle2 } from 'lucide-react';
+import { signIn } from 'next-auth/react';
 
 export default function SignUpClientPage() {
-  const handleSubmit = (e: React.FormEvent) => {
+  const router = useRouter();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [agree, setAgree] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Implementation for sign-up logic will go here
+    setError('');
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
+    if (!agree) {
+      setError('You must agree to the Terms of Service and Privacy Policy');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Registration failed');
+      }
+
+      // Automatically sign in the user
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError('Account created, but automatic sign-in failed. Please sign in manually.');
+        router.push('/signin');
+      } else {
+        router.push('/onboarding');
+      }
+    } catch (err: any) {
+      setError(err.message || 'An unexpected error occurred.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -46,23 +106,11 @@ export default function SignUpClientPage() {
           subtitle="Join the world of Zoniraz luxury"
           className="max-w-xl"
         >
-          {/* Mobile OTP Quick Sign Up */}
-          <div className="mb-8 p-6 bg-brand-gold/5 border border-brand-gold/15 rounded-3xl text-center space-y-3">
-            <p className="text-[10px] uppercase tracking-widest font-black text-brand-gold">Recommended</p>
-            <h4 className="text-sm font-serif text-brand-text font-bold">Instant Registration via Mobile OTP</h4>
-            <p className="text-[10px] text-brand-text/50 uppercase tracking-wider max-w-xs mx-auto">No passwords required. Secure your account, Digi Gold wallet, and SIPs in seconds.</p>
-            <Link href="/signin" className="block">
-              <Button type="button" variant="primary" size="full" className="!py-4 text-[10px] tracking-[0.3em] shadow-soft">
-                Register via Mobile OTP
-              </Button>
-            </Link>
-          </div>
-
-          <div className="flex items-center my-6 opacity-30">
-            <div className="flex-grow border-t border-brand-text" />
-            <span className="px-4 text-[10px] font-black uppercase tracking-widest text-brand-text">or use email signup</span>
-            <div className="flex-grow border-t border-brand-text" />
-          </div>
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/25 rounded-2xl">
+              <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest text-center">{error}</p>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -70,13 +118,19 @@ export default function SignUpClientPage() {
                 label="Full Name" 
                 type="text" 
                 placeholder="Enter your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required
+                disabled={isLoading}
               />
               <AuthInput 
                 label="Email Address" 
                 type="email" 
                 placeholder="name@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
             
@@ -84,29 +138,38 @@ export default function SignUpClientPage() {
               <PasswordField 
                 label="Password" 
                 placeholder="Create password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={isLoading}
               />
               <PasswordField 
                 label="Confirm Password" 
                 placeholder="Verify password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
 
             <div className="space-y-8">
-              <label className="flex items-start space-x-4 cursor-pointer group bg-white/50 backdrop-blur-md p-6 rounded-3xl border border-brand-text/5 hover:border-brand-gold/30 transition-all duration-500 shadow-soft">
+              <label className="flex items-start space-x-4 cursor-pointer group bg-white/50 dark:bg-white/5 backdrop-blur-md p-6 rounded-3xl border border-brand-text/5 hover:border-brand-gold/30 transition-all duration-500 shadow-soft">
                 <input 
                   type="checkbox" 
+                  checked={agree}
+                  onChange={(e) => setAgree(e.target.checked)}
                   className="mt-1 w-4 h-4 rounded-full border-brand-text/10 text-brand-gold focus:ring-brand-gold cursor-pointer"
                   required
+                  disabled={isLoading}
                 />
                 <span className="text-[11px] leading-relaxed uppercase tracking-widest text-brand-text/70 group-hover:text-brand-text transition-colors">
                   I agree to the <Link href="/terms" className="text-brand-gold font-bold">Terms of Service</Link> and <Link href="/privacy" className="text-brand-gold font-bold">Privacy Policy</Link>
                 </span>
               </label>
 
-              <Button type="submit" variant="primary" size="full" className="shadow-premium !py-6 text-[12px] tracking-[0.4em]">
-                Create Account <CheckCircle2 size={18} className="ml-3" />
+              <Button type="submit" variant="primary" size="full" className="shadow-premium !py-6 text-[12px] tracking-[0.4em]" disabled={isLoading}>
+                {isLoading ? "Creating Account..." : "Create Account"} <CheckCircle2 size={18} className="ml-3" />
               </Button>
             </div>
 

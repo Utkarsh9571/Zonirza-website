@@ -16,6 +16,9 @@ export interface IUserAddress {
 export interface IUser extends Document {
   name?: string;
   email?: string;
+  password?: string;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
   phone?: string;
   mobileNumber?: string;
   mobileVerified?: boolean;
@@ -63,6 +66,9 @@ const UserSchema = new Schema<IUser>({
     lowercase: true, 
     trim: true 
   },
+  password: { type: String },
+  passwordResetToken: { type: String },
+  passwordResetExpires: { type: Date },
   phone: { type: String },
   mobileNumber: {
     type: String,

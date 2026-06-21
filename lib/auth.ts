@@ -1,5 +1,4 @@
 import { NextAuthOptions } from "next-auth";
-import EmailProvider from "next-auth/providers/email";
 import CredentialsProvider from "next-auth/providers/credentials";
 import nodemailer from "nodemailer";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
@@ -7,6 +6,7 @@ import clientPromise from "./mongodb";
 import dbConnect from "./db";
 import User from "@/models/User";
 import { verifyAdminCredentials, hashPassword } from "./adminAuth";
+import { verifyPassword as verifyUserPassword } from "./userAuth";
 import { otpService, normalizePhoneNumber } from "./otpService";
 
 // Custom transporter for Gmail
@@ -122,43 +122,49 @@ export const authOptions: NextAuthOptions = {
         return null;
       }
     }),
-    EmailProvider({
-      server: {
-        host: process.env.EMAIL_SERVER_HOST,
-        port: Number(process.env.EMAIL_SERVER_PORT),
-        auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
-        },
+    CredentialsProvider({
+      id: "credentials",
+      name: "Email and Password",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
       },
-      from: process.env.EMAIL_FROM,
-      async sendVerificationRequest({ identifier: email, url, provider }) {
-        const { host } = new URL(url);
-        // In a real OTP flow, we'd extract the token or generate a custom 6-digit code
-        // For NextAuth default EmailProvider, it uses a magic link. 
-        // We will customize this to feel like a "Verification Code" or "Link" for luxury feel.
-        
-        const result = await transporter.sendMail({
-          to: email,
-          from: provider.from,
-          subject: `Your Zoniraz Access Link`,
-          text: `Sign in to Zoniraz: ${url}`,
-          html: `
-            <div style="background-color: #fdfaf5; padding: 60px; font-family: 'Playfair Display', serif; color: #3A1C16; text-align: center; border-radius: 40px;">
-              <h1 style="font-size: 32px; font-weight: normal; font-style: italic; margin-bottom: 24px;">Welcome to Zoniraz</h1>
-              <p style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 40px; color: rgba(58, 28, 22, 0.6);">Your exclusive gateway to luxury awaits</p>
-              <div style="margin-bottom: 40px;">
-                <a href="${url}" style="background-color: #3A1C16; color: #ffffff; padding: 20px 40px; text-decoration: none; border-radius: 12px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4em; font-weight: bold; display: inline-block; box-shadow: 0 10px 30px rgba(58, 28, 22, 0.1);">Enter The Collection</a>
-              </div>
-              <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: rgba(58, 28, 22, 0.4);">This link expires in 10 minutes.</p>
-            </div>
-          `,
-        });
-
-        if (result.rejected.length > 0) {
-          throw new Error(`Email(s) (${result.rejected.join(", ")}) could not be sent`);
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email and password are required");
         }
-      },
+
+        await dbConnect();
+        const emailLower = credentials.email.toLowerCase();
+        const user = await User.findOne({ email: emailLower });
+
+        if (!user) {
+          throw new Error("No user found with this email");
+        }
+
+        if (!user.password) {
+          throw new Error("This account does not have a password set. Please use password recovery.");
+        }
+
+        const isPasswordValid = verifyUserPassword(credentials.password, user.password);
+        if (!isPasswordValid) {
+          throw new Error("Incorrect password");
+        }
+
+        if (!user.isActive || user.status !== 'active') {
+          throw new Error("Your account has been suspended or banned");
+        }
+
+        // Update last login
+        user.lastLogin = new Date();
+        await user.save();
+
+        return {
+          id: user._id.toString(),
+          email: user.email,
+          name: user.name,
+        };
+      }
     }),
   ],
   session: {
@@ -168,6 +174,7 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account }) {
       if (account?.provider === "admin-credentials") return true;
       if (account?.provider === "otp") return true; // OTP handles creation in authorize()
+      if (account?.provider === "credentials") return true;
       if (!user.email) return false;
       
       await dbConnect();
