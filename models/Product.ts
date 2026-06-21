@@ -31,6 +31,11 @@ export interface IProduct extends Document {
     makingCharges?: number;
     sizeWeightOffset?: number;
   };
+  hasDiamond: boolean;
+  hasStone: boolean;
+  stoneType?: string;
+  goldPurityOptions: string[];
+  jewelryType: 'diamond' | 'stone' | 'gold';
 }
 
 const ProductSchema: Schema = new Schema({
@@ -52,6 +57,11 @@ const ProductSchema: Schema = new Schema({
   enableCardVideoPreview: { type: Boolean, default: false },
   cardPreviewVideo: { type: String },
   cardPreviewThumbnail: { type: String },
+  hasDiamond: { type: Boolean, default: false },
+  hasStone: { type: Boolean, default: false },
+  stoneType: { type: String },
+  goldPurityOptions: { type: [String], default: [] },
+  jewelryType: { type: String, enum: ['diamond', 'stone', 'gold'], default: 'gold' },
   configurableOptions: {
     metals: [String],
     purities: [String],

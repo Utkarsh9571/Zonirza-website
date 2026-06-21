@@ -102,7 +102,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
   
   // Safe fallback arrays mapped dynamically
   const metals = configOptions.metals?.length ? configOptions.metals : ['White Gold', 'Rose Gold', 'Yellow Gold'];
-  const purities = configOptions.purities?.length ? configOptions.purities : ['22K', '18K', '14K', '9K'];
+  const purities = product.goldPurityOptions?.length ? product.goldPurityOptions : (configOptions.purities?.length ? configOptions.purities : ['18K', '14K', '9K']);
   const sizes = configOptions.sizes?.length ? configOptions.sizes : ['7', '8', '9', '10', '11'];
   const stones = configOptions.stones?.length ? configOptions.stones : ['VVS1', 'VS1', 'SI1', 'Diamond-Standard'];
 
@@ -112,7 +112,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
       metal: metals[0] || 'Yellow Gold', 
       purity: purities.includes('18K') ? '18K' : (purities[0] || '18K'),
       size: '',
-      stone: stones.length > 0 ? stones[0] : 'None',
+      stone: (product.jewelryType === 'gold' || stones.length === 0) ? 'None' : stones[0],
     };
 
     // Default Size for Rings/Bangles
@@ -466,7 +466,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                 {/* Custom Request Expandable Section */}
                 {config.isCustomColor && (
                   <div className="mt-4 p-4 bg-brand-gold/5 border border-brand-gold/20 rounded-2xl animate-in fade-in slide-in-from-top-2 duration-300">
-                    <label className="block text-[11px] font-bold uppercase tracking-widest text-brand-text mb-2 flex items-center justify-between">
+                    <label className="text-[11px] font-bold uppercase tracking-widest text-brand-text mb-2 flex items-center justify-between">
                       <span>Describe your Customization:</span>
                       <span className="text-[9px] text-brand-gold font-normal normal-case tracking-normal border border-brand-gold/30 px-2 py-0.5 rounded-full">Consultation</span>
                     </label>
@@ -621,23 +621,24 @@ export function ProductInteractiveUI({ product }: { product: any }) {
               )}
 
               {/* Diamond Quality Selector */}
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Diamond Clarity</span>
-                  {showValidation && isFieldMissing('stone', validation.missingFields) && (
-                    <span className="text-[9px] text-red-500 font-bold uppercase tracking-widest flex items-center animate-pulse">
-                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2" /> Incomplete
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {stones.map((q: string) => (
-                    <button
-                      key={q}
-                      onClick={() => {
-                        setConfig({ ...config, stone: q });
-                        if (showValidation) setShowValidation(false);
-                      }}
+              {product.jewelryType === 'diamond' && (
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Diamond Clarity</span>
+                    {showValidation && isFieldMissing('stone', validation.missingFields) && (
+                      <span className="text-[9px] text-red-500 font-bold uppercase tracking-widest flex items-center animate-pulse">
+                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2" /> Incomplete
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {stones.map((q: string) => (
+                      <button
+                        key={q}
+                        onClick={() => {
+                          setConfig({ ...config, stone: q });
+                          if (showValidation) setShowValidation(false);
+                        }}
                         className={cn(
                           "px-4 py-2.5 rounded-xl text-[9px] uppercase tracking-widest font-bold border transition-all duration-300",
                           config.stone === q
@@ -645,42 +646,48 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                             : "bg-white dark:bg-[#1a1614] text-brand-muted border-brand-gold/10 dark:border-white/5 hover:border-brand-gold",
                           showValidation && isFieldMissing('stone', validation.missingFields) && "border-red-200"
                         )}
-                    >
-                      {q.replace('-', ' ')}
-                    </button>
-                  ))}
+                      >
+                        {q.replace('-', ' ')}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Right Column: Live Config Summary, Cart, Guides */}
             <div className="space-y-8 pl-0 lg:pl-4 flex flex-col justify-start">
               {/* Live Config Summary */}
               <div className="p-6 rounded-[40px] bg-brand-bg dark:bg-[#1a1614] border border-brand-gold/10 space-y-3 transition-colors">
-              <h4 className="text-[10px] font-bold uppercase tracking-widest text-brand-gold">Configuration Summary</h4>
-              <div className="grid grid-cols-2 gap-4">
-                 <div className="space-y-1">
-                   <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Metal & Purity</p>
-                   <p className="text-[11px] font-bold text-brand-text">{config.isCustomColor ? `${config.purity} Custom Color Request` : `${config.purity} ${config.metal}`}</p>
-                 </div>
-                 <div className="space-y-1">
-                   <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Stone Quality</p>
-                   <p className="text-[11px] font-bold text-brand-text">{config.stone?.replace('-', ' ')}</p>
-                 </div>
-                 <div className="space-y-1">
-                   <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Estimated Weight</p>
-                   <p className="text-[11px] font-bold text-brand-text">{pricing.estimatedGoldWeight}g Metal {pricing.estimatedStoneWeight ? ` + ${pricing.estimatedStoneWeight}g Stone` : ''}</p>
-                 </div>
-                 <div className="space-y-1">
-                   <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Selected Size</p>
-                   <p className="text-[11px] font-bold text-brand-text">{config.size || 'Base'}</p>
-                 </div>
-                 <div className="space-y-1 col-span-2 pt-2 border-t border-brand-gold/10">
-                   <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Estimated Total Weight</p>
-                   <p className="text-[13px] font-bold text-brand-gold">{pricing.estimatedWeight}g</p>
-                 </div>
+                <h4 className="text-[10px] font-bold uppercase tracking-widest text-brand-gold">Configuration Summary</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Metal & Purity</p>
+                    <p className="text-[11px] font-bold text-brand-text">{config.isCustomColor ? `${config.purity} Custom Color Request` : `${config.purity} ${config.metal}`}</p>
+                  </div>
+                  {product.jewelryType !== 'gold' && (
+                    <div className="space-y-1">
+                      <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Stone Quality</p>
+                      <p className="text-[11px] font-bold text-brand-text">{config.stone?.replace('-', ' ')}</p>
+                    </div>
+                  )}
+                  <div className="space-y-1">
+                    <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Estimated Weight</p>
+                    <p className="text-[11px] font-bold text-brand-text">
+                      {pricing.estimatedGoldWeight}g Metal
+                      {product.jewelryType !== 'gold' && pricing.estimatedStoneWeight ? ` + ${pricing.estimatedStoneWeight}g Stone` : ''}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Selected Size</p>
+                    <p className="text-[11px] font-bold text-brand-text">{config.size || 'Base'}</p>
+                  </div>
+                  <div className="space-y-1 col-span-2 pt-2 border-t border-brand-gold/10">
+                    <p className="text-[9px] text-brand-text/40 dark:text-brand-text/60 uppercase">Estimated Total Weight</p>
+                    <p className="text-[13px] font-bold text-brand-gold">{pricing.estimatedWeight}g</p>
+                  </div>
+                </div>
               </div>
-            </div>
 
             <div className="flex flex-col space-y-4 pt-4">
               {rulesEvaluation.isRestricted && (
@@ -781,25 +788,68 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                     <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Selected Metal</p>
                     <p className="text-sm font-bold text-brand-text">{config.isCustomColor ? `${config.purity} Custom Color` : `${config.purity} ${config.metal}`}</p>
                   </div>
+                  {/* Gold Weight */}
                   <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
-                    <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Estimated Weight</p>
-                    <p className="text-sm font-bold text-brand-text">{pricing.estimatedWeight}g</p>
+                    <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Gold Weight</p>
+                    <p className="text-sm font-bold text-brand-text">{pricing.estimatedGoldWeight || pricing.estimatedWeight}g</p>
                   </div>
-                  {config.stone && config.stone !== 'None' && (
-                    <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
-                      <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Diamond/Stone Quality</p>
-                      <p className="text-sm font-bold text-brand-text">{config.stone.replace('-', ' ')}</p>
-                    </div>
-                  )}
-                  {/* Dynamic Specs */}
-                  {Object.entries(specs || {}).map(([key, value]) => (
-                    key !== 'price' && (
-                      <div key={key} className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
-                        <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">{key}</p>
-                        <p className="text-sm font-bold text-brand-text">{value as string}</p>
+
+                  {/* Diamond Specs */}
+                  {product.jewelryType === 'diamond' && (
+                    <>
+                      <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
+                        <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Diamond Weight</p>
+                        <p className="text-sm font-bold text-brand-text">{specs?.diamondWeight || specs?.stoneWeight || '0.15 ct'}</p>
                       </div>
-                    )
-                  ))}
+                      {specs?.diamondCount && (
+                        <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
+                          <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Diamond Count</p>
+                          <p className="text-sm font-bold text-brand-text">{specs.diamondCount}</p>
+                        </div>
+                      )}
+                      {config.stone && config.stone !== 'None' && (
+                        <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
+                          <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Diamond Quality</p>
+                          <p className="text-sm font-bold text-brand-text">{config.stone.replace('-', ' ')}</p>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {/* Gemstone Specs */}
+                  {product.jewelryType === 'stone' && (
+                    <>
+                      <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
+                        <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Stone Name</p>
+                        <p className="text-sm font-bold text-brand-text">{specs?.stoneName || product.stoneType || 'Gemstone'}</p>
+                      </div>
+                      <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
+                        <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Stone Weight</p>
+                        <p className="text-sm font-bold text-brand-text">{specs?.stoneWeight || '1.0 ct'}</p>
+                      </div>
+                      {specs?.stoneCount && (
+                        <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
+                          <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Stone Count</p>
+                          <p className="text-sm font-bold text-brand-text">{specs.stoneCount}</p>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {/* Dynamic Specs */}
+                  {Object.entries(specs || {}).map(([key, value]) => {
+                    const k = key.toLowerCase();
+                    const isStoneOrDiamondKey = k.includes('stone') || k.includes('diamond');
+                    if (key !== 'price' && !isStoneOrDiamondKey) {
+                      return (
+                        <div key={key} className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
+                          <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">{key}</p>
+                          <p className="text-sm font-bold text-brand-text">{value as string}</p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })}
                 </div>
                 <div className="pt-8">
                   <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60 mb-2">Description</p>

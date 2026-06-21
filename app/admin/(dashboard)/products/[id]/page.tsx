@@ -136,6 +136,46 @@ function ProductEditorContent({ params }: ProductEditorProps) {
       return;
     }
 
+    // Auto-derive Gold Purity options based on jewelry composition
+    let purityOptions = [];
+    const currentJType = formData.jewelryType || 'gold';
+    if (currentJType === 'diamond') {
+      purityOptions = ['9K', '14K', '18K'];
+    } else if (currentJType === 'stone') {
+      purityOptions = ['9K', '14K', '18K', '22K'];
+    } else {
+      purityOptions = ['18K', '22K'];
+    }
+
+    // Clean specs to prevent validation errors (e.g. Stone weight on Diamond product)
+    const cleanedSpecs = { ...(formData.specs || {}) };
+    if (currentJType === 'gold') {
+      delete cleanedSpecs.diamondWeight;
+      delete cleanedSpecs.diamondCount;
+      delete cleanedSpecs.diamondQuality;
+      delete cleanedSpecs.stoneName;
+      delete cleanedSpecs.stoneWeight;
+      delete cleanedSpecs.stoneCount;
+    } else if (currentJType === 'diamond') {
+      delete cleanedSpecs.stoneName;
+      delete cleanedSpecs.stoneWeight;
+      delete cleanedSpecs.stoneCount;
+    } else if (currentJType === 'stone') {
+      delete cleanedSpecs.diamondWeight;
+      delete cleanedSpecs.diamondCount;
+      delete cleanedSpecs.diamondQuality;
+    }
+
+    const payload = {
+      ...formData,
+      specs: cleanedSpecs,
+      goldPurityOptions: purityOptions,
+      configurableOptions: {
+        ...(formData.configurableOptions || {}),
+        purities: purityOptions
+      }
+    };
+
     try {
       const url = isNew ? '/api/admin/products' : `/api/admin/products/${id}`;
       const method = isNew ? 'POST' : 'PATCH';
@@ -143,7 +183,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -151,6 +191,29 @@ function ProductEditorContent({ params }: ProductEditorProps) {
         setSuccess('Masterpiece preserved in the vault.');
         if (isNew) {
           router.push(`/admin/products/${data.data._id}`);
+        } else {
+          // Refresh state with updated saved product
+          setFormData({
+            ...data.data,
+            productVideos: data.data.productVideos || [],
+            enableCardVideoPreview: data.data.enableCardVideoPreview || false,
+            cardPreviewVideo: data.data.cardPreviewVideo || '',
+            cardPreviewThumbnail: data.data.cardPreviewThumbnail || '',
+            variantImages: data.data.variantImages || {},
+            specs: data.data.specs || {},
+            configurableOptions: {
+              metals: data.data.configurableOptions?.metals || [],
+              purities: data.data.configurableOptions?.purities || [],
+              stones: data.data.configurableOptions?.stones || [],
+              sizes: data.data.configurableOptions?.sizes || [],
+              customizations: data.data.configurableOptions?.customizations || []
+            },
+            pricingOverrides: {
+              makingCharges: data.data.pricingOverrides?.makingCharges ?? '',
+              sizeWeightOffset: data.data.pricingOverrides?.sizeWeightOffset ?? '',
+              stonePrices: data.data.pricingOverrides?.stonePrices || {}
+            }
+          });
         }
       } else {
         setError(data.message || 'The vault rejected the update.');
@@ -337,6 +400,110 @@ function ProductEditorContent({ params }: ProductEditorProps) {
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
                 className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/20 dark:border-white/20 rounded-[32px] py-6 px-8 text-[14px] leading-relaxed text-brand-text dark:text-white focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
               />
+            </div>
+
+            {/* Material Composition Section */}
+            <div className="pt-10 border-t border-brand-text/10 dark:border-white/10 space-y-6">
+              <h3 className="text-lg font-serif font-bold text-brand-text dark:text-white">Material Composition</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="space-y-4">
+                  <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Jewelry Type</label>
+                  <select
+                    value={formData.jewelryType || 'gold'}
+                    onChange={(e) => {
+                      const type = e.target.value;
+                      setFormData({
+                        ...formData,
+                        jewelryType: type,
+                        hasDiamond: type === 'diamond',
+                        hasStone: type === 'stone',
+                        stoneType: type === 'stone' ? (formData.stoneType || 'Ruby') : ''
+                      });
+                    }}
+                    className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/20 dark:border-white/20 rounded-2xl py-4 px-6 text-[14px] text-brand-text dark:text-white focus:ring-1 focus:ring-brand-gold/50 transition-all"
+                  >
+                    <option value="gold">Gold Jewelry (Plain Gold)</option>
+                    <option value="diamond">Diamond Jewelry</option>
+                    <option value="stone">Stone Jewelry (Gemstones)</option>
+                  </select>
+                </div>
+
+                {formData.jewelryType === 'diamond' && (
+                  <>
+                    <div className="space-y-4">
+                      <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Diamond Weight (ct)</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. 0.45"
+                        value={formData.specs?.diamondWeight || ''}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          specs: { ...(formData.specs || {}), diamondWeight: e.target.value }
+                        })}
+                        className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/20 dark:border-white/20 rounded-2xl py-4 px-6 text-[14px] text-brand-text dark:text-white focus:ring-1 focus:ring-brand-gold/50 transition-all"
+                      />
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Diamond Count</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. 1 or 24"
+                        value={formData.specs?.diamondCount || ''}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          specs: { ...(formData.specs || {}), diamondCount: e.target.value }
+                        })}
+                        className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/20 dark:border-white/20 rounded-2xl py-4 px-6 text-[14px] text-brand-text dark:text-white focus:ring-1 focus:ring-brand-gold/50 transition-all"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {formData.jewelryType === 'stone' && (
+                  <>
+                    <div className="space-y-4">
+                      <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Stone Name</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Emerald, Ruby"
+                        value={formData.stoneType || formData.specs?.stoneName || ''}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          stoneType: e.target.value,
+                          specs: { ...(formData.specs || {}), stoneName: e.target.value }
+                        })}
+                        className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/20 dark:border-white/20 rounded-2xl py-4 px-6 text-[14px] text-brand-text dark:text-white focus:ring-1 focus:ring-brand-gold/50 transition-all"
+                      />
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Stone Weight (ct)</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. 1.2"
+                        value={formData.specs?.stoneWeight || ''}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          specs: { ...(formData.specs || {}), stoneWeight: e.target.value }
+                        })}
+                        className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/20 dark:border-white/20 rounded-2xl py-4 px-6 text-[14px] text-brand-text dark:text-white focus:ring-1 focus:ring-brand-gold/50 transition-all"
+                      />
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Stone Count</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. 1"
+                        value={formData.specs?.stoneCount || ''}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          specs: { ...(formData.specs || {}), stoneCount: e.target.value }
+                        })}
+                        className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/20 dark:border-white/20 rounded-2xl py-4 px-6 text-[14px] text-brand-text dark:text-white focus:ring-1 focus:ring-brand-gold/50 transition-all"
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         )}
