@@ -81,7 +81,7 @@ function ProductImageZoom({ image, name }: { image: string, name: string }) {
 
       {/* Luxury Lens Overlay */}
       {isZooming && (
-        <div className="absolute inset-0 border-2 border-brand-gold/20 z-20 pointer-events-none rounded-[24px] overflow-hidden">
+        <div className="absolute inset-0 border-2 border-brand-gold/20 z-20 pointer-events-none rounded-3xl overflow-hidden">
           <div className="absolute top-4 left-4 bg-brand-text/80 backdrop-blur-md px-3 py-1.5 rounded-full">
             <p className="text-[8px] text-white uppercase tracking-[0.2em] font-black flex items-center">
               <Sparkles size={10} className="mr-2 text-brand-gold" />
@@ -303,7 +303,7 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
   return (
     <div className="bg-brand-bg text-brand-text min-h-screen pb-24 transition-colors duration-500">
       {/* Main Single-Column Layout */}
-      <Section className="!pt-36 !pb-12 w-full max-w-[1920px] mx-auto flex flex-col items-center px-4 md:px-8 lg:px-12">
+      <Section className="pt-36! pb-12! w-full max-w-480 mx-auto flex flex-col items-center px-4 md:px-8 lg:px-12">
         
         {/* 1. HEADER: Breadcrumbs, Title, Price */}
         <div className="w-full flex flex-col items-center text-center space-y-4 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
@@ -357,7 +357,7 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
 
         {/* 3. MASSIVE FULL-WIDTH DUAL IMAGE GALLERY */}
         <div className="w-full relative bg-white dark:bg-[#1a1614] rounded-[40px] overflow-hidden mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150">
-          <div className="flex w-full aspect-[4/5] lg:aspect-[2.5/1] gap-4">
+          <div className="flex w-full aspect-4/5 lg:aspect-2.5/1 gap-4">
              {/* Media 1 */}
              <div className="w-full lg:w-1/2 relative h-full">
                 {isVideo(currentMedia[selectedImage] || '') ? (
@@ -750,7 +750,7 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
               <Button 
                 size="lg" 
                 className={cn(
-                  "w-full !py-5 shadow-premium transition-all duration-300", 
+                  "w-full py-5! shadow-premium transition-all duration-300", 
                   isAdded ? "bg-green-600 hover:bg-green-700" : "",
                   (!validation.isValid && showValidation) || rulesEvaluation.isRestricted ? "bg-brand-text/40 opacity-70 cursor-not-allowed" : "",
                   (config.isCustomColor || rulesEvaluation.requiresConsultation) ? "bg-[#12100e] dark:bg-white text-white dark:text-[#12100e] hover:opacity-90" : ""
@@ -768,7 +768,7 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
                 disabled={rulesEvaluation.isRestricted || (!validation.isValid && showValidation)}
               />
               {!(config.isCustomColor || rulesEvaluation.requiresConsultation) && !rulesEvaluation.isRestricted && (
-                <Button size="lg" variant="outline" className="w-full !py-5 shadow-soft border-brand-text dark:border-brand-gold text-brand-text dark:text-brand-gold hover:bg-brand-text dark:hover:bg-brand-gold hover:text-white" onClick={() => window.location.href = '/cart'}>
+                <Button size="lg" variant="outline" className="w-full py-5! shadow-soft border-brand-text dark:border-brand-gold text-brand-text dark:text-brand-gold hover:bg-brand-text dark:hover:bg-brand-gold hover:text-white" onClick={() => window.location.href = '/cart'}>
                   Buy It Now
                 </Button>
               )}
@@ -785,7 +785,7 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
       </Section>
 
       {/* Jewellery Details Section (Tanishq Inspired) */}
-      <Section id="jewellery-details" className="!py-20 bg-white dark:bg-brand-bg transition-colors">
+      <Section id="jewellery-details" className="py-20! bg-white dark:bg-brand-bg transition-colors">
         <div className="max-w-4xl mx-auto space-y-12">
           <div className="text-center space-y-4">
             <h2 className="text-3xl md:text-4xl font-serif text-brand-text">Jewellery Details</h2>
@@ -817,7 +817,7 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
             </button>
           </div>
 
-          <div className="bg-white dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-[40px] p-8 md:p-12 shadow-premium min-h-[300px] transition-colors relative overflow-hidden">
+          <div className="bg-white dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-[40px] p-8 md:p-12 shadow-premium min-h-75 transition-colors relative overflow-hidden">
             {/* Background Accent */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/5 blur-3xl rounded-full pointer-events-none" />
 
@@ -1004,14 +1004,18 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
         <Button 
           size="lg"
           className={cn(
-            "!rounded-[100px] !py-4 px-8 shadow-premium transition-all duration-300 min-w-[140px]", 
+            "rounded-full py-4 px-8 shadow-premium transition-all duration-300 min-w-35", 
             isAdded ? "bg-green-600 hover:bg-green-700" : "",
-            !validation.isValid && showValidation ? "bg-brand-text/40 opacity-70" : ""
+            (!validation.isValid && showValidation) || rulesEvaluation.isRestricted ? "bg-brand-text/40 opacity-70 cursor-not-allowed" : "",
+            (config.isCustomColor || rulesEvaluation.requiresConsultation) ? "bg-[#12100e] dark:bg-white text-white dark:text-[#12100e] hover:opacity-90" : ""
           )} 
           onClick={handleAddToCart}
+          disabled={rulesEvaluation.isRestricted}
         >
-          {isAdded ? <><Check size={16} className="mr-2 inline" /> Added</> : 
-           (!validation.isValid && showValidation) ? 'Select Options' : 'Add to Cart'}
+          {isAdded ? <><Check size={18} className="mr-2 inline" /> {(config.isCustomColor || rulesEvaluation.requiresConsultation) ? 'Request Added' : 'Added to Cart'}</> : 
+           rulesEvaluation.isRestricted ? 'Selection Unavailable' :
+           (!validation.isValid && showValidation) ? 'Complete Selection' : 
+           (config.isCustomColor || rulesEvaluation.requiresConsultation) ? 'Request Consultation' : 'Add to Cart'}
         </Button>
       </div>
 
