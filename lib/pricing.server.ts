@@ -54,10 +54,15 @@ export async function secureCalculateOrderTotal(
       { 
         basePrice: product.basePrice, 
         baseWeight: product.baseWeight, 
-        makingCharges: product.makingCharges 
+        makingCharges: product.makingCharges,
+        category: product.category,
+        jewelryType: product.jewelryType,
+        stoneType: product.stoneType,
+        specs: product.specs,
+        pricingOverrides: product.pricingOverrides
       },
       item.configuration,
-      rates
+      settings?.pricingFactors
     );
 
     const itemTotal = breakdown.totalPrice * item.quantity;

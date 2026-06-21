@@ -31,7 +31,11 @@ export async function GET(req: NextRequest) {
         metalRates: settings.pricingFactors?.metalRates || { gold24k: 6500, silver: 100, platinum: 4000 },
         stonePrices: settings.pricingFactors?.stonePrices ? Object.fromEntries(settings.pricingFactors.stonePrices) : undefined,
         purityMultipliers: settings.pricingFactors?.purityMultipliers ? Object.fromEntries(settings.pricingFactors.purityMultipliers) : undefined,
-        sizeWeightOffset: settings.pricingFactors?.sizeWeightOffset
+        sizeWeightOffset: settings.pricingFactors?.sizeWeightOffset,
+        ringsOffset: settings.pricingFactors?.ringsOffset !== undefined ? settings.pricingFactors.ringsOffset : 0.12,
+        chainsOffset: settings.pricingFactors?.chainsOffset !== undefined ? settings.pricingFactors.chainsOffset : 0.25,
+        braceletsOffset: settings.pricingFactors?.braceletsOffset !== undefined ? settings.pricingFactors.braceletsOffset : 0.15,
+        banglesOffset: settings.pricingFactors?.banglesOffset !== undefined ? settings.pricingFactors.banglesOffset : 0.15,
       }
     };
 

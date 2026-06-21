@@ -20,6 +20,10 @@ export interface ISettings extends Document {
     stonePrices?: Record<string, number>;
     purityMultipliers?: Record<string, number>;
     sizeWeightOffset?: number;
+    ringsOffset?: number;
+    chainsOffset?: number;
+    braceletsOffset?: number;
+    banglesOffset?: number;
   };
   socialLinks: {
     instagram?: string;
@@ -77,7 +81,11 @@ const SettingsSchema: Schema = new Schema({
       '14K': 0.585,
       '9K': 0.375
     }},
-    sizeWeightOffset: { type: Number, default: 0.15 }
+    sizeWeightOffset: { type: Number, default: 0.15 },
+    ringsOffset: { type: Number, default: 0.12 },
+    chainsOffset: { type: Number, default: 0.25 },
+    braceletsOffset: { type: Number, default: 0.15 },
+    banglesOffset: { type: Number, default: 0.15 }
   },
   socialLinks: {
     instagram: { type: String },

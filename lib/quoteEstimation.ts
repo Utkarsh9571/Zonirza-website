@@ -32,6 +32,10 @@ export async function generateQuoteEstimation(input: QuoteEstimationInput): Prom
     basePrice: product.basePrice || 0,
     baseWeight: product.baseWeight || 5.0,
     makingCharges: product.makingCharges || 0,
+    category: product.category || '',
+    jewelryType: product.jewelryType,
+    stoneType: product.stoneType,
+    specs: product.specs,
     pricingOverrides: product.pricingOverrides || {}
   }, configuration, rates);
 

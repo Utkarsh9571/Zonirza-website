@@ -16,9 +16,7 @@ import { useCurrencyStore } from '@/store/currencyStore';
 import { displayPrice } from '@/lib/currency';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { validateProductConfiguration, isFieldMissing } from '@/lib/ecommerce';
-import { RingSizeGuide } from '../product/guides/RingSizeGuide';
-import { DiamondGuide } from '../product/guides/DiamondGuide';
-import { GoldPurityGuide } from '../product/guides/GoldPurityGuide';
+import { ProductKnowledgeGuide } from '@/components/product/guides/ProductKnowledgeGuide';
 import { useRulesEngine } from '@/hooks/useRulesEngine';
 import { MonthlyPlanButton } from '@/components/finance/MonthlyPlanButton';
 import { MonthlyPlanModal } from '@/components/finance/MonthlyPlanModal';
@@ -109,18 +107,24 @@ export function ProductInteractiveUI({ product }: { product: any }) {
   // HELPER: Generate sensible defaults for every required option group
   const getInitialConfiguration = () => {
     const initialConfig: ProductConfiguration = {
-      metal: metals[0] || 'Yellow Gold', 
+      metal: product.defaultColor || metals[0] || 'Yellow Gold', 
       purity: purities.includes('18K') ? '18K' : (purities[0] || '18K'),
-      size: '',
+      size: product.defaultSize || '',
       stone: (product.jewelryType === 'gold' || stones.length === 0) ? 'None' : stones[0],
     };
 
-    // Default Size for Rings/Bangles
-    const category = product.category?.toLowerCase() || '';
-    if (category.includes('ring')) {
-      initialConfig.size = sizes.includes('7') ? '7' : sizes[0]; 
-    } else if (category.includes('bangle') || category.includes('bracelet')) {
-      initialConfig.size = sizes.includes('2.4') ? '2.4' : sizes[0]; 
+    // Default Size for Rings/Bangles/Chains/Bracelets if not specified
+    if (!initialConfig.size) {
+      const category = product.category?.toLowerCase() || '';
+      if (category.includes('ring')) {
+        initialConfig.size = sizes.includes('12') ? '12' : (sizes.includes('7') ? '7' : sizes[0]); 
+      } else if (category.includes('chain') || category.includes('necklace') || category.includes('mangalsutra')) {
+        initialConfig.size = sizes.includes('20') ? '20' : sizes[0];
+      } else if (category.includes('bracelet') || category.includes('anklet')) {
+        initialConfig.size = sizes.includes('M') ? 'M' : (sizes.includes('Medium') ? 'Medium' : sizes[0]);
+      } else if (category.includes('bangle')) {
+        initialConfig.size = sizes.includes('2.4') ? '2.4' : sizes[0]; 
+      }
     }
 
     return initialConfig;
@@ -135,6 +139,10 @@ export function ProductInteractiveUI({ product }: { product: any }) {
 
   // Configuration State - Always initialized with valid defaults
   const [config, setConfig] = useState<ProductConfiguration>(getInitialConfiguration());
+
+  // Fetch Public Settings for Live Rates & Offsets
+  const { data: settingsResponse } = useSWR('/api/settings/public', fetcher);
+  const pricingFactors = settingsResponse?.data?.pricingFactors;
 
   // Derive current media (images + videos) based on selected metal
   const currentMedia = useMemo(() => {
@@ -162,14 +170,18 @@ export function ProductInteractiveUI({ product }: { product: any }) {
       basePrice: product.basePrice || product.price || 0,
       baseWeight: product.baseWeight || 5.0,
       makingCharges: product.makingCharges || 0,
+      category: product.category,
+      jewelryType: product.jewelryType,
+      stoneType: product.stoneType,
+      specs: product.specs,
       pricingOverrides: product.pricingOverrides || {}
-    }, config, rates);
+    }, config, pricingFactors);
     
     // Inject rule-based surcharges
     basePricing.totalPrice += (rulesEvaluation?.surcharges || 0) * (rates[currentCurrency] || 1);
     
     return basePricing;
-  }, [product.basePrice, product.price, product.baseWeight, product.makingCharges, product.pricingOverrides, config, rates, rulesEvaluation?.surcharges, currentCurrency]);
+  }, [product, config, pricingFactors, rates, currentCurrency, rulesEvaluation?.surcharges]);
 
   const validation = useMemo(() => {
     return validateProductConfiguration(product, config as any);
@@ -585,17 +597,20 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                         </span>
                       )}
                      </div>
-                     {(product.category?.toLowerCase() || '') === 'rings' && (
-                       <button 
-                         onClick={() => {
-                           document.getElementById('size-guide')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                           window.dispatchEvent(new CustomEvent('open-ring-guide'));
-                         }}
-                         className="text-[9px] text-brand-gold underline tracking-widest"
-                       >
-                         Not sure?
-                       </button>
-                     )}
+                     {['rings', 'bangles', 'chains', 'bracelets', 'mangalsutras', 'anklets', 'necklaces'].includes(product.category?.toLowerCase() || '') && (
+                        <button 
+                          onClick={() => {
+                            const element = document.getElementById('product-knowledge-guide');
+                            if (element) {
+                              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                            window.dispatchEvent(new CustomEvent('open-product-knowledge-guide', { detail: { tab: 'size' } }));
+                          }}
+                          className="text-[9px] text-brand-gold underline tracking-widest"
+                        >
+                          Not sure?
+                        </button>
+                      )}
                   </div>
                   <div className="flex flex-wrap gap-3">
                     {sizes.map((size: string) => (
@@ -728,14 +743,8 @@ export function ProductInteractiveUI({ product }: { product: any }) {
             </div>
 
             {/* Educational Guides */}
-            <div className="space-y-3 pt-6 border-t border-brand-text/5">
-              {(product.category?.toLowerCase() || '') === 'rings' && (
-                <div id="size-guide">
-                  <RingSizeGuide />
-                </div>
-              )}
-              <DiamondGuide />
-              <GoldPurityGuide />
+            <div id="product-knowledge-guide" className="space-y-3 pt-6 border-t border-brand-text/5">
+              <ProductKnowledgeGuide product={product} />
             </div>
             
             </div> {/* End Right Column */}
