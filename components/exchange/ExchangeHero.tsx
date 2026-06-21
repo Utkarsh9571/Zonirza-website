@@ -46,7 +46,7 @@ export default function ExchangeHero() {
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
             className="text-base md:text-lg text-white/70 max-w-xl font-light leading-relaxed"
           >
-            Experience the most transparent, rewarding, and luxurious exchange process. We accept gold of any purity, transforming your memories into magnificent new masterpieces.
+            Experience the most transparent, rewarding, and luxurious exchange process with a guaranteed <strong>0% deduction</strong> and <strong>100% value retention</strong>. We accept gold of any purity from any jeweler.
           </motion.p>
 
           <motion.div

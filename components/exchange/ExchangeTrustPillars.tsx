@@ -25,9 +25,9 @@ const pillars = [
     icon: Scale,
     imageClass: "bg-[url('https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=2070&auto=format&fit=crop')]",
     subtitle: 'The best price, guaranteed.',
-    description: 'Full exchange value with no hidden deductions — every visit, all year round.',
+    description: 'Guaranteed 100% value retention with 0% deduction on your old gold exchange — every visit, all year round.',
     points: [
-      { title: 'Best exchange value on old gold', desc: 'Buying rate = Selling rate, no hidden deductions.' },
+      { title: 'Guaranteed 0% Deduction', desc: 'Get 100% value on your gold exchange. Buying rate = Selling rate with zero melting or handling deductions.' },
       { title: 'We accept old gold from any jeweller', desc: 'No bills required.' },
       { title: 'Exchange gold for diamonds', desc: 'Upgrade your old gold for stunning diamond jewellery.' }
     ]

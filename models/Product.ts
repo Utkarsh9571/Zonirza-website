@@ -40,6 +40,7 @@ export interface IProduct extends Document {
   defaultSize?: string;
   legacyConfigurableOptions?: any;
   legacySpecs?: any;
+  readyToShipVariants?: string[];
 }
 
 const ProductSchema: Schema = new Schema({
@@ -70,6 +71,7 @@ const ProductSchema: Schema = new Schema({
   defaultSize: { type: String },
   legacyConfigurableOptions: { type: Schema.Types.Mixed },
   legacySpecs: { type: Schema.Types.Mixed },
+  readyToShipVariants: { type: [String], default: [] },
   configurableOptions: {
     metals: [String],
     purities: [String],

@@ -163,7 +163,7 @@ export default function TermsClientPage() {
             </div>
             <div className="bg-white rounded-[40px] overflow-hidden border border-brand-text/5 shadow-premium">
               <div className="p-8 border-b border-brand-text/5 bg-[#FDF9F6]/50">
-                <p className="text-sm text-brand-text/70 italic">Zoniraz gives an opportunity of product exchange and buy back at the current market value after deduction of making charge and processing charges.</p>
+                <p className="text-sm text-brand-text/70 italic">Zoniraz offers 100% gold exchange value with a strict 0% deduction policy for upgrades. Buy backs are calculated at prevailing market rates after standard processing fees.</p>
               </div>
               <table className="w-full text-left">
                 <thead>

@@ -177,17 +177,45 @@ export function calculatePricing(
   const jType = (product.jewelryType || '').toLowerCase();
   
   if (jType === 'diamond') {
-    const dWeight = parseFloat(specsObj.diamondWeight || specsObj.stoneWeight || '0') || 0;
     const grade = config.stone || 'Diamond-Standard';
-    const ratePerCarat = DIAMOND_RATES[grade] || DIAMOND_RATES['Diamond-Standard'];
-    stonePrice = dWeight * ratePerCarat;
-    estimatedStoneWeightGrams = dWeight * 0.2; // 1 carat = 0.2g
+    const stoneOverriddenPrice = overrides.stonePrices instanceof Map 
+      ? overrides.stonePrices.get(grade) 
+      : overrides.stonePrices?.[grade];
+      
+    if (stoneOverriddenPrice !== undefined && stoneOverriddenPrice !== null) {
+      stonePrice = stoneOverriddenPrice;
+    } else {
+      const dWeight = parseFloat(specsObj.diamondWeight || specsObj.stoneWeight || '0') || 0;
+      const ratePerCarat = DIAMOND_RATES[grade] || DIAMOND_RATES['Diamond-Standard'];
+      stonePrice = dWeight * ratePerCarat;
+    }
+    
+    let activeWeight = parseFloat(specsObj.diamondWeight || specsObj.stoneWeight || '0') || 0;
+    const weightMatch = grade.match(/([\d.-]+)\s*ct/i);
+    if (weightMatch) {
+      activeWeight = parseFloat(weightMatch[1].replace('-', '.')) || activeWeight;
+    }
+    estimatedStoneWeightGrams = activeWeight * 0.2; // 1 carat = 0.2g
   } else if (jType === 'stone') {
-    const sWeight = parseFloat(specsObj.stoneWeight || specsObj.diamondWeight || '0') || 0;
     const sType = (product.stoneType || specsObj.stoneType || specsObj.stoneName || 'default').toLowerCase();
-    const ratePerCarat = GEMSTONE_RATES[sType] || GEMSTONE_RATES['default'];
-    stonePrice = sWeight * ratePerCarat;
-    estimatedStoneWeightGrams = sWeight * 0.2; // 1 carat = 0.2g
+    const stoneOverriddenPrice = overrides.stonePrices instanceof Map 
+      ? overrides.stonePrices.get(config.stone) 
+      : overrides.stonePrices?.[config.stone || ''];
+      
+    if (stoneOverriddenPrice !== undefined && stoneOverriddenPrice !== null) {
+      stonePrice = stoneOverriddenPrice;
+    } else {
+      const sWeight = parseFloat(specsObj.stoneWeight || specsObj.diamondWeight || '0') || 0;
+      const ratePerCarat = GEMSTONE_RATES[sType] || GEMSTONE_RATES['default'];
+      stonePrice = sWeight * ratePerCarat;
+    }
+    
+    let activeWeight = parseFloat(specsObj.stoneWeight || specsObj.diamondWeight || '0') || 0;
+    const weightMatch = (config.stone || '').match(/([\d.-]+)\s*ct/i);
+    if (weightMatch) {
+      activeWeight = parseFloat(weightMatch[1].replace('-', '.')) || activeWeight;
+    }
+    estimatedStoneWeightGrams = activeWeight * 0.2;
   }
 
   // Making charges: Use product override, then product default, then fallback to 15% of gold value

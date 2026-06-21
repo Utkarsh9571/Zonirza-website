@@ -1,17 +1,17 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import useSWR from 'swr';
 import { useSession } from 'next-auth/react';
 import { useAuthModalStore } from '@/store/authModalStore';
-import { ShieldCheck, Truck, RotateCcw, Heart, Share2, Info, Check, Minus, Plus, Scale, Sparkles, ChevronDown, ChevronLeft, ChevronRight, Coins } from 'lucide-react';
+import { RotateCcw, Heart, Share2, Check, Scale, Sparkles, ChevronDown, ChevronLeft, ChevronRight, Coins } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { Button } from './Button';
 import { Section } from './Section';
 import { cn } from '@/lib/utils';
 import { resolveProductImage } from '@/lib/imageResolver';
-import { calculatePricing, formatCurrency, ProductConfiguration } from '@/lib/pricing';
+import { calculatePricing, ProductConfiguration } from '@/lib/pricing';
 import { useCurrencyStore } from '@/store/currencyStore';
 import { displayPrice } from '@/lib/currency';
 import { useWishlistStore } from '@/store/wishlistStore';
@@ -20,15 +20,17 @@ import { ProductKnowledgeGuide } from '@/components/product/guides/ProductKnowle
 import { useRulesEngine } from '@/hooks/useRulesEngine';
 import { MonthlyPlanButton } from '@/components/finance/MonthlyPlanButton';
 import { MonthlyPlanModal } from '@/components/finance/MonthlyPlanModal';
+import type { IProduct } from '@/models/Product';
 // --- PREMIUM ZOOM COMPONENT ---
 function ProductImageZoom({ image, name }: { image: string, name: string }) {
   const [isZooming, setIsZooming] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isTouch, setIsTouch] = useState(false);
-
-  useEffect(() => {
-    setIsTouch(window.matchMedia('(pointer: coarse)').matches);
-  }, []);
+  const [isTouch] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(pointer: coarse)').matches;
+    }
+    return false;
+  });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isTouch) return;
@@ -94,7 +96,7 @@ function ProductImageZoom({ image, name }: { image: string, name: string }) {
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
-export function ProductInteractiveUI({ product }: { product: any }) {
+export function ProductInteractiveUI({ product }: { product: IProduct & { price?: number } }) {
   // 1. Initial State Calculation Logic
   const configOptions = product.configurableOptions || {};
   
@@ -131,7 +133,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
   };
   
   const [selectedImage, setSelectedImage] = useState(0);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
   const [isPlanModalOpen, setPlanModalOpen] = useState(false);
@@ -155,10 +157,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
 
   const isVideo = (url: string) => url.match(/\.(mp4|webm|mov)$/i);
 
-  // Reset selected image when metal changes
-  useEffect(() => {
-    setSelectedImage(0);
-  }, [config.metal]);
+
 
   const { currentCurrency, rates } = useCurrencyStore();
 
@@ -181,10 +180,10 @@ export function ProductInteractiveUI({ product }: { product: any }) {
     basePricing.totalPrice += (rulesEvaluation?.surcharges || 0) * (rates[currentCurrency] || 1);
     
     return basePricing;
-  }, [product, config, pricingFactors, rates, currentCurrency, rulesEvaluation?.surcharges]);
+  }, [product, config, pricingFactors, rates, currentCurrency, rulesEvaluation]);
 
   const validation = useMemo(() => {
-    return validateProductConfiguration(product, config as any);
+    return validateProductConfiguration(product, config as unknown as Record<string, string>);
   }, [product, config]);
 
   const cartAddItem = useCartStore((state) => state.addItem);
@@ -256,13 +255,13 @@ export function ProductInteractiveUI({ product }: { product: any }) {
     }
 
     // Generate a unique ID based on productId and current configuration
-    const cartItemId = `${product._id}-${config.purity}-${config.metal}-${config.size}-${config.stone}`.replace(/\s+/g, '-').toLowerCase();
+    const cartItemId = `${product._id?.toString()}-${config.purity}-${config.metal}-${config.size}-${config.stone}`.replace(/\s+/g, '-').toLowerCase();
 
     const resolvedImage = resolveProductImage(currentMedia[selectedImage] || currentMedia[0]);
 
     cartAddItem({
       cartItemId,
-      productId: product._id as string,
+      productId: product._id?.toString() || '',
       slug: product.slug,
       name: product.name,
       price: pricing.totalPrice,
@@ -443,6 +442,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                             metal: metalOption,
                             isCustomColor: false 
                           });
+                          setSelectedImage(0);
                           if (showValidation) setShowValidation(false);
                         }}
                         className={cn(
@@ -462,6 +462,7 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                   <button
                     onClick={() => {
                       setConfig({ ...config, isCustomColor: true });
+                      setSelectedImage(0);
                       if (showValidation) setShowValidation(false);
                     }}
                     className={cn(
@@ -612,25 +613,28 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                         </button>
                       )}
                   </div>
-                  <div className="flex flex-wrap gap-3">
-                    {sizes.map((size: string) => (
-                      <button
-                        key={size}
-                        onClick={() => {
-                          setConfig({ ...config, size });
-                          if (showValidation) setShowValidation(false);
-                        }}
-                        className={cn(
-                          "w-14 h-14 flex items-center justify-center rounded-2xl text-[11px] font-bold border transition-all duration-300 touch-safe-hit",
-                          config.size === size 
-                            ? "bg-brand-gold text-white border-brand-gold shadow-premium" 
-                            : "bg-white dark:bg-[#1a1614] text-brand-muted border-brand-gold/10 dark:border-white/5 active:border-brand-gold",
-                          showValidation && isFieldMissing('size', validation.missingFields) && "border-red-200 bg-red-50/30"
-                        )}
-                      >
-                        {size}
-                      </button>
-                    ))}
+                  <div className="relative w-full max-w-xs">
+                    <select
+                      value={config.size || ''}
+                      onChange={(e) => {
+                        setConfig({ ...config, size: e.target.value });
+                        if (showValidation) setShowValidation(false);
+                      }}
+                      className={cn(
+                        "w-full appearance-none bg-white dark:bg-[#1a1614] text-brand-text dark:text-white border border-brand-gold/30 dark:border-white/10 rounded-2xl py-4 px-6 pr-12 text-[12px] font-bold tracking-wider uppercase focus:outline-none focus:border-brand-gold transition-all cursor-pointer shadow-soft",
+                        showValidation && isFieldMissing('size', validation.missingFields) && "border-red-200 bg-red-50/30"
+                      )}
+                    >
+                      <option value="" disabled className="text-brand-muted">Select Size / Length</option>
+                      {sizes.map((size: string) => (
+                        <option key={size} value={size}>
+                          {size}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-brand-gold">
+                      <ChevronDown size={16} />
+                    </div>
                   </div>
                 </div>
               )}
@@ -705,6 +709,34 @@ export function ProductInteractiveUI({ product }: { product: any }) {
               </div>
 
             <div className="flex flex-col space-y-4 pt-4">
+              {/* Ready to Ship / Made to Order Status Banner */}
+              {(() => {
+                const comboId = `${config.purity}-${config.metal}-${config.size || 'base'}`.toLowerCase().replace(/\s+/g, '-');
+                const isReadyToShip = product.readyToShipVariants?.includes(comboId);
+                
+                return (
+                  <div className={cn(
+                    "p-4 rounded-2xl border transition-all duration-300 flex items-center space-x-3 shadow-soft",
+                    isReadyToShip 
+                      ? "bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-500/20 dark:border-emerald-500/20 text-emerald-800 dark:text-emerald-300" 
+                      : "bg-amber-500/5 dark:bg-amber-500/10 border-amber-500/20 dark:border-amber-500/20 text-amber-800 dark:text-amber-300"
+                  )}>
+                    <div className={cn(
+                      "w-2 h-2 rounded-full",
+                      isReadyToShip ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
+                    )} />
+                    <div className="space-y-0.5">
+                      <p className="text-[9px] uppercase tracking-widest font-black text-brand-text dark:text-white">
+                        {isReadyToShip ? 'Ready To Ship' : 'Made To Order'}
+                      </p>
+                      <p className="text-[10px] text-brand-text/60 dark:text-white/50">
+                        {isReadyToShip ? 'Dispatches in 1–3 Business Days' : 'Crafted Specifically For You (Dispatches in 10–14 Days)'}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })()}
+
               {rulesEvaluation.isRestricted && (
                 <div className="p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl">
                   <p className="text-xs text-red-600 dark:text-red-400 font-bold">{rulesEvaluation.restrictionMessage}</p>
@@ -790,36 +822,49 @@ export function ProductInteractiveUI({ product }: { product: any }) {
             <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/5 blur-3xl rounded-full pointer-events-none" />
 
             {activeTab === 'details' && (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-8">
-                  {/* Default Info */}
-                  <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
-                    <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Selected Metal</p>
-                    <p className="text-sm font-bold text-brand-text">{config.isCustomColor ? `${config.purity} Custom Color` : `${config.purity} ${config.metal}`}</p>
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10 space-y-8 text-brand-text">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-4">
+                  {/* Karatage/Purity */}
+                  <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
+                    <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">Gold Karatage</span>
+                    <span className="text-xs font-bold text-brand-text dark:text-white">{config.purity}</span>
                   </div>
-                  {/* Gold Weight */}
-                  <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
-                    <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Gold Weight</p>
-                    <p className="text-sm font-bold text-brand-text">{pricing.estimatedGoldWeight || pricing.estimatedWeight}g</p>
+
+                  {/* Metal/Color */}
+                  <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
+                    <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">Metal Color</span>
+                    <span className="text-xs font-bold text-brand-text dark:text-white">{config.metal}</span>
+                  </div>
+
+                  {/* Size/Length */}
+                  {config.size && (
+                    <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
+                      <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">Selected Size</span>
+                      <span className="text-xs font-bold text-brand-text dark:text-white">{config.size}</span>
+                    </div>
+                  )}
+
+                  {/* Metal weight */}
+                  <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
+                    <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">Approx. Gold Weight</span>
+                    <span className="text-xs font-bold text-brand-text dark:text-white">{pricing.estimatedGoldWeight} g</span>
                   </div>
 
                   {/* Diamond Specs */}
                   {product.jewelryType === 'diamond' && (
                     <>
-                      <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
-                        <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Diamond Weight</p>
-                        <p className="text-sm font-bold text-brand-text">{specs?.diamondWeight || specs?.stoneWeight || '0.15 ct'}</p>
+                      <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
+                        <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">Diamond Quality</span>
+                        <span className="text-xs font-bold text-brand-text dark:text-white">{config.stone?.replace('-', ' ')}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
+                        <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">Total Diamond Weight</span>
+                        <span className="text-xs font-bold text-brand-text dark:text-white">{specs?.diamondWeight || specs?.stoneWeight || '0.15 ct'}</span>
                       </div>
                       {specs?.diamondCount && (
-                        <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
-                          <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Diamond Count</p>
-                          <p className="text-sm font-bold text-brand-text">{specs.diamondCount}</p>
-                        </div>
-                      )}
-                      {config.stone && config.stone !== 'None' && (
-                        <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
-                          <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Diamond Quality</p>
-                          <p className="text-sm font-bold text-brand-text">{config.stone.replace('-', ' ')}</p>
+                        <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
+                          <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">No. of Diamonds</span>
+                          <span className="text-xs font-bold text-brand-text dark:text-white">{specs.diamondCount}</span>
                         </div>
                       )}
                     </>
@@ -828,41 +873,49 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                   {/* Gemstone Specs */}
                   {product.jewelryType === 'stone' && (
                     <>
-                      <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
-                        <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Stone Name</p>
-                        <p className="text-sm font-bold text-brand-text">{specs?.stoneName || product.stoneType || 'Gemstone'}</p>
+                      <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
+                        <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">Gemstone Name</span>
+                        <span className="text-xs font-bold text-brand-text dark:text-white">{specs?.stoneName || product.stoneType || 'Gemstone'}</span>
                       </div>
-                      <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
-                        <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Stone Weight</p>
-                        <p className="text-sm font-bold text-brand-text">{specs?.stoneWeight || '1.0 ct'}</p>
+                      <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
+                        <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">Total Stone Weight</span>
+                        <span className="text-xs font-bold text-brand-text dark:text-white">{specs?.stoneWeight || '1.0 ct'}</span>
                       </div>
                       {specs?.stoneCount && (
-                        <div className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
-                          <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">Stone Count</p>
-                          <p className="text-sm font-bold text-brand-text">{specs.stoneCount}</p>
+                        <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
+                          <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">No. of Gemstones</span>
+                          <span className="text-xs font-bold text-brand-text dark:text-white">{specs.stoneCount}</span>
                         </div>
                       )}
                     </>
                   )}
 
-                  {/* Dynamic Specs */}
+                  {/* Dynamic Custom Specs */}
                   {Object.entries(specs || {}).map(([key, value]) => {
                     const k = key.toLowerCase();
+                    const isConfigurableKey = [
+                      'metal', 'metals', 'purity', 'purities', 'karat', 'size', 'sizes', 
+                      'stone', 'stones', 'customization', 'customizations', 'price', 
+                      'slug', 'category', 'gold_weight', 'diamond_weight', 'stone_weight', 
+                      'diamond_quality', 'gold_purity_options', 'jewelry_type'
+                    ].some(attr => k.includes(attr) || attr.includes(k));
+                    
                     const isStoneOrDiamondKey = k.includes('stone') || k.includes('diamond');
-                    if (key !== 'price' && !isStoneOrDiamondKey) {
+                    
+                    if (key !== 'price' && !isConfigurableKey && !isStoneOrDiamondKey && typeof value === 'string' && !value.includes(',')) {
                       return (
-                        <div key={key} className="space-y-2 border-b border-brand-text/5 dark:border-white/5 pb-4">
-                          <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60">{key}</p>
-                          <p className="text-sm font-bold text-brand-text">{value as string}</p>
+                        <div key={key} className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
+                          <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">{key.replace(/_/g, ' ')}</span>
+                          <span className="text-xs font-bold text-brand-text dark:text-white">{value}</span>
                         </div>
                       );
                     }
                     return null;
                   })}
                 </div>
-                <div className="pt-8">
-                  <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-text/40 dark:text-brand-text/60 mb-2">Description</p>
-                  <p className="text-brand-text/80 text-sm leading-relaxed">{product.description}</p>
+                <div className="pt-6 border-t border-brand-text/5 dark:border-white/5">
+                  <p className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40 mb-2">Description</p>
+                  <p className="text-brand-text/80 text-xs leading-relaxed max-w-3xl">{product.description}</p>
                 </div>
               </div>
             )}

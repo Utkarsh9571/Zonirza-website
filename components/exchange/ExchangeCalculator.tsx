@@ -180,7 +180,11 @@ export default function ExchangeCalculator({ purpose, onPurposeChange }: Exchang
                       {purpose === 'exchange' ? 'Estimated Exchange Value:' : 'Estimated In-Store Sell Value:'}
                     </span>
                     <span className="text-3xl font-serif font-bold text-[#8c5a5a] dark:text-[#e08686]">{formatCurrencyINR(estimatedValue)}</span>
-                    {purpose === 'sell' && (
+                    {purpose === 'exchange' ? (
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-widest font-black mt-2 flex items-center bg-emerald-500/5 px-3 py-1 rounded-full border border-emerald-500/10">
+                        ✓ 0% Deduction & 100% Value Retention Guaranteed
+                      </span>
+                    ) : (
                       <span className="text-[10px] text-brand-text/50 uppercase tracking-widest font-bold mt-2">
                         * Subject to physical verification at Alwar Branch
                       </span>

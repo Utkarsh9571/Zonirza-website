@@ -101,6 +101,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
           cardPreviewThumbnail: product.cardPreviewThumbnail || '',
           variantImages: product.variantImages || {},
           specs: product.specs || {},
+          readyToShipVariants: product.readyToShipVariants || [],
           configurableOptions: {
             metals: product.configurableOptions?.metals || [],
             purities: product.configurableOptions?.purities || [],
@@ -201,6 +202,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
             cardPreviewThumbnail: data.data.cardPreviewThumbnail || '',
             variantImages: data.data.variantImages || {},
             specs: data.data.specs || {},
+            readyToShipVariants: data.data.readyToShipVariants || [],
             configurableOptions: {
               metals: data.data.configurableOptions?.metals || [],
               purities: data.data.configurableOptions?.purities || [],
@@ -305,6 +307,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
           { id: 'jewelry', label: 'Variant Setup', icon: Layers },
           { id: 'specs', label: 'Jewellery Details', icon: FileText },
           { id: 'variants', label: 'Visual Variants', icon: Diamond },
+          { id: 'availability', label: 'Variant Availability', icon: CheckCircle2 },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -929,6 +932,92 @@ function ProductEditorContent({ params }: ProductEditorProps) {
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'availability' && (
+          <div className="bg-white dark:bg-white/10 rounded-[40px] border border-brand-text/15 dark:border-white/15 p-10 space-y-10 animate-in fade-in duration-700 shadow-md">
+            <div className="space-y-6">
+              <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Ready to Ship Whitelist</label>
+              <p className="text-[11px] text-brand-text/70 leading-relaxed uppercase tracking-widest">
+                Select combinations that are in stock and ready to ship within 1–3 business days. Unchecked variants will default to &ldquo;Made to Order&rdquo; (10–14 days delivery).
+              </p>
+              
+              {(() => {
+                const metals = formData.configurableOptions?.metals?.length ? formData.configurableOptions.metals : ['Yellow Gold', 'Rose Gold', 'White Gold'];
+                
+                let purities = formData.configurableOptions?.purities || [];
+                if (purities.length === 0) {
+                  const currentJType = formData.jewelryType || 'gold';
+                  if (currentJType === 'diamond') {
+                    purities = ['9K', '14K', '18K'];
+                  } else if (currentJType === 'stone') {
+                    purities = ['9K', '14K', '18K', '22K'];
+                  } else {
+                    purities = ['18K', '22K'];
+                  }
+                }
+
+                const sizes = formData.configurableOptions?.sizes?.length ? formData.configurableOptions.sizes : ['base'];
+
+                const combinations: { comboId: string; label: string }[] = [];
+                for (const purity of purities) {
+                  for (const metal of metals) {
+                    for (const size of sizes) {
+                      const displaySize = size === 'base' ? '' : size;
+                      const comboId = `${purity}-${metal}-${displaySize || 'base'}`.toLowerCase().replace(/\s+/g, '-');
+                      combinations.push({
+                        comboId,
+                        label: `${purity} ${metal} ${displaySize ? `(Size ${displaySize})` : ''}`
+                      });
+                    }
+                  }
+                }
+
+                if (combinations.length === 0) {
+                  return (
+                    <div className="p-8 text-center border border-dashed border-brand-text/10 rounded-2xl">
+                      <p className="text-[11px] uppercase tracking-widest text-brand-text/40">No configurable variants available. Please set up Metals, Purities, or Sizes first.</p>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {combinations.map((combo) => {
+                      const isChecked = (formData.readyToShipVariants || []).includes(combo.comboId);
+                      return (
+                        <label 
+                          key={combo.comboId} 
+                          className={cn(
+                            "flex items-center space-x-3 p-4 rounded-xl border cursor-pointer select-none transition-all duration-300",
+                            isChecked 
+                              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-300" 
+                              : "bg-slate-50 dark:bg-white/5 border-brand-text/10 dark:border-white/5 hover:border-brand-gold/30 text-brand-text"
+                          )}
+                        >
+                          <input 
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={(e) => {
+                              const newWhitelist = e.target.checked 
+                                ? [...(formData.readyToShipVariants || []), combo.comboId]
+                                : (formData.readyToShipVariants || []).filter((id: string) => id !== combo.comboId);
+                              setFormData({ ...formData, readyToShipVariants: newWhitelist });
+                            }}
+                            className="rounded border-gray-300 dark:border-white/10 text-brand-gold focus:ring-brand-gold bg-transparent"
+                          />
+                          <div className="flex flex-col">
+                            <span className="text-[12px] font-bold uppercase tracking-wider">{combo.label}</span>
+                            <span className="text-[8px] uppercase tracking-widest text-brand-text/50 dark:text-white/40">{combo.comboId}</span>
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
           </div>
         )}
