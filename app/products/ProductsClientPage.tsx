@@ -25,7 +25,7 @@ const FILTERS = [
   {
     id: 'category',
     label: 'Category',
-    options: ['Gold', 'Diamond', 'Earrings', 'Rings', 'Daily Wear', 'Wedding', 'Gifting', 'Men', 'Kids']
+    options: ['Rings', 'Earrings', 'Necklaces', 'Chains', 'Pendants', 'Bracelets', 'Bangles', 'Mangalsutras', 'Nose Pins', 'Anklets', 'Brooches']
   },
   {
     id: 'metal',
@@ -48,6 +48,14 @@ const FILTERS = [
     options: ['Diamond', 'Emerald', 'Ruby', 'Sapphire', 'Pearl', 'Zirconia']
   }
 ];
+
+const getFilterValue = (id: string, option: string) => {
+  if (id === 'category') {
+    if (option === 'Nose Pins') return 'nose-pin';
+    return option.toLowerCase();
+  }
+  return option.toLowerCase();
+};
 
 function ProductsContent() {
   const router = useRouter();
@@ -199,14 +207,15 @@ function ProductsContent() {
                     {filter.options.map((option: any, idx) => {
                       const isPrice = typeof option === 'object';
                       const label = isPrice ? option.label : option;
+                      const filterVal = isPrice ? '' : getFilterValue(filter.id, option);
                       const isActive = isPrice 
                         ? (searchParams.get('price_min') === option.min.toString())
-                        : (searchParams.get(filter.id) === option.toLowerCase() || searchParams.get('tag') === option.toLowerCase());
+                        : (searchParams.get(filter.id) === filterVal || searchParams.get('tag') === filterVal);
 
                       return (
                         <button
                           key={idx}
-                          onClick={() => isPrice ? setPriceFilter(option.min, option.max) : updateFilter(filter.id, option.toLowerCase())}
+                          onClick={() => isPrice ? setPriceFilter(option.min, option.max) : updateFilter(filter.id, filterVal)}
                           className={cn(
                             "flex items-center justify-between w-full group transition-all duration-300",
                             isActive ? "text-brand-gold font-bold" : "text-brand-text/60 dark:text-brand-text/80 hover:text-brand-text dark:hover:text-brand-text"
@@ -440,16 +449,17 @@ function ProductsContent() {
                     {filter.options.map((option: any, idx) => {
                       const isPrice = typeof option === 'object';
                       const label = isPrice ? option.label : option;
+                      const filterVal = isPrice ? '' : getFilterValue(filter.id, option);
                       const isActive = isPrice 
                         ? (searchParams.get('price_min') === option.min.toString())
-                        : (searchParams.get(filter.id) === option.toLowerCase() || searchParams.get('tag') === option.toLowerCase());
+                        : (searchParams.get(filter.id) === filterVal || searchParams.get('tag') === filterVal);
 
                       return (
                         <button
                           key={idx}
                           onClick={() => {
                             if (isPrice) setPriceFilter(option.min, option.max);
-                            else updateFilter(filter.id, option.toLowerCase());
+                            else updateFilter(filter.id, filterVal);
                           }}
                           className={cn(
                             "flex items-center justify-center px-4 py-4 rounded-2xl text-[10px] uppercase tracking-widest font-bold border transition-all duration-300 touch-safe-hit",

@@ -290,11 +290,17 @@ function ProductEditorContent({ params }: ProductEditorProps) {
                   className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/20 dark:border-white/20 rounded-2xl py-4 px-6 text-[14px] text-brand-text dark:text-white focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
                 >
                   <option value="">Select Category</option>
-                  <option value="Rings">Rings</option>
-                  <option value="Earrings">Earrings</option>
-                  <option value="Necklaces">Necklaces</option>
-                  <option value="Bracelets">Bracelets</option>
-                  <option value="Pendants">Pendants</option>
+                  <option value="rings">Rings</option>
+                  <option value="earrings">Earrings</option>
+                  <option value="necklaces">Necklaces</option>
+                  <option value="chains">Chains</option>
+                  <option value="pendants">Pendants</option>
+                  <option value="bracelets">Bracelets</option>
+                  <option value="bangles">Bangles</option>
+                  <option value="mangalsutras">Mangalsutras</option>
+                  <option value="nose-pin">Nose Pins</option>
+                  <option value="anklets">Anklets</option>
+                  <option value="brooches">Brooches</option>
                 </select>
               </div>
               <div className="space-y-4">
@@ -606,43 +612,71 @@ function ProductEditorContent({ params }: ProductEditorProps) {
 
         {activeTab === 'jewelry' && (
           <div className="bg-white dark:bg-white/10 rounded-[40px] border border-brand-text/15 dark:border-white/15 p-10 space-y-12 animate-in fade-in duration-700 shadow-md">
-            {[
-              { id: 'metals', label: 'Metals (Options)', placeholder: 'e.g. Yellow Gold, Rose Gold' },
-              { id: 'purities', label: 'Purity Levels', placeholder: 'e.g. 18K, 14K, 22K' },
-              { id: 'stones', label: 'Stone Grades', placeholder: 'e.g. VVS-EF, SI-GH' },
-              { id: 'sizes', label: 'Available Sizes', placeholder: 'e.g. 12, 14, 16' },
-              { id: 'customizations', label: 'Customization Options', placeholder: 'e.g. Engraving, Special Polish' },
-            ].map((section) => (
-              <div key={section.id} className="space-y-6">
-                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">{section.label}</label>
-                <div className="flex flex-wrap gap-3">
-                  {formData.configurableOptions[section.id]?.map((opt: string, idx: number) => (
-                    <div key={idx} className="flex items-center space-x-2 px-4 py-2 bg-brand-gold/10 rounded-full border border-brand-gold/20">
-                      <span className="text-[11px] font-bold text-brand-gold">{opt}</span>
-                      <button onClick={() => {
-                        const newOpts = formData.configurableOptions[section.id].filter((_:any, i:number) => i !== idx);
-                        updateConfigOption(section.id, newOpts);
-                      }}><X size={12} /></button>
-                    </div>
-                  ))}
-                  <input 
-                    type="text" 
-                    placeholder={section.placeholder}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        const val = (e.target as HTMLInputElement).value.trim();
-                        if (val && !formData.configurableOptions[section.id].includes(val)) {
-                          updateConfigOption(section.id, [...formData.configurableOptions[section.id], val]);
-                          (e.target as HTMLInputElement).value = '';
+            {(() => {
+              const category = (formData.category || '').toLowerCase();
+              let sizeLabel = 'Available Sizes';
+              let sizePlaceholder = 'e.g. 12, 14, 16';
+              let isSizeRelevant = true;
+
+              if (category === 'rings') {
+                sizeLabel = 'Ring Sizes (Available Sizes)';
+                sizePlaceholder = 'e.g. 6, 7, 8, 9, 10';
+              } else if (category === 'bangles') {
+                sizeLabel = 'Bangle Sizes (Available Sizes)';
+                sizePlaceholder = 'e.g. 2.2, 2.4, 2.6';
+              } else if (['chains', 'bracelets', 'mangalsutras', 'anklets', 'necklaces'].includes(category)) {
+                sizeLabel = 'Length Options / Chain Sizes (Available Sizes)';
+                sizePlaceholder = 'e.g. 16 inches, 18 inches, 20 inches';
+              } else {
+                isSizeRelevant = false;
+                sizeLabel = 'Sizes (Not typical for ' + (formData.category || 'this category') + ')';
+                sizePlaceholder = 'Sizes are not standard for this category';
+              }
+
+              const sections = [
+                { id: 'metals', label: 'Metals (Options)', placeholder: 'e.g. Yellow Gold, Rose Gold' },
+                { id: 'purities', label: 'Purity Levels', placeholder: 'e.g. 18K, 14K, 22K' },
+                { id: 'stones', label: 'Stone Grades', placeholder: 'e.g. VVS-EF, SI-GH' },
+                { id: 'sizes', label: sizeLabel, placeholder: sizePlaceholder, isHighlighted: isSizeRelevant, isOptional: !isSizeRelevant },
+                { id: 'customizations', label: 'Customization Options', placeholder: 'e.g. Engraving, Special Polish' },
+              ];
+
+              return sections.map((section) => (
+                <div key={section.id} className={cn("space-y-6", section.isOptional && "opacity-60 hover:opacity-100 transition-opacity")}>
+                  <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold flex items-center justify-between">
+                    <span>{section.label}</span>
+                    {section.isHighlighted && <span className="text-[8px] bg-brand-gold/20 text-brand-gold px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Category Specific</span>}
+                    {section.isOptional && <span className="text-[8px] bg-slate-100 dark:bg-white/5 text-brand-text/40 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Optional</span>}
+                  </label>
+                  <div className="flex flex-wrap gap-3">
+                    {formData.configurableOptions[section.id]?.map((opt: string, idx: number) => (
+                      <div key={idx} className="flex items-center space-x-2 px-4 py-2 bg-brand-gold/10 rounded-full border border-brand-gold/20">
+                        <span className="text-[11px] font-bold text-brand-gold">{opt}</span>
+                        <button onClick={() => {
+                          const newOpts = formData.configurableOptions[section.id].filter((_:any, i:number) => i !== idx);
+                          updateConfigOption(section.id, newOpts);
+                        }}><X size={12} /></button>
+                      </div>
+                    ))}
+                    <input 
+                      type="text" 
+                      placeholder={section.placeholder}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const val = (e.target as HTMLInputElement).value.trim();
+                          if (val && !formData.configurableOptions[section.id].includes(val)) {
+                            updateConfigOption(section.id, [...formData.configurableOptions[section.id], val]);
+                            (e.target as HTMLInputElement).value = '';
+                          }
                         }
-                      }
-                    }}
-                    className="bg-transparent border-none text-[13px] text-brand-text dark:text-white focus:ring-0 min-w-[200px]"
-                  />
+                      }}
+                      className="bg-transparent border-none text-[13px] text-brand-text dark:text-white focus:ring-0 min-w-[200px]"
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ));
+            })()}
           </div>
         )}
 

@@ -571,48 +571,54 @@ export function ProductInteractiveUI({ product }: { product: any }) {
                 </div>
               </div>
 
-              {/* Ring Size Selector */}
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                   <div className="flex items-center space-x-2">
-                    <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Size (India/US)</span>
-                    {showValidation && isFieldMissing('size', validation.missingFields) && (
-                      <span className="text-[9px] text-red-500 font-bold uppercase tracking-widest flex items-center animate-pulse">
-                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2" /> Incomplete
+              {/* Category-aware Size/Length Selector */}
+              {['rings', 'bangles', 'chains', 'bracelets', 'mangalsutras', 'anklets', 'necklaces'].includes(product.category?.toLowerCase() || '') && (
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                     <div className="flex items-center space-x-2">
+                      <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">
+                        {(product.category?.toLowerCase() || '') === 'rings' ? 'Ring Size' : (product.category?.toLowerCase() || '') === 'bangles' ? 'Bangle Size' : 'Length'}
                       </span>
-                    )}
-                   </div>
-                   <button 
-                     onClick={() => {
-                       document.getElementById('size-guide')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                       window.dispatchEvent(new CustomEvent('open-ring-guide'));
-                     }}
-                     className="text-[9px] text-brand-gold underline tracking-widest"
-                   >
-                     Not sure?
-                   </button>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  {sizes.map((size: string) => (
-                    <button
-                      key={size}
-                      onClick={() => {
-                        setConfig({ ...config, size });
-                        if (showValidation) setShowValidation(false);
-                      }}
-                      className={cn(
-                        "w-14 h-14 flex items-center justify-center rounded-2xl text-[11px] font-bold border transition-all duration-300 touch-safe-hit",
-                        config.size === size 
-                          ? "bg-brand-gold text-white border-brand-gold shadow-premium" 
-                          : "bg-white dark:bg-[#1a1614] text-brand-muted border-brand-gold/10 dark:border-white/5 active:border-brand-gold",
-                        showValidation && isFieldMissing('size', validation.missingFields) && "border-red-200 bg-red-50/30"
+                      {showValidation && isFieldMissing('size', validation.missingFields) && (
+                        <span className="text-[9px] text-red-500 font-bold uppercase tracking-widest flex items-center animate-pulse">
+                          <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2" /> Incomplete
+                        </span>
                       )}
-                    >
-                      {size}
-                    </button>
-                  ))}
+                     </div>
+                     {(product.category?.toLowerCase() || '') === 'rings' && (
+                       <button 
+                         onClick={() => {
+                           document.getElementById('size-guide')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                           window.dispatchEvent(new CustomEvent('open-ring-guide'));
+                         }}
+                         className="text-[9px] text-brand-gold underline tracking-widest"
+                       >
+                         Not sure?
+                       </button>
+                     )}
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    {sizes.map((size: string) => (
+                      <button
+                        key={size}
+                        onClick={() => {
+                          setConfig({ ...config, size });
+                          if (showValidation) setShowValidation(false);
+                        }}
+                        className={cn(
+                          "w-14 h-14 flex items-center justify-center rounded-2xl text-[11px] font-bold border transition-all duration-300 touch-safe-hit",
+                          config.size === size 
+                            ? "bg-brand-gold text-white border-brand-gold shadow-premium" 
+                            : "bg-white dark:bg-[#1a1614] text-brand-muted border-brand-gold/10 dark:border-white/5 active:border-brand-gold",
+                          showValidation && isFieldMissing('size', validation.missingFields) && "border-red-200 bg-red-50/30"
+                        )}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Diamond Quality Selector */}
               <div className="space-y-4">
@@ -716,9 +722,11 @@ export function ProductInteractiveUI({ product }: { product: any }) {
 
             {/* Educational Guides */}
             <div className="space-y-3 pt-6 border-t border-brand-text/5">
-              <div id="size-guide">
-                <RingSizeGuide />
-              </div>
+              {(product.category?.toLowerCase() || '') === 'rings' && (
+                <div id="size-guide">
+                  <RingSizeGuide />
+                </div>
+              )}
               <DiamondGuide />
               <GoldPurityGuide />
             </div>
