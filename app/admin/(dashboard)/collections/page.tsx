@@ -136,7 +136,7 @@ export default function AdminCollectionsPage() {
                   <button 
                     onClick={() => {
                       setEditingCollection(col);
-                      setFormData({ ...col });
+                      setFormData({ ...col, description: col.description || '' });
                       setIsModalOpen(true);
                     }}
                     className="p-3 bg-brand-bg dark:bg-white/5 rounded-2xl text-brand-text/40 hover:text-brand-gold transition-colors"
