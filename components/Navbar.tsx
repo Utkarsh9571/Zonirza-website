@@ -49,6 +49,7 @@ const Navbar = () => {
     // Unified menu control
     const closeAllMenus = () => {
       setActiveMenu('none');
+      setIsOpen(false);
       if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
     };
 

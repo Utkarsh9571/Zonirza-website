@@ -64,8 +64,8 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
       onMouseLeave={onMouseLeave}
     >
       {/* 1. TOP MAIN CATEGORY NAVIGATION TABS */}
-      <div className="border-b border-brand-text/5 dark:border-white/5 px-8 flex justify-center">
-        <div className="flex items-center space-x-1 overflow-x-auto no-scrollbar">
+      <div className="border-b border-brand-text/5 dark:border-white/5">
+        <div className="flex items-center space-x-1 overflow-x-auto no-scrollbar px-4 md:px-8 md:justify-center">
           {NAVIGATION_DATA.map((tab) => {
             const Icon = tab.icon;
             return (
@@ -82,12 +82,12 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
                   setActiveTabId(tab.id);
                 }}
                 className={cn(
-                  "px-5 py-6 relative transition-all duration-300 flex items-center space-x-2 group whitespace-nowrap touch-safe-hit min-h-[64px]",
+                  "px-4 md:px-5 py-4 md:py-6 relative transition-all duration-300 flex items-center space-x-2 group whitespace-nowrap touch-safe-hit min-h-[56px] md:min-h-[64px] shrink-0",
                   activeTabId === tab.id ? "text-brand-text border-b-2 border-brand-text dark:border-brand-gold bg-brand-bg/30 dark:bg-brand-accent/50" : "text-brand-text/60 dark:text-brand-text/70"
                 )}
               >
-                {Icon && <Icon size={16} strokeWidth={1.5} className={cn("transition-colors", activeTabId === tab.id ? "text-brand-gold" : "text-brand-text/40")} />}
-                <span className="text-[11px] uppercase tracking-[0.1em] font-bold">
+                {Icon && <Icon size={16} strokeWidth={1.5} className={cn("transition-colors hidden md:block", activeTabId === tab.id ? "text-brand-gold" : "text-brand-text/40")} />}
+                <span className="text-[10px] md:text-[11px] uppercase tracking-[0.1em] font-bold">
                   {tab.name}
                 </span>
               </button>
@@ -140,8 +140,8 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
               if (isFirstFilter || isVisualLabel) {
                 return (
                   <div className={cn(
-                    "grid gap-y-8 gap-x-8 mb-10",
-                    activeTab.subCategories.some(s => s.image) ? "grid-cols-4" : "grid-cols-3"
+                    "grid gap-y-8 gap-x-4 md:gap-x-8 mb-10",
+                    activeTab.subCategories.some(s => s.image) ? "grid-cols-2 md:grid-cols-4" : "grid-cols-2 md:grid-cols-3"
                   )}>
                     {activeTab.subCategories.map((sub, idx) => (
                       <Link 
@@ -149,7 +149,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
                         href={sub.href}
                         className={cn(
                           "group flex transition-all duration-300",
-                          sub.image ? "flex-col space-y-3" : "items-center space-x-4"
+                          sub.image ? "flex-col space-y-3" : "flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4"
                         )}
                         onClick={onClose}
                       >
@@ -160,21 +160,21 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
                                 src={sub.image} 
                                 alt={sub.name}
                                 fill
-                                sizes="(max-width: 1024px) 100vw, 20vw"
+                                sizes="(max-width: 1024px) 50vw, 20vw"
                                 className="object-cover transition-transform duration-700 group-hover:scale-110"
                               />
                               <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300" />
                             </div>
-                            <span className="text-[12px] font-bold text-brand-text/80 group-hover:text-brand-text text-center uppercase tracking-wider">
+                            <span className="text-[11px] md:text-[12px] font-bold text-brand-text/80 group-hover:text-brand-text text-center uppercase tracking-wider">
                               {sub.name}
                             </span>
                           </>
                         ) : (
                           <>
-                            <div className="w-12 h-12 rounded-full bg-brand-bg dark:bg-brand-bg/50 flex items-center justify-center text-xl transition-transform duration-300 group-hover:scale-110 border border-brand-text/5 dark:border-white/5">
+                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-brand-bg dark:bg-brand-bg/50 flex items-center justify-center text-lg md:text-xl transition-transform duration-300 group-hover:scale-110 border border-brand-text/5 dark:border-white/5 shrink-0">
                               {sub.thumbnail || '✨'}
                             </div>
-                            <span className="text-[13px] font-medium text-brand-text/80 group-hover:text-brand-text transition-colors">
+                            <span className="text-[12px] md:text-[13px] font-medium text-brand-text/80 group-hover:text-brand-text transition-colors text-center sm:text-left">
                               {sub.name}
                             </span>
                           </>
@@ -185,7 +185,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onMouseEnter, onMous
                 );
               } else {
                 return (
-                  <div className="grid grid-cols-2 gap-y-6 gap-x-12 mb-10">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 md:gap-y-6 gap-x-4 md:gap-x-12 mb-10">
                     {activeTab.filters.find(f => f.title === activeFilter)?.options.map((option, idx) => (
                       <Link 
                         key={idx} 
