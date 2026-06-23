@@ -7,7 +7,7 @@ import { ProductRecommendations } from '@/components/new-ui/ProductRecommendatio
 import { constructMetadata } from '@/lib/seo';
 
 async function getProduct(slug: string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products/${slug}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products/${slug}`, {
     next: { revalidate: 60 }
   });
   

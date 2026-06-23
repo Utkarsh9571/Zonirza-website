@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     user.passwordResetExpires = new Date(Date.now() + 3600000); // 1 hour from now
     await user.save();
 
-    const baseUrl = process.env.NEXT_PUBLIC_URL || process.env.NEXTAUTH_URL || "http://localhost:3000";
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_URL || process.env.NEXTAUTH_URL || "https://zoniraz.in";
     const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
     const content = `

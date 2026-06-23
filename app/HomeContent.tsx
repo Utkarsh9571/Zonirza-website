@@ -13,8 +13,6 @@ import { displayPrice } from '@/lib/currency';
 
 
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-
 const PERFECT_MATCH_CATEGORIES = [
   { name: 'Rings', image: '/images/site/rings_category.png', href: '/products?category=rings' },
   { name: 'Earrings', image: '/images/site/earrings_category.png', href: '/products?category=earrings' },
@@ -47,9 +45,9 @@ export default function HomeContent() {
     async function fetchData() {
       try {
         const [pRes, cRes, hRes] = await Promise.all([
-          fetch(`${API_URL}/api/products?limit=20`),
-          fetch(`${API_URL}/api/categories`),
-          fetch(`${API_URL}/api/merchandising/public`)
+          fetch(`/api/products?limit=20`),
+          fetch(`/api/categories`),
+          fetch(`/api/merchandising/public`)
         ]);
 
         const products = pRes.ok ? (await pRes.json()).data : [];

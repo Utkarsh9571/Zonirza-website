@@ -6,7 +6,7 @@ import { IProduct } from '@/models/Product';
 import { constructMetadata } from '@/lib/seo';
 
 async function getProductsAndRecommendations(category: string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products?category=${category}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products?category=${category}`, {
     next: { revalidate: 60 }
   });
   
