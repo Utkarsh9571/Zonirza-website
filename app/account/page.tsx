@@ -552,7 +552,7 @@ function AccountContent() {
                         <ProductCard 
                           name={product.name}
                           price={product.basePrice}
-                          image={product.images?.[0]}
+                          image={product.images?.[0] || ''}
                           slug={product.slug}
                         />
                       </div>
