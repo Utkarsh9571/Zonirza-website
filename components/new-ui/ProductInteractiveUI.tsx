@@ -104,7 +104,18 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
   const metals = configOptions.metals?.length ? configOptions.metals : ['White Gold', 'Rose Gold', 'Yellow Gold'];
   const purities = product.goldPurityOptions?.length ? product.goldPurityOptions : (configOptions.purities?.length ? configOptions.purities : ['18K', '14K', '9K']);
   const sizes = configOptions.sizes?.length ? configOptions.sizes : ['7', '8', '9', '10', '11'];
-  const stones = configOptions.stones?.length ? configOptions.stones : ['VVS1', 'VS1', 'SI1', 'Diamond-Standard'];
+  const mapLegacyStones = (stonesArr: string[]) => {
+    const mapping: Record<string, string> = {
+      'VVS1': 'EF-VVS',
+      'VS1': 'GH-VS',
+      'SI1': 'IJ-SI',
+      'DIAMOND STANDARD': 'Diamond-Standard',
+      'DIAMOND-STANDARD': 'Diamond-Standard',
+    };
+    return stonesArr.map(s => mapping[s.toUpperCase()] || mapping[s] || s);
+  };
+  const rawStones = configOptions.stones?.length ? configOptions.stones : ['EF-VVS', 'GH-VS', 'IJ-SI', 'Diamond-Standard'];
+  const stones = mapLegacyStones(rawStones);
 
   // HELPER: Generate sensible defaults for every required option group
   const getInitialConfiguration = () => {

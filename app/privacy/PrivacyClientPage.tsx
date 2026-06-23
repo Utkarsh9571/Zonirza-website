@@ -18,7 +18,7 @@ export default function PrivacyClientPage() {
   const { currentCurrency, rates } = useCurrencyStore();
   
   return (
-    <div className="min-h-screen bg-[#FDF9F6] pb-24 pt-32">
+    <div className="min-h-screen bg-[#FDF9F6] dark:bg-brand-bg pb-24 pt-32 transition-colors">
       <div className="max-w-[1000px] mx-auto px-6 md:px-12">
         
         {/* HEADER */}
@@ -46,7 +46,7 @@ export default function PrivacyClientPage() {
             </div>
             <h2 className="text-3xl font-serif text-brand-text">Shipping & Delivery</h2>
           </div>
-          <div className="bg-white rounded-[40px] p-8 md:p-12 border border-brand-text/5 shadow-premium space-y-8 text-brand-text/80 leading-relaxed text-sm md:text-base">
+          <div className="bg-white dark:bg-zinc-900 rounded-[40px] p-8 md:p-12 border border-brand-text/5 dark:border-zinc-800 shadow-premium space-y-8 text-brand-text/80 leading-relaxed text-sm md:text-base transition-colors">
             <p>Welcome to the Shipping and Delivery Information page! You can purchase your items online and ship them directly to your doorstep. We use the best carriers in the business to make sure your order gets to you on time.</p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-4">
@@ -67,9 +67,9 @@ export default function PrivacyClientPage() {
             </div>
 
             {/* SHIPPING COST TABLE */}
-            <div className="overflow-hidden rounded-3xl border border-brand-text/5 mt-8">
+            <div className="overflow-hidden rounded-3xl border border-brand-text/5 dark:border-zinc-800 mt-8 transition-colors">
               <table className="w-full text-left text-[11px] md:text-xs">
-                <thead className="bg-brand-bg text-brand-text border-b border-brand-text/10">
+                <thead className="bg-brand-bg dark:bg-zinc-950 text-brand-text border-b border-brand-text/10 dark:border-zinc-800 transition-colors">
                   <tr>
                     <th className="py-4 px-4 font-bold">Service</th>
                     <th className="py-4 px-4 font-bold">Locations</th>
@@ -135,7 +135,7 @@ export default function PrivacyClientPage() {
                 content: "Net cash thirty (30) days from invoice date. Overdue amounts accrue interest at 1.5% per month or the highest legal rate."
               }
             ].map((term, i) => (
-              <div key={i} className="bg-white p-8 rounded-[32px] border border-brand-text/5 hover:border-brand-gold/30 transition-all group">
+              <div key={i} className="bg-white dark:bg-zinc-900 p-8 rounded-[32px] border border-brand-text/5 dark:border-zinc-800 hover:border-brand-gold/30 transition-all group">
                 <term.icon size={28} className="text-brand-gold mb-6 group-hover:scale-110 transition-transform" />
                 <h3 className="font-serif text-lg text-brand-text mb-3">{term.title}</h3>
                 <p className="text-[12px] text-brand-text/60 leading-relaxed">{term.content}</p>

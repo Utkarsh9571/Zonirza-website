@@ -119,7 +119,7 @@ export default function BlogClientPage() {
       </section>
 
       {/* ====== CATEGORY TABS ====== */}
-      <section className="sticky top-25 z-40 bg-white/95 backdrop-blur-xl border-b border-brand-border shadow-soft mt-1">
+      <section className="sticky top-25 z-40 bg-white/95 dark:bg-brand-bg/95 backdrop-blur-xl border-b border-brand-border dark:border-white/5 shadow-soft mt-1">
         <div className="max-w-7xl mx-auto px-6 sm:px-12">
           <div className="flex items-center overflow-x-auto no-scrollbar py-5 space-x-8">
             {BLOG_CATEGORIES.map(cat => (
@@ -220,7 +220,7 @@ export default function BlogClientPage() {
         <div className="max-w-7xl mx-auto px-6 sm:px-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {(activeCategory === 'All Blogs' ? filteredPosts.slice(0, 2) : filteredPosts.slice(0, 2)).map(post => (
-              <Link href={`/blog/${post.slug}`} key={post.id} className="group bg-white rounded-4xl overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 border border-brand-border">
+              <Link href={`/blog/${post.slug}`} key={post.id} className="group bg-white dark:bg-zinc-900 rounded-4xl overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 border border-brand-border dark:border-zinc-800">
                 <div className="relative w-full aspect-16/10 overflow-hidden">
                   <Image
                     src={post.image}
@@ -307,7 +307,7 @@ export default function BlogClientPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {(activeCategory === 'All Blogs' ? filteredPosts : filteredPosts).map(post => (
-              <Link href={`/blog/${post.slug}`} key={post.id} className="group bg-white rounded-3xl overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 border border-brand-text/5">
+              <Link href={`/blog/${post.slug}`} key={post.id} className="group bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 border border-brand-text/5 dark:border-zinc-800">
                 <div className="relative w-full aspect-4/3 overflow-hidden">
                   <Image
                     src={post.image}
@@ -319,7 +319,7 @@ export default function BlogClientPage() {
                 <div className="p-6 space-y-3 border border-brand-gold rounded-b-3xl">
                   <div className="flex flex-wrap gap-2">
                     {post.tags.map(tag => (
-                      <span key={tag} className="px-3 py-1 border border-brand-text/10 rounded-full text-[9px] uppercase tracking-widest font-bold text-brand-text/50 hover:border-brand-gold hover:text-brand-gold transition-colors">
+                      <span key={tag} className="px-3 py-1 border border-brand-text/10 dark:border-white/10 rounded-full text-[9px] uppercase tracking-widest font-bold text-brand-text/50 dark:text-brand-text/70 hover:border-brand-gold hover:text-brand-gold transition-colors">
                         {tag}
                       </span>
                     ))}

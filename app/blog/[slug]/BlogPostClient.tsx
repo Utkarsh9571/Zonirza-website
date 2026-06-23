@@ -10,7 +10,7 @@ export default function BlogPostClient({ post }: { post: any }) {
   const slug = post.slug;
   
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-brand-bg transition-colors">
       
 
       {/* Hero Header Section */}
@@ -34,7 +34,7 @@ export default function BlogPostClient({ post }: { post: any }) {
       </section>
 
       {/* Meta Bar */}
-      <div className="sticky top-18 z-30 bg-white/80 backdrop-blur-xl border-b border-brand-text/5 py-4">
+      <div className="sticky top-18 z-30 bg-white/80 dark:bg-brand-bg/80 backdrop-blur-xl border-b border-brand-text/5 dark:border-white/5 py-4 transition-colors">
         <div className="max-w-4xl mx-auto px-6 flex items-center justify-between">
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2 text-brand-text/40">
@@ -131,7 +131,7 @@ export default function BlogPostClient({ post }: { post: any }) {
           <Image src="/images/site/blog/banner-shop.png" alt="Shop Now" fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
           <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="px-12 py-5 bg-white text-brand-text text-[11px] uppercase tracking-[0.4em] font-black rounded-full shadow-premium hover:bg-brand-gold hover:text-white transition-all transform active:scale-95">
+            <span className="px-12 py-5 bg-white text-brand-text dark:text-zinc-900 text-[11px] uppercase tracking-[0.4em] font-black rounded-full shadow-premium hover:bg-brand-gold hover:text-white transition-all transform active:scale-95">
               Shop Now
             </span>
           </div>
@@ -145,7 +145,7 @@ export default function BlogPostClient({ post }: { post: any }) {
               <Link 
                 href={`/blog/${relatedPost.slug}`} 
                 key={relatedPost.id} 
-                className="group bg-white rounded-3xl border border-brand-text/5 overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500"
+                className="group bg-white dark:bg-zinc-900 rounded-3xl border border-brand-text/5 dark:border-zinc-800 overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500"
               >
                 <div className="relative aspect-4/3 overflow-hidden">
                   <Image src={relatedPost.image} alt={relatedPost.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />

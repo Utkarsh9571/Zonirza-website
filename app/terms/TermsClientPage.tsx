@@ -5,7 +5,7 @@ import { ShieldCheck, Scale, ScrollText, Gem, Diamond, Award, Truck, CreditCard 
 
 export default function TermsClientPage() {
   return (
-    <div className="min-h-screen bg-[#FDF9F6] pb-24 pt-32">
+    <div className="min-h-screen bg-[#FDF9F6] dark:bg-brand-bg pb-24 pt-32 transition-colors">
       <div className="max-w-250 mx-auto px-6 md:px-12">
         
         {/* HERO HEADER */}
@@ -36,7 +36,7 @@ export default function TermsClientPage() {
               </div>
               <h2 className="text-3xl font-serif text-brand-text">Terms & Conditions</h2>
             </div>
-            <div className="bg-white rounded-[40px] p-8 md:p-12 border border-brand-text/5 shadow-premium space-y-8 text-brand-text/80 leading-relaxed">
+            <div className="bg-white dark:bg-zinc-900 rounded-[40px] p-8 md:p-12 border border-brand-text/5 dark:border-zinc-800 shadow-premium space-y-8 text-brand-text/80 leading-relaxed transition-colors">
               <p className="font-bold text-brand-text">All the terms and conditions mention here will be applicable on the buyer at the time of buying any type of product from Zoniraz.com</p>
               
               <div className="space-y-4">
@@ -56,7 +56,7 @@ export default function TermsClientPage() {
                 <p>Products Price given on the website are calculated using precious metal and gem prices in the market to provide you the best value. Price of Zoniraz.com can change without notice due to precious metal and gems market fluctuation.</p>
               </div>
 
-              <div className="p-6 bg-brand-bg rounded-3xl border border-brand-text/5 italic text-sm">
+              <div className="p-6 bg-brand-bg dark:bg-zinc-950 rounded-3xl border border-brand-text/5 dark:border-zinc-800 italic text-sm transition-colors">
                 &ldquo;Zoniraz.com owner will not be liable and responsible for any loss, damage, personal injury of buyer and third party, whatsoever is the cause.&rdquo;
               </div>
             </div>
@@ -72,7 +72,7 @@ export default function TermsClientPage() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-white rounded-[40px] p-8 border border-brand-text/5 shadow-premium space-y-6">
+              <div className="bg-white dark:bg-zinc-900 rounded-[40px] p-8 border border-brand-text/5 dark:border-zinc-800 shadow-premium space-y-6 transition-colors">
                 <h3 className="text-2xl font-serif text-[#8B1D2F]">Gold Jewellery Guide</h3>
                 <div className="space-y-4 text-sm text-brand-text/70">
                   <p><strong className="text-brand-text">Trustworthy Seller:</strong> We are a trustworthy seller with 50 years of experience in the market and sell right product with accurate quality at right price.</p>
@@ -100,7 +100,7 @@ export default function TermsClientPage() {
               </div>
               <h2 className="text-3xl font-serif text-brand-text">Certification Guide</h2>
             </div>
-            <div className="bg-white rounded-[40px] p-10 border border-brand-text/5 shadow-premium space-y-8 text-brand-text/80">
+            <div className="bg-white dark:bg-zinc-900 rounded-[40px] p-10 border border-brand-text/5 dark:border-zinc-800 shadow-premium space-y-8 text-brand-text/80 transition-colors">
               <div className="flex flex-col md:flex-row gap-8">
                 <div className="flex-1 space-y-4">
                   <h3 className="font-serif text-xl text-brand-text flex items-center gap-2">
@@ -136,7 +136,7 @@ export default function TermsClientPage() {
               ].map((care, i) => {
                 const CareIcon = care.icon;
                 return (
-                  <div key={i} className="bg-white p-8 rounded-4xl border border-brand-text/5 hover:border-brand-gold/30 transition-all group">
+                  <div key={i} className="bg-white dark:bg-zinc-900 p-8 rounded-4xl border border-brand-text/5 dark:border-zinc-800 hover:border-brand-gold/30 transition-all group">
                     <CareIcon size={32} className="text-brand-gold mb-6 group-hover:scale-110 transition-transform" />
                     <h3 className="font-serif text-lg text-brand-text mb-4">{care.title}</h3>
                     <ul className="space-y-3">
@@ -161,8 +161,8 @@ export default function TermsClientPage() {
               </div>
               <h2 className="text-3xl font-serif text-brand-text">Lifetime Policies</h2>
             </div>
-            <div className="bg-white rounded-[40px] overflow-hidden border border-brand-text/5 shadow-premium">
-              <div className="p-8 border-b border-brand-text/5 bg-[#FDF9F6]/50">
+            <div className="bg-white dark:bg-zinc-900 rounded-[40px] overflow-hidden border border-brand-text/5 dark:border-zinc-800 shadow-premium transition-colors">
+              <div className="p-8 border-b border-brand-text/5 dark:border-zinc-800 bg-[#FDF9F6]/50 dark:bg-zinc-950/50">
                 <p className="text-sm text-brand-text/70 italic">Zoniraz offers 100% gold exchange value with a strict 0% deduction policy for upgrades. Buy backs are calculated at prevailing market rates after standard processing fees.</p>
               </div>
               <table className="w-full text-left">
@@ -203,7 +203,7 @@ export default function TermsClientPage() {
                 We provide free delivery all over India. Shipping takes 24-48hrs for “Available in stocks” and 2 weeks for custom-made deliveries.
               </p>
             </div>
-            <div className="bg-white p-10 rounded-[40px] border border-brand-text/5 shadow-premium space-y-6">
+            <div className="bg-white dark:bg-zinc-900 p-10 rounded-[40px] border border-brand-text/5 dark:border-zinc-800 shadow-premium space-y-6 transition-colors">
               <CreditCard size={32} className="text-brand-gold" />
               <h3 className="text-2xl font-serif text-brand-text">Payment Policy</h3>
               <p className="text-sm text-brand-text/60 leading-relaxed">

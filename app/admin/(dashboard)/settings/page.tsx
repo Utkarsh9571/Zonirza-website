@@ -246,15 +246,15 @@ export default function AdminSettingsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2">VVS1 Diamond (₹)</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2">EF-VVS Diamond (₹)</label>
                   <input 
                     type="number" 
-                    value={settings?.pricingFactors?.stonePrices?.['VVS1'] ?? 50000}
+                    value={settings?.pricingFactors?.stonePrices?.['EF-VVS'] ?? 85000}
                     onChange={(e) => setSettings({
                       ...settings, 
                       pricingFactors: { 
                         ...(settings?.pricingFactors || {}), 
-                        stonePrices: { ...(settings?.pricingFactors?.stonePrices || {}), 'VVS1': parseInt(e.target.value) }
+                        stonePrices: { ...(settings?.pricingFactors?.stonePrices || {}), 'EF-VVS': parseInt(e.target.value) }
                       }
                     })}
                     className="w-full bg-slate-50 border border-brand-text/15 rounded-2xl py-3 px-4 text-[13px] font-bold"

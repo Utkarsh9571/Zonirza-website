@@ -78,7 +78,7 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
 
       {/* Search Content */}
       <div className="relative w-full max-w-5xl mx-auto mt-20 px-6 sm:px-12 flex flex-col h-full max-h-[80vh]">
-        <div className="bg-white/90 backdrop-blur-md rounded-[40px] shadow-premium overflow-hidden flex flex-col border border-white/20">
+        <div className="bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md rounded-[40px] shadow-premium overflow-hidden flex flex-col border border-white/20 dark:border-zinc-800 transition-colors">
           
           {/* Search Input Area */}
           <div className="p-8 border-b border-brand-text/5 flex items-center space-x-6">
@@ -137,7 +137,7 @@ export const SearchOverlay = ({ isOpen, onClose }: SearchOverlayProps) => {
                             key={col.slug}
                             href={`/products?collection=${col.slug}`}
                             onClick={onClose}
-                            className="flex items-center justify-between p-4 rounded-2xl bg-brand-bg hover:bg-white hover:shadow-soft transition-all group"
+                            className="flex items-center justify-between p-4 rounded-2xl bg-brand-bg dark:bg-zinc-900 hover:bg-white dark:hover:bg-zinc-800 hover:shadow-soft transition-all group"
                           >
                             <span className="text-[12px] font-bold uppercase tracking-widest text-brand-text">{col.name}</span>
                             <ArrowRight size={14} className="text-brand-gold opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />

@@ -82,7 +82,7 @@ const FAQ_DATA: Record<string, { question: string; answer: string | React.ReactN
         <div class="p-5 bg-brand-gold/5 rounded-2xl border border-brand-gold/10">
           <h4 class="font-bold text-[#8B1D2F] mb-2">International Orders</h4>
           <p>Payments are accepted through PayPal Payment gateway either by your PayPal account or by using International credit/debit cards only. For orders being shipped outside India, the payment will be accepted only in US Dollars. For international orders, currency conversion rates will apply according to the prevailing exchange rates on the day of placing the order.</p>
-          <div class="mt-4 p-3 bg-white/50 rounded-xl text-[11px] border border-[#8B1D2F]/10 text-[#8B1D2F]">
+          <div class="mt-4 p-3 bg-white/50 dark:bg-zinc-900/50 rounded-xl text-[11px] border border-[#8B1D2F]/10 text-[#8B1D2F] dark:text-brand-gold">
             <strong>NOTE:</strong> Indian issued cards will not be accepted for international orders.
           </div>
         </div>
@@ -97,7 +97,7 @@ const FAQ_DATA: Record<string, { question: string; answer: string | React.ReactN
           <div class="overflow-x-auto rounded-2xl border border-brand-text/5">
             <table class="w-full text-left text-[11px] border-collapse">
               <thead>
-                <tr class="bg-brand-bg border-b border-brand-text/10 text-brand-text font-bold">
+                <tr class="bg-brand-bg dark:bg-zinc-950 border-b border-brand-text/10 dark:border-zinc-800 text-brand-text font-bold transition-colors">
                   <th class="py-3 px-3">S.No</th>
                   <th class="py-3 px-3">Country</th>
                   <th class="py-3 px-3">Duty (%)</th>
@@ -326,10 +326,10 @@ const FAQ_DATA: Record<string, { question: string; answer: string | React.ReactN
           <p>The shipping and handling charges apply for international destinations. For Jewellery we charge $50 per order. All products/consignments are dispatched on “Delivery Duty Unpaid” (DDU) basis.</p>
           <p>Any other import duties or charges levied in the destination country of the shipment has to be borne by the customer as per actuals. These taxes and duties are subject to change.</p>
           
-          <div class="overflow-x-auto mt-6 bg-white rounded-2xl border border-brand-text/5">
+          <div class="overflow-x-auto mt-6 bg-white dark:bg-zinc-900 rounded-2xl border border-brand-text/5 dark:border-zinc-800 transition-colors">
             <table class="w-full text-left text-[11px] sm:text-xs border-collapse">
               <thead>
-                <tr class="border-b border-brand-text/10 text-brand-text font-bold bg-brand-gold/5 uppercase tracking-tighter">
+                <tr class="border-b border-brand-text/10 dark:border-zinc-800 text-brand-text font-bold bg-brand-gold/5 uppercase tracking-tighter transition-colors">
                   <th class="py-3 px-3">S.No</th>
                   <th class="py-3 px-3">Country</th>
                   <th class="py-3 px-3">Duty (%)</th>
@@ -452,8 +452,8 @@ function HelpContent() {
                 className={cn(
                   "w-full text-left px-6 py-4 rounded-2xl transition-all duration-300 flex items-center justify-between group",
                   activeTab === cat.id
-                    ? "bg-[#FDF9F6] text-[#8B1D2F] font-bold shadow-sm border border-[#8B1D2F]/10"
-                    : "text-brand-text/60 hover:bg-brand-bg/50"
+                    ? "bg-[#FDF9F6] dark:bg-zinc-900 text-[#8B1D2F] dark:text-brand-gold font-bold shadow-sm border border-[#8B1D2F]/10 dark:border-brand-gold/20"
+                    : "text-brand-text/60 hover:bg-brand-bg/50 dark:hover:bg-zinc-900/50"
                 )}
               >
                 <span className="text-[13px] uppercase tracking-wider">{cat.name}</span>
@@ -505,7 +505,7 @@ function HelpContent() {
               key={idx}
               className={cn(
                 "border rounded-[24px] transition-all duration-500 overflow-hidden",
-                openIndex === idx ? "border-brand-gold/40 bg-[#FDF9F6]" : "border-brand-text/5 bg-white hover:border-brand-gold/20"
+                openIndex === idx ? "border-brand-gold/40 bg-[#FDF9F6] dark:bg-zinc-900" : "border-brand-text/5 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:border-brand-gold/20"
               )}
             >
               <button
@@ -520,7 +520,7 @@ function HelpContent() {
                 </span>
                 <div className={cn(
                   "shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500",
-                  openIndex === idx ? "bg-[#8B1D2F] text-white rotate-180" : "bg-brand-bg text-brand-text"
+                  openIndex === idx ? "bg-[#8B1D2F] text-white rotate-180" : "bg-brand-bg dark:bg-zinc-900 text-brand-text"
                 )}>
                   {openIndex === idx ? <Minus size={18} /> : <Plus size={18} />}
                 </div>
