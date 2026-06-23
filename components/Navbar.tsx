@@ -168,7 +168,7 @@ const Navbar = () => {
         </div>
   
         {/* 2. RIGHT: Floating Pill Navbar */}
-        <div className="hidden md:flex items-center bg-white dark:bg-brand-white/80 backdrop-blur-md rounded-full shadow-premium border-2 border-brand-gold pl-4 pr-3 py-2.5 relative transition-colors">
+        <div className="hidden lg:flex items-center bg-white dark:bg-brand-white/80 backdrop-blur-md rounded-full shadow-premium border-2 border-brand-gold pl-4 pr-3 py-2.5 relative transition-colors">
           
           {/* SEARCH BAR */}
           <div ref={searchRef} className="relative flex items-center mr-6 border-r border-brand-border dark:border-white/10 pr-6 transition-colors">
@@ -410,8 +410,9 @@ const Navbar = () => {
         {activeMenu === 'shop' && (
           <div 
             className={cn(
-              "left-0 right-0 flex justify-center px-4 md:px-6 lg:px-12 animate-in slide-in-from-top-2 duration-300 z-110 pointer-events-auto",
-              "absolute top-full"
+              "left-0 right-0 justify-center px-4 md:px-6 lg:px-12 animate-in slide-in-from-top-2 duration-300 z-110 pointer-events-auto",
+              "absolute top-full",
+              "hidden lg:flex"
             )}
             onMouseEnter={() => handleShopInteraction('hover')}
             onMouseLeave={handleMouseLeave}
@@ -428,13 +429,13 @@ const Navbar = () => {
         )}
 
       {/* Mobile Menu Toggle */}
-      <button className="md:hidden w-12 h-12 flex items-center justify-center bg-white/90 dark:bg-brand-bg/90 backdrop-blur-md rounded-full shadow-premium text-brand-text dark:text-brand-text/90 border border-white/40 dark:border-white/10 active:scale-90 transition-all" onClick={() => setIsOpen(!isOpen)}>
+      <button className="lg:hidden w-12 h-12 flex items-center justify-center bg-white/90 dark:bg-brand-bg/90 backdrop-blur-md rounded-full shadow-premium text-brand-text dark:text-brand-text/90 border border-white/40 dark:border-white/10 active:scale-90 transition-all" onClick={() => setIsOpen(!isOpen)}>
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
       {/* MOBILE ACCORDION MENU */}
       {isOpen && (
-        <div className="md:hidden absolute top-24 left-6 right-6 bg-white/90 dark:bg-white/90 backdrop-blur-md rounded-[30px] border border-white/40 shadow-premium z-150 max-h-[80vh] overflow-y-auto pointer-events-auto transition-colors">
+        <div className="lg:hidden absolute top-24 left-6 right-6 bg-white/90 dark:bg-white/90 backdrop-blur-md rounded-[30px] border border-white/40 shadow-premium z-150 max-h-[80vh] overflow-y-auto pointer-events-auto transition-colors">
           <div className="flex flex-col py-6 px-8 space-y-4">
             <div className="flex flex-col space-y-2 pb-4 border-b border-brand-text/5">
               <div 
