@@ -76,7 +76,7 @@ export default function CinematicHero() {
   const slide = slides[currentSlide];
 
   return (
-    <section className="relative min-h-[100dvh] md:h-screen md:min-h-[750px] w-full overflow-hidden bg-[#12100e]">
+    <section className="relative min-h-dvh md:h-screen md:min-h-187.5 w-full overflow-hidden bg-[#12100e]">
 
       {/* Background Videos with Crossfade */}
       <AnimatePresence initial={false}>
@@ -131,12 +131,12 @@ export default function CinematicHero() {
           })()}
 
           {/* Cinematic Overlays */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 z-10 pointer-events-none" />
+          <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/40 to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-black/30 z-10 pointer-events-none" />
         </motion.div>
       </AnimatePresence>
 
-      <div className="relative z-20 h-full max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24 pt-32 pb-24 flex flex-col lg:flex-row items-center justify-between">
+      <div className="relative z-20 h-full max-w-350 mx-auto px-6 md:px-12 lg:px-24 pt-32 pb-24 flex flex-col lg:flex-row items-center justify-between">
 
         {/* Left Content Area */}
         <div className="flex-1 max-w-2xl text-white space-y-8 self-center lg:self-center mt-12 lg:mt-0">
@@ -155,7 +155,7 @@ export default function CinematicHero() {
               </div>
 
               <h1
-                className="text-5xl md:text-7xl lg:text-8xl font-serif leading-[1.1] tracking-tight"
+                className="text-5xl text-white md:text-7xl lg:text-8xl font-serif leading-[1.1] tracking-tight"
                 dangerouslySetInnerHTML={{ __html: slide.title }}
               />
 
@@ -196,7 +196,7 @@ export default function CinematicHero() {
                 className="hero-card-interactive group flex items-center p-4 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 transition-all duration-500 shadow-2xl overflow-hidden relative"
               >
                 {/* Subtle hover gradient inside card */}
-                <div className="hero-card-bg absolute inset-0 bg-gradient-to-r from-brand-gold/0 to-brand-gold/10 opacity-0 transition-opacity duration-500" />
+                <div className="hero-card-bg absolute inset-0 bg-linear-to-r from-brand-gold/0 to-brand-gold/10 opacity-0 transition-opacity duration-500" />
 
                 <div className="hero-card-icon w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-brand-gold transition-transform duration-500 z-10">
                   <card.icon size={20} />

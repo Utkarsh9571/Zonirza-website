@@ -23,6 +23,10 @@ export default function ExchangeTabController({ initialTab = 'exchange' }: { ini
   const [activeTab, setActiveTab] = useState<'exchange' | 'sell'>(initialTab);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     if (initialTab) {
       setActiveTab(initialTab);
     }

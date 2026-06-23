@@ -2,27 +2,22 @@
 
 import { useState, useEffect } from 'react';
 import { 
-  Layers, 
   Plus, 
   Edit2, 
-  Trash2, 
   Loader2,
   Image as ImageIcon,
   ChevronRight,
   Package
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+
+type Category = { _id: string; name: string; slug: string; image: string; description?: string; productCount?: number };
 
 export default function AdminCategoriesPage() {
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<any>(null);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [formData, setFormData] = useState({ name: '', slug: '', image: '', description: '' });
-
-  useEffect(() => {
-    fetchCategories();
-  }, []);
 
   const fetchCategories = async () => {
     setLoading(true);
@@ -36,6 +31,11 @@ export default function AdminCategoriesPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchCategories();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,7 +131,7 @@ export default function AdminCategoriesPage() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-6">
           <div className="absolute inset-0 bg-[#12100e]/80 backdrop-blur-md" onClick={() => setIsModalOpen(false)} />
           <div className="relative w-full max-w-lg bg-white dark:bg-[#1a1614] rounded-[40px] shadow-2xl p-10 border border-brand-text/15">
             <h2 className="text-2xl font-serif font-bold text-brand-text italic mb-8">

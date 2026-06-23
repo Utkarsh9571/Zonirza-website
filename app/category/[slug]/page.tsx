@@ -67,7 +67,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
       />
 
       {/* Category Header Banner */}
-      <section className="relative h-[60vh] min-h-[500px] w-full flex items-center justify-center overflow-hidden">
+      <section className="relative h-[60vh] min-h-125 w-full flex items-center justify-center overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=2000"
           alt={categoryTitle}
@@ -82,12 +82,12 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
           <h1 className="text-6xl md:text-9xl font-serif text-brand-text font-light tracking-tight italic leading-tight animate-in fade-in slide-in-from-bottom-8 duration-1000">
             {categoryTitle}
           </h1>
-          <div className="w-24 h-[1px] bg-brand-gold mx-auto mt-12 animate-in fade-in duration-1000 delay-500"></div>
+          <div className="w-24 h-px bg-brand-gold mx-auto mt-12 animate-in fade-in duration-1000 delay-500"></div>
         </div>
       </section>
 
       {/* Product Grid Section */}
-      <Section className="!py-32">
+      <Section className="py-32!">
         <div className="flex flex-col md:flex-row items-end justify-between mb-24 gap-10">
           <div className="space-y-4">
             <p className="text-brand-gold text-[12px] uppercase tracking-[0.5em] font-bold">Discover</p>
@@ -96,7 +96,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
         </div>
 
         {products.length > 0 ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-24">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 md:gap-x-12 gap-y-16 md:gap-y-24">
             {products.map((product) => (
               <ProductCard
                 key={product.slug}
@@ -128,7 +128,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
               <p className="text-brand-gold text-[12px] uppercase tracking-[0.5em] font-bold">Curated for you</p>
               <h2 className="text-4xl md:text-5xl font-serif font-light text-brand-text italic">Explore More</h2>
             </div>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-24">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 md:gap-x-12 gap-y-16 md:gap-y-24">
               {recommendations.map((product) => (
                 <ProductCard
                   key={product.slug}

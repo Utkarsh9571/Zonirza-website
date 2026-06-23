@@ -188,6 +188,136 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
 
   const cartAddItem = useCartStore((state) => state.addItem);
   const specs = product.specs instanceof Map ? Object.fromEntries(product.specs) : product.specs;
+
+  const specGroups = useMemo(() => {
+    const metalGroup: { label: string; value: string }[] = [];
+    const stoneGroup: { label: string; value: string }[] = [];
+    const craftGroup: { label: string; value: string }[] = [];
+    const generalGroup: { label: string; value: string }[] = [];
+
+    // Helper to format values
+    const formatVal = (k: string, v: string) => {
+      if (!v) return '';
+      // Map raw values
+      const mapping: Record<string, string> = {
+        'white-gold': 'White Gold',
+        'yellow-gold': 'Yellow Gold',
+        'rose-gold': 'Rose Gold',
+        'gold': 'Gold',
+        'silver': 'Silver',
+        'platinum': 'Platinum',
+        'women': 'Women',
+        'men': 'Men',
+        'kids': 'Kids',
+        'unisex': 'Unisex',
+        'in-stock': 'In Stock',
+        'out-of-stock': 'Out of Stock',
+        'high polish': 'High Polish',
+        'high-polish': 'High Polish',
+        'yes': 'Yes',
+        'no': 'No'
+      };
+
+      const parts = v.split(',').map(part => {
+        const trimmed = part.trim().toLowerCase();
+        if (mapping[trimmed]) return mapping[trimmed];
+        // Capitalize words
+        return part.trim()
+          .replace(/-/g, ' ')
+          .replace(/_/g, ' ')
+          .split(' ')
+          .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(' ');
+      });
+
+      return parts.join(', ');
+    };
+
+    // 1. Metal & Composition
+    metalGroup.push({ label: 'Metal Purity', value: config.purity });
+    metalGroup.push({ label: 'Metal Color', value: config.metal });
+    if (pricing.estimatedGoldWeight) {
+      metalGroup.push({ label: 'Approx. Metal Weight', value: `${pricing.estimatedGoldWeight} g` });
+    }
+
+    // 2. Diamond & Gemstones
+    if (product.jewelryType === 'diamond') {
+      if (config.stone && config.stone !== 'None') {
+        stoneGroup.push({ label: 'Diamond Quality', value: config.stone.replace('-', ' ') });
+      }
+      const dWeight = specs?.diamondWeight || specs?.stoneWeight || specs?.diamondweight || specs?.stoneweight;
+      if (dWeight) {
+        stoneGroup.push({ label: 'Total Diamond Weight', value: formatVal('diamondWeight', dWeight) });
+      }
+      const dCount = specs?.diamondCount || specs?.diamondcount;
+      if (dCount) {
+        stoneGroup.push({ label: 'Number of Diamonds', value: formatVal('diamondCount', dCount) });
+      }
+    } else if (product.jewelryType === 'stone') {
+      const sName = specs?.stoneName || specs?.stonename || product.stoneType;
+      if (sName) {
+        stoneGroup.push({ label: 'Gemstone Type', value: formatVal('stoneName', sName) });
+      }
+      const sWeight = specs?.stoneWeight || specs?.stoneweight;
+      if (sWeight) {
+        stoneGroup.push({ label: 'Total Stone Weight', value: formatVal('stoneWeight', sWeight) });
+      }
+      const sCount = specs?.stoneCount || specs?.stonecount;
+      if (sCount) {
+        stoneGroup.push({ label: 'Number of Gemstones', value: formatVal('stoneCount', sCount) });
+      }
+    }
+
+    // 3. Dynamic Custom Specs categorization
+    const excludedKeys = [
+      'metal', 'metals', 'purity', 'purities', 'karat', 'size', 'sizes', 
+      'stone', 'stones', 'customization', 'customizations', 'price', 
+      'slug', 'category', 'gold_weight', 'diamond_weight', 'stone_weight', 
+      'diamond_quality', 'gold_purity_options', 'jewelry_type', 'diamond_count', 'stone_count',
+      'stone_name'
+    ];
+
+    Object.entries(specs || {}).forEach(([key, value]) => {
+      const k = key.toLowerCase();
+      if (excludedKeys.some(ex => k === ex || ex.includes(k) || k.includes(ex))) {
+        return; // skip duplicate/configurable
+      }
+      if (key === 'price' || typeof value !== 'string') return;
+
+      const formattedLabel = key
+        .replace(/_/g, ' ')
+        .replace(/-/g, ' ')
+        .split(' ')
+        .map(w => w.toLowerCase() === 'sku' ? 'SKU' : w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+
+      const formattedValue = formatVal(key, value);
+
+      // Categorize dynamic spec based on key keywords
+      if (k.includes('craft') || k.includes('finish') || k.includes('setting') || k.includes('occasion') || k.includes('style')) {
+        craftGroup.push({ label: formattedLabel, value: formattedValue });
+      } else if (k.includes('sku') || k.includes('gender') || k.includes('recipient') || k.includes('brand') || k.includes('collection')) {
+        generalGroup.push({ label: formattedLabel, value: formattedValue });
+      } else if (k.includes('weight') || k.includes('composition') || k.includes('dimension')) {
+        metalGroup.push({ label: formattedLabel, value: formattedValue });
+      } else {
+        // Fallback group
+        craftGroup.push({ label: formattedLabel, value: formattedValue });
+      }
+    });
+
+    // Add selected size to General or Metal
+    if (config.size) {
+      generalGroup.push({ label: 'Selected Size / Length', value: config.size });
+    }
+
+    return {
+      metalGroup,
+      stoneGroup,
+      craftGroup,
+      generalGroup
+    };
+  }, [config, specs, product, pricing]);
   
   const { status } = useSession();
   const openAuthModal = useAuthModalStore(state => state.openAuthModal);
@@ -822,97 +952,69 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
             <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/5 blur-3xl rounded-full pointer-events-none" />
 
             {activeTab === 'details' && (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10 space-y-8 text-brand-text">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-4">
-                  {/* Karatage/Purity */}
-                  <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
-                    <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">Gold Karatage</span>
-                    <span className="text-xs font-bold text-brand-text dark:text-white">{config.purity}</span>
-                  </div>
-
-                  {/* Metal/Color */}
-                  <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
-                    <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">Metal Color</span>
-                    <span className="text-xs font-bold text-brand-text dark:text-white">{config.metal}</span>
-                  </div>
-
-                  {/* Size/Length */}
-                  {config.size && (
-                    <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
-                      <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">Selected Size</span>
-                      <span className="text-xs font-bold text-brand-text dark:text-white">{config.size}</span>
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10 space-y-10 text-brand-text">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  {/* Metal & Composition */}
+                  {specGroups.metalGroup.length > 0 && (
+                    <div className="space-y-4">
+                      <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-brand-gold border-b border-brand-gold/20 pb-2">Metal & Composition</h3>
+                      <div className="space-y-3">
+                        {specGroups.metalGroup.map((item, idx) => (
+                          <div key={idx} className="flex justify-between items-center py-1">
+                            <span className="text-[10px] uppercase tracking-wider font-semibold text-brand-text/40 dark:text-white/40">{item.label}</span>
+                            <span className="text-xs font-bold text-brand-text dark:text-white">{item.value}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
 
-                  {/* Metal weight */}
-                  <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
-                    <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">Approx. Gold Weight</span>
-                    <span className="text-xs font-bold text-brand-text dark:text-white">{pricing.estimatedGoldWeight} g</span>
-                  </div>
-
-                  {/* Diamond Specs */}
-                  {product.jewelryType === 'diamond' && (
-                    <>
-                      <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
-                        <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">Diamond Quality</span>
-                        <span className="text-xs font-bold text-brand-text dark:text-white">{config.stone?.replace('-', ' ')}</span>
+                  {/* Gemstone Specifications */}
+                  {specGroups.stoneGroup.length > 0 && (
+                    <div className="space-y-4">
+                      <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-brand-gold border-b border-brand-gold/20 pb-2">Diamond & Gemstones</h3>
+                      <div className="space-y-3">
+                        {specGroups.stoneGroup.map((item, idx) => (
+                          <div key={idx} className="flex justify-between items-center py-1">
+                            <span className="text-[10px] uppercase tracking-wider font-semibold text-brand-text/40 dark:text-white/40">{item.label}</span>
+                            <span className="text-xs font-bold text-brand-text dark:text-white">{item.value}</span>
+                          </div>
+                        ))}
                       </div>
-                      <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
-                        <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">Total Diamond Weight</span>
-                        <span className="text-xs font-bold text-brand-text dark:text-white">{specs?.diamondWeight || specs?.stoneWeight || '0.15 ct'}</span>
-                      </div>
-                      {specs?.diamondCount && (
-                        <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
-                          <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">No. of Diamonds</span>
-                          <span className="text-xs font-bold text-brand-text dark:text-white">{specs.diamondCount}</span>
-                        </div>
-                      )}
-                    </>
+                    </div>
                   )}
 
-                  {/* Gemstone Specs */}
-                  {product.jewelryType === 'stone' && (
-                    <>
-                      <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
-                        <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">Gemstone Name</span>
-                        <span className="text-xs font-bold text-brand-text dark:text-white">{specs?.stoneName || product.stoneType || 'Gemstone'}</span>
+                  {/* Design & Craft */}
+                  {specGroups.craftGroup.length > 0 && (
+                    <div className="space-y-4">
+                      <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-brand-gold border-b border-brand-gold/20 pb-2">Design & Craft</h3>
+                      <div className="space-y-3">
+                        {specGroups.craftGroup.map((item, idx) => (
+                          <div key={idx} className="flex justify-between items-center py-1">
+                            <span className="text-[10px] uppercase tracking-wider font-semibold text-brand-text/40 dark:text-white/40">{item.label}</span>
+                            <span className="text-xs font-bold text-brand-text dark:text-white">{item.value}</span>
+                          </div>
+                        ))}
                       </div>
-                      <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
-                        <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">Total Stone Weight</span>
-                        <span className="text-xs font-bold text-brand-text dark:text-white">{specs?.stoneWeight || '1.0 ct'}</span>
-                      </div>
-                      {specs?.stoneCount && (
-                        <div className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
-                          <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">No. of Gemstones</span>
-                          <span className="text-xs font-bold text-brand-text dark:text-white">{specs.stoneCount}</span>
-                        </div>
-                      )}
-                    </>
+                    </div>
                   )}
 
-                  {/* Dynamic Custom Specs */}
-                  {Object.entries(specs || {}).map(([key, value]) => {
-                    const k = key.toLowerCase();
-                    const isConfigurableKey = [
-                      'metal', 'metals', 'purity', 'purities', 'karat', 'size', 'sizes', 
-                      'stone', 'stones', 'customization', 'customizations', 'price', 
-                      'slug', 'category', 'gold_weight', 'diamond_weight', 'stone_weight', 
-                      'diamond_quality', 'gold_purity_options', 'jewelry_type'
-                    ].some(attr => k.includes(attr) || attr.includes(k));
-                    
-                    const isStoneOrDiamondKey = k.includes('stone') || k.includes('diamond');
-                    
-                    if (key !== 'price' && !isConfigurableKey && !isStoneOrDiamondKey && typeof value === 'string' && !value.includes(',')) {
-                      return (
-                        <div key={key} className="flex justify-between items-center py-3.5 border-b border-brand-text/5 dark:border-white/5">
-                          <span className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40">{key.replace(/_/g, ' ')}</span>
-                          <span className="text-xs font-bold text-brand-text dark:text-white">{value}</span>
-                        </div>
-                      );
-                    }
-                    return null;
-                  })}
+                  {/* General Information */}
+                  {specGroups.generalGroup.length > 0 && (
+                    <div className="space-y-4">
+                      <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-brand-gold border-b border-brand-gold/20 pb-2">Product Information</h3>
+                      <div className="space-y-3">
+                        {specGroups.generalGroup.map((item, idx) => (
+                          <div key={idx} className="flex justify-between items-center py-1">
+                            <span className="text-[10px] uppercase tracking-wider font-semibold text-brand-text/40 dark:text-white/40">{item.label}</span>
+                            <span className="text-xs font-bold text-brand-text dark:text-white">{item.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
+
                 <div className="pt-6 border-t border-brand-text/5 dark:border-white/5">
                   <p className="text-[9px] uppercase tracking-[0.25em] font-black text-brand-text/40 dark:text-white/40 mb-2">Description</p>
                   <p className="text-brand-text/80 text-xs leading-relaxed max-w-3xl">{product.description}</p>

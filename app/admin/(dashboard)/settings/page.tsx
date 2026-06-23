@@ -24,15 +24,13 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+type SettingsType = Record<string, unknown> & { siteName?: string; supportPhone?: string; supportEmail?: string; maintenanceMode?: boolean; address?: string; businessHours?: string; footerText?: string; pricingFactors?: { gstPercentage?: number; shippingBaseCharge?: number; freeShippingThreshold?: number; sizeWeightOffset?: number; stonePrices?: Record<string, number>; purityMultipliers?: Record<string, number> }; socialLinks?: { instagram?: string; facebook?: string; whatsapp?: string }; seo?: { defaultTitle?: string; defaultDescription?: string }; announcement?: { text?: string; isActive?: boolean; link?: string } };
+
 export default function AdminSettingsPage() {
-  const [settings, setSettings] = useState<any>(null);
+  const [settings, setSettings] = useState<SettingsType | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
-
-  useEffect(() => {
-    fetchSettings();
-  }, []);
 
   const fetchSettings = async () => {
     try {
@@ -45,6 +43,11 @@ export default function AdminSettingsPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchSettings();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSave = async () => {
     setSaving(true);
@@ -426,7 +429,7 @@ export default function AdminSettingsPage() {
             
             <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
               <div className="flex items-center space-x-6">
-                <div className="w-16 h-16 rounded-[24px] bg-brand-gold text-white flex items-center justify-center shadow-premium">
+                <div className="w-16 h-16 rounded-3xl bg-brand-gold text-white flex items-center justify-center shadow-premium">
                   <Megaphone size={28} />
                 </div>
                 <div>

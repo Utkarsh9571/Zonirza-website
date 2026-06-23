@@ -139,7 +139,7 @@ export default function AdminFranchiseLeadsPage() {
                 </td>
               </tr>
             ) : filteredLeads.map((lead) => (
-              <tr key={lead._id} className="group hover:bg-brand-gold/[0.02] transition-colors">
+              <tr key={lead._id} className="group hover:bg-brand-gold/2 transition-colors">
                 <td className="p-8">
                   <div className="flex items-center space-x-4">
                     <div className="w-10 h-10 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold font-bold text-xs">
@@ -195,7 +195,7 @@ export default function AdminFranchiseLeadsPage() {
 
       {/* Detail Modal */}
       {isModalOpen && selectedLead && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-6">
           <div className="absolute inset-0 bg-[#12100e]/80 backdrop-blur-md" onClick={() => setIsModalOpen(false)} />
           <div className="relative w-full max-w-2xl bg-white dark:bg-[#1a1614] rounded-[48px] shadow-2xl overflow-hidden border border-brand-text/15">
             <div className="p-10 space-y-8">
@@ -244,7 +244,7 @@ export default function AdminFranchiseLeadsPage() {
               <div className="space-y-3">
                 <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2">Message Body</label>
                 <div className="bg-slate-50 dark:bg-white/5 border border-brand-text/5 rounded-3xl p-6 text-[13px] text-brand-text/70 leading-relaxed italic">
-                  "{selectedLead.message}"
+                  &ldquo;{selectedLead.message}&rdquo;
                 </div>
               </div>
 

@@ -2,11 +2,24 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { MapPin, Mail, Phone, MessageSquare } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import LinkNext from "next/link";
 
+interface IFooterSettings {
+  footerText?: string;
+  supportPhone?: string;
+  supportEmail?: string;
+  socialLinks?: {
+    facebook?: string;
+    instagram?: string;
+    youtube?: string;
+    pinterest?: string;
+    twitter?: string;
+  };
+}
+
 export default function Footer() {
-  const [settings, setSettings] = useState<any>(null);
+  const [settings, setSettings] = useState<IFooterSettings | null>(null);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -22,7 +35,7 @@ export default function Footer() {
   }, []);
   return (
     <footer className="bg-[#3A1C16] text-[#EAE1D5] pt-20 pb-10 mt-10 rounded-t-[40px] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] relative z-20">
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+      <div className="max-w-350 mx-auto px-6 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8 mb-12 border-b border-[#EAE1D5]/10 pb-12">
 
           <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-6">
@@ -35,14 +48,14 @@ export default function Footer() {
                 className="object-contain brightness-0 invert"
               />
             </LinkNext>
-            <p className="text-sm text-[#EAE1D5]/90 font-light tracking-wide max-w-[300px]">
+            <p className="text-sm text-[#EAE1D5]/90 font-light tracking-wide max-w-75">
               {settings?.footerText || "Zoniraz Jewel house Pvt LTD. is one of the leading Jewellery manufacturer, wholesaler, retailer and exporter in the international Jewels market. From the last 50 Years we are serving for our loyal customers and delivering them not only a qualitative and best designs of Jewellery but also a trustful and responsible brand."}
             </p>
           </div>
 
-          <div className="pl-0 lg:pl-4">
+          <div className="flex flex-col items-center md:items-start text-center md:text-left pl-0 lg:pl-4">
             <h4 className="font-serif text-lg mb-6 text-[#EAE1D5]">Useful Links</h4>
-            <ul className="space-y-3 text-sm font-light text-[#EAE1D5]/70">
+            <ul className="space-y-3 text-sm font-light text-[#EAE1D5]/70 flex flex-col items-center md:items-start">
               <li><LinkNext href="/help?tab=delivery" className="hover:text-white transition-colors">Delivery Information</LinkNext></li>
               <li><LinkNext href="/help?tab=international" className="hover:text-white transition-colors">International Shipping</LinkNext></li>
               <li><LinkNext href="/help?tab=payment" className="hover:text-white transition-colors">Payment Options</LinkNext></li>
@@ -51,18 +64,18 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <h4 className="font-serif text-lg mb-6 text-[#EAE1D5]">Information</h4>
-            <ul className="space-y-3 text-sm font-light text-[#EAE1D5]/70">
+            <ul className="space-y-3 text-sm font-light text-[#EAE1D5]/70 flex flex-col items-center md:items-start">
               <li><LinkNext href="/blog" className="hover:text-white transition-colors">Blog</LinkNext></li>
               <li><LinkNext href="/contact" className="hover:text-white transition-colors">Contact Us</LinkNext></li>
               <li><LinkNext href="/about" className="hover:text-white transition-colors">About Zoniraz</LinkNext></li>
             </ul>
           </div>
 
-          <div>
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <h4 className="font-serif text-lg mb-6 text-[#EAE1D5]">Contact Us</h4>
-            <div className="space-y-6 text-sm font-light text-[#EAE1D5]/70">
+            <div className="space-y-6 text-sm font-light text-[#EAE1D5]/70 flex flex-col items-center md:items-start">
               <div className="space-y-1">
                 <p className="flex items-center space-x-2">
                   <Phone size={14} className="text-[#EAE1D5]" />
@@ -80,15 +93,15 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="flex flex-col space-y-6">
-            <h4 className="font-serif text-lg mb-6 text-[#EAE1D5]">Partnership</h4>
+          <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-6">
+            <h4 className="font-serif text-lg mb-2 text-[#EAE1D5]">Partnership</h4>
             <LinkNext
               href="/franchise"
-              className="inline-flex items-center justify-center px-6 py-4 bg-brand-gold text-white text-[10px] font-bold uppercase tracking-[0.2em] rounded-full hover:bg-[#EAE1D5] hover:text-[#3A1C16] transition-all shadow-premium text-center"
+              className="inline-flex items-center justify-center px-6 py-4 bg-brand-gold text-white text-[10px] font-bold uppercase tracking-[0.2em] rounded-full hover:bg-[#EAE1D5] hover:text-[#3A1C16] transition-all shadow-premium text-center w-full max-w-60"
             >
               Franchise Enquiry
             </LinkNext>
-            <p className="text-[10px] text-[#EAE1D5]/40 leading-relaxed uppercase tracking-[0.15em] font-medium">
+            <p className="text-[10px] text-[#EAE1D5]/40 leading-relaxed uppercase tracking-[0.15em] font-medium max-w-50">
               Join the legacy of excellence and trust.
             </p>
           </div>

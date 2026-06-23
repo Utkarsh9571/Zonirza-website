@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import Navbar from '@/components/Navbar';
 import { Section } from '@/components/new-ui/Section';
 import { Button } from '@/components/new-ui/Button';
 import { cn } from '@/lib/utils';
@@ -22,9 +21,36 @@ export default function FranchiseClientPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const newErrors: Record<string, string> = {};
+    if (!formData.name.trim()) newErrors.name = 'Full name is required';
+    
+    const phoneTrimmed = formData.phone.trim();
+    if (!phoneTrimmed) {
+      newErrors.phone = 'Phone number is required';
+    } else if (!/^[6-9]\d{9}$/.test(phoneTrimmed)) {
+      newErrors.phone = 'Please enter a valid 10-digit Indian mobile number (starts with 6-9)';
+    }
+
+    const emailTrimmed = formData.email.trim();
+    if (!emailTrimmed) {
+      newErrors.email = 'Email address is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.city.trim()) newErrors.city = 'City / Location is required';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
     setIsSubmitting(true);
     
     try {
@@ -51,10 +77,10 @@ export default function FranchiseClientPage() {
 
   return (
     <div className="min-h-screen bg-brand-bg">
-      <Navbar />
+      
 
       {/* Hero Section - Editorial Style */}
-      <section className="relative h-[80vh] min-h-[600px] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[80vh] min-h-150 flex items-center justify-center overflow-hidden">
         <Image 
           src="/images/site/blog-hero.png" // Reusing high-end asset
           alt="Franchise Opportunity"
@@ -71,13 +97,13 @@ export default function FranchiseClientPage() {
             Join the <span className="italic">Zoniraz</span> Legacy
           </h1>
           <p className="text-[#EAE1D5]/70 text-lg md:text-xl font-light max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
-            Partner with India's leading luxury jewelry house and bring timeless craftsmanship to your city.
+            Partner with India&apos;s leading luxury jewelry house and bring timeless craftsmanship to your city.
           </p>
         </div>
       </section>
 
       {/* Brand Pillars */}
-      <Section className="!py-24">
+      <Section className="py-24!">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {[
             { icon: Award, title: "Heritage Excellence", desc: "50 years of manufacturing excellence and trust in the international jewels market." },
@@ -96,7 +122,7 @@ export default function FranchiseClientPage() {
       </Section>
 
       {/* Main Inquiry Section */}
-      <Section className="!pb-32">
+      <Section className="pb-32!">
         <div className="bg-white dark:bg-brand-white rounded-[60px] overflow-hidden border border-brand-gold shadow-premium flex flex-col lg:flex-row">
           
           {/* Left Column - Info */}
@@ -110,14 +136,14 @@ export default function FranchiseClientPage() {
 
             <div className="space-y-8">
               <div className="flex items-start space-x-6">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"><Briefcase size={18} /></div>
+                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0"><Briefcase size={18} /></div>
                 <div>
                   <h4 className="text-sm font-bold uppercase tracking-widest mb-2">Expansion Model</h4>
                   <p className="text-xs text-[#EAE1D5]/50">FOCO & FOFO Models available for Tier 1 & Tier 2 cities.</p>
                 </div>
               </div>
               <div className="flex items-start space-x-6">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"><Award size={18} /></div>
+                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0"><Award size={18} /></div>
                 <div>
                   <h4 className="text-sm font-bold uppercase tracking-widest mb-2">Brand Value</h4>
                   <p className="text-xs text-[#EAE1D5]/50">Access to exclusive collections and established customer loyalty.</p>
@@ -127,7 +153,7 @@ export default function FranchiseClientPage() {
             
             <div className="pt-8">
                <div className="p-8 rounded-3xl bg-white/5 border border-white/10 italic text-sm text-[#EAE1D5]/70 leading-relaxed">
-                 "Our franchise partners aren't just business associates; they are the guardians of our 50-year legacy."
+                 &ldquo;Our franchise partners aren&apos;t just business associates; they are the guardians of our 50-year legacy.&rdquo;
                </div>
             </div>
           </div>
@@ -149,17 +175,21 @@ export default function FranchiseClientPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-2">
                     <label className="text-[10px] uppercase tracking-widest font-black text-brand-text/40">Full Name</label>
                     <input 
                       required
                       type="text" 
                       placeholder="Enter your name"
-                      className="w-full bg-brand-bg/50 border rounded-lg border-brand-gold py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm text-brand-text placeholder:text-brand-text/30"
+                      className={cn(
+                        "w-full bg-brand-bg/50 border rounded-lg py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm text-brand-text placeholder:text-brand-text/30",
+                        errors.name ? "border-red-500" : "border-brand-gold"
+                      )}
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
                     />
+                    {errors.name && <p className="text-red-500 text-[10px] mt-1 ml-1 uppercase tracking-widest font-bold font-sans">{errors.name}</p>}
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] uppercase tracking-widest font-black text-brand-text/40">Email Address</label>
@@ -167,10 +197,14 @@ export default function FranchiseClientPage() {
                       required
                       type="email" 
                       placeholder="email@example.com"
-                      className="w-full bg-brand-bg/50 border rounded-lg border-brand-gold py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm text-brand-text placeholder:text-brand-text/30"
+                      className={cn(
+                        "w-full bg-brand-bg/50 border rounded-lg py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm text-brand-text placeholder:text-brand-text/30",
+                        errors.email ? "border-red-500" : "border-brand-gold"
+                      )}
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
                     />
+                    {errors.email && <p className="text-red-500 text-[10px] mt-1 ml-1 uppercase tracking-widest font-bold font-sans">{errors.email}</p>}
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] uppercase tracking-widest font-black text-brand-text/40">Phone Number</label>
@@ -178,10 +212,14 @@ export default function FranchiseClientPage() {
                       required
                       type="tel" 
                       placeholder="+91 XXXXX XXXXX"
-                      className="w-full bg-brand-bg/50 border rounded-lg border-brand-gold py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm text-brand-text placeholder:text-brand-text/30"
+                      className={cn(
+                        "w-full bg-brand-bg/50 border rounded-lg py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm text-brand-text placeholder:text-brand-text/30",
+                        errors.phone ? "border-red-500" : "border-brand-gold"
+                      )}
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     />
+                    {errors.phone && <p className="text-red-500 text-[10px] mt-1 ml-1 uppercase tracking-widest font-bold font-sans">{errors.phone}</p>}
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] uppercase tracking-widest font-black text-brand-text/40">City / Location</label>
@@ -189,10 +227,14 @@ export default function FranchiseClientPage() {
                       required
                       type="text" 
                       placeholder="Preferred location"
-                      className="w-full bg-brand-bg/50 border rounded-lg border-brand-gold py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm text-brand-text placeholder:text-brand-text/30"
+                      className={cn(
+                        "w-full bg-brand-bg/50 border rounded-lg py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm text-brand-text placeholder:text-brand-text/30",
+                        errors.city ? "border-red-500" : "border-brand-gold"
+                      )}
                       value={formData.city}
                       onChange={(e) => setFormData({...formData, city: e.target.value})}
                     />
+                    {errors.city && <p className="text-red-500 text-[10px] mt-1 ml-1 uppercase tracking-widest font-bold font-sans">{errors.city}</p>}
                   </div>
                 </div>
 
@@ -236,7 +278,7 @@ export default function FranchiseClientPage() {
 
                 <Button 
                   type="submit" 
-                  className="w-full !py-6 text-xs uppercase tracking-[0.3em] font-black group dark:text-brand-bg"
+                  className="w-full py-6! text-xs uppercase tracking-[0.3em] font-black group dark:text-brand-bg"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? "Processing..." : (

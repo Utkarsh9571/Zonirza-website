@@ -8,7 +8,8 @@ export const metadata: Metadata = constructMetadata({
   path: '/exchange',
 });
 
-export default function ExchangePage({ searchParams }: { searchParams: { tab?: string } }) {
-  const initialTab = searchParams.tab === 'sell' ? 'sell' : 'exchange';
+export default async function ExchangePage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+  const resolvedParams = await searchParams;
+  const initialTab = resolvedParams.tab === 'sell' ? 'sell' : 'exchange';
   return <ExchangeTabController initialTab={initialTab} />;
 }

@@ -16,21 +16,18 @@ import {
   Building2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { formatCurrencyINR } from '@/lib/exchangeCalculator';
 import Image from 'next/image';
 
+type Inquiry = { _id: string; fullName: string; phone: string; email?: string; city: string; branch: string; jewelleryType?: string; approximateWeight?: number; knowsPurity?: boolean; purity?: string; preferredContactMethod: string; preferredVisitDate?: string; status: string; adminNotes?: string; notes?: string; imageUrls?: string[]; createdAt: string };
+
 export default function AdminSellGoldLeadsPage() {
-  const [inquiries, setInquiries] = useState<any[]>([]);
+  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [selectedInquiry, setSelectedInquiry] = useState<any>(null);
+  const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
-
-  useEffect(() => {
-    fetchInquiries();
-  }, [statusFilter]);
 
   const fetchInquiries = async () => {
     setLoading(true);
@@ -44,6 +41,11 @@ export default function AdminSellGoldLeadsPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchInquiries();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusFilter]);
 
   const handleUpdateStatus = async (id: string, status: string, notes: string) => {
     setUpdating(true);
@@ -146,7 +148,7 @@ export default function AdminSellGoldLeadsPage() {
                 </td>
               </tr>
             ) : filteredInquiries.map((inq) => (
-              <tr key={inq._id} className="group hover:bg-brand-gold/[0.02] transition-colors">
+              <tr key={inq._id} className="group hover:bg-brand-gold/2 transition-colors">
                 <td className="p-8">
                   <div className="flex items-center space-x-4">
                     <div className="w-10 h-10 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold font-bold text-xs">
@@ -212,7 +214,7 @@ export default function AdminSellGoldLeadsPage() {
 
       {/* Detail Modal */}
       {isModalOpen && selectedInquiry && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-6">
           <div className="absolute inset-0 bg-[#12100e]/80 backdrop-blur-md" onClick={() => setIsModalOpen(false)} />
           <div className="relative w-full max-w-2xl bg-white dark:bg-[#1a1614] rounded-[48px] shadow-2xl overflow-hidden border border-brand-text/15">
             <div className="p-10 space-y-8 max-h-[85vh] overflow-y-auto custom-scrollbar">
@@ -301,7 +303,7 @@ export default function AdminSellGoldLeadsPage() {
                 <div className="space-y-3">
                   <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2">Customer Notes</label>
                   <div className="bg-slate-50 dark:bg-white/5 border border-brand-text/5 rounded-3xl p-6 text-[13px] text-brand-text/70 leading-relaxed italic">
-                    "{selectedInquiry.notes}"
+                    &ldquo;{selectedInquiry.notes}&rdquo;
                   </div>
                 </div>
               )}

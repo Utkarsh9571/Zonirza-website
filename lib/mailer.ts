@@ -1,23 +1,33 @@
 import nodemailer from 'nodemailer';
 import { logger } from './logger';
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.example.com',
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: process.env.SMTP_SECURE === 'true',
-  auth: {
-    user: process.env.SMTP_USER || 'test@example.com',
-    pass: process.env.SMTP_PASS || 'password',
-  },
-});
+const transporter = nodemailer.createTransport(
+  process.env.EMAIL_SERVER_USER
+    ? {
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_SERVER_USER,
+          pass: process.env.EMAIL_SERVER_PASSWORD,
+        },
+      }
+    : {
+        host: process.env.SMTP_HOST || 'smtp.example.com',
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        secure: process.env.SMTP_SECURE === 'true',
+        auth: {
+          user: process.env.SMTP_USER || 'test@example.com',
+          pass: process.env.SMTP_PASS || 'password',
+        },
+      }
+);
 
 export const sendEmail = async (
   { to, subject, html }: { to: string; subject: string; html: string },
   retries = 3,
   delayMs = 1000
 ) => {
-  // If SMTP is not configured, fallback to console log for testing
-  if (!process.env.SMTP_HOST) {
+  // If SMTP is not configured and no Gmail service is configured, fallback to console log for testing
+  if (!process.env.SMTP_HOST && !process.env.EMAIL_SERVER_USER) {
     logger.info('MOCK EMAIL DISPATCH', { to, subject });
     return { success: true, message: 'Mock email sent successfully (check console)' };
   }
@@ -25,7 +35,7 @@ export const sendEmail = async (
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const info = await transporter.sendMail({
-        from: `"Zoniraz Luxury" <${process.env.SMTP_FROM || 'no-reply@zoniraz.com'}>`,
+        from: process.env.EMAIL_FROM || `"Zoniraz Luxury" <${process.env.EMAIL_SERVER_USER || process.env.SMTP_USER || 'no-reply@zoniraz.com'}>`,
         to,
         subject,
         html,

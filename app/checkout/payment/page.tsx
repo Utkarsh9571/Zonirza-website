@@ -32,12 +32,14 @@ export default function PaymentPage() {
   const [appliedGiftCard, setAppliedGiftCard] = useState<{ code: string; pin: string; balance: number } | null>(null);
   const [giftCardError, setGiftCardError] = useState<string | null>(null);
   const [isGiftCardValidating, setIsGiftCardValidating] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   // Fetch user's digi gold wallet if they are logged in
   const { data: digiGoldData } = useSWR('/api/digi-gold/wallet', fetcher);
 
   useEffect(() => {
-    setIsMounted(true);
+    const timer = setTimeout(() => setIsMounted(true), 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const total = getTotal();
@@ -83,6 +85,7 @@ export default function PaymentPage() {
         setGiftCardError(data.error || 'Failed to validate gift card.');
       }
     } catch (err) {
+      console.error('Validate gift card error:', err);
       setGiftCardError('Network error. Please try again.');
     } finally {
       setIsGiftCardValidating(false);
@@ -106,6 +109,7 @@ export default function PaymentPage() {
 
   const handlePayment = async () => {
     setIsLoading(true);
+    setPaymentError(null);
     try {
       const isLoaded = await loadRazorpay();
       if (!isLoaded) throw new Error('Razorpay SDK failed to load');
@@ -149,6 +153,12 @@ export default function PaymentPage() {
         return;
       }
 
+      interface IRazorpayResponse {
+        razorpay_payment_id: string;
+        razorpay_order_id: string;
+        razorpay_signature: string;
+      }
+
       // 2. Open Razorpay Checkout
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -158,7 +168,7 @@ export default function PaymentPage() {
         description: "Exquisite Luxury & Timeless Elegance",
         image: "/images/ZONIRAZ LOGO.png",
         order_id: orderData.razorpayOrderId,
-        handler: async function (response: any) {
+        handler: async function (response: IRazorpayResponse) {
           try {
             setIsLoading(true);
             // Verify payment on backend
@@ -177,13 +187,27 @@ export default function PaymentPage() {
             if (verifyData.success) {
               router.push(`/success?order_id=${orderData.orderId}&payment_id=${response.razorpay_payment_id}`);
             } else {
-              alert('Payment verification failed: ' + verifyData.error);
+              setPaymentError('Payment verification failed: ' + verifyData.error);
               setIsLoading(false);
             }
           } catch (err) {
             console.error('Verification error:', err);
-            alert('Verification process failed.');
+            setPaymentError('Verification process failed.');
             setIsLoading(false);
+          }
+        },
+        modal: {
+          ondismiss: async function() {
+            try {
+              await fetch('/api/orders/abandon', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: orderData.orderId })
+              });
+              console.log('Order marked as abandoned client-side');
+            } catch (err) {
+              console.error('Failed to trigger order abandon:', err);
+            }
           }
         },
         prefill: {
@@ -198,12 +222,13 @@ export default function PaymentPage() {
         },
       };
 
-      const paymentObject = new (window as any).Razorpay(options);
+      const paymentObject = new (window as Window & typeof globalThis & { Razorpay: new (options: Record<string, unknown>) => { open: () => void } }).Razorpay(options);
       paymentObject.open();
 
-    } catch (error: any) {
+    } catch (error) {
       console.error('Payment Error:', error);
-      alert('Payment initialization failed: ' + error.message);
+      const err = error as Error;
+      setPaymentError('Payment initialization failed: ' + err.message);
     } finally {
       setIsLoading(false);
     }
@@ -223,7 +248,7 @@ export default function PaymentPage() {
 
   return (
     <div className="bg-brand-bg text-brand-text min-h-screen pt-24 pb-32 transition-colors duration-500">
-      <div className="max-w-[1400px] mx-auto px-6">
+      <div className="max-w-350 mx-auto px-6">
         
         {/* Step Indicator */}
         <CheckoutSteps currentStep="payment" />
@@ -320,7 +345,7 @@ export default function PaymentPage() {
                 >
                   <div className={cn(
                     "w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all shadow-sm",
-                    applyDigiGold ? "left-[26px]" : "left-0.5"
+                    applyDigiGold ? "left-6.5" : "left-0.5"
                   )} />
                 </button>
               </div>
@@ -398,7 +423,7 @@ export default function PaymentPage() {
 
           </div>
 
-          <div className="w-full lg:w-[480px]">
+          <div className="w-full lg:w-120">
             <div className="bg-white dark:bg-brand-white rounded-[50px] p-10 md:p-12 border border-brand-text/5 shadow-premium sticky top-32 space-y-10 animate-in fade-in slide-in-from-right duration-1000 transition-colors">
               <div className="absolute top-4 right-8 px-2 py-1 bg-red-100 text-red-700 text-[8px] font-black uppercase tracking-widest rounded-md animate-pulse">Test Mode</div>
               <h2 className="text-2xl font-serif text-brand-text dark:text-brand-text/90 text-center">Order Summary</h2>
@@ -428,10 +453,16 @@ export default function PaymentPage() {
                   <span className="text-3xl font-serif text-brand-text italic">{displayPrice(finalPayable, currentCurrency, rates)}</span>
                 </div>
 
+                {paymentError && (
+                  <div className="p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-2xl animate-in fade-in duration-300">
+                    <p className="text-[10px] font-bold text-red-600 dark:text-red-400 uppercase tracking-widest text-center leading-relaxed">{paymentError}</p>
+                  </div>
+                )}
+
                 <Button 
                   size="lg" 
                   disabled={isLoading}
-                  className="w-full !py-7 shadow-premium text-sm tracking-[0.2em]"
+                  className="w-full py-7! shadow-premium text-sm tracking-[0.2em]"
                   onClick={handlePayment}
                 >
                   {isLoading ? 'Processing...' : 'Pay Now'}

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { Gift, ShieldCheck, Mail, User, MessageSquare, Landmark, Lock, Sparkles } from 'lucide-react';
+import { Gift, ShieldCheck, Mail, User, MessageSquare, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 import { useAuthModalStore } from '@/store/authModalStore';
 import { Button } from '@/components/new-ui/Button';
@@ -85,8 +85,16 @@ export default function GiftCardsClientPage() {
   const [sendOption, setSendOption] = useState<'immediate' | 'scheduled'>('immediate');
   const [scheduledAt, setScheduledAt] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
   const isLoggedIn = status === 'authenticated';
+  const [minDateTime, setMinDateTime] = useState<string>('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMinDateTime(new Date(Date.now() + 60000).toISOString().slice(0, 16));
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   const loadRazorpay = () => {
     return new Promise((resolve) => {
@@ -105,19 +113,28 @@ export default function GiftCardsClientPage() {
       return;
     }
 
+    setPurchaseError(null);
+
     const finalAmount = isCustom ? parseFloat(customAmount) : amount;
     if (isNaN(finalAmount) || finalAmount < 100) {
-      alert('Please enter a valid amount of ₹100 or more.');
+      setPurchaseError('Please enter a valid amount of ₹100 or more.');
       return;
     }
 
     if (!recipientEmail || !recipientName) {
-      alert('Please enter recipient details.');
+      setPurchaseError('Please enter recipient details.');
+      return;
+    }
+
+    // Email regex validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(recipientEmail)) {
+      setPurchaseError('Please enter a valid recipient email address.');
       return;
     }
 
     if (sendOption === 'scheduled' && !scheduledAt) {
-      alert('Please select a scheduled delivery date and time.');
+      setPurchaseError('Please select a scheduled delivery date and time.');
       return;
     }
 
@@ -158,9 +175,14 @@ export default function GiftCardsClientPage() {
         description: `Luxury Gift Card for ${recipientName}`,
         image: "/images/ZONIRAZ LOGO.png",
         order_id: orderData.razorpayOrderId,
-        handler: async function (response: any) {
+        handler: async function (response: {
+          razorpay_payment_id: string;
+          razorpay_order_id: string;
+          razorpay_signature: string;
+        }) {
           try {
             setIsLoading(true);
+            setPurchaseError(null);
             // Verify payment
             const verifyRes = await fetch('/api/checkout/razorpay/verify', {
               method: 'POST',
@@ -177,13 +199,27 @@ export default function GiftCardsClientPage() {
             if (verifyData.success) {
               router.push(`/success?order_id=${orderData.orderId}&payment_id=${response.razorpay_payment_id}`);
             } else {
-              alert('Payment verification failed: ' + verifyData.error);
+              setPurchaseError('Payment verification failed: ' + verifyData.error);
               setIsLoading(false);
             }
           } catch (err) {
             console.error('Verification error:', err);
-            alert('Verification process failed.');
+            setPurchaseError('Verification process failed.');
             setIsLoading(false);
+          }
+        },
+        modal: {
+          ondismiss: async function() {
+            try {
+              await fetch('/api/orders/abandon', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: orderData.orderId })
+              });
+              console.log('Order marked as abandoned client-side');
+            } catch (err) {
+              console.error('Failed to trigger order abandon:', err);
+            }
           }
         },
         prefill: {
@@ -195,11 +231,12 @@ export default function GiftCardsClientPage() {
         },
       };
 
-      const paymentObject = new (window as any).Razorpay(options);
+      const paymentObject = new (window as Window & typeof globalThis & { Razorpay: new (options: Record<string, unknown>) => { open: () => void } }).Razorpay(options);
       paymentObject.open();
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      alert(err.message || 'Failed to complete order. Please try again.');
+      const errorObj = err as Error;
+      setPurchaseError(errorObj.message || 'Failed to complete order. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -211,7 +248,7 @@ export default function GiftCardsClientPage() {
     <div className="bg-brand-bg text-brand-text min-h-screen pt-24 pb-32 transition-colors duration-500 overflow-x-hidden">
       
       {/* Hero Section */}
-      <div className="relative py-24 bg-gradient-to-b from-[#3A1C16] to-[#12100e] text-[#EAE1D5] flex items-center justify-center text-center px-6 rounded-b-[60px] shadow-premium mb-16">
+      <div className="relative py-24 bg-linear-to-b from-[#3A1C16] to-[#12100e] text-[#EAE1D5] flex items-center justify-center text-center px-6 rounded-b-[60px] shadow-premium mb-16">
         <div className="absolute inset-0 opacity-15 mix-blend-overlay">
           <Image 
             src="/images/luxury_giftcard_mockup.png" 
@@ -223,7 +260,7 @@ export default function GiftCardsClientPage() {
         </div>
         <div className="relative z-10 max-w-2xl mx-auto space-y-6">
           <span className="text-brand-gold text-[11px] uppercase tracking-[0.4em] font-black">The Art of Giving</span>
-          <h1 className="text-4xl md:text-6xl font-serif font-bold italic tracking-wide">
+          <h1 className="text-4xl text-white md:text-6xl font-serif font-bold italic tracking-wide">
             Zoniraz <span className="not-italic text-white">Gift Cards</span>
           </h1>
           <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-light leading-relaxed max-w-lg mx-auto text-[#EAE1D5]/80">
@@ -232,7 +269,7 @@ export default function GiftCardsClientPage() {
         </div>
       </div>
 
-      <Section className="max-w-[1400px] mx-auto px-6">
+      <Section className="max-w-350 mx-auto px-6">
         <div className="flex flex-col lg:flex-row gap-16 items-start">
           
           {/* Form Side */}
@@ -312,7 +349,7 @@ export default function GiftCardsClientPage() {
                       )}
                     >
                       <span className="text-[11px] tracking-wide">{theme.name}</span>
-                      <div className={cn("w-12 h-2 rounded-full bg-gradient-to-r", theme.gradient)} />
+                      <div className={cn("w-12 h-2 rounded-full bg-linear-to-r", theme.gradient)} />
                     </button>
                   ))}
                 </div>
@@ -405,7 +442,7 @@ export default function GiftCardsClientPage() {
                     <input
                       type="datetime-local"
                       required
-                      min={new Date(Date.now() + 60000).toISOString().slice(0, 16)} // min is 1 minute in future
+                      min={minDateTime} // min is 1 minute in future, computed in useEffect
                       value={scheduledAt}
                       onChange={(e) => setScheduledAt(e.target.value)}
                       className="w-full h-14 px-6 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 rounded-2xl text-xs font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all dark:text-brand-text"
@@ -426,10 +463,16 @@ export default function GiftCardsClientPage() {
               </div>
 
               {/* Submit */}
+              {purchaseError && (
+                <div className="p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-2xl animate-in fade-in duration-300">
+                  <p className="text-[10px] font-bold text-red-600 dark:text-red-400 uppercase tracking-widest text-center leading-relaxed">{purchaseError}</p>
+                </div>
+              )}
+
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full !py-6 shadow-premium uppercase text-xs tracking-[0.25em]"
+                className="w-full py-6! shadow-premium uppercase text-xs tracking-[0.25em]"
               >
                 {isLoading ? 'Processing...' : isLoggedIn ? `Proceed to Payment — ₹${activeAmount.toLocaleString('en-IN')}` : 'Log In to Buy'}
               </Button>
@@ -440,22 +483,22 @@ export default function GiftCardsClientPage() {
           {(() => {
             const currentTheme = THEMES.find(t => t.name === selectedTheme) || THEMES[0];
             return (
-              <div className="w-full lg:w-[480px] sticky top-32 space-y-8 animate-in fade-in slide-in-from-right duration-1000">
+              <div className="w-full lg:w-120 sticky top-32 space-y-8 animate-in fade-in slide-in-from-right duration-1000">
                 <h3 className="text-md uppercase tracking-[0.2em] font-black text-brand-text/40 text-center lg:text-left">Live Gift Card Preview</h3>
                 
                 {/* Metallic Card Display styled dynamically */}
                 <div className={cn(
-                  "relative w-full aspect-[1.6/1] bg-gradient-to-br rounded-[32px] p-8 shadow-premium border-2 text-white flex flex-col justify-between overflow-hidden group transition-all duration-500",
+                  "relative w-full aspect-[1.6/1] bg-linear-to-br rounded-4xl p-8 shadow-premium border-2 text-white flex flex-col justify-between overflow-hidden group transition-all duration-500",
                   currentTheme.gradient,
                   currentTheme.borderColor
                 )}>
                   {/* Overlay sheen */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out" />
+                  <div className="absolute inset-0 bg-linear-to-tr from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
                   
                   <div className="flex justify-between items-start">
                     <div className="space-y-1">
                       <span className="text-[8px] uppercase tracking-[0.3em] font-black opacity-60">Luxury Gift Card</span>
-                      <h4 className={cn("text-xl tracking-widest uppercase italic font-bold", currentTheme.fontClass)}>Zoniraz</h4>
+                      <h4 className={cn("text-xl tracking-widest uppercase italic font-bold text-white", currentTheme.fontClass)}>Zoniraz</h4>
                     </div>
                     <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10">
                       <Gift size={20} className={currentTheme.accentColor} />
@@ -463,10 +506,10 @@ export default function GiftCardsClientPage() {
                   </div>
 
                   {/* Personal Message Preview */}
-                  <div className="my-2 min-h-[40px] flex items-center justify-center text-center">
+                  <div className="my-2 min-h-10 flex items-center justify-center text-center">
                     {personalMessage ? (
                       <p className="text-[10px] italic font-serif leading-relaxed line-clamp-2 px-4 opacity-90">
-                        "{personalMessage}"
+                        &ldquo;{personalMessage}&rdquo;
                       </p>
                     ) : (
                       <p className="text-[9px] uppercase tracking-widest font-black opacity-30">Your customized message here</p>
@@ -476,7 +519,7 @@ export default function GiftCardsClientPage() {
                   <div className="flex justify-between items-end border-t border-white/10 pt-4">
                     <div className="space-y-1">
                       <span className="text-[8px] uppercase tracking-[0.2em] opacity-60">Presented To</span>
-                      <p className="text-[11px] font-bold tracking-widest uppercase truncate max-w-[150px]">
+                      <p className="text-[11px] font-bold tracking-widest uppercase truncate max-w-37.5">
                         {recipientName || 'Name of recipient'}
                       </p>
                     </div>
@@ -495,7 +538,7 @@ export default function GiftCardsClientPage() {
                     <Sparkles size={16} />
                     <span className="text-[10px] font-black uppercase tracking-[0.2em]">{selectedTheme} Theme</span>
                   </div>
-                  <p className="text-[10px] text-brand-text/50 leading-relaxed uppercase tracking-[0.1em] font-medium">
+                  <p className="text-[10px] text-brand-text/50 leading-relaxed uppercase tracking-widest font-medium">
                     {sendOption === 'immediate' 
                       ? "This card is dispatched instantly to the recipient's email upon payment validation."
                       : `This card's email dispatch is scheduled for your selected timing (${scheduledAt ? new Date(scheduledAt).toLocaleString() : 'future date'}).`

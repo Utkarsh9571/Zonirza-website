@@ -1,19 +1,17 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft, Package, Truck, Calendar, MapPin, IndianRupee, Clock, CheckCircle2, FileText } from 'lucide-react';
+import { ArrowLeft, Package, Calendar, MapPin, CheckCircle2, FileText } from 'lucide-react';
 import Link from 'next/link';
+
+type OrderItem = { name: string; quantity: number; price: number; image?: string; configuration?: { metal?: string; purity?: string; size?: string; stone?: string } };
+type TimelineEvent = { status: string; date: string };
+type OrderType = { _id: string; createdAt: string; orderStatus: string; paymentStatus: string; totalAmount: number; discountAmount: number; shippingAddress?: { fullName?: string; addressLine?: string; city?: string; state?: string; pincode?: string; country?: string; phone?: string }; trackingDetails?: { trackingId?: string; courierPartner?: string; trackingUrl?: string; estimatedDeliveryDate?: string }; timeline?: TimelineEvent[]; items?: OrderItem[] };
 
 export default function CustomerOrderDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const router = useRouter();
-  const [order, setOrder] = useState<any>(null);
+  const [order, setOrder] = useState<OrderType | null>(null);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchOrder();
-  }, [id]);
 
   const fetchOrder = async () => {
     try {
@@ -28,6 +26,11 @@ export default function CustomerOrderDetail({ params }: { params: Promise<{ id: 
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchOrder();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   if (loading) return <div className="pt-32 pb-20 text-center text-brand-text/50">Loading order tracker...</div>;
   if (!order) return <div className="pt-32 pb-20 text-center text-red-500">Order not found.</div>;
@@ -54,10 +57,10 @@ export default function CustomerOrderDetail({ params }: { params: Promise<{ id: 
 
   return (
     <div className="bg-brand-bg text-brand-text min-h-screen pt-32 pb-20">
-      <div className="max-w-[1200px] mx-auto px-4 md:px-6 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="max-w-300 mx-auto px-4 md:px-6 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
         
         {/* Header - Hidden on Print */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-[#1a1614] p-6 rounded-[32px] border border-brand-text/10 shadow-soft print:hidden">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-[#1a1614] p-6 rounded-4xl border border-brand-text/10 shadow-soft print:hidden">
           <div className="flex items-center space-x-4">
             <Link href="/account?tab=orders" className="p-3 rounded-full hover:bg-slate-50 dark:hover:bg-white/5 transition-colors border border-transparent hover:border-brand-text/10">
               <ArrowLeft size={20} />
@@ -101,7 +104,7 @@ export default function CustomerOrderDetail({ params }: { params: Promise<{ id: 
                 <div className="space-y-10">
                   {timelineStages.map((stage, idx) => {
                     const status = getStepStatus(stage);
-                    const matchingTimelineEvent = order.timeline?.find((t: any) => t.status === stage);
+                    const matchingTimelineEvent = order.timeline?.find((t: TimelineEvent) => t.status === stage);
                     
                     // Only show stages up to current + 1 if not delivered
                     const currentIndex = timelineStages.indexOf(currentStatus);
@@ -175,10 +178,11 @@ export default function CustomerOrderDetail({ params }: { params: Promise<{ id: 
                 <Package size={16} className="mr-2" /> Order Details
               </h2>
               <div className="space-y-8">
-                {order.items?.map((item: any, idx: number) => (
+                {order.items?.map((item: OrderItem, idx: number) => (
                   <div key={idx} className="flex flex-col sm:flex-row items-start gap-8 pb-8 border-b border-brand-text/5 last:border-0 last:pb-0">
                     <div className="w-32 h-32 rounded-2xl border border-brand-text/10 overflow-hidden bg-white shrink-0 shadow-sm print:w-20 print:h-20">
-                      <img src={item.image || '/placeholder.png'} className="w-full h-full object-cover" />
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={item.image || '/placeholder.png'} alt={item.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 space-y-4 w-full">
                       <div className="flex justify-between items-start">
@@ -205,7 +209,7 @@ export default function CustomerOrderDetail({ params }: { params: Promise<{ id: 
           {/* Right Column: Pricing & Shipping */}
           <div className="space-y-8">
             
-            <div className="bg-white dark:bg-[#1a1614] rounded-[32px] border border-brand-text/10 p-8 shadow-soft print:border-none print:shadow-none print:p-0">
+            <div className="bg-white dark:bg-[#1a1614] rounded-4xl border border-brand-text/10 p-8 shadow-soft print:border-none print:shadow-none print:p-0">
               <h2 className="text-[11px] font-black uppercase tracking-widest text-brand-gold mb-6">Payment Summary</h2>
               <div className="space-y-4 text-sm font-medium border-b border-brand-text/5 pb-6 mb-6">
                 <div className="flex justify-between items-center text-brand-text/70">
@@ -236,7 +240,7 @@ export default function CustomerOrderDetail({ params }: { params: Promise<{ id: 
               </div>
             </div>
 
-            <div className="bg-white dark:bg-[#1a1614] rounded-[32px] border border-brand-text/10 p-8 shadow-soft print:border-none print:shadow-none print:p-0">
+            <div className="bg-white dark:bg-[#1a1614] rounded-4xl border border-brand-text/10 p-8 shadow-soft print:border-none print:shadow-none print:p-0">
               <h2 className="text-[11px] font-black uppercase tracking-widest text-brand-gold mb-6 flex items-center">
                 <MapPin size={16} className="mr-2" /> Shipping Destination
               </h2>
@@ -250,7 +254,7 @@ export default function CustomerOrderDetail({ params }: { params: Promise<{ id: 
             </div>
 
             {order.trackingDetails?.estimatedDeliveryDate && (
-              <div className="bg-brand-gold/5 rounded-[32px] border border-brand-gold/20 p-8 shadow-sm flex items-start space-x-4">
+              <div className="bg-brand-gold/5 rounded-4xl border border-brand-gold/20 p-8 shadow-sm flex items-start space-x-4">
                 <div className="w-10 h-10 rounded-full bg-brand-gold/10 text-brand-gold flex items-center justify-center shrink-0">
                   <Calendar size={18} />
                 </div>

@@ -9,29 +9,22 @@ import {
   UserCircle, 
   MapPin, 
   Package, 
-  Settings, 
   LogOut, 
   Diamond, 
   Edit3, 
   Plus, 
-  ChevronRight,
-  Phone,
-  Mail,
-  ShieldCheck,
-  Briefcase,
-  Home,
-  User,
-  Trash2,
   Loader2,
   Heart,
   X,
   MessageSquare,
-  Ticket
+  Ticket,
+  ShieldCheck,
+  Home,
+  Briefcase
 } from 'lucide-react';
 import { Section } from '@/components/new-ui/Section';
 import { Button } from '@/components/new-ui/Button';
 import { cn } from '@/lib/utils';
-import { CURRENCIES, useCurrencyStore, CurrencyCode } from '@/store/currencyStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import ProductCard from '@/components/ProductCard';
 import { resolveProductImage } from '@/lib/imageResolver';
@@ -50,6 +43,11 @@ interface Address {
   type: 'Home' | 'Office' | 'Other';
 }
 
+type OrderHistory = { _id: string; createdAt: string; orderStatus?: string; paymentStatus?: string; items: { name: string; image?: string; quantity: number }[] };
+type UserQuote = { _id: string; createdAt: string; status: string; quotedPrice?: number; estimation?: { estimatedPriceMin: number; estimatedPriceMax: number }; complexity?: string; customizationNotes?: string; configuration: { metal: string; purity: string }; product?: { name?: string; images?: string[] } };
+type WishlistProduct = { slug: string; name: string; basePrice: number; images?: string[] };
+type Tab = { id: string; label: string; icon: React.ReactNode; href?: string; hidden?: boolean };
+
 function AccountContent() {
   const { data: session, status, update } = useSession();
   const router = useRouter();
@@ -58,7 +56,6 @@ function AccountContent() {
   // UI State
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'profile');
   const wishlistItems = useWishlistStore(state => state.items);
-  const { toggleItem } = useWishlistStore();
   const [isMounted, setIsMounted] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
@@ -72,8 +69,8 @@ function AccountContent() {
     gender: '',
     addresses: [] as Address[],
     wishlist: [] as string[],
-    orderHistory: [] as any[],
-    quotes: [] as any[],
+    orderHistory: [] as OrderHistory[],
+    quotes: [] as UserQuote[],
     recentlyViewed: [] as string[],
     preferences: {
       preferredMetal: '',
@@ -83,7 +80,7 @@ function AccountContent() {
     }
   });
   
-  const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
+  const [wishlistProducts, setWishlistProducts] = useState<WishlistProduct[]>([]);
 
   const [addressForm, setAddressForm] = useState<Address>({
     fullName: '',
@@ -97,15 +94,6 @@ function AccountContent() {
     isDefault: false,
     type: 'Home'
   });
-
-  useEffect(() => {
-    setIsMounted(true);
-    if (status === 'unauthenticated') {
-      router.push('/');
-    } else if (status === 'authenticated') {
-      fetchUserProfile();
-    }
-  }, [status, router]);
 
   const fetchUserProfile = async () => {
     try {
@@ -154,10 +142,14 @@ function AccountContent() {
   };
 
   useEffect(() => {
-    if (activeTab === 'wishlist' && wishlistItems.length > 0) {
-      fetchWishlistDetails();
+    setIsMounted(true);
+    if (status === 'unauthenticated') {
+      router.push('/');
+    } else if (status === 'authenticated') {
+      fetchUserProfile();
     }
-  }, [activeTab, wishlistItems]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, router]);
 
   const fetchWishlistDetails = async () => {
     try {
@@ -171,6 +163,13 @@ function AccountContent() {
       console.error("Failed to fetch wishlist details:", err);
     }
   };
+
+  useEffect(() => {
+    if (activeTab === 'wishlist' && wishlistItems.length > 0) {
+      fetchWishlistDetails();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, wishlistItems]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -271,11 +270,11 @@ function AccountContent() {
 
   return (
     <div className="bg-brand-bg text-brand-text min-h-screen pt-32 pb-20 overflow-x-hidden transition-colors duration-500">
-      <Section className="max-w-[1400px] mx-auto px-4 md:px-6">
+      <Section className="max-w-350 mx-auto px-4 md:px-6">
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
           
           {/* Sidebar */}
-          <div className="w-full lg:w-[350px] space-y-6 animate-in fade-in slide-in-from-left duration-1000">
+          <div className="w-full lg:w-87.5 space-y-6 animate-in fade-in slide-in-from-left duration-1000">
             <div className="bg-white dark:bg-brand-white rounded-[40px] p-6 md:p-8 border border-brand-text/5 shadow-soft space-y-8 transition-colors">
               <div className="flex items-center space-x-5">
                 <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-brand-text dark:bg-brand-gold flex items-center justify-center text-white text-2xl md:text-3xl font-serif italic shadow-premium shrink-0 transition-colors">
@@ -288,7 +287,7 @@ function AccountContent() {
               </div>
 
               <nav className="flex flex-row lg:flex-col overflow-x-auto lg:overflow-visible gap-2 pb-2 lg:pb-0 scrollbar-hide">
-                {tabs.filter(tab => !(tab as any).hidden).map((tab) => (
+                {(tabs as Tab[]).filter(tab => !tab.hidden).map((tab) => (
                   tab.href ? (
                     <Link
                       key={tab.id}
@@ -402,7 +401,7 @@ function AccountContent() {
                         </div>
                       </div>
                       <div className="flex items-center space-x-4 pt-4">
-                        <Button type="submit" disabled={isLoading} className="shadow-premium min-w-[150px]">
+                        <Button type="submit" disabled={isLoading} className="shadow-premium min-w-37.5">
                           {isLoading ? <Loader2 size={18} className="animate-spin" /> : "Save Changes"}
                         </Button>
                         <button 
@@ -499,7 +498,7 @@ function AccountContent() {
                           <h4 className="text-[12px] font-bold uppercase tracking-widest text-brand-text">{addr.fullName}</h4>
                           <p className="text-[10px] font-medium text-brand-text/40">{addr.phone}</p>
                         </div>
-                        <p className="text-[11px] text-brand-text/60 leading-relaxed min-h-[40px]">
+                        <p className="text-[11px] text-brand-text/60 leading-relaxed min-h-10">
                           {addr.addressLine1}, {addr.addressLine2 && `${addr.addressLine2}, `}
                           {addr.city}, {addr.state} — {addr.pincode}
                         </p>
@@ -566,7 +565,7 @@ function AccountContent() {
                     </div>
                     <div className="space-y-2">
                       <h3 className="text-2xl font-serif italic text-brand-text">Your heart is open</h3>
-                      <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-brand-text/30 max-w-[200px] leading-relaxed">Save your favorite masterpieces to view them later.</p>
+                      <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-brand-text/30 max-w-50 leading-relaxed">Save your favorite masterpieces to view them later.</p>
                     </div>
                     <Link href="/products" className="pt-4">
                       <Button variant="primary" className="shadow-premium px-10">Start Discovering</Button>
@@ -582,7 +581,7 @@ function AccountContent() {
                 <h2 className="text-2xl md:text-3xl font-serif text-brand-text">My Orders</h2>
                 
                 <div className="space-y-6">
-                  {userData.orderHistory.map((order: any) => (
+                  {userData.orderHistory.map((order: OrderHistory) => (
                     <div 
                       key={order._id}
                       className="bg-white dark:bg-brand-white rounded-[40px] p-8 border border-brand-text/5 shadow-soft hover:shadow-premium transition-all group"
@@ -617,7 +616,7 @@ function AccountContent() {
                       </div>
 
                       <Link href={`/account/orders/${order._id}`} className="space-y-4 block group-hover:opacity-80 transition-opacity">
-                        {order.items.map((item: any, idx: number) => (
+                        {order.items.map((item: { name: string; image?: string; quantity: number }, idx: number) => (
                           <div key={idx} className="flex items-center space-x-4">
                             <div className="w-12 h-12 rounded-xl bg-brand-bg flex items-center justify-center overflow-hidden border border-brand-text/5">
                               <Image 
@@ -645,7 +644,7 @@ function AccountContent() {
                       </div>
                       <div className="space-y-2">
                         <h3 className="text-2xl font-serif italic text-brand-text">No orders yet</h3>
-                        <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-brand-text/30 max-w-[200px] leading-relaxed">Your journey of elegance is just beginning.</p>
+                        <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-brand-text/30 max-w-50 leading-relaxed">Your journey of elegance is just beginning.</p>
                       </div>
                       <Link href="/products" className="pt-4">
                         <Button variant="primary" className="shadow-premium px-10">Explore Masterpieces</Button>
@@ -662,7 +661,7 @@ function AccountContent() {
                 <h2 className="text-2xl md:text-3xl font-serif text-brand-text">My Consultations</h2>
                 
                 <div className="space-y-6">
-                  {userData.quotes?.map((quote: any) => (
+                  {userData.quotes?.map((quote: UserQuote) => (
                     <div 
                       key={quote._id}
                       className="bg-white dark:bg-brand-white rounded-[40px] p-8 border border-brand-text/5 shadow-soft hover:shadow-premium transition-all group"
@@ -720,7 +719,7 @@ function AccountContent() {
                           </div>
                           
                           <div className="bg-brand-bg/50 dark:bg-black/10 rounded-xl p-4 border border-brand-text/5 text-xs text-brand-text/80 italic line-clamp-2">
-                            "{quote.customizationNotes}"
+                            &ldquo;{quote.customizationNotes}&rdquo;
                           </div>
                         </div>
                       </div>
@@ -734,7 +733,7 @@ function AccountContent() {
                       </div>
                       <div className="space-y-2">
                         <h3 className="text-2xl font-serif italic text-brand-text">No custom requests</h3>
-                        <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-brand-text/30 max-w-[200px] leading-relaxed">Request a bespoke masterpiece today.</p>
+                        <p className="text-[9px] uppercase tracking-[0.3em] font-bold text-brand-text/30 max-w-50 leading-relaxed">Request a bespoke masterpiece today.</p>
                       </div>
                       <Link href="/products" className="pt-4">
                         <Button variant="primary" className="shadow-premium px-10">Start Customizing</Button>
@@ -751,7 +750,7 @@ function AccountContent() {
 
       {/* Address Modal */}
       {isAddressModalOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-200 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-brand-text/40 dark:bg-black/60 backdrop-blur-md animate-in fade-in duration-500" onClick={() => setIsAddressModalOpen(false)} />
           <div className="relative w-full max-w-2xl bg-white dark:bg-brand-white rounded-[45px] shadow-premium p-8 md:p-12 animate-in zoom-in slide-in-from-bottom-8 duration-700 transition-colors">
             <button 
@@ -827,7 +826,7 @@ function AccountContent() {
                     <label className="text-[9px] uppercase tracking-widest text-brand-text/40 font-bold ml-2">Type</label>
                     <select 
                       value={addressForm.type}
-                      onChange={(e) => setAddressForm({...addressForm, type: e.target.value as any})}
+                      onChange={(e) => setAddressForm({...addressForm, type: e.target.value as 'Home' | 'Office' | 'Other'})}
                       className="w-full h-14 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl px-6 text-xs font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 transition-all appearance-none dark:text-brand-text/90"
                     >
                       <option value="Home">Home</option>
@@ -848,7 +847,7 @@ function AccountContent() {
                 </label>
 
                 <div className="pt-6">
-                  <Button type="submit" disabled={isLoading} className="w-full !py-6 shadow-premium">
+                  <Button type="submit" disabled={isLoading} className="w-full py-6! shadow-premium">
                     {isLoading ? <Loader2 className="animate-spin" /> : "Secure Save"}
                   </Button>
                 </div>

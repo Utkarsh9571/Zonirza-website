@@ -141,7 +141,7 @@ function GiftCardRedeemContent() {
             <Info size={28} />
           </div>
           <h2 className="text-2xl font-serif italic text-white">Verification Failed</h2>
-          <p className="text-xs text-[#EAE1D5]/70 leading-relaxed uppercase tracking-[0.1em]">
+          <p className="text-xs text-[#EAE1D5]/70 leading-relaxed uppercase tracking-widest">
             {error || 'The gift voucher credentials could not be checked.'}
           </p>
           <div className="pt-4">
@@ -159,7 +159,7 @@ function GiftCardRedeemContent() {
   return (
     <div className="bg-[#12100e] text-[#EAE1D5] min-h-screen pt-24 pb-32 flex items-center justify-center px-4 overflow-hidden relative">
       {/* Background radial glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-gold/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-200 h-200 bg-brand-gold/5 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-2xl w-full flex flex-col items-center">
         
@@ -188,15 +188,15 @@ function GiftCardRedeemContent() {
             `}</style>
 
             <div className={cn(
-              "w-full h-full relative transition-all duration-[1500ms] transform-style-3d",
+              "w-full h-full relative transition-all duration-1500 transform-style-3d",
               isRevealing ? "scale-95" : "hover:scale-[1.02]"
             )}>
               {/* 1. Envelope Back Body (acts as the back wall inside the envelope) */}
-              <div className="absolute inset-0 bg-[#160f0d] border border-white/5 rounded-[24px] shadow-2xl overflow-visible">
+              <div className="absolute inset-0 bg-[#160f0d] border border-white/5 rounded-3xl shadow-2xl overflow-visible">
                 
                 {/* 2. The Gift Card inside the pocket */}
                 <div className={cn(
-                  "absolute left-8 right-8 top-6 bottom-6 rounded-2xl bg-gradient-to-br transition-all duration-[2000ms] ease-in-out p-6 flex flex-col justify-between text-white border border-white/10 shadow-lg",
+                  "absolute left-8 right-8 top-6 bottom-6 rounded-2xl bg-linear-to-br transition-all duration-2000 ease-in-out p-6 flex flex-col justify-between text-white border border-white/10 shadow-lg",
                   themeStyle.gradient,
                   isRevealing ? "card-emerge" : "translate-y-0 opacity-40 scale-95 z-0"
                 )}>
@@ -208,12 +208,12 @@ function GiftCardRedeemContent() {
                     <Gift size={16} className={themeStyle.accentColor} />
                   </div>
                   <div className="text-center italic font-serif text-[10px] px-2 opacity-95">
-                    "{giftCard.personalMessage || 'A special token for you'}"
+                    &ldquo;{giftCard.personalMessage || 'A special token for you'}&rdquo;
                   </div>
                   <div className="flex justify-between items-end border-t border-white/10 pt-2 text-left">
                     <div>
                       <span className="text-[6px] uppercase tracking-widest opacity-60 block">Presented to</span>
-                      <span className="text-[9px] uppercase tracking-wider font-bold truncate max-w-[120px] block">{giftCard.recipientName}</span>
+                      <span className="text-[9px] uppercase tracking-wider font-bold truncate max-w-30 block">{giftCard.recipientName}</span>
                     </div>
                     <div className="text-right">
                       <span className="text-[6px] uppercase tracking-widest opacity-60 block">Value</span>
@@ -223,20 +223,20 @@ function GiftCardRedeemContent() {
                 </div>
 
                 {/* 3. Envelope Left Flap */}
-                <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-[#2a1f1c] to-[#211816] z-10 rounded-l-[24px]"
+                <div className="absolute inset-y-0 left-0 w-1/2 bg-linear-to-r from-[#2a1f1c] to-[#211816] z-10 rounded-l-3xl"
                      style={{ clipPath: 'polygon(0% 0%, 100% 50%, 0% 100%)' }} />
 
                 {/* 4. Envelope Right Flap */}
-                <div className="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-[#2d221f] to-[#211816] z-10 rounded-r-[24px]"
+                <div className="absolute inset-y-0 right-0 w-1/2 bg-linear-to-l from-[#2d221f] to-[#211816] z-10 rounded-r-3xl"
                      style={{ clipPath: 'polygon(100% 0%, 0% 50%, 100% 100%)' }} />
 
                 {/* 5. Envelope Bottom Flap */}
-                <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-[#1d1412] to-[#261b19] z-15 rounded-b-[24px]"
+                <div className="absolute inset-x-0 bottom-0 h-2/3 bg-linear-to-t from-[#1d1412] to-[#261b19] z-15 rounded-b-3xl"
                      style={{ clipPath: 'polygon(0% 100%, 100% 100%, 50% 0%)' }} />
 
                 {/* 6. Envelope Top Flap (opens upwards) */}
                 <div className={cn(
-                  "absolute inset-x-0 top-0 h-2/3 bg-gradient-to-b from-[#2e2320] to-[#261b19] origin-top transition-transform duration-[1200ms] cubic-bezier(0.4, 0, 0.2, 1) z-30 rounded-t-[24px] flex flex-col items-center justify-start pt-6",
+                  "absolute inset-x-0 top-0 h-2/3 bg-linear-to-b from-[#2e2320] to-[#261b19] origin-top transition-transform duration-1200 cubic-bezier(0.4, 0, 0.2, 1) z-30 rounded-t-3xl flex flex-col items-center justify-start pt-6",
                   isRevealing ? "flap-open" : ""
                 )}
                 style={{ 
@@ -265,7 +265,7 @@ function GiftCardRedeemContent() {
                       style={{ borderRadius: '43% 57% 45% 55% / 54% 46% 54% 46%' }} 
                     />
                     {/* Wax seal inner ring */}
-                    <div className="absolute w-20 h-20 bg-gradient-to-br from-[#801b2a] via-[#6b1724] to-[#440c14] rounded-full flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.4),0_2px_8px_rgba(0,0,0,0.4)] border border-[#C5A880]/10">
+                    <div className="absolute w-20 h-20 bg-linear-to-br from-[#801b2a] via-[#6b1724] to-[#440c14] rounded-full flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.4),0_2px_8px_rgba(0,0,0,0.4)] border border-[#C5A880]/10">
                       <span className="text-[#C5A880] text-3xl font-serif italic font-bold select-none drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]">Z</span>
                     </div>
                     
@@ -294,13 +294,13 @@ function GiftCardRedeemContent() {
 
             {/* Themed Gift Card Object */}
             <div className={cn(
-              "relative w-full max-w-lg aspect-[1.6/1] mx-auto rounded-[32px] p-6 md:p-8 text-white border-2 flex flex-col justify-between overflow-hidden group transition-all duration-700",
+              "relative w-full max-w-lg aspect-[1.6/1] mx-auto rounded-4xl p-6 md:p-8 text-white border-2 flex flex-col justify-between overflow-hidden group transition-all duration-700",
               themeStyle.gradient,
               themeStyle.borderColor,
               themeStyle.glow
             )}>
               {/* Golden sweep effect */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out" />
+              <div className="absolute inset-0 bg-linear-to-tr from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
               
               <div className="flex justify-between items-start">
                 <div className="space-y-1 text-left">
@@ -327,7 +327,7 @@ function GiftCardRedeemContent() {
 
                 {giftCard.personalMessage && (
                   <p className="text-[10px] italic font-serif leading-relaxed text-center px-4 opacity-90 line-clamp-2">
-                    "{giftCard.personalMessage}"
+                    &ldquo;{giftCard.personalMessage}&rdquo;
                   </p>
                 )}
               </div>
@@ -397,7 +397,7 @@ function GiftCardRedeemContent() {
                 /* Unauthenticated */
                 <div className="bg-brand-gold/5 border border-brand-gold/15 p-6 rounded-[30px] space-y-4 text-center">
                   <p className="text-[10px] uppercase tracking-widest leading-relaxed text-[#EAE1D5]/80">
-                    Don't have a Zoniraz account? Sign up or Log In with OTP using the recipient email <strong>{giftCard.recipientEmail}</strong> to link this card and check transaction history.
+                    Don&apos;t have a Zoniraz account? Sign up or Log In with OTP using the recipient email <strong>{giftCard.recipientEmail}</strong> to link this card and check transaction history.
                   </p>
                   <button 
                     onClick={openAuthModal}

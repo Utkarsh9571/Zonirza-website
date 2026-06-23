@@ -1,21 +1,15 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
-  Filter, 
-  X, 
-  ChevronDown, 
   Search, 
-  LayoutGrid, 
-  ShoppingBag,
   ArrowRight
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import ProductCard from '@/components/ProductCard';
-import Navbar from '@/components/Navbar';
-import { resolveProductImage } from '@/lib/imageResolver';
+import { IProduct } from '@/models/Product';
+import { ICollection } from '@/models/Collection';
 
 // Filter data structure (Simplified for Search)
 const FILTERS = [
@@ -40,17 +34,27 @@ const FILTERS = [
   }
 ];
 
+type FilterOption = string | { label: string; min: number; max: number };
+
 function SearchResultsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
   
-  const [products, setProducts] = useState<any[]>([]);
-  const [collections, setCollections] = useState<any[]>([]);
+  const [products, setProducts] = useState<IProduct[]>([]);
+  const [collections, setCollections] = useState<ICollection[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<any[]>([]);
+
+  const activeFilters = useMemo(() => {
+    const filters: Array<{ key: string; value: string }> = [];
+    searchParams.forEach((value, key) => {
+      if (key !== 'q' && !['price_min', 'price_max', 'limit', 'sort'].includes(key)) {
+        filters.push({ key, value });
+      }
+    });
+    return filters;
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -72,22 +76,7 @@ function SearchResultsContent() {
     };
 
     fetchResults();
-
-    // Parse filters
-    const filters: any[] = [];
-    searchParams.forEach((value, key) => {
-      if (key !== 'q' && !['price_min', 'price_max', 'limit', 'sort'].includes(key)) {
-        filters.push({ key, value });
-      }
-    });
-    setActiveFilters(filters);
-  }, [query, searchParams]);
-
-  const removeFilter = (key: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete(key);
-    router.push(`/search?${params.toString()}`);
-  };
+  }, [query]);
 
   const clearAllFilters = () => {
     router.push(`/search?q=${encodeURIComponent(query)}`);
@@ -95,10 +84,10 @@ function SearchResultsContent() {
 
   return (
     <div className="min-h-screen bg-brand-white">
-      <Navbar />
+      
       
       {/* Page Header */}
-      <div className="pt-32 pb-12 px-6 sm:px-12 bg-gradient-to-b from-[#FDF8F6] to-brand-white">
+      <div className="pt-32 pb-12 px-6 sm:px-12 bg-linear-to-b from-[#FDF8F6] to-brand-white">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-2">
@@ -147,7 +136,7 @@ function SearchResultsContent() {
         <div className="flex flex-col lg:flex-row gap-12">
           
           {/* Filters Sidebar (Reusing Logic) */}
-          <aside className="hidden lg:block w-72 flex-shrink-0 space-y-10">
+          <aside className="hidden lg:block w-72 shrink-0 space-y-10">
             <div className="flex items-center justify-between pb-6 border-b border-brand-text/10">
               <h2 className="text-sm font-black uppercase tracking-[0.2em] text-brand-text">Refine Search</h2>
               {activeFilters.length > 0 && (
@@ -159,7 +148,7 @@ function SearchResultsContent() {
                 <div key={filter.id} className="space-y-6">
                   <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-brand-text/40">{filter.label}</h3>
                   <div className="space-y-3">
-                    {filter.options.map((option: any, idx) => (
+                    {filter.options.map((option: FilterOption, idx) => (
                       <button 
                         key={idx} 
                         className="flex items-center justify-between w-full text-brand-text/60 hover:text-brand-text text-[13px] tracking-wide"
@@ -191,7 +180,7 @@ function SearchResultsContent() {
                   <ProductCard 
                     key={product.slug}
                     name={product.name}
-                    price={product.basePrice || product.price || 0}
+                    price={product.basePrice || 0}
                     image={product.images?.[0] || ''}
                     slug={product.slug}
                     variantImages={product.variantImages}

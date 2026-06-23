@@ -15,11 +15,13 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+type Collection = { _id: string; name: string; slug: string; image: string; description?: string; tags: string[]; isActive: boolean; productCount?: number };
+
 export default function AdminCollectionsPage() {
-  const [collections, setCollections] = useState<any[]>([]);
+  const [collections, setCollections] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCollection, setEditingCollection] = useState<any>(null);
+  const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
   const [formData, setFormData] = useState({ 
     name: '', 
     slug: '', 
@@ -29,10 +31,6 @@ export default function AdminCollectionsPage() {
     isActive: true
   });
   const [tagInput, setTagInput] = useState('');
-
-  useEffect(() => {
-    fetchCollections();
-  }, []);
 
   const fetchCollections = async () => {
     setLoading(true);
@@ -46,6 +44,11 @@ export default function AdminCollectionsPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchCollections();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -167,7 +170,7 @@ export default function AdminCollectionsPage() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-6">
           <div className="absolute inset-0 bg-[#12100e]/80 backdrop-blur-md" onClick={() => setIsModalOpen(false)} />
           <div className="relative w-full max-w-2xl bg-white dark:bg-[#1a1614] rounded-[48px] shadow-2xl p-12 border border-brand-text/15 max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-serif font-bold text-brand-text italic mb-10">

@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const status = searchParams.get('status');
 
-    let query: any = {};
+    const query: Record<string, string> = {};
     if (status && status !== 'all') {
       query.status = status;
     }

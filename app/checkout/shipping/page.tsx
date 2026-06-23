@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Plus, MapPin, Phone, User, Home, Briefcase, Trash2, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, Plus, MapPin, Phone, User, Home, Briefcase, CheckCircle2 } from 'lucide-react';
 import { useCartStore, Address } from '@/store/cartStore';
 import { CheckoutSteps } from '@/components/checkout/CheckoutSteps';
 import { Button } from '@/components/new-ui/Button';
@@ -39,10 +39,11 @@ export default function ShippingPage() {
   });
 
   useEffect(() => {
-    setIsMounted(true);
+    const t = setTimeout(() => setIsMounted(true), 0);
     if (isMounted && items.length === 0) {
       router.push('/cart');
     }
+    return () => clearTimeout(t);
   }, [isMounted, items.length, router]);
 
   if (!isMounted || items.length === 0) return null;
@@ -67,7 +68,7 @@ export default function ShippingPage() {
 
   return (
     <div className="bg-brand-bg text-brand-text min-h-screen pt-24 pb-32 transition-colors duration-500">
-      <div className="max-w-[1400px] mx-auto px-6">
+      <div className="max-w-350 mx-auto px-6">
         
         {/* Step Indicator */}
         <CheckoutSteps currentStep="shipping" />
@@ -133,7 +134,7 @@ export default function ShippingPage() {
 
                         <div className="space-y-2">
                           <p className="font-bold text-brand-text tracking-wide">{address.fullName}</p>
-                          <p className="text-sm text-brand-text/60 leading-relaxed max-w-[200px]">
+                          <p className="text-sm text-brand-text/60 leading-relaxed max-w-50">
                             {address.addressLine}, {address.city}, {address.state} - {address.pincode}
                           </p>
                           <p className="text-[11px] font-bold text-brand-text/40 pt-2 flex items-center space-x-2">
@@ -263,7 +264,7 @@ export default function ShippingPage() {
                         <button
                           key={type}
                           type="button"
-                          onClick={() => setFormData(prev => ({ ...prev, type: type as any }))}
+                          onClick={() => setFormData(prev => ({ ...prev, type: type as Address['type'] }))}
                           className={cn(
                             "flex-1 h-14 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all",
                             formData.type === type 
@@ -277,7 +278,7 @@ export default function ShippingPage() {
                     </div>
                   </div>
 
-                  <Button type="submit" size="lg" className="w-full !py-7 mt-8 shadow-premium">
+                  <Button type="submit" size="lg" className="w-full py-7! mt-8 shadow-premium">
                     Save Address & Continue
                   </Button>
                 </form>
@@ -287,7 +288,7 @@ export default function ShippingPage() {
           </div>
 
           {/* Right Side: Order Summary */}
-          <div className="w-full lg:w-[480px]">
+          <div className="w-full lg:w-120">
             <div className="bg-white dark:bg-brand-white rounded-[50px] p-10 md:p-12 border border-brand-text/5 shadow-premium sticky top-32 space-y-10 animate-in fade-in slide-in-from-right duration-1000 transition-colors">
               <h2 className="text-2xl font-serif text-brand-text dark:text-brand-text/90 text-center">Order Summary</h2>
               
@@ -317,7 +318,7 @@ export default function ShippingPage() {
 
                 <Button 
                   size="lg" 
-                  className="w-full !py-7 shadow-premium text-sm tracking-[0.2em]"
+                  className="w-full py-7! shadow-premium text-sm tracking-[0.2em]"
                   disabled={!selectedAddressId || showAddressForm}
                   onClick={() => router.push('/checkout/payment')}
                 >

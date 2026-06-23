@@ -18,7 +18,6 @@ import {
   Inbox, 
   Calendar, 
   History, 
-  Sparkles,
   Printer
 } from 'lucide-react';
 import { Section } from '@/components/new-ui/Section';
@@ -35,7 +34,7 @@ export default function UserGiftCardsDashboard() {
   const [revealedPins, setRevealedPins] = useState<Record<string, boolean>>({});
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'scheduled' | 'redeemed'>('all');
 
-  const { data: giftCardsRes, error, isLoading, mutate } = useSWR(
+  const { data: giftCardsRes, error, isLoading } = useSWR(
     status === 'authenticated' ? '/api/gift-cards/my-cards' : null,
     fetcher
   );
@@ -71,7 +70,7 @@ export default function UserGiftCardsDashboard() {
 
   // Filter sent cards: senderUserId matches current user's ID
   const sentCards = allCards.filter(
-    (card: any) => card.senderUserId === (session?.user as any).id
+    (card: GiftCard) => card.senderUserId === (session?.user as { id?: string })?.id
   );
 
   let activeCardsList = activeSubTab === 'received' ? receivedCards : sentCards;
@@ -127,7 +126,7 @@ export default function UserGiftCardsDashboard() {
 
   return (
     <div className="bg-brand-bg text-brand-text min-h-screen pt-32 pb-20 overflow-x-hidden transition-colors duration-500">
-      <Section className="max-w-[1200px] mx-auto px-4 md:px-6 space-y-8">
+      <Section className="max-w-300 mx-auto px-4 md:px-6 space-y-8">
         
         {/* Navigation Breadcrumb */}
         <button 
@@ -158,7 +157,7 @@ export default function UserGiftCardsDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           
           {/* received sum */}
-          <div className="bg-[#1a1614] text-white rounded-[40px] p-8 shadow-premium relative overflow-hidden flex flex-col justify-between min-h-[180px]">
+          <div className="bg-[#1a1614] text-white rounded-[40px] p-8 shadow-premium relative overflow-hidden flex flex-col justify-between min-h-45">
             <div className="absolute top-0 right-0 p-8 opacity-5">
               <Inbox size={150} />
             </div>
@@ -170,7 +169,7 @@ export default function UserGiftCardsDashboard() {
           </div>
 
           {/* sent sum */}
-          <div className="bg-white dark:bg-brand-white rounded-[40px] p-8 border border-brand-text/5 shadow-soft flex flex-col justify-between min-h-[180px]">
+          <div className="bg-white dark:bg-brand-white rounded-[40px] p-8 border border-brand-text/5 shadow-soft flex flex-col justify-between min-h-45">
             <div className="absolute top-0 right-0 p-8 opacity-5">
               <Send size={150} />
             </div>
@@ -228,7 +227,7 @@ export default function UserGiftCardsDashboard() {
         {/* Main List */}
         <div className="space-y-8">
           {activeCardsList.length === 0 ? (
-            <div className="py-24 bg-gradient-to-b from-white to-[#FAF9F6] dark:from-[#1C1A19] dark:to-[#121110] rounded-[40px] border border-brand-text/5 shadow-soft flex flex-col items-center justify-center text-center p-8 max-w-xl mx-auto space-y-6">
+            <div className="py-24 bg-linear-to-b from-white to-[#FAF9F6] dark:from-[#1C1A19] dark:to-[#121110] rounded-[40px] border border-brand-text/5 shadow-soft flex flex-col items-center justify-center text-center p-8 max-w-xl mx-auto space-y-6">
               <div className="w-20 h-20 rounded-full bg-brand-gold/5 flex items-center justify-center text-brand-gold border border-brand-gold/15">
                 <Gift size={36} />
               </div>
@@ -243,7 +242,7 @@ export default function UserGiftCardsDashboard() {
               {activeSubTab === 'sent' && (
                 <Button 
                   onClick={() => router.push('/gift-cards')}
-                  className="shadow-premium px-8 text-[10px] tracking-widest uppercase !py-3"
+                  className="shadow-premium px-8 text-[10px] tracking-widest uppercase py-3!"
                 >
                   Buy First Gift Card
                 </Button>
@@ -365,7 +364,7 @@ export default function UserGiftCardsDashboard() {
                     <div className="flex flex-col space-y-4">
                       {card.personalMessage && (
                         <p className="text-[11px] text-brand-text/60 italic leading-relaxed bg-brand-bg/20 p-4 rounded-xl">
-                          "{card.personalMessage}"
+                          &ldquo;{card.personalMessage}&rdquo;
                         </p>
                       )}
 
@@ -413,7 +412,7 @@ export default function UserGiftCardsDashboard() {
                           <History size={12} />
                           <span>Redemption Log</span>
                         </div>
-                        <div className="space-y-2 max-h-[120px] overflow-y-auto pr-2 custom-scrollbar">
+                        <div className="space-y-2 max-h-30 overflow-y-auto pr-2 custom-scrollbar">
                           {card.transactions.map((tx: any) => (
                             <div key={tx._id} className="flex justify-between items-center text-[10px] p-2 bg-brand-bg/30 rounded-lg">
                               <div>

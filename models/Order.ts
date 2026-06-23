@@ -29,8 +29,8 @@ export interface IOrder extends Document {
     pincode: string;
     country: string;
   };
-  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
-  orderStatus: 'placed' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'Order Placed' | 'Payment Confirmed' | 'In Production' | 'Stone Setting' | 'Quality Check' | 'Packed' | 'Out For Delivery' | 'Delivered' | 'Cancelled';
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded' | 'abandoned';
+  orderStatus: 'placed' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'Order Placed' | 'Payment Confirmed' | 'In Production' | 'Stone Setting' | 'Quality Check' | 'Packed' | 'Out For Delivery' | 'Delivered' | 'Cancelled' | 'abandoned';
   timeline: {
     status: string;
     date: Date;
@@ -52,6 +52,9 @@ export interface IOrder extends Document {
   digiGoldTransactionId?: mongoose.Types.ObjectId | string;
   giftCardCode?: string;
   giftCardAmountRedeemed?: number;
+  emailsSent?: boolean;
+  couponIncremented?: boolean;
+  abandonedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -88,12 +91,12 @@ const OrderSchema: Schema = new Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ['pending', 'paid', 'failed', 'refunded'],
+      enum: ['pending', 'paid', 'failed', 'refunded', 'abandoned'],
       default: 'pending',
     },
     orderStatus: {
       type: String,
-      enum: ['placed', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'Order Placed', 'Payment Confirmed', 'In Production', 'Stone Setting', 'Quality Check', 'Packed', 'Out For Delivery', 'Delivered', 'Cancelled'],
+      enum: ['placed', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'Order Placed', 'Payment Confirmed', 'In Production', 'Stone Setting', 'Quality Check', 'Packed', 'Out For Delivery', 'Delivered', 'Cancelled', 'abandoned'],
       default: 'Order Placed',
     },
     timeline: [
@@ -119,6 +122,9 @@ const OrderSchema: Schema = new Schema(
     digiGoldTransactionId: { type: Schema.Types.ObjectId, ref: 'DigitalGoldTransaction' },
     giftCardCode: { type: String },
     giftCardAmountRedeemed: { type: Number, default: 0 },
+    emailsSent: { type: Boolean, default: false },
+    couponIncremented: { type: Boolean, default: false },
+    abandonedAt: { type: Date },
   },
   { timestamps: true }
 );

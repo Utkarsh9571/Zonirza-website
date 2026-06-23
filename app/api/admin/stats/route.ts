@@ -25,7 +25,8 @@ export async function GET(req: NextRequest) {
 
     // 2. Active Orders (Processing or Shipped)
     const activeOrders = await Order.countDocuments({ 
-      orderStatus: { $in: ['placed', 'confirmed', 'processing', 'shipped'] } 
+      paymentStatus: 'paid',
+      orderStatus: { $in: ['placed', 'confirmed', 'processing', 'shipped', 'Payment Confirmed'] } 
     });
 
     // 3. Total Products
@@ -35,7 +36,7 @@ export async function GET(req: NextRequest) {
     const totalCustomers = await User.countDocuments();
 
     // 5. Recent Orders for the table
-    const recentOrders = await Order.find()
+    const recentOrders = await Order.find({ paymentStatus: { $nin: ['pending', 'abandoned'] }, orderStatus: { $ne: 'abandoned' } })
       .sort({ createdAt: -1 })
       .limit(5);
 

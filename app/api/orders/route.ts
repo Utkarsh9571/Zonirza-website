@@ -39,6 +39,7 @@ const OrderSchema = z.object({
   giftCardPin: z.string().optional(),
 });
 
+
 // POST: Create a new pending order
 export async function POST(req: Request) {
   try {
@@ -59,8 +60,8 @@ export async function POST(req: Request) {
     const pricingResult = await secureCalculateOrderTotal(rawItems, couponCode);
     let finalPayableAmount = pricingResult.totalAmount;
     let digiGoldRedeemedAmount = 0;
-    let digiGoldRedeemedGrams = 0;
-    let digiGoldTxId = null;
+    const digiGoldRedeemedGrams = 0;
+    const digiGoldTxId = null;
 
     // 3. DIGI GOLD REDEMPTION LOGIC
     if (applyDigiGold && session?.user) {
@@ -194,22 +195,26 @@ export async function POST(req: Request) {
       await order.save();
     }
 
-    // If a coupon was used, increment its usage count
-    if (pricingResult.couponCode) {
-      await Coupon.findOneAndUpdate(
-        { code: pricingResult.couponCode },
-        { $inc: { usedCount: 1 } }
-      );
-    }
-
-    // Trigger Email Workflow (Async)
-    if (session?.user?.email) {
-      sendOrderConfirmationEmail(order, session.user.email).catch(err => console.error('Order Email Error:', err));
-      sendAdminNewOrderEmail(order).catch(err => console.error('Admin Email Error:', err));
-    }
-
-    // If 100% redeemed via Digi Gold, skip Razorpay!
+    // If 100% redeemed (i.e. finalPayableAmount === 0), finalize immediately
     if (finalPayableAmount === 0) {
+      // If a coupon was used, increment its usage count
+      if (pricingResult.couponCode) {
+        await Coupon.findOneAndUpdate(
+          { code: pricingResult.couponCode },
+          { $inc: { usedCount: 1 } }
+        );
+        order.couponIncremented = true;
+      }
+
+      // Trigger Email Workflow (Async)
+      if (session?.user?.email) {
+        order.emailsSent = true;
+        sendOrderConfirmationEmail(order, session.user.email).catch(err => console.error('Order Email Error:', err));
+        sendAdminNewOrderEmail(order).catch(err => console.error('Admin Email Error:', err));
+      }
+
+      await order.save();
+
       // NOTE: Because Razorpay webhook won't fire, we must finalize the redemption immediately.
       if (order.digiGoldRedeemedAmount > 0) {
         const { finalizeRedemption } = await import('@/lib/digiGoldRedemption');
@@ -255,7 +260,12 @@ export async function GET() {
     }
 
     await dbConnect();
-    const orders = await Order.find({ userId: (session.user as any).id }).sort({ createdAt: -1 });
+
+    const orders = await Order.find({ 
+      userId: (session.user as any).id,
+      paymentStatus: { $nin: ['pending', 'abandoned'] },
+      orderStatus: { $ne: 'abandoned' }
+    }).sort({ createdAt: -1 });
 
     return NextResponse.json({ success: true, orders });
   } catch (error: any) {

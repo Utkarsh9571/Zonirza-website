@@ -1,11 +1,12 @@
-const mongoose = require('mongoose');
-const fs = require('fs');
-const path = require('path');
+/* eslint-disable @typescript-eslint/no-var-requires */
+import mongoose from 'mongoose';
+import { existsSync, readFileSync } from 'fs';
+import { join } from 'path';
 
 let MONGODB_URI = '';
-const envPath = path.join(process.cwd(), '.env.local');
-if (fs.existsSync(envPath)) {
-  const envContent = fs.readFileSync(envPath, 'utf8');
+const envPath = join(process.cwd(), '.env.local');
+if (existsSync(envPath)) {
+  const envContent = readFileSync(envPath, 'utf8');
   const match = envContent.match(/MONGODB_URI=(.*)/);
   if (match) MONGODB_URI = match[1].trim();
 }
@@ -48,7 +49,7 @@ const slides = [
     },
     secondaryCTA: {
       label: "Our Story",
-      link: "/terms"
+      link: "/about"
     },
     isActive: true,
     order: 0

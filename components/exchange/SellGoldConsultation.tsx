@@ -8,6 +8,7 @@ export default function SellGoldConsultation() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -25,6 +26,30 @@ export default function SellGoldConsultation() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const newErrors: Record<string, string> = {};
+    if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
+    
+    const phoneTrimmed = formData.phone.trim();
+    if (!phoneTrimmed) {
+      newErrors.phone = 'Phone number is required';
+    } else if (!/^[6-9]\d{9}$/.test(phoneTrimmed)) {
+      newErrors.phone = 'Please enter a valid 10-digit Indian mobile number (starts with 6-9)';
+    }
+
+    const emailTrimmed = formData.email.trim();
+    if (emailTrimmed && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.city.trim()) newErrors.city = 'City is required';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
     setIsSubmitting(true);
     setError('');
 
@@ -130,8 +155,11 @@ export default function SellGoldConsultation() {
                     required 
                     value={formData.fullName}
                     onChange={(e) => setFormData({...formData, fullName: e.target.value})}
-                    className="w-full bg-white dark:bg-white/5 border border-brand-text/10 dark:border-white/10 rounded-2xl py-3 px-4 text-sm focus:ring-1 focus:ring-brand-gold transition-all outline-none" 
+                    className={`w-full bg-white dark:bg-white/5 border rounded-2xl py-3 px-4 text-sm focus:ring-1 focus:ring-brand-gold transition-all outline-none ${
+                      errors.fullName ? "border-red-500" : "border-brand-text/10 dark:border-white/10"
+                    }`} 
                   />
+                  {errors.fullName && <p className="text-red-500 text-[10px] mt-1 ml-1 uppercase tracking-widest font-bold font-sans">{errors.fullName}</p>}
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-text/60 dark:text-white/60">Phone Number *</label>
@@ -140,8 +168,11 @@ export default function SellGoldConsultation() {
                     required 
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="w-full bg-white dark:bg-white/5 border border-brand-text/10 dark:border-white/10 rounded-2xl py-3 px-4 text-sm focus:ring-1 focus:ring-brand-gold transition-all outline-none" 
+                    className={`w-full bg-white dark:bg-white/5 border rounded-2xl py-3 px-4 text-sm focus:ring-1 focus:ring-brand-gold transition-all outline-none ${
+                      errors.phone ? "border-red-500" : "border-brand-text/10 dark:border-white/10"
+                    }`} 
                   />
+                  {errors.phone && <p className="text-red-500 text-[10px] mt-1 ml-1 uppercase tracking-widest font-bold font-sans">{errors.phone}</p>}
                 </div>
               </div>
 
@@ -152,8 +183,11 @@ export default function SellGoldConsultation() {
                     type="email" 
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full bg-white dark:bg-white/5 border border-brand-text/10 dark:border-white/10 rounded-2xl py-3 px-4 text-sm focus:ring-1 focus:ring-brand-gold transition-all outline-none" 
+                    className={`w-full bg-white dark:bg-white/5 border rounded-2xl py-3 px-4 text-sm focus:ring-1 focus:ring-brand-gold transition-all outline-none ${
+                      errors.email ? "border-red-500" : "border-brand-text/10 dark:border-white/10"
+                    }`} 
                   />
+                  {errors.email && <p className="text-red-500 text-[10px] mt-1 ml-1 uppercase tracking-widest font-bold font-sans">{errors.email}</p>}
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-text/60 dark:text-white/60">Your City *</label>
@@ -162,8 +196,11 @@ export default function SellGoldConsultation() {
                     required
                     value={formData.city}
                     onChange={(e) => setFormData({...formData, city: e.target.value})}
-                    className="w-full bg-white dark:bg-white/5 border border-brand-text/10 dark:border-white/10 rounded-2xl py-3 px-4 text-sm focus:ring-1 focus:ring-brand-gold transition-all outline-none" 
+                    className={`w-full bg-white dark:bg-white/5 border rounded-2xl py-3 px-4 text-sm focus:ring-1 focus:ring-brand-gold transition-all outline-none ${
+                      errors.city ? "border-red-500" : "border-brand-text/10 dark:border-white/10"
+                    }`} 
                   />
+                  {errors.city && <p className="text-red-500 text-[10px] mt-1 ml-1 uppercase tracking-widest font-bold font-sans">{errors.city}</p>}
                 </div>
               </div>
 

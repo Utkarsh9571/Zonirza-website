@@ -3,6 +3,8 @@ import dbConnect from '@/lib/db';
 import Product from '@/models/Product';
 import { resolveCollectionMapping } from '@/lib/collectionMapper';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
@@ -65,7 +67,7 @@ export async function GET(request: NextRequest) {
 
         // Normalize values: handle plural/singular and common synonyms
         const values = value.split(',').map(v => {
-          let normalized = v.trim().replace(/-/g, ' ').toLowerCase();
+          const normalized = v.trim().replace(/-/g, ' ').toLowerCase();
           // Simple plural to singular mapping
           if (normalized.endsWith('s')) {
             const singular = normalized.slice(0, -1);
@@ -179,13 +181,13 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      let recQuery: any = {
+      const recQuery: Record<string, unknown> = {
         _id: { $nin: matchedIds },
         isActive: { $ne: false }
       };
 
       if (recConditions.length > 0) {
-        recQuery.$or = recConditions;
+        (recQuery as any).$or = recConditions;
       }
 
       recommendations = await Product.find(recQuery).limit(needed).lean();

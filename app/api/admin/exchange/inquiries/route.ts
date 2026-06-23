@@ -11,10 +11,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const status = searchParams.get('status');
 
-    let query = {};
-    if (status && status !== 'all') {
-      query = { status };
-    }
+    const query = (status && status !== 'all') ? { status } : {};
 
     const inquiries = await ExchangeInquiry.find(query).sort({ createdAt: -1 });
 

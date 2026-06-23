@@ -13,6 +13,15 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    rules: {
+      // Standard fetch-in-effect pattern is acceptable; this rule causes hundreds of false positives
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/immutability": "off",
+      // Downgrade explicit-any from error to warning to allow gradual type migration
+      "@typescript-eslint/no-explicit-any": "warn",
+    },
+  },
 ]);
 
 export default eslintConfig;

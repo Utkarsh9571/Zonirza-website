@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { CheckCircle2, Package, Truck, ArrowRight, ShoppingBag, Download, Loader2 } from 'lucide-react';
+import { CheckCircle2, Truck, Download, Loader2 } from 'lucide-react';
 import { Button } from '@/components/new-ui/Button';
 import { Section } from '@/components/new-ui/Section';
 import { useCartStore } from '@/store/cartStore';
@@ -16,15 +16,14 @@ function SuccessContent() {
   const [orderId, setOrderId] = useState<string | null>(null);
 
   useEffect(() => {
-    const paymentId = searchParams.get('payment_id');
     const id = searchParams.get('order_id');
     
     if (id) {
-      setOrderId(id);
+      setTimeout(() => setOrderId(id), 0);
       // In a real app, we'd verify the paymentId with Razorpay here or via webhook
       // For now, we simulate the verification and clear the cart
       clearCart();
-      setIsUpdating(false);
+      setTimeout(() => setIsUpdating(false), 0);
     } else {
       router.push('/');
     }
@@ -43,7 +42,7 @@ function SuccessContent() {
 
   return (
     <div className="bg-brand-bg min-h-screen pt-32 pb-20 overflow-x-hidden">
-      <Section className="max-w-[1000px] mx-auto px-6">
+      <Section className="max-w-250 mx-auto px-6">
         <div className="bg-white rounded-[60px] p-10 md:p-20 shadow-premium border border-brand-text/5 text-center space-y-12 animate-in fade-in zoom-in duration-1000">
           
           <div className="space-y-6">

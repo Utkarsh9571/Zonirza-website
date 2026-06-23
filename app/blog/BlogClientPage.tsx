@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
 import { ArrowRight, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BLOG_POSTS } from '@/lib/blog/posts';
@@ -58,14 +57,13 @@ export default function BlogClientPage() {
       );
 
   const featuredPosts = BLOG_POSTS.filter(p => p.featured);
-  const recentPosts = BLOG_POSTS.filter(p => !p.featured);
 
   return (
     <div className="min-h-screen bg-brand-bg">
-      <Navbar />
+      
 
       {/* ====== HERO BANNER with SLIDER ====== */}
-      <section className="relative w-full h-[60vh] min-h-[400px] max-h-[550px] overflow-hidden">
+      <section className="relative w-full h-[60vh] min-h-100 max-h-137.5 overflow-hidden">
         <div className="absolute inset-0 transition-all duration-700">
           <Image
             src={HERO_SLIDES[heroIndex].image}
@@ -74,7 +72,7 @@ export default function BlogClientPage() {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-text/70 via-brand-text/40 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-r from-brand-text/70 via-brand-text/40 to-transparent" />
         </div>
 
         <div className="relative z-10 h-full max-w-7xl mx-auto px-6 sm:px-12 flex flex-col justify-end pb-16">
@@ -121,7 +119,7 @@ export default function BlogClientPage() {
       </section>
 
       {/* ====== CATEGORY TABS ====== */}
-      <section className="sticky top-[100px] z-[40] bg-white/95 backdrop-blur-xl border-b border-brand-border shadow-soft mt-1">
+      <section className="sticky top-25 z-40 bg-white/95 backdrop-blur-xl border-b border-brand-border shadow-soft mt-1">
         <div className="max-w-7xl mx-auto px-6 sm:px-12">
           <div className="flex items-center overflow-x-auto no-scrollbar py-5 space-x-8">
             {BLOG_CATEGORIES.map(cat => (
@@ -158,7 +156,7 @@ export default function BlogClientPage() {
               {featuredPosts[0] && (
                 <div className="lg:col-span-6 group">
                   <Link href={`/blog/${featuredPosts[0].slug}`} className="block">
-                    <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden mb-6">
+                    <div className="relative w-full aspect-4/3 rounded-2xl overflow-hidden mb-6">
                       <Image
                         src={featuredPosts[0].image}
                         alt={featuredPosts[0].title}
@@ -187,7 +185,7 @@ export default function BlogClientPage() {
               <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {featuredPosts.slice(1, 3).map(post => (
                   <Link href={`/blog/${post.slug}`} key={post.id} className="group">
-                    <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden mb-4">
+                    <div className="relative w-full aspect-4/3 rounded-2xl overflow-hidden mb-4">
                       <Image
                         src={post.image}
                         alt={post.title}
@@ -222,8 +220,8 @@ export default function BlogClientPage() {
         <div className="max-w-7xl mx-auto px-6 sm:px-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {(activeCategory === 'All Blogs' ? filteredPosts.slice(0, 2) : filteredPosts.slice(0, 2)).map(post => (
-              <Link href={`/blog/${post.slug}`} key={post.id} className="group bg-white rounded-[32px] overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 border border-brand-border">
-                <div className="relative w-full aspect-[16/10] overflow-hidden">
+              <Link href={`/blog/${post.slug}`} key={post.id} className="group bg-white rounded-4xl overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 border border-brand-border">
+                <div className="relative w-full aspect-16/10 overflow-hidden">
                   <Image
                     src={post.image}
                     alt={post.title}
@@ -231,7 +229,7 @@ export default function BlogClientPage() {
                     className="object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                 </div>
-                <div className="p-8 space-y-4 border-1 border-brand-gold rounded-b-4xl">
+                <div className="p-8 space-y-4 border border-brand-gold rounded-b-4xl">
                   <p className="text-brand-gold text-[11px] uppercase tracking-widest font-bold">{post.date}</p>
                   <h3 className="text-xl sm:text-2xl font-serif text-brand-text leading-snug group-hover:text-brand-gold transition-colors">
                     {post.title}
@@ -259,7 +257,7 @@ export default function BlogClientPage() {
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 items-center">
               {/* Left: Image */}
-              <div className="relative w-full aspect-square lg:aspect-auto lg:h-[550px] overflow-hidden">
+              <div className="relative w-full aspect-square lg:aspect-auto lg:h-137.5 overflow-hidden">
                 <Image
                   src="/images/site/blog/post-1.png"
                   alt="Queen of the Aisle"
@@ -303,14 +301,14 @@ export default function BlogClientPage() {
           <div className="flex items-center justify-between mb-12">
             <div>
               <h2 className="text-3xl sm:text-4xl font-serif text-brand-text">Latest Stories</h2>
-              <div className="w-16 h-[2px] bg-brand-gold mt-4" />
+              <div className="w-16 h-0.5 bg-brand-gold mt-4" />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {(activeCategory === 'All Blogs' ? filteredPosts : filteredPosts).map(post => (
-              <Link href={`/blog/${post.slug}`} key={post.id} className="group bg-white rounded-[24px] overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 border border-brand-text/5">
-                <div className="relative w-full aspect-[4/3] overflow-hidden">
+              <Link href={`/blog/${post.slug}`} key={post.id} className="group bg-white rounded-3xl overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 border border-brand-text/5">
+                <div className="relative w-full aspect-4/3 overflow-hidden">
                   <Image
                     src={post.image}
                     alt={post.title}
@@ -318,7 +316,7 @@ export default function BlogClientPage() {
                     className="object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                 </div>
-                <div className="p-6 space-y-3 border border-brand-gold rounded-b-4xl">
+                <div className="p-6 space-y-3 border border-brand-gold rounded-b-3xl">
                   <div className="flex flex-wrap gap-2">
                     {post.tags.map(tag => (
                       <span key={tag} className="px-3 py-1 border border-brand-text/10 rounded-full text-[9px] uppercase tracking-widest font-bold text-brand-text/50 hover:border-brand-gold hover:text-brand-gold transition-colors">

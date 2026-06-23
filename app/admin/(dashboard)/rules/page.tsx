@@ -1,14 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Edit3, Trash2, ShieldAlert, CheckCircle2, MessageSquare, IndianRupee } from 'lucide-react';
+import { Plus, Edit3, Trash2, ShieldAlert, MessageSquare, IndianRupee } from 'lucide-react';
 import { Button } from '@/components/new-ui/Button';
 
+type Rule = { _id: string; name: string; type: string; isActive: boolean; scope?: { categories?: string[]; productIds?: string[] }; trigger?: { metals?: string[]; purities?: string[]; stones?: string[]; sizes?: string[] }; result?: { message?: string; surcharge?: number; surchargeType?: string } };
+
 export default function RulesDashboard() {
-  const [rules, setRules] = useState<any[]>([]);
+  const [rules, setRules] = useState<Rule[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingRule, setEditingRule] = useState<any>(null);
+  const [editingRule, setEditingRule] = useState<Rule | null>(null);
 
   // Form State
   const [name, setName] = useState('');
@@ -30,10 +32,6 @@ export default function RulesDashboard() {
   const [surcharge, setSurcharge] = useState(0);
   const [surchargeType, setSurchargeType] = useState('fixed');
 
-  useEffect(() => {
-    fetchRules();
-  }, []);
-
   const fetchRules = async () => {
     try {
       const res = await fetch('/api/admin/rules');
@@ -47,6 +45,11 @@ export default function RulesDashboard() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchRules();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const resetForm = () => {
     setEditingRule(null);
@@ -64,7 +67,7 @@ export default function RulesDashboard() {
     setSurchargeType('fixed');
   };
 
-  const openEditModal = (rule: any) => {
+  const openEditModal = (rule: Rule) => {
     setEditingRule(rule);
     setName(rule.name);
     setType(rule.type);
@@ -143,7 +146,7 @@ export default function RulesDashboard() {
   return (
     <div className="max-w-7xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-      <div className="flex justify-between items-center bg-white dark:bg-[#1a1614] p-6 rounded-[32px] border border-brand-text/10 shadow-sm">
+      <div className="flex justify-between items-center bg-white dark:bg-[#1a1614] p-6 rounded-4xl border border-brand-text/10 shadow-sm">
         <div>
           <h1 className="text-2xl font-serif text-brand-text dark:text-white">Configuration Rules Engine</h1>
           <p className="text-xs text-brand-text/50 mt-1 uppercase tracking-widest font-bold">Intelligent constraints & triggers</p>
@@ -155,7 +158,7 @@ export default function RulesDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {rules.map((rule) => (
-          <div key={rule._id} className="bg-white dark:bg-[#1a1614] rounded-[32px] border border-brand-text/10 p-6 flex flex-col hover:border-brand-gold/30 transition-colors shadow-sm">
+          <div key={rule._id} className="bg-white dark:bg-[#1a1614] rounded-4xl border border-brand-text/10 p-6 flex flex-col hover:border-brand-gold/30 transition-colors shadow-sm">
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center space-x-2">
                 {rule.type === 'restriction' && <div className="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center shrink-0"><ShieldAlert size={14} /></div>}
@@ -191,7 +194,7 @@ export default function RulesDashboard() {
                     + {rule.result?.surchargeType === 'percentage' ? `${rule.result?.surcharge}%` : `₹ ${rule.result?.surcharge}`}
                   </p>
                 ) : (
-                  <p className="text-xs text-brand-text/80 italic line-clamp-2">"{rule.result?.message || 'No message provided'}"</p>
+                  <p className="text-xs text-brand-text/80 italic line-clamp-2">&ldquo;{rule.result?.message || 'No message provided'}&rdquo;</p>
                 )}
               </div>
             </div>
@@ -208,7 +211,7 @@ export default function RulesDashboard() {
           </div>
         ))}
         {rules.length === 0 && (
-          <div className="col-span-full py-20 text-center border-2 border-dashed border-brand-text/10 rounded-[32px]">
+          <div className="col-span-full py-20 text-center border-2 border-dashed border-brand-text/10 rounded-4xl">
             <p className="text-brand-text/50 font-serif italic text-lg mb-2">No rules configured</p>
             <p className="text-xs uppercase tracking-widest font-bold text-brand-text/30">Create a rule to intelligently restrict combinations.</p>
           </div>

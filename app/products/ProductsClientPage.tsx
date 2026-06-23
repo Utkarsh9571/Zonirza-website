@@ -1,24 +1,19 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
 import { 
   Filter, 
   X, 
-  ChevronDown, 
   Search, 
-  LayoutGrid, 
   List,
-  ArrowUpDown,
   ShoppingBag,
   ArrowRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ProductCard from '@/components/ProductCard';
-import Navbar from '@/components/Navbar';
-import { resolveProductImage } from '@/lib/imageResolver';
+import { IProduct } from '@/models/Product';
 
 // Filter data structure
 const FILTERS = [
@@ -57,16 +52,27 @@ const getFilterValue = (id: string, option: string) => {
   return option.toLowerCase();
 };
 
+type FilterOption = string | { label: string; min: number; max: number };
+
 function ProductsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [products, setProducts] = useState<any[]>([]);
-  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [products, setProducts] = useState<IProduct[]>([]);
+  const [recommendations, setRecommendations] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<any[]>([]);
   const [gridCols, setGridCols] = useState(3);
+
+  // Compute active filters directly from searchParams during render
+  const activeFilters = useMemo(() => {
+    const filters: Array<{ key: string; value: string }> = [];
+    searchParams.forEach((value, key) => {
+      if (['price_min', 'price_max', 'limit', 'sort'].includes(key)) return;
+      filters.push({ key, value });
+    });
+    return filters;
+  }, [searchParams]);
 
   // Fetch products based on query params
   useEffect(() => {
@@ -89,14 +95,6 @@ function ProductsContent() {
     };
 
     fetchProducts();
-
-    // Parse active filters for UI
-    const filters: any[] = [];
-    searchParams.forEach((value, key) => {
-      if (['price_min', 'price_max', 'limit', 'sort'].includes(key)) return;
-      filters.push({ key, value });
-    });
-    setActiveFilters(filters);
   }, [searchParams]);
 
   const updateFilter = (key: string, value: string) => {
@@ -137,10 +135,10 @@ function ProductsContent() {
 
   return (
     <div className="min-h-screen bg-brand-white dark:bg-brand-bg transition-colors duration-500">
-      <Navbar />
+      
       
       {/* Page Header */}
-      <div className="pt-32 pb-12 px-6 sm:px-12 bg-gradient-to-b from-[#FDF8F6] to-brand-white dark:from-[#1a1614] dark:to-brand-bg transition-all duration-700">
+      <div className="pt-32 pb-12 px-6 sm:px-12 bg-linear-to-b from-[#FDF8F6] to-brand-white dark:from-[#1a1614] dark:to-brand-bg transition-all duration-700">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-2">
@@ -184,7 +182,7 @@ function ProductsContent() {
           </button>
 
           {/* Sidebar Filters - Desktop */}
-          <aside className="hidden lg:block w-72 flex-shrink-0 space-y-10 transition-all duration-500">
+          <aside className="hidden lg:block w-72 shrink-0 space-y-10 transition-all duration-500">
             <div className="flex items-center justify-between pb-6 border-b border-brand-text/10 dark:border-white/10 transition-colors">
               <h2 className="text-sm font-black uppercase tracking-[0.2em] text-brand-text dark:text-brand-text/90">Filters</h2>
               {activeFilters.length > 0 && (
@@ -204,10 +202,10 @@ function ProductsContent() {
                     {filter.label}
                   </h3>
                   <div className="space-y-3">
-                    {filter.options.map((option: any, idx) => {
+                    {filter.options.map((option: FilterOption, idx) => {
                       const isPrice = typeof option === 'object';
                       const label = isPrice ? option.label : option;
-                      const filterVal = isPrice ? '' : getFilterValue(filter.id, option);
+                      const filterVal = isPrice ? '' : getFilterValue(filter.id, option as string);
                       const isActive = isPrice 
                         ? (searchParams.get('price_min') === option.min.toString())
                         : (searchParams.get(filter.id) === filterVal || searchParams.get('tag') === filterVal);
@@ -237,7 +235,7 @@ function ProductsContent() {
             </div>
 
             {/* Sidebar Promo */}
-            <div className="p-8 bg-[#FAF7F5] dark:bg-[#1a1614] rounded-[32px] border border-brand-text/5 relative overflow-hidden group transition-colors">
+            <div className="p-8 bg-[#FAF7F5] dark:bg-[#1a1614] rounded-4xl border border-brand-text/5 relative overflow-hidden group transition-colors">
               <div className="relative z-10">
                 <ShoppingBag className="text-brand-gold mb-4 group-hover:scale-110 transition-transform" size={24} />
                 <h4 className="text-brand-text dark:text-brand-text/90 font-serif font-bold text-lg mb-2">Bespoke Design</h4>
@@ -317,7 +315,7 @@ function ProductsContent() {
                     params.set('sort', e.target.value);
                     router.push(`/products?${params.toString()}`);
                   }}
-                  className="text-[11px] font-bold text-brand-text dark:text-brand-text/90 uppercase tracking-widest bg-transparent dark:bg-brand-bg border-none focus:ring-0 cursor-pointer transition-colors [color-scheme:light] dark:[color-scheme:dark]"
+                  className="text-[11px] font-bold text-brand-text dark:text-brand-text/90 uppercase tracking-widest bg-transparent dark:bg-brand-bg border-none focus:ring-0 cursor-pointer transition-colors scheme-light dark:scheme-dark"
                 >
                   <option value="newest">Newest Arrivals</option>
                   <option value="price-low">Price: Low to High</option>
@@ -329,7 +327,7 @@ function ProductsContent() {
 
             {loading ? (
               <div className={cn(
-                "grid gap-8",
+                "grid gap-4 md:gap-8",
                 gridCols === 2 ? "grid-cols-2" : 
                 gridCols === 3 ? "grid-cols-2 md:grid-cols-3" : 
                 "grid-cols-2 md:grid-cols-4"
@@ -344,7 +342,7 @@ function ProductsContent() {
               </div>
             ) : products.length > 0 ? (
               <div className={cn(
-                "grid gap-8",
+                "grid gap-4 md:gap-8",
                 gridCols === 2 ? "grid-cols-2" : 
                 gridCols === 3 ? "grid-cols-2 md:grid-cols-3" : 
                 "grid-cols-2 md:grid-cols-4"
@@ -353,7 +351,7 @@ function ProductsContent() {
                   <ProductCard 
                     key={product.slug}
                     name={product.name}
-                    price={product.basePrice || product.price || 0}
+                    price={product.basePrice || 0}
                     image={product.images?.[0] || ''}
                     slug={product.slug}
                     variantImages={product.variantImages}
@@ -373,7 +371,7 @@ function ProductsContent() {
                 <div className="space-y-2">
                   <h3 className="text-2xl font-serif font-bold text-brand-text dark:text-brand-text/90 transition-colors">No Masterpieces Found</h3>
                   <p className="text-brand-text/50 dark:text-brand-text/70 text-sm max-w-sm mx-auto uppercase tracking-widest transition-colors">
-                    We couldn't find any products matching your specific refinement. Try adjusting your filters.
+                    We couldn&apos;t find any products matching your specific refinement. Try adjusting your filters.
                   </p>
                 </div>
                 <button 
@@ -395,7 +393,7 @@ function ProductsContent() {
                   </p>
                 </div>
                 <div className={cn(
-                  "grid gap-8",
+                  "grid gap-4 md:gap-8",
                   gridCols === 2 ? "grid-cols-2" : 
                   gridCols === 3 ? "grid-cols-2 md:grid-cols-3" : 
                   "grid-cols-2 md:grid-cols-4"
@@ -404,7 +402,7 @@ function ProductsContent() {
                     <ProductCard 
                       key={product.slug}
                       name={product.name}
-                      price={product.basePrice || product.price || 0}
+                      price={product.basePrice || 0}
                       image={product.images?.[0] || ''}
                       slug={product.slug}
                       variantImages={product.variantImages}
@@ -424,7 +422,7 @@ function ProductsContent() {
 
       {/* Mobile Filter Overlay */}
       {isFilterOpen && (
-        <div className="fixed inset-0 z-[100] lg:hidden flex flex-col justify-end">
+        <div className="fixed inset-0 z-100 lg:hidden flex flex-col justify-end">
           <div className="absolute inset-0 bg-brand-text/60 dark:bg-black/80 backdrop-blur-md animate-in fade-in duration-700" onClick={() => setIsFilterOpen(false)} />
           <div className="relative w-full bg-white dark:bg-brand-bg rounded-t-[40px] shadow-premium flex flex-col animate-in slide-in-from-bottom duration-700 max-h-[90vh]">
             <div className="p-8 border-b border-brand-text/5 flex items-center justify-between sticky top-0 bg-white/80 dark:bg-brand-bg/80 backdrop-blur-md rounded-t-[40px] z-10 transition-colors">
@@ -446,10 +444,10 @@ function ProductsContent() {
                     {filter.label}
                   </h3>
                   <div className="grid grid-cols-2 gap-3">
-                    {filter.options.map((option: any, idx) => {
+                    {filter.options.map((option: FilterOption, idx) => {
                       const isPrice = typeof option === 'object';
                       const label = isPrice ? option.label : option;
-                      const filterVal = isPrice ? '' : getFilterValue(filter.id, option);
+                      const filterVal = isPrice ? '' : getFilterValue(filter.id, option as string);
                       const isActive = isPrice 
                         ? (searchParams.get('price_min') === option.min.toString())
                         : (searchParams.get(filter.id) === filterVal || searchParams.get('tag') === filterVal);
@@ -516,7 +514,7 @@ function ProductsContent() {
                 </button>
                 <button 
                   onClick={() => setIsFilterOpen(false)}
-                  className="flex-[2] py-5 bg-brand-gold text-white text-[11px] font-bold uppercase tracking-[0.2em] rounded-2xl shadow-premium active:scale-95 transition-all"
+                  className="flex-2 py-5 bg-brand-gold text-white text-[11px] font-bold uppercase tracking-[0.2em] rounded-2xl shadow-premium active:scale-95 transition-all"
                 >
                   Show Results
                 </button>

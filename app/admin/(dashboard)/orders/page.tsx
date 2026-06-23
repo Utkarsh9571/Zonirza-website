@@ -18,10 +18,46 @@ import {
   ChevronDown,
   Check,
   X,
-  CreditCard
+  CreditCard,
+  RotateCcw
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import Image from 'next/image';
+
+interface IOrderShippingAddress {
+  fullName: string;
+  addressLine: string;
+  city: string;
+  state: string;
+  country: string;
+  pincode: string;
+  phone: string;
+}
+
+interface IOrderItem {
+  name: string;
+  image: string;
+  price: number;
+  quantity: number;
+  configuration?: {
+    metal?: string;
+    purity?: string;
+    size?: string;
+  };
+}
+
+interface IOrderClient {
+  _id: string;
+  createdAt: string;
+  shippingAddress?: IOrderShippingAddress;
+  orderStatus: string;
+  paymentStatus: string;
+  currency: string;
+  totalAmount: number;
+  razorpayOrderId?: string;
+  items?: IOrderItem[];
+}
 
 function AdminOrdersPageContent() {
   const router = useRouter();
@@ -35,15 +71,35 @@ function AdminOrdersPageContent() {
   const paymentStatus = searchParams.get('paymentStatus') || '';
   const sort = searchParams.get('sort') || 'newest';
 
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<IOrderClient[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalOrders, setTotalOrders] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
   const limit = 10;
 
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [selectedOrder, setSelectedOrder] = useState<IOrderClient | null>(null);
   const [updating, setUpdating] = useState(false);
+  const [cleaning, setCleaning] = useState(false);
+
+  const handleRunCleanup = async () => {
+    setCleaning(true);
+    try {
+      const res = await fetch('/api/admin/orders/cleanup', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        alert('Order cleanup successfully completed.');
+        fetchOrders();
+      } else {
+        alert('Cleanup failed: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error running cleanup:', error);
+      alert('Error running order cleanup.');
+    } finally {
+      setCleaning(false);
+    }
+  };
 
   // Helper to update URL params
   const updateQueryParams = useCallback((updates: Record<string, string | null>) => {
@@ -61,7 +117,7 @@ function AdminOrdersPageContent() {
     router.push(`${pathname}?${params.toString()}`);
   }, [router, pathname, searchParams]);
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setLoading(true);
     try {
       const queryParams = new URLSearchParams({
@@ -83,13 +139,13 @@ function AdminOrdersPageContent() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, searchTerm, status, paymentStatus, sort, limit]);
 
   useEffect(() => {
     fetchOrders();
-  }, [page, searchTerm, status, paymentStatus, sort]);
+  }, [fetchOrders]);
 
-  const handleUpdateStatus = async (id: string, updates: any) => {
+  const handleUpdateStatus = async (id: string, updates: Partial<IOrderClient>) => {
     setUpdating(true);
     try {
       const res = await fetch(`/api/admin/orders/${id}`, {
@@ -151,11 +207,28 @@ function AdminOrdersPageContent() {
             Orders <span className="not-italic text-brand-text/20 dark:text-white/20">({totalOrders})</span>
           </h1>
         </div>
+        <button
+          onClick={handleRunCleanup}
+          disabled={cleaning}
+          className="flex items-center space-x-2 px-6 py-3 bg-brand-gold text-brand-bg rounded-2xl text-[12px] font-bold uppercase tracking-widest hover:bg-brand-text hover:text-white dark:hover:bg-white dark:hover:text-brand-bg disabled:opacity-50 transition-all shadow-sm w-fit"
+        >
+          {cleaning ? (
+            <>
+              <Loader2 className="animate-spin" size={16} />
+              <span>Cleaning...</span>
+            </>
+          ) : (
+            <>
+              <RotateCcw size={16} />
+              <span>Run Order Cleanup</span>
+            </>
+          )}
+        </button>
       </div>
 
       {/* Filters & Search */}
       <div className="space-y-4">
-        <div className="bg-white dark:bg-white/10 p-4 md:p-6 rounded-[32px] border border-brand-text/15 dark:border-white/15 flex flex-col md:flex-row items-center gap-4 shadow-sm">
+        <div className="bg-white dark:bg-white/10 p-4 md:p-6 rounded-4xl border border-brand-text/15 dark:border-white/15 flex flex-col md:flex-row items-center gap-4 shadow-sm">
           <div className="relative flex-1 group w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text/30 group-focus-within:text-brand-gold transition-colors" size={18} />
             <input 
@@ -284,7 +357,7 @@ function AdminOrdersPageContent() {
                 onClick={() => updateQueryParams({ q: '' })}
                 className="flex items-center space-x-2 px-3 py-1.5 bg-brand-gold/10 text-brand-gold border border-brand-gold/20 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-brand-gold/20 transition-all"
               >
-                <span>"{searchTerm}"</span>
+                <span>&ldquo;{searchTerm}&rdquo;</span>
                 <X size={12} />
               </button>
             )}
@@ -436,7 +509,7 @@ function AdminOrdersPageContent() {
 
       {/* Order Detail Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-6">
           <div 
             className="absolute inset-0 bg-[#12100e]/80 backdrop-blur-md animate-in fade-in duration-500" 
             onClick={() => setSelectedOrder(null)} 
@@ -552,10 +625,10 @@ function AdminOrdersPageContent() {
               <div className="space-y-6">
                 <h4 className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Manifest ({selectedOrder.items?.length})</h4>
                 <div className="space-y-4">
-                  {selectedOrder.items?.map((item: any, idx: number) => (
+                  {selectedOrder.items?.map((item: IOrderItem, idx: number) => (
                     <div key={idx} className="flex items-center space-x-6 p-4 bg-brand-bg/50 dark:bg-white/2 rounded-2xl border border-brand-text/5 dark:border-white/5 group hover:border-brand-gold/20 transition-all">
-                      <div className="w-20 h-20 rounded-xl bg-white dark:bg-white/5 overflow-hidden p-2 flex-shrink-0">
-                        <img src={item.image} alt={item.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
+                      <div className="w-20 h-20 rounded-xl bg-white dark:bg-white/5 overflow-hidden p-2 shrink-0 relative">
+                        <Image src={item.image} alt={item.name} fill className="object-contain p-2 group-hover:scale-110 transition-transform duration-500" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h5 className="text-[14px] font-bold text-brand-text dark:text-white truncate">{item.name}</h5>
@@ -570,7 +643,7 @@ function AdminOrdersPageContent() {
                           )}
                         </div>
                       </div>
-                      <div className="text-right flex-shrink-0">
+                      <div className="text-right shrink-0">
                         <div className="text-[11px] text-brand-text/40 font-bold uppercase tracking-widest mb-1">{item.quantity} × ₹{item.price.toLocaleString()}</div>
                         <div className="text-[15px] font-black text-brand-gold">₹{(item.quantity * item.price).toLocaleString()}</div>
                       </div>

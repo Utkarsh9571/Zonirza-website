@@ -6,7 +6,7 @@ import { ShieldCheck, Scale, ScrollText, Gem, Diamond, Award, Truck, CreditCard 
 export default function TermsClientPage() {
   return (
     <div className="min-h-screen bg-[#FDF9F6] pb-24 pt-32">
-      <div className="max-w-[1000px] mx-auto px-6 md:px-12">
+      <div className="max-w-250 mx-auto px-6 md:px-12">
         
         {/* HERO HEADER */}
         <motion.div 
@@ -15,9 +15,9 @@ export default function TermsClientPage() {
           className="text-center mb-20"
         >
           <div className="flex items-center justify-center space-x-3 text-[10px] uppercase tracking-[0.4em] font-bold text-brand-gold mb-6">
-            <span className="w-12 h-[1px] bg-brand-gold/30"></span>
+            <span className="w-12 h-px bg-brand-gold/30"></span>
             <span>Legal & Information</span>
-            <span className="w-12 h-[1px] bg-brand-gold/30"></span>
+            <span className="w-12 h-px bg-brand-gold/30"></span>
           </div>
           <h1 className="text-5xl md:text-6xl font-serif text-brand-text mb-8">Terms & Guidelines</h1>
           <p className="text-brand-text/60 max-w-2xl mx-auto leading-relaxed">
@@ -136,7 +136,7 @@ export default function TermsClientPage() {
               ].map((care, i) => {
                 const CareIcon = care.icon;
                 return (
-                  <div key={i} className="bg-white p-8 rounded-[32px] border border-brand-text/5 hover:border-brand-gold/30 transition-all group">
+                  <div key={i} className="bg-white p-8 rounded-4xl border border-brand-text/5 hover:border-brand-gold/30 transition-all group">
                     <CareIcon size={32} className="text-brand-gold mb-6 group-hover:scale-110 transition-transform" />
                     <h3 className="font-serif text-lg text-brand-text mb-4">{care.title}</h3>
                     <ul className="space-y-3">

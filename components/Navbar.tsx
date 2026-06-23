@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from "next-auth/react";
-import { Menu, X, ChevronDown, Search, ShoppingCart, User, LogIn, UserPlus, Gift, MessageSquare, LogOut, Package, MapPin as MapPinIcon, UserCircle, ArrowRight, Heart, Moon, Sun, ShieldCheck, Ticket } from 'lucide-react';
+import { Menu, X, ChevronDown, Search, ShoppingCart, User, Gift, LogOut, Package, MapPin as MapPinIcon, UserCircle, ArrowRight, Heart, Moon, Sun, ShieldCheck, Ticket } from 'lucide-react';
+import { IProduct } from '@/models/Product';
 import { MegaMenu } from './MegaMenu';
 import { AuthModal } from './auth/AuthModal';
 import { cn } from '@/lib/utils';
@@ -26,12 +27,11 @@ const Navbar = () => {
     const [activeMenu, setActiveMenu] = useState<'none' | 'shop' | 'account' | 'search' | 'currency'>('none');
     
     const { currentCurrency, setCurrency } = useCurrencyStore();
-    const currencyInfo = CURRENCIES[currentCurrency];
     const [isScrolled, setIsScrolled] = useState(false);
     const { isOpen: isAuthModalOpen, openAuthModal, closeAuthModal } = useAuthModalStore();
     
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [searchResults, setSearchResults] = useState<IProduct[]>([]);
     const [isSearchLoading, setIsSearchLoading] = useState(false);
     const router = useRouter();
     const searchRef = useRef<HTMLDivElement>(null);
@@ -69,7 +69,7 @@ const Navbar = () => {
   
     // Close menus on outside click/tap
     useEffect(() => {
-      setIsMounted(true);
+      const timer = setTimeout(() => setIsMounted(true), 0);
       const handleGlobalInteraction = (event: MouseEvent | TouchEvent) => {
         if (navRef.current && !navRef.current.contains(event.target as Node)) {
           closeAllMenus();
@@ -88,11 +88,27 @@ const Navbar = () => {
       rafId = requestAnimationFrame(handleScroll);
 
       return () => {
+        clearTimeout(timer);
         document.removeEventListener("mousedown", handleGlobalInteraction);
         document.removeEventListener("touchstart", handleGlobalInteraction);
         cancelAnimationFrame(rafId);
       };
     }, []);
+
+    // Prevent body scroll when any overlay is open
+    useEffect(() => {
+      if (isOpen || activeMenu !== 'none' || isAuthModalOpen) {
+        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+      }
+      return () => {
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+      };
+    }, [isOpen, activeMenu, isAuthModalOpen]);
   
     // Debounced Search Effect
     useEffect(() => {
@@ -129,14 +145,14 @@ const Navbar = () => {
     return (
       <>
       <nav ref={navRef} className={cn(
-        "fixed top-0 left-0 right-0 z-[100] flex justify-between items-center transition-all duration-500 pointer-events-auto",
+        "fixed top-0 left-0 right-0 z-100 flex justify-between items-center transition-all duration-500 pointer-events-auto",
         isScrolled 
           ? "py-4 px-6 md:px-12 bg-white/90 dark:bg-brand-bg/90 backdrop-blur-xl shadow-premium border-b border-brand-border dark:border-white/5" 
           : "py-6 px-6 md:px-12 bg-transparent"
       )}>
         
         <div className="flex items-center space-x-4">
-          <Link href="/" className="flex items-center group relative z-[110] bg-white dark:bg-brand-white/80 backdrop-blur-md px-6 py-4 rounded-full border-2 border-brand-gold shadow-premium transition-all duration-500">
+          <Link href="/" className="flex items-center group relative z-110 bg-transparent md:bg-white md:dark:bg-brand-white/80 backdrop-blur-none md:backdrop-blur-md px-2 py-2 md:px-6 md:py-4 rounded-full border-0 md:border-2 border-transparent md:border-brand-gold shadow-none md:shadow-premium transition-all duration-500">
             <div className="relative w-32 md:w-40 h-10 md:h-12">
               <Image 
                 src="/images/ZONIRAZ LOGO.png" 
@@ -157,9 +173,9 @@ const Navbar = () => {
           <div ref={searchRef} className="relative flex items-center mr-6 border-r border-brand-border dark:border-white/10 pr-6 transition-colors">
             <div className={cn(
               "flex items-center bg-brand-bg/80 dark:bg-brand-bg rounded-full transition-all duration-500 overflow-hidden px-4 py-2",
-              activeMenu === 'search' || searchQuery ? "w-[280px] ring-1 ring-brand-gold/30" : "w-[180px]"
+              activeMenu === 'search' || searchQuery ? "w-70 ring-1 ring-brand-gold/30" : "w-45"
             )}>
-              <Search size={14} className="text-brand-gold flex-shrink-0" />
+              <Search size={14} className="text-brand-gold shrink-0" />
               <form onSubmit={handleSearchSubmit} className="flex-1 ml-2">
                 <input 
                   type="text"
@@ -175,7 +191,7 @@ const Navbar = () => {
 
             {/* LIVE SUGGESTIONS DROPDOWN */}
             {activeMenu === 'search' && searchResults.length > 0 && (
-              <div className="absolute top-full left-0 mt-4 w-[350px] bg-white dark:bg-brand-white rounded-[24px] shadow-premium border border-brand-text/5 dark:border-white/10 p-4 animate-in fade-in slide-in-from-top-2 duration-300 z-[120] transition-colors">
+              <div className="absolute top-full left-0 mt-4 w-87.5 bg-white dark:bg-brand-white rounded-3xl shadow-premium border border-brand-text/5 dark:border-white/10 p-4 animate-in fade-in slide-in-from-top-2 duration-300 z-120 transition-colors">
                 <p className="text-[9px] uppercase tracking-widest font-black text-brand-text/30 px-3 mb-4">Quick Results</p>
                 <div className="space-y-1">
                   {searchResults.map((product) => (
@@ -185,7 +201,7 @@ const Navbar = () => {
                       onClick={() => setActiveMenu('none')}
                     className="flex items-center space-x-4 p-3 rounded-xl hover:bg-brand-bg dark:hover:bg-brand-bg/50 text-brand-text dark:text-brand-text transition-all group"
                     >
-                      <div className="w-12 h-12 relative rounded-lg overflow-hidden bg-brand-bg dark:bg-brand-bg/50 flex-shrink-0 transition-colors">
+                      <div className="w-12 h-12 relative rounded-lg overflow-hidden bg-brand-bg dark:bg-brand-bg/50 shrink-0 transition-colors">
                         <Image src={resolveProductImage(product.images?.[0])} alt={product.name} fill className="object-cover" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -224,14 +240,14 @@ const Navbar = () => {
                 }}
                 aria-expanded={activeMenu === 'shop'}
               >
-                <span className="text-[11px] uppercase tracking-widest font-bold group-hover:text-brand-gold transition-colors">Shop</span>
-                <ChevronDown size={14} className={cn("transition-transform duration-300", activeMenu === 'shop' ? "rotate-180 text-brand-gold" : "text-brand-text")} />
+                <span className="text-[11px] uppercase tracking-widest font-bold font-regular-season group-hover:text-brand-gold transition-colors">Shop</span>
+                <ChevronDown size={14} className={cn("transition-transform duration-300", activeMenu === 'shop' ? "rotate-180 text-brand-gold" : "text-brand-gold")} />
               </button>
             </div>
             
-            <Link href="/blog" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 dark:text-brand-text/80 hover:text-brand-gold transition-colors">Blog</Link>
-            <Link href="/franchise" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 dark:text-brand-text/80 hover:text-brand-gold transition-colors">Franchise</Link>
-            <Link href="/contact" className="text-[11px] uppercase tracking-widest font-bold text-brand-text/70 dark:text-brand-text/80 hover:text-brand-gold transition-colors">Contact Us</Link>
+            <Link href="/blog" className="text-[11px] uppercase tracking-widest font-bold font-regular-season text-brand-text/70 dark:text-brand-text/80 hover:text-brand-gold transition-colors">Blog</Link>
+            <Link href="/franchise" className="text-[11px] uppercase tracking-widest font-bold font-regular-season text-brand-text/70 dark:text-brand-text/80 hover:text-brand-gold transition-colors">Franchise</Link>
+            <Link href="/contact" className="text-[11px] uppercase tracking-widest font-bold font-regular-season text-brand-text/70 dark:text-brand-text/80 hover:text-brand-gold transition-colors">Contact Us</Link>
           </div>
   
           {/* User Actions inside Pill */}
@@ -266,7 +282,7 @@ const Navbar = () => {
 
               {/* Account Dropdown */}
               {activeMenu === 'account' && (
-                <div className="absolute top-full right-0 mt-4 w-72 bg-white dark:bg-brand-white rounded-[32px] shadow-premium border border-brand-text/5 dark:border-white/10 p-4 animate-in fade-in slide-in-from-top-2 duration-500 z-50 pointer-events-auto transition-colors">
+                <div className="absolute top-full right-0 mt-4 w-72 bg-white dark:bg-brand-white rounded-4xl shadow-premium border border-brand-text/5 dark:border-white/10 p-4 animate-in fade-in slide-in-from-top-2 duration-500 z-50 pointer-events-auto transition-colors">
                    <div className="space-y-1">
                       {isLoggedIn ? (
                         <>
@@ -333,7 +349,7 @@ const Navbar = () => {
                   e.stopPropagation();
                   setActiveMenu(prev => prev === 'currency' ? 'none' : 'currency');
                 }}
-                className="flex items-center space-x-1 cursor-pointer min-h-[44px] group touch-safe-hit"
+                className="flex items-center space-x-1 cursor-pointer min-h-11 group touch-safe-hit"
               >
                 <span className="text-[10px] uppercase tracking-widest font-black text-brand-text dark:text-brand-text group-hover:text-brand-gold transition-colors">{currentCurrency}</span>
                 <ChevronDown size={12} className={cn("text-brand-text dark:text-brand-text transition-transform duration-300", activeMenu === 'currency' ? "rotate-180" : "")} />
@@ -341,7 +357,7 @@ const Navbar = () => {
 
               {/* Currency Dropdown */}
               {activeMenu === 'currency' && (
-                <div className="absolute top-full right-0 mt-4 w-48 bg-white dark:bg-brand-white rounded-[24px] shadow-premium border border-brand-text/5 dark:border-white/10 p-3 animate-in fade-in slide-in-from-top-2 duration-300 z-50 pointer-events-auto transition-colors">
+                <div className="absolute top-full right-0 mt-4 w-48 bg-white dark:bg-brand-white rounded-3xl shadow-premium border border-brand-text/5 dark:border-white/10 p-3 animate-in fade-in slide-in-from-top-2 duration-300 z-50 pointer-events-auto transition-colors">
                   <p className="text-[8px] uppercase tracking-widest font-black text-brand-text/30 px-3 mb-3">Select Currency</p>
                   <div className="space-y-1">
                     {(Object.keys(CURRENCIES) as CurrencyCode[]).map((code) => (
@@ -393,13 +409,13 @@ const Navbar = () => {
         {activeMenu === 'shop' && (
           <div 
             className={cn(
-              "left-0 right-0 flex justify-center px-4 md:px-6 lg:px-12 animate-in slide-in-from-top-2 duration-300 z-[110] pointer-events-auto",
+              "left-0 right-0 flex justify-center px-4 md:px-6 lg:px-12 animate-in slide-in-from-top-2 duration-300 z-110 pointer-events-auto",
               "absolute top-full"
             )}
             onMouseEnter={() => handleShopInteraction('hover')}
             onMouseLeave={handleMouseLeave}
           >
-            <div className="w-full max-w-[1500px] shadow-premium rounded-[40px] pointer-events-auto">
+            <div className="w-full max-w-375 shadow-premium rounded-[40px] pointer-events-auto">
               <MegaMenu 
                 isOpen={activeMenu === 'shop'} 
                 onMouseEnter={() => handleShopInteraction('hover')} 
@@ -417,7 +433,7 @@ const Navbar = () => {
 
       {/* MOBILE ACCORDION MENU */}
       {isOpen && (
-        <div className="md:hidden absolute top-24 left-6 right-6 bg-white/90 dark:bg-white/90 backdrop-blur-md rounded-[30px] border border-white/40 shadow-premium z-[150] max-h-[80vh] overflow-y-auto pointer-events-auto transition-colors">
+        <div className="md:hidden absolute top-24 left-6 right-6 bg-white/90 dark:bg-white/90 backdrop-blur-md rounded-[30px] border border-white/40 shadow-premium z-150 max-h-[80vh] overflow-y-auto pointer-events-auto transition-colors">
           <div className="flex flex-col py-6 px-8 space-y-4">
             <div className="flex flex-col space-y-2 pb-4 border-b border-brand-text/5">
               <div 
@@ -446,14 +462,14 @@ const Navbar = () => {
               )}
             </div>
 
-            <Link href="/account?tab=wishlist" className="text-sm uppercase tracking-widest font-bold text-brand-text dark:text-brand-text/90 py-4 flex items-center justify-between" onClick={() => setIsOpen(false)}>
+            <Link href="/account?tab=wishlist" className="text-sm uppercase tracking-widest font-bold font-regular-season text-brand-text dark:text-brand-text/90 py-4 flex items-center justify-between" onClick={() => setIsOpen(false)}>
               <span>Wishlist</span>
               {isMounted && wishlistCount > 0 && <span className="bg-brand-gold text-white px-2 py-0.5 rounded-full text-[10px]">{wishlistCount}</span>}
             </Link>
 
-            <Link href="/blog" className="text-sm uppercase tracking-widest font-bold text-brand-text dark:text-brand-text/90 py-4" onClick={() => setIsOpen(false)}>Blog</Link>
-            <Link href="/franchise" className="text-sm uppercase tracking-widest font-bold text-brand-text dark:text-brand-text/90 py-4" onClick={() => setIsOpen(false)}>Franchise</Link>
-            <Link href="/gift-cards" className="text-sm uppercase tracking-widest font-bold text-brand-text dark:text-brand-text/90 py-4" onClick={() => setIsOpen(false)}>Gift Cards</Link>
+            <Link href="/blog" className="text-sm uppercase tracking-widest font-bold font-regular-season text-brand-text dark:text-brand-text/90 py-4" onClick={() => setIsOpen(false)}>Blog</Link>
+            <Link href="/franchise" className="text-sm uppercase tracking-widest font-bold font-regular-season text-brand-text dark:text-brand-text/90 py-4" onClick={() => setIsOpen(false)}>Franchise</Link>
+            <Link href="/gift-cards" className="text-sm uppercase tracking-widest font-bold font-regular-season text-brand-text dark:text-brand-text/90 py-4" onClick={() => setIsOpen(false)}>Gift Cards</Link>
             
             <div className="pt-6 border-t border-brand-text/5 space-y-4">
                <button onClick={() => { setActiveMenu('search'); setIsOpen(false); }} className="w-full flex items-center justify-center space-x-3 p-5 rounded-2xl bg-brand-bg dark:bg-brand-bg/80 text-brand-text dark:text-brand-text/90 font-bold uppercase tracking-widest text-[11px] active:bg-brand-gold active:text-white transition-all">

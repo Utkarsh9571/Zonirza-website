@@ -70,7 +70,7 @@ const Product = mongoose.models.Product || mongoose.model('Product', ProductSche
 const newCategory = {
   name: 'Gold Coins',
   slug: 'gold-coins',
-  image: 'https://images.unsplash.com/photo-1618409399922-04aba3629f4c?auto=format&fit=crop&q=80&w=800',
+  image: '/images/images/product/yellow-gold-16010972111558.jpg',
   description: 'Pure 24K certified gold coins for wealth preservation, auspicious occasions, and corporate gifting.'
 };
 
@@ -206,7 +206,7 @@ const goldCoinProducts = [
     name: "Zoniraz 24K Laxmi Gold Coin",
     slug: "zoniraz-24k-laxmi-gold-coin",
     category: "gold-coins",
-    images: ["https://images.unsplash.com/photo-1618409399922-04aba3629f4c?auto=format&fit=crop&q=80&w=800"],
+    images: ["/images/images/product/yellow-gold-16010972111558.jpg"],
     description: "Blessed 24K pure (999.9) gold coin embossed with Goddess Laxmi. Ideal for Diwali, Akshaya Tritiya, weddings, and family wealth savings. Protected by tamper-proof luxury certicard packing.",
     basePrice: 7200, // per-gram rate base
     makingCharges: 350,

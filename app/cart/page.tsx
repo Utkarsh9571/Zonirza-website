@@ -6,7 +6,7 @@ import { useAuthModalStore } from '@/store/authModalStore';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Minus, Plus, Trash2, ArrowRight, ShoppingBag, MapPin, Gift, ChevronRight, Info, Ticket, XCircle, CheckCircle2 } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingBag, MapPin, Gift, ChevronRight, Info, Ticket, XCircle, CheckCircle2 } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { Section } from '@/components/new-ui/Section';
 import { Button } from '@/components/new-ui/Button';
@@ -20,7 +20,7 @@ import { displayPrice } from '@/lib/currency';
 
 export default function CartPage() {
   const { status } = useSession();
-  const openAuthModal = useAuthModalStore((state: any) => state.openAuthModal);
+  const openAuthModal = useAuthModalStore((state: { openAuthModal: () => void }) => state.openAuthModal);
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
   const { 
@@ -50,12 +50,13 @@ export default function CartPage() {
 
   // Coupon State
   const [couponCode, setCouponCode] = useState('');
-  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountAmount: number } | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
+    const t = setTimeout(() => setIsMounted(true), 0);
+    return () => clearTimeout(t);
   }, []);
 
   if (!isMounted) return null;
@@ -155,7 +156,7 @@ export default function CartPage() {
 
   return (
     <div className="bg-brand-bg text-brand-text min-h-screen pt-24 pb-32 transition-colors duration-500">
-      <div className="max-w-[1400px] mx-auto px-6">
+      <div className="max-w-350 mx-auto px-6">
         
         {/* Step Indicator */}
         <CheckoutSteps currentStep="cart" />
@@ -353,7 +354,7 @@ export default function CartPage() {
           </div>
 
           {/* Right Side: Order Summary */}
-          <div className="w-full lg:w-[480px]">
+          <div className="w-full lg:w-120">
             <div className="bg-white dark:bg-brand-white rounded-[50px] p-10 md:p-12 border border-brand-text/5 shadow-premium sticky top-32 space-y-10 animate-in fade-in slide-in-from-right duration-1000 transition-colors">
               <h2 className="text-2xl font-serif text-brand-text dark:text-brand-text/90 text-center">Order Summary</h2>
               
@@ -439,7 +440,7 @@ export default function CartPage() {
 
                 <Button 
                   size="lg" 
-                  className="w-full !py-7 shadow-premium text-sm tracking-[0.2em]"
+                  className="w-full py-7! shadow-premium text-sm tracking-[0.2em]"
                   onClick={handleProceedToCheckout}
                 >
                   Proceed to Shipping

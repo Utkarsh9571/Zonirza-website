@@ -1,19 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { FileText, ArrowRight, Clock, CheckCircle2, XCircle } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function QuotesDashboard() {
-  const { data: session } = useSession();
-  const [quotes, setQuotes] = useState<any[]>([]);
+  const [quotes, setQuotes] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
-
-  useEffect(() => {
-    fetchQuotes();
-  }, [filter]);
 
   const fetchQuotes = async () => {
     setLoading(true);
@@ -30,7 +24,12 @@ export default function QuotesDashboard() {
     }
   };
 
-  const statusColors: any = {
+  useEffect(() => {
+    fetchQuotes();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter]);
+
+  const statusColors: Record<string, string> = {
     'Pending Review': 'bg-amber-100 text-amber-800',
     'In Consultation': 'bg-blue-100 text-blue-800',
     'Quoted': 'bg-purple-100 text-purple-800',
@@ -64,7 +63,7 @@ export default function QuotesDashboard() {
         ))}
       </div>
 
-      <div className="bg-white dark:bg-white/5 rounded-[32px] border border-brand-text/10 overflow-hidden shadow-sm">
+      <div className="bg-white dark:bg-white/5 rounded-4xl border border-brand-text/10 overflow-hidden shadow-sm">
         {loading ? (
           <div className="p-20 text-center text-brand-text/50">Loading requests...</div>
         ) : quotes.length === 0 ? (

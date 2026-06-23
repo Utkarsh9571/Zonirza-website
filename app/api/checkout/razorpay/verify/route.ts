@@ -57,6 +57,35 @@ export async function POST(req: NextRequest) {
       notes: `Verified Razorpay Payment ID: ${razorpay_payment_id}`
     });
 
+    // Send emails if not already sent
+    if (!order.emailsSent) {
+      order.emailsSent = true;
+      let customerEmail = '';
+      if (order.userId) {
+        const User = (await import('@/models/User')).default;
+        const user = await User.findById(order.userId);
+        if (user?.email) customerEmail = user.email;
+      }
+      if (!customerEmail && session?.user?.email) {
+        customerEmail = session.user.email;
+      }
+      if (customerEmail) {
+        const { sendOrderConfirmationEmail, sendAdminNewOrderEmail } = await import('@/lib/mail');
+        sendOrderConfirmationEmail(order, customerEmail).catch(err => console.error('Order Confirmation Email Error:', err));
+        sendAdminNewOrderEmail(order).catch(err => console.error('Admin New Order Email Error:', err));
+      }
+    }
+
+    // Increment coupon usage if not already incremented
+    if (order.couponCode && !order.couponIncremented) {
+      const Coupon = (await import('@/models/Coupon')).default;
+      await Coupon.findOneAndUpdate(
+        { code: order.couponCode },
+        { $inc: { usedCount: 1 } }
+      );
+      order.couponIncremented = true;
+    }
+
     await order.save();
 
     // Activate Gift Card if it is a virtual gift card purchase

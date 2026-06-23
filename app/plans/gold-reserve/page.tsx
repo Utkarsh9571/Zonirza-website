@@ -23,13 +23,13 @@ export default function GoldReservePage() {
             fill 
             className="object-cover opacity-20"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0A192F] via-[#0A192F]/80 to-transparent"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-[#0A192F] via-[#0A192F]/80 to-transparent"></div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
           <div className="flex-1 max-w-2xl">
             <h1 className="text-4xl md:text-6xl font-serif font-bold text-white leading-tight mb-6">
-              It's reigning gold.
+              It&apos;s reigning gold.
             </h1>
             <p className="text-lg text-white/80 mb-8 max-w-lg leading-relaxed">
               Take shelter here. Every month you pay, you receive gold units at live value. Complete 10 installments and receive your special benefit voucher to purchase the luxury jewelry you desire.
@@ -53,7 +53,7 @@ export default function GoldReservePage() {
             </div>
           </div>
           
-          <div className="hidden lg:block w-[400px]">
+          <div className="hidden lg:block w-100">
             <div className="bg-[#0D213D] border border-white/10 rounded-2xl p-8 text-center shadow-2xl relative overflow-hidden">
                <div className="absolute top-0 right-0 p-4 opacity-10">
                  <Scale size={120} />
@@ -121,7 +121,7 @@ export default function GoldReservePage() {
 
             <div className="flex-1 space-y-12">
                <div className="flex gap-6 items-start relative">
-                  <div className="w-12 h-12 rounded-full border-2 border-brand-gold text-brand-gold flex items-center justify-center font-bold bg-white dark:bg-[#111] z-10 flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full border-2 border-brand-gold text-brand-gold flex items-center justify-center font-bold bg-white dark:bg-[#111] z-10 shrink-0">
                     1
                   </div>
                   <div>
@@ -133,7 +133,7 @@ export default function GoldReservePage() {
                </div>
 
                <div className="flex gap-6 items-start relative">
-                  <div className="w-12 h-12 rounded-full border-2 border-brand-gold text-brand-gold flex items-center justify-center font-bold bg-white dark:bg-[#111] z-10 flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full border-2 border-brand-gold text-brand-gold flex items-center justify-center font-bold bg-white dark:bg-[#111] z-10 shrink-0">
                     2
                   </div>
                   <div>
@@ -145,14 +145,14 @@ export default function GoldReservePage() {
                </div>
 
                <div className="flex gap-6 items-start relative">
-                  <div className="w-12 h-12 rounded-full border-2 border-brand-gold text-brand-gold flex items-center justify-center font-bold bg-white dark:bg-[#111] z-10 flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full border-2 border-brand-gold text-brand-gold flex items-center justify-center font-bold bg-white dark:bg-[#111] z-10 shrink-0">
                     3
                   </div>
                   <div>
                     <h4 className="text-xl font-bold text-brand-text dark:text-white mb-2 flex items-center gap-2">
                        Happy Shopping
                     </h4>
-                    <p className="text-brand-text/60 dark:text-white/60 text-sm">Use the auto-redeemed voucher (equal to your total reserved gold units' live value at maturity) to buy at any of our stores or online.</p>
+                     <p className="text-brand-text/60 dark:text-white/60 text-sm">Use the auto-redeemed voucher (equal to your total reserved gold units&apos; live value at maturity) to buy at any of our stores or online.</p>
                   </div>
                </div>
             </div>

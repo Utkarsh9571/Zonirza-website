@@ -78,9 +78,6 @@
     color: var(--brand-text);
     -webkit-tap-highlight-color: transparent;
     @apply font-sans antialiased transition-colors duration-500;
-
-    /* Prevent unwanted pull-to-refresh on certain interactive pages if needed */
-    overscroll-behavior-y: none;
   }
 
   h1,
@@ -103,7 +100,7 @@
 /* Reusable Components/Classes */
 @layer components {
   .section-container {
-    @apply max-w-[1280px] mx-auto px-6 py-20;
+    @apply max-w-7xl mx-auto px-6 py-20;
   }
 
   .glass-card {
@@ -200,7 +197,7 @@
 
   /* Interaction Utilities */
   .touch-safe-hit {
-    @apply min-w-[44px] min-h-[44px] flex items-center justify-center relative z-10;
+    @apply min-w-11 min-h-11 flex items-center justify-center relative z-10;
   }
 
   .interaction-overlay {
@@ -228,4 +225,9 @@
   input, textarea, select {
     font-size: 16px !important;
   }
+}
+
+/* Custom Brand Typography Fallback */
+.font-regular-season {
+  font-family: 'Regular Season', var(--font-sans);
 }

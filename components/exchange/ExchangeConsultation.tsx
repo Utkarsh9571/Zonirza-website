@@ -16,9 +16,27 @@ export default function ExchangeConsultation() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const newErrors: Record<string, string> = {};
+    if (!formData.fullName.trim()) newErrors.fullName = 'Name is required';
+    
+    const phoneTrimmed = formData.phone.trim();
+    if (!phoneTrimmed) {
+      newErrors.phone = 'Phone number is required';
+    } else if (!/^[6-9]\d{9}$/.test(phoneTrimmed)) {
+      newErrors.phone = 'Please enter a valid 10-digit Indian mobile number (starts with 6-9)';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
     setLoading(true);
     setError('');
 
@@ -36,8 +54,9 @@ export default function ExchangeConsultation() {
       } else {
         setError(data.error || 'Something went wrong.');
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to submit inquiry.');
+    } catch (err) {
+      const errorObj = err as Error;
+      setError(errorObj.message || 'Failed to submit inquiry.');
     } finally {
       setLoading(false);
     }
@@ -62,7 +81,7 @@ export default function ExchangeConsultation() {
               >
                 <h3 className="text-2xl font-serif font-bold text-[#6d3d3d] dark:text-[#e08686] mb-2">Thank You</h3>
                 <p className="text-brand-text/70 dark:text-white/70">
-                  We've received your details. Our expert team will contact you shortly.
+                  We&apos;ve received your details. Our expert team will contact you shortly.
                 </p>
               </motion.div>
             ) : (
@@ -79,9 +98,12 @@ export default function ExchangeConsultation() {
                     type="text"
                     value={formData.fullName}
                     onChange={(e) => setFormData({...formData, fullName: e.target.value})}
-                    className="w-full bg-transparent border border-[#d2b48c] dark:border-[#5a4836] rounded-xl py-4 px-6 focus:ring-1 focus:ring-brand-gold outline-none transition-all placeholder:text-brand-text/40 dark:placeholder:text-white/40 text-brand-text dark:text-white text-sm"
+                    className={`w-full bg-transparent border rounded-xl py-4 px-6 focus:ring-1 focus:ring-brand-gold outline-none transition-all placeholder:text-brand-text/40 dark:placeholder:text-white/40 text-brand-text dark:text-white text-sm ${
+                      errors.fullName ? "border-red-500" : "border-[#d2b48c] dark:border-[#5a4836]"
+                    }`}
                     placeholder="Enter Your Name"
                   />
+                  {errors.fullName && <p className="text-red-500 text-[10px] mt-1 ml-2 uppercase tracking-widest font-bold font-sans">{errors.fullName}</p>}
                 </div>
 
                 <div>
@@ -90,9 +112,12 @@ export default function ExchangeConsultation() {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="w-full bg-transparent border border-[#d2b48c] dark:border-[#5a4836] rounded-xl py-4 px-6 focus:ring-1 focus:ring-brand-gold outline-none transition-all placeholder:text-brand-text/40 dark:placeholder:text-white/40 text-brand-text dark:text-white text-sm"
+                    className={`w-full bg-transparent border rounded-xl py-4 px-6 focus:ring-1 focus:ring-brand-gold outline-none transition-all placeholder:text-brand-text/40 dark:placeholder:text-white/40 text-brand-text dark:text-white text-sm ${
+                      errors.phone ? "border-red-500" : "border-[#d2b48c] dark:border-[#5a4836]"
+                    }`}
                     placeholder="Enter Your Phone Number"
                   />
+                  {errors.phone && <p className="text-red-500 text-[10px] mt-1 ml-2 uppercase tracking-widest font-bold font-sans">{errors.phone}</p>}
                 </div>
 
                 <button 
@@ -112,7 +137,7 @@ export default function ExchangeConsultation() {
           </div>
 
           {/* Right: Video Card area */}
-          <div className="w-full md:w-1/2 relative min-h-[400px] md:min-h-full bg-[url('https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?q=80&w=2126&auto=format&fit=crop')] bg-cover bg-center">
+          <div className="w-full md:w-1/2 relative min-h-100 md:min-h-full bg-[url('https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?q=80&w=2126&auto=format&fit=crop')] bg-cover bg-center">
             {/* Branding/Icons overlay */}
             <div className="absolute top-6 right-6 flex items-center space-x-4">
                <button className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-colors">

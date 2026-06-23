@@ -31,8 +31,17 @@ export async function GET(req: NextRequest) {
     // Build filter
     const filter: any = {};
     
-    if (status) filter.orderStatus = status;
-    if (paymentStatus) filter.paymentStatus = paymentStatus;
+    if (status) {
+      filter.orderStatus = status;
+    } else {
+      filter.orderStatus = { $ne: 'abandoned' };
+    }
+    
+    if (paymentStatus) {
+      filter.paymentStatus = paymentStatus;
+    } else {
+      filter.paymentStatus = { $nin: ['pending', 'abandoned'] };
+    }
     
     if (minAmount || maxAmount) {
       filter.totalAmount = {};

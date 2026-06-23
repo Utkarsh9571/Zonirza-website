@@ -108,7 +108,7 @@ function AdminCustomersPageContent() {
 
       {/* Filters & Search */}
       <div className="space-y-4">
-        <div className="bg-white dark:bg-white/10 p-4 md:p-6 rounded-[32px] border border-brand-text/15 dark:border-white/15 flex flex-col md:flex-row items-center gap-4 shadow-sm">
+        <div className="bg-white dark:bg-white/10 p-4 md:p-6 rounded-4xl border border-brand-text/15 dark:border-white/15 flex flex-col md:flex-row items-center gap-4 shadow-sm">
           <div className="relative flex-1 group w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text/30 group-focus-within:text-brand-gold transition-colors" size={18} />
             <input 
@@ -238,7 +238,7 @@ function AdminCustomersPageContent() {
                 onClick={() => updateQueryParams({ q: '' })}
                 className="flex items-center space-x-2 px-3 py-1.5 bg-brand-gold/10 text-brand-gold border border-brand-gold/20 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-brand-gold/20 transition-all"
               >
-                <span>"{searchTerm}"</span>
+                <span>&ldquo;{searchTerm}&rdquo;</span>
                 <X size={12} />
               </button>
             )}

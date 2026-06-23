@@ -1,20 +1,16 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
 import { ArrowLeft, Save, MessageSquare, IndianRupee, Image as ImageIcon, Calendar } from 'lucide-react';
 import Link from 'next/link';
 
+type QuoteType = Record<string, unknown> & { _id: string; status: string; adminNotes?: string; quotedPrice?: number; quotedMakingCharges?: number; customizationNotes?: string; complexity?: string; inspirationImages?: string[]; productionInsights?: string[]; createdAt: string; customerInfo?: { name?: string; email?: string; phone?: string }; product?: { name?: string; images?: string[] }; configuration: { metal: string; purity: string; size?: string; stone?: string }; estimation?: { estimatedPriceMin?: number; estimatedPriceMax?: number; estimatedGoldWeight?: number; estimatedSurcharges?: number } };
+
 export default function QuoteDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const router = useRouter();
-  const [quote, setQuote] = useState<any>(null);
+  const [quote, setQuote] = useState<QuoteType | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    fetchQuote();
-  }, [id]);
 
   const fetchQuote = async () => {
     try {
@@ -29,6 +25,11 @@ export default function QuoteDetail({ params }: { params: Promise<{ id: string }
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchQuote();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -58,7 +59,7 @@ export default function QuoteDetail({ params }: { params: Promise<{ id: string }
 
   return (
     <div className="max-w-5xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
-      <div className="flex justify-between items-center bg-white dark:bg-[#1a1614] p-6 rounded-[32px] border border-brand-text/10 shadow-sm">
+      <div className="flex justify-between items-center bg-white dark:bg-[#1a1614] p-6 rounded-4xl border border-brand-text/10 shadow-sm">
         <div className="flex items-center space-x-4">
           <Link href="/admin/quotes" className="p-3 rounded-full hover:bg-slate-50 dark:hover:bg-white/5 transition-colors border border-transparent hover:border-brand-text/10">
             <ArrowLeft size={20} />
@@ -84,12 +85,12 @@ export default function QuoteDetail({ params }: { params: Promise<{ id: string }
         {/* Left Column: Customer & Request Info */}
         <div className="lg:col-span-2 space-y-8">
           
-          <div className="bg-white dark:bg-white/5 rounded-[32px] border border-brand-text/10 p-8 space-y-6 shadow-sm">
+          <div className="bg-white dark:bg-white/5 rounded-4xl border border-brand-text/10 p-8 space-y-6 shadow-sm">
             <h2 className="text-[11px] font-black uppercase tracking-widest text-brand-gold flex items-center">
               <MessageSquare size={16} className="mr-2" /> Customer Consultation Request
             </h2>
             <div className="bg-brand-gold/5 border border-brand-gold/20 rounded-2xl p-6 text-sm text-brand-text dark:text-white leading-relaxed italic">
-              "{quote.customizationNotes}"
+              &ldquo;{quote.customizationNotes}&rdquo;
             </div>
             
             {quote.inspirationImages?.length > 0 && (
@@ -100,7 +101,8 @@ export default function QuoteDetail({ params }: { params: Promise<{ id: string }
                 <div className="flex flex-wrap gap-4">
                   {quote.inspirationImages.map((img: string, idx: number) => (
                     <a key={idx} href={img} target="_blank" rel="noreferrer" className="w-24 h-24 rounded-xl border border-brand-gold/20 overflow-hidden block hover:opacity-80 transition-opacity">
-                      <img src={img} className="w-full h-full object-cover" />
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={img} alt="Inspiration" className="w-full h-full object-cover" />
                     </a>
                   ))}
                 </div>
@@ -109,7 +111,7 @@ export default function QuoteDetail({ params }: { params: Promise<{ id: string }
           </div>
 
           {quote.complexity && (
-            <div className="bg-brand-gold/5 dark:bg-brand-gold/10 rounded-[32px] border border-brand-gold/20 p-8 shadow-sm">
+            <div className="bg-brand-gold/5 dark:bg-brand-gold/10 rounded-4xl border border-brand-gold/20 p-8 shadow-sm">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-[11px] font-black uppercase tracking-widest text-brand-gold flex items-center">
                   <span className="w-2 h-2 rounded-full bg-brand-gold animate-pulse mr-2"></span>
@@ -154,7 +156,7 @@ export default function QuoteDetail({ params }: { params: Promise<{ id: string }
             </div>
           )}
 
-          <div className="bg-white dark:bg-white/5 rounded-[32px] border border-brand-text/10 p-8 shadow-sm">
+          <div className="bg-white dark:bg-white/5 rounded-4xl border border-brand-text/10 p-8 shadow-sm">
             <h2 className="text-[11px] font-black uppercase tracking-widest text-brand-gold mb-6">Base Product Configuration</h2>
             <div className="flex items-start space-x-6">
               <div className="w-24 h-24 rounded-2xl border border-brand-text/10 overflow-hidden bg-slate-50 dark:bg-black/20 shrink-0">
@@ -193,7 +195,7 @@ export default function QuoteDetail({ params }: { params: Promise<{ id: string }
         {/* Right Column: Workflow & Admin Tools */}
         <div className="space-y-8">
           
-          <div className="bg-white dark:bg-white/5 rounded-[32px] border border-brand-text/10 p-8 space-y-6 shadow-sm">
+          <div className="bg-white dark:bg-white/5 rounded-4xl border border-brand-text/10 p-8 space-y-6 shadow-sm">
             <h2 className="text-[11px] font-black uppercase tracking-widest text-brand-gold">Workflow Status</h2>
             <select 
               value={quote.status}
@@ -209,7 +211,7 @@ export default function QuoteDetail({ params }: { params: Promise<{ id: string }
             </select>
           </div>
 
-          <div className="bg-white dark:bg-white/5 rounded-[32px] border border-brand-text/10 p-8 space-y-6 shadow-sm">
+          <div className="bg-white dark:bg-white/5 rounded-4xl border border-brand-text/10 p-8 space-y-6 shadow-sm">
             <h2 className="text-[11px] font-black uppercase tracking-widest text-brand-gold flex items-center">
               <IndianRupee size={16} className="mr-2" /> Finalize Quote Pricing
             </h2>
@@ -237,7 +239,7 @@ export default function QuoteDetail({ params }: { params: Promise<{ id: string }
             </div>
           </div>
 
-          <div className="bg-white dark:bg-white/5 rounded-[32px] border border-brand-text/10 p-8 space-y-6 shadow-sm">
+          <div className="bg-white dark:bg-white/5 rounded-4xl border border-brand-text/10 p-8 space-y-6 shadow-sm">
             <h2 className="text-[11px] font-black uppercase tracking-widest text-brand-gold">Customer Contact</h2>
             <div className="space-y-3 bg-slate-50 dark:bg-black/20 p-4 rounded-2xl border border-brand-text/5 text-sm">
               <p><strong>Name:</strong> {quote.customerInfo?.name}</p>
@@ -249,7 +251,7 @@ export default function QuoteDetail({ params }: { params: Promise<{ id: string }
             </a>
           </div>
 
-          <div className="bg-white dark:bg-white/5 rounded-[32px] border border-brand-text/10 p-8 space-y-6 shadow-sm">
+          <div className="bg-white dark:bg-white/5 rounded-4xl border border-brand-text/10 p-8 space-y-6 shadow-sm">
             <h2 className="text-[11px] font-black uppercase tracking-widest text-brand-gold">Internal Jeweler Notes</h2>
             <textarea 
               rows={5}

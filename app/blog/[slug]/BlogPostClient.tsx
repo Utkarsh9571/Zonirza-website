@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
 import { ArrowLeft, Clock, Heart, Share2, Globe, Mail, Link as LinkIcon, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BLOG_POSTS } from '@/lib/blog/posts';
@@ -12,10 +11,10 @@ export default function BlogPostClient({ post }: { post: any }) {
   
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
+      
 
       {/* Hero Header Section */}
-      <section className="relative w-full h-[70vh] min-h-[500px] overflow-hidden">
+      <section className="relative w-full h-[70vh] min-h-125 overflow-hidden">
         <Image 
           src={post.image}
           alt={post.title}
@@ -35,7 +34,7 @@ export default function BlogPostClient({ post }: { post: any }) {
       </section>
 
       {/* Meta Bar */}
-      <div className="sticky top-[72px] z-30 bg-white/80 backdrop-blur-xl border-b border-brand-text/5 py-4">
+      <div className="sticky top-18 z-30 bg-white/80 backdrop-blur-xl border-b border-brand-text/5 py-4">
         <div className="max-w-4xl mx-auto px-6 flex items-center justify-between">
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2 text-brand-text/40">
@@ -114,7 +113,7 @@ export default function BlogPostClient({ post }: { post: any }) {
                     <ul className="space-y-6 text-[#EAE1D5]/70">
                       {section.items?.map((item: string, i: number) => (
                         <li key={i} className="flex items-start space-x-4">
-                          <div className="w-6 h-6 rounded-full bg-brand-gold flex-shrink-0 flex items-center justify-center text-white text-[10px] font-bold">{i + 1}</div>
+                          <div className="w-6 h-6 rounded-full bg-brand-gold shrink-0 flex items-center justify-center text-white text-[10px] font-bold">{i + 1}</div>
                           <p>{item}</p>
                         </li>
                       ))}
@@ -128,7 +127,7 @@ export default function BlogPostClient({ post }: { post: any }) {
         </div>
 
         {/* Shop Now Banner */}
-        <Link href="/products" className="block relative w-full h-[250px] rounded-[40px] overflow-hidden group mb-24">
+        <Link href="/products" className="block relative w-full h-62.5 rounded-[40px] overflow-hidden group mb-24">
           <Image src="/images/site/blog/banner-shop.png" alt="Shop Now" fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
           <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
           <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -146,9 +145,9 @@ export default function BlogPostClient({ post }: { post: any }) {
               <Link 
                 href={`/blog/${relatedPost.slug}`} 
                 key={relatedPost.id} 
-                className="group bg-white rounded-[24px] border border-brand-text/5 overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500"
+                className="group bg-white rounded-3xl border border-brand-text/5 overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500"
               >
-                <div className="relative aspect-[4/3] overflow-hidden">
+                <div className="relative aspect-4/3 overflow-hidden">
                   <Image src={relatedPost.image} alt={relatedPost.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
                 </div>
                 <div className="p-6 space-y-4 border border-brand-gold rounded-b-4xl">

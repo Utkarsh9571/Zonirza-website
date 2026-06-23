@@ -1,13 +1,13 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { History, Target, Eye, Gem, Users, Globe, Store, Headset, Sparkles, Award } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { History, Target, Eye, Gem, Users, Globe, Store, Headset, Sparkles } from 'lucide-react';
+import Link from 'next/link';
 
 export default function AboutContent() {
   return (
     <div className="min-h-screen bg-brand-bg text-brand-text pb-24 pt-32 transition-colors duration-500">
-      <div className="max-w-[1200px] mx-auto px-6 md:px-12">
+      <div className="max-w-300 mx-auto px-6 md:px-12">
         
         {/* HERO SECTION */}
         <motion.div 
@@ -16,9 +16,9 @@ export default function AboutContent() {
           className="text-center mb-24"
         >
           <div className="flex items-center justify-center space-x-3 text-[10px] uppercase tracking-[0.4em] font-bold text-brand-gold mb-6">
-            <span className="w-12 h-[1px] bg-brand-gold/30"></span>
+            <span className="w-12 h-px bg-brand-gold/30"></span>
             <span>Est. 1976</span>
-            <span className="w-12 h-[1px] bg-brand-gold/30"></span>
+            <span className="w-12 h-px bg-brand-gold/30"></span>
           </div>
           <h1 className="text-6xl md:text-7xl font-serif text-brand-text mb-8">Our Heritage</h1>
           <p className="text-brand-text/60 max-w-3xl mx-auto leading-relaxed text-lg">
@@ -27,7 +27,7 @@ export default function AboutContent() {
         </motion.div>
 
         {/* 50 YEARS JOURNEY */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32">
+        <section className="grid grid-cols-1 lg:grid-cols-1 gap-16 items-center mb-32">
           <div className="space-y-8">
             <div className="inline-flex items-center space-x-3 text-brand-gold">
               <History size={20} />
@@ -43,43 +43,29 @@ export default function AboutContent() {
                 <span className="text-4xl font-serif text-brand-text">50+</span>
                 <span className="text-[10px] uppercase tracking-widest text-brand-gold font-bold">Years Experience</span>
               </div>
-              <div className="w-[1px] h-12 bg-brand-text/10"></div>
+              <div className="w-px h-12 bg-brand-text/10"></div>
               <div className="flex flex-col">
                 <span className="text-4xl font-serif text-brand-text">100%</span>
                 <span className="text-[10px] uppercase tracking-widest text-brand-gold font-bold">BIS Hallmarked</span>
               </div>
             </div>
           </div>
-          <div className="relative">
-            <div className="aspect-[4/5] bg-brand-text rounded-[60px] overflow-hidden shadow-premium group">
-               <div className="absolute inset-0 bg-brand-gold/10 mix-blend-overlay"></div>
-               <div className="absolute inset-0 flex items-center justify-center p-12">
-                  <div className="text-center space-y-4">
-                    <Award size={64} className="text-brand-gold mx-auto mb-4" />
-                    <p className="font-serif text-2xl text-white">"Customer satisfaction is our mission, not a profit."</p>
-                  </div>
-               </div>
-            </div>
-            {/* Floating badge */}
-            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-brand-gold rounded-full flex items-center justify-center text-center p-6 shadow-premium animate-pulse-slow">
-              <span className="text-white text-[10px] font-bold uppercase tracking-widest">Global Export Leader</span>
-            </div>
-          </div>
+          
         </section>
 
         {/* CORE PRODUCT RANGE */}
         <section className="mb-32">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-serif text-brand-text mb-4">Exquisite Collections</h2>
-            <div className="w-24 h-[1px] bg-brand-gold mx-auto"></div>
+            <div className="w-24 h-px bg-brand-gold mx-auto"></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {['Rings', 'Earrings', 'Pendants'].map((item, i) => (
-              <div key={i} className="bg-white dark:bg-brand-white p-12 rounded-[40px] border border-brand-text/10 dark:border-brand-gold/30 text-center group hover:border-brand-gold/50 transition-all shadow-soft">
+              <Link key={i} href={`/category/${item.toLowerCase()}`} className="bg-white dark:bg-brand-white p-12 rounded-[40px] border border-brand-text/10 dark:border-brand-gold/30 text-center group hover:border-brand-gold/50 hover:shadow-premium transition-all shadow-soft block">
                 <Gem size={32} className="text-brand-gold mx-auto mb-6 group-hover:scale-110 transition-transform" />
                 <h3 className="font-serif text-xl text-brand-text mb-2">{item}</h3>
                 <p className="text-[10px] uppercase tracking-widest text-brand-text/40">Designer Collection</p>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
@@ -137,7 +123,7 @@ export default function AboutContent() {
             <Target size={40} className="text-brand-gold mb-8 group-hover:rotate-45 transition-transform duration-500" />
             <h3 className="text-3xl font-serif text-brand-text mb-6">Our Mission</h3>
             <div className="space-y-4 text-sm text-brand-text/60 leading-relaxed">
-              <p>Zoniraz Jewelhouse was founded with the mission: <strong className="text-brand-text">"Next Generation of Jewellery Industry for Customer Support and Satisfaction"</strong>.</p>
+              <p>Zoniraz Jewelhouse was founded with the mission: <strong className="text-brand-text">&ldquo;Next Generation of Jewellery Industry for Customer Support and Satisfaction&rdquo;</strong>.</p>
               <p>We dedicatedly begin our work at early stage and search for rough Diamonds in the most remote parts of the world, ensuring every client has a reason to smile.</p>
             </div>
           </div>

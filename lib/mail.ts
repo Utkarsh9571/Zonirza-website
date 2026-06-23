@@ -249,7 +249,7 @@ export async function sendAdminNewOrderEmail(order: any) {
   `;
 
   return sendZonirazMail({
-    to: process.env.BUSINESS_EMAIL || "orders@zoniraz.com",
+    to: process.env.BUSINESS_EMAIL || process.env.EMAIL_SERVER_USER || "zonirazjewelhouse@gmail.com",
     subject: `New Order Alert: ${order.shippingAddress.fullName} - ${order.currency} ${order.totalAmount.toLocaleString()}`,
     html: getLuxuryEmailTemplate(content)
   });
@@ -302,7 +302,7 @@ export async function sendExchangeInquiryAdminEmail(inquiry: any) {
   `;
 
   return sendZonirazMail({
-    to: process.env.BUSINESS_EMAIL || "info@zoniraz.com",
+    to: process.env.BUSINESS_EMAIL || process.env.EMAIL_SERVER_USER || "zonirazjewelhouse@gmail.com",
     subject: `New Exchange Lead: ${inquiry.fullName}`,
     html: getLuxuryEmailTemplate(content)
   });
@@ -361,7 +361,7 @@ export async function sendSellGoldInquiryAdminEmail(inquiry: any) {
   `;
 
   return sendZonirazMail({
-    to: process.env.BUSINESS_EMAIL || "info@zoniraz.com",
+    to: process.env.BUSINESS_EMAIL || process.env.EMAIL_SERVER_USER || "zonirazjewelhouse@gmail.com",
     subject: `New Sell Gold Lead: ${inquiry.fullName}`,
     html: getLuxuryEmailTemplate(content)
   });

@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
 
     if (metal) {
       // Map display metal names to DB slugs
-      let metalSlug = metal.toLowerCase().replace(/\s+/g, '-');
+      const metalSlug = metal.toLowerCase().replace(/\s+/g, '-');
       
       // Broaden "gold" to include "yellow-gold" if specifically requested or if it's the common term
       if (metalSlug === 'gold') {

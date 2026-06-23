@@ -22,6 +22,8 @@ import { cn } from '@/lib/utils';
 import { resolveProductImage } from '@/lib/imageResolver';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
+type AdminProduct = { _id: string; name: string; slug: string; images?: string[]; category?: string; specs?: { metal?: string }; basePrice?: number; price?: number; stockStatus?: string; isActive?: boolean };
+
 function AdminProductsPageContent() {
   const router = useRouter();
   const pathname = usePathname();
@@ -37,7 +39,7 @@ function AdminProductsPageContent() {
   const tags = searchParams.get('tags') || '';
   const sort = searchParams.get('sort') || 'newest';
 
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<AdminProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalProducts, setTotalProducts] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
@@ -167,7 +169,7 @@ function AdminProductsPageContent() {
 
       {/* Filters & Search */}
       <div className="space-y-4">
-        <div className="bg-white dark:bg-white/10 p-4 md:p-6 rounded-[32px] border border-brand-text/15 dark:border-white/15 flex flex-col md:flex-row items-center gap-4 shadow-sm">
+        <div className="bg-white dark:bg-white/10 p-4 md:p-6 rounded-4xl border border-brand-text/15 dark:border-white/15 flex flex-col md:flex-row items-center gap-4 shadow-sm">
           <div className="relative flex-1 group w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text/30 group-focus-within:text-brand-gold transition-colors" size={18} />
             <input 
@@ -334,7 +336,7 @@ function AdminProductsPageContent() {
                 onClick={() => handleSearch('')}
                 className="flex items-center space-x-2 px-3 py-1.5 bg-brand-gold/10 text-brand-gold border border-brand-gold/20 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-brand-gold/20 transition-all"
               >
-                <span>"{searchTerm}"</span>
+                <span>&ldquo;{searchTerm}&rdquo;</span>
                 <X size={12} />
               </button>
             )}
@@ -546,7 +548,7 @@ function AdminProductsPageContent() {
       </div>
 
       {/* Quick Stats/Alerts */}
-      <div className="flex items-center space-x-3 p-6 bg-brand-gold/5 border border-brand-gold/20 rounded-[32px]">
+      <div className="flex items-center space-x-3 p-6 bg-brand-gold/5 border border-brand-gold/20 rounded-4xl">
         <AlertCircle className="text-brand-gold" size={20} />
         <p className="text-[11px] text-brand-gold uppercase tracking-widest font-black">
           Critical Note: Changes to base pricing or active variants will reflect instantly across all regional storefronts.

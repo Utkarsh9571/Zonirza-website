@@ -13,6 +13,17 @@ interface SanitizedPrize {
   displayOrder: number;
 }
 
+// Module-level constants — generated once at module load, not during render
+const CONFETTI_COLORS = ["#dfb876", "#fcfaf7", "#C5A880", "#D4AF37", "#8B2332"];
+const CONFETTI_PARTICLES = Array.from({ length: 70 }).map((_, i) => ({
+  id: i,
+  left: Math.random() * 100,
+  delay: Math.random() * 2,
+  duration: 2.5 + Math.random() * 3,
+  size: 6 + Math.random() * 10,
+  color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+}));
+
 export default function SpinWinContent() {
   const { data: session, status } = useSession();
   const { openAuthModal } = useAuthModalStore();
@@ -88,13 +99,6 @@ export default function SpinWinContent() {
     return () => clearInterval(interval);
   }, [timeLeft]);
 
-  // 3. Handle claiming of guest spins when session becomes authenticated
-  useEffect(() => {
-    if (status === "authenticated" && pendingAttemptId && claimStatus === "idle") {
-      claimReward(pendingAttemptId);
-    }
-  }, [status, pendingAttemptId]);
-
   const claimReward = async (attemptId: string) => {
     try {
       setClaimStatus("claiming");
@@ -124,6 +128,14 @@ export default function SpinWinContent() {
       setClaimError("Network error claiming reward");
     }
   };
+
+  // 3. Handle claiming of guest spins when session becomes authenticated
+  useEffect(() => {
+    if (status === "authenticated" && pendingAttemptId && claimStatus === "idle") {
+      claimReward(pendingAttemptId);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, pendingAttemptId]);
 
   // 4. Trigger spin action
   const handleSpin = async () => {
@@ -300,30 +312,22 @@ export default function SpinWinContent() {
       {/* Floating Confetti Particle Emitter */}
       {showConfetti && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-40">
-          {Array.from({ length: 70 }).map((_, i) => {
-            const left = Math.random() * 100;
-            const delay = Math.random() * 2;
-            const duration = 2.5 + Math.random() * 3;
-            const size = 6 + Math.random() * 10;
-            const colors = ["#dfb876", "#fcfaf7", "#C5A880", "#D4AF37", "#8B2332"];
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            return (
-              <div
-                key={i}
-                className="absolute rounded-sm animate-float-down"
-                style={{
-                  left: `${left}%`,
-                  top: `-20px`,
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  backgroundColor: color,
-                  animationDelay: `${delay}s`,
-                  animationDuration: `${duration}s`,
-                  opacity: 0.8,
-                }}
-              />
-            );
-          })}
+          {CONFETTI_PARTICLES.map((particle) => (
+            <div
+              key={particle.id}
+              className="absolute rounded-sm animate-float-down"
+              style={{
+                left: `${particle.left}%`,
+                top: `-20px`,
+                width: `${particle.size}px`,
+                height: `${particle.size}px`,
+                backgroundColor: particle.color,
+                animationDelay: `${particle.delay}s`,
+                animationDuration: `${particle.duration}s`,
+                opacity: 0.8,
+              }}
+            />
+          ))}
         </div>
       )}
 
@@ -357,13 +361,13 @@ export default function SpinWinContent() {
             </p>
           </div>
 
-          <div className="h-[1px] bg-brand-gold/15 w-full"></div>
+          <div className="h-px bg-brand-gold/15 w-full"></div>
 
           {/* User Status / Notification Card */}
           <div className="bg-[#1C1816] border border-brand-gold/20 rounded-3xl p-6 shadow-premium space-y-4">
             {!spinWinEnabled ? (
               <div className="flex items-start space-x-3 text-left">
-                <AlertCircle className="text-brand-gold flex-shrink-0 mt-0.5" size={18} />
+                <AlertCircle className="text-brand-gold shrink-0 mt-0.5" size={18} />
                 <div>
                   <h4 className="font-serif text-white font-bold text-sm">Wheel Closed</h4>
                   <p className="text-xs text-[#9E8A75] mt-1">The Lucky Wheel is currently resting. Check back soon for more rewards!</p>
@@ -451,14 +455,14 @@ export default function SpinWinContent() {
         <div className="lg:col-span-7 flex justify-center items-center py-8 relative">
           
           {/* Luxury Wheel Container */}
-          <div className="relative w-[340px] h-[340px] sm:w-[480px] sm:h-[480px] rounded-full flex items-center justify-center bg-[#1A1614] border-[8px] border-[#D4AF37] shadow-[0_0_50px_rgba(212,175,55,0.25)] select-none">
+          <div className="relative w-85 h-85 sm:w-120 sm:h-120 rounded-full flex items-center justify-center bg-[#1A1614] border-8 border-[#D4AF37] shadow-[0_0_50px_rgba(212,175,55,0.25)] select-none">
             
             {/* Blinking outer bulb indicator lights */}
             <div className="absolute inset-0 rounded-full border border-dashed border-[#D4AF37]/50 pointer-events-none animate-border-blink"></div>
 
             {/* Pointer Pin at top pointing down */}
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-30">
-              <div className="w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-t-[28px] border-t-[#D4AF37] filter drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]"></div>
+              <div className="w-0 h-0 border-l-14 border-l-transparent border-r-14 border-r-transparent border-t-28 border-t-[#D4AF37] filter drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]"></div>
               {/* Little red light on pointer */}
               <div className="w-2 h-2 rounded-full bg-[#8B2332] absolute top-1 left-1/2 transform -translate-x-1/2 border border-white/30 animate-pulse"></div>
             </div>
@@ -485,11 +489,11 @@ export default function SpinWinContent() {
             </div>
 
             {/* Center Hub & Spin Button */}
-            <div className="absolute z-20 w-[80px] h-[80px] sm:w-[110px] sm:h-[110px] rounded-full bg-[#1E1B18] border-[4px] border-[#D4AF37] flex items-center justify-center shadow-2xl">
+            <div className="absolute z-20 w-20 h-20 sm:w-27.5 sm:h-27.5 rounded-full bg-[#1E1B18] border-4 border-[#D4AF37] flex items-center justify-center shadow-2xl">
               <button
                 disabled={spinning || !canSpin || !spinWinEnabled}
                 onClick={handleSpin}
-                className={`w-full h-full rounded-full flex flex-col items-center justify-center bg-gradient-to-br from-[#dfb876] to-[#b88c3a] text-black font-black uppercase text-[11px] sm:text-xs tracking-widest hover:scale-105 active:scale-95 transition-all duration-300 ${
+                className={`w-full h-full rounded-full flex flex-col items-center justify-center bg-linear-to-br from-[#dfb876] to-[#b88c3a] text-black font-black uppercase text-[11px] sm:text-xs tracking-widest hover:scale-105 active:scale-95 transition-all duration-300 ${
                   canSpin && !spinning && spinWinEnabled 
                     ? "cursor-pointer animate-pulse-glow opacity-100" 
                     : "opacity-75 cursor-not-allowed text-[#4A3E39]"

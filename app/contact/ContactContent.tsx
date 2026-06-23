@@ -1,9 +1,23 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Mail, Phone, MessageSquare, ChevronRight, CheckCircle2, Loader2, MapPin } from 'lucide-react';
+import { Mail, Phone, ChevronRight, CheckCircle2, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+
+interface IContactSettings {
+  supportPhone?: string;
+  supportEmail?: string;
+  businessHours?: string;
+  socialLinks?: {
+    facebook?: string;
+    instagram?: string;
+    youtube?: string;
+    pinterest?: string;
+    twitter?: string;
+  };
+  footerText?: string;
+}
 
 export default function ContactContent() {
   const [formData, setFormData] = useState({
@@ -14,7 +28,8 @@ export default function ContactContent() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
-  const [settings, setSettings] = useState<any>(null);
+  const [settings, setSettings] = useState<IContactSettings | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -31,6 +46,33 @@ export default function ContactContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Strict Validation
+    const newErrors: Record<string, string> = {};
+    if (!formData.name.trim()) newErrors.name = 'Name is required';
+    
+    const mobileTrimmed = formData.mobile.trim();
+    if (!mobileTrimmed) {
+      newErrors.mobile = 'Mobile number is required';
+    } else if (!/^[6-9]\d{9}$/.test(mobileTrimmed)) {
+      newErrors.mobile = 'Please enter a valid 10-digit Indian mobile number (starts with 6-9)';
+    }
+
+    const emailTrimmed = formData.email.trim();
+    if (!emailTrimmed) {
+      newErrors.email = 'Email address is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.message.trim()) newErrors.message = 'Message is required';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
     setIsSubmitting(true);
     
     try {
@@ -54,7 +96,7 @@ export default function ContactContent() {
   return (
     <div className="min-h-screen bg-white dark:bg-brand-bg pt-32 pb-24 font-serif text-brand-text">
       {/* HEADER SECTION */}
-      <div className="max-w-[1400px] mx-auto px-6 text-center mb-16">
+      <div className="max-w-350 mx-auto px-6 text-center mb-16">
         <nav className="flex items-center justify-center space-x-2 text-[10px] uppercase tracking-[0.2em] font-bold text-brand-gold mb-8">
           <Link href="/" className="hover:text-brand-text transition-colors">Home</Link>
           <ChevronRight size={10} />
@@ -86,7 +128,7 @@ export default function ContactContent() {
       </div>
 
       {/* CONTACT CHANNELS DESIGN (FROM IMAGE) */}
-      <div className="max-w-[1200px] mx-auto px-6 mb-32">
+      <div className="max-w-300 mx-auto px-6 mb-32">
         <h2 className="text-3xl text-center text-brand-text mb-16">Have A Question</h2>
         
         <div className="grid md:grid-cols-2 gap-0 border border-brand-text/5 rounded-[40px] overflow-hidden shadow-premium">
@@ -116,13 +158,13 @@ export default function ContactContent() {
       </div>
 
       {/* CONTACT FORM */}
-      <div className="max-w-[800px] mx-auto px-6">
+      <div className="max-w-200 mx-auto px-6">
         <div className="bg-white dark:bg-brand-white p-10 md:p-16 rounded-[48px] border border-brand-gold shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-2 bg-brand-gold"></div>
           
           <div className="text-center mb-12">
             <h2 className="text-3xl text-brand-text mb-4">Send Us A Message</h2>
-            <p className="text-brand-text/50 text-sm">We'll get back to you within 24 hours.</p>
+            <p className="text-brand-text/50 text-sm">We&apos;ll get back to you within 24 hours.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8 font-sans">
@@ -133,10 +175,14 @@ export default function ContactContent() {
                   required
                   type="text" 
                   placeholder="Enter Name"
-                  className="w-full px-6 py-4 rounded-2xl bg-brand-bg border border-brand-gold focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none text-brand-text placeholder:text-brand-text/30"
+                  className={cn(
+                    "w-full px-6 py-4 rounded-2xl bg-brand-bg border border-brand-gold focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none text-brand-text placeholder:text-brand-text/30",
+                    errors.name && "border-red-500"
+                  )}
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                 />
+                {errors.name && <p className="text-red-500 text-[10px] mt-1 ml-2 uppercase tracking-widest font-bold font-sans">{errors.name}</p>}
               </div>
               <div className="space-y-2">
                 <label className="text-[11px] uppercase tracking-widest font-bold text-brand-text/60 ml-2">Mobile *</label>
@@ -144,10 +190,14 @@ export default function ContactContent() {
                   required
                   type="tel" 
                   placeholder="Enter Mobile"
-                  className="w-full px-6 py-4 rounded-2xl bg-brand-bg border border-brand-gold focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none text-brand-text placeholder:text-brand-text/30"
+                  className={cn(
+                    "w-full px-6 py-4 rounded-2xl bg-brand-bg border border-brand-gold focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none text-brand-text placeholder:text-brand-text/30",
+                    errors.mobile && "border-red-500"
+                  )}
                   value={formData.mobile}
                   onChange={(e) => setFormData({...formData, mobile: e.target.value})}
                 />
+                {errors.mobile && <p className="text-red-500 text-[10px] mt-1 ml-2 uppercase tracking-widest font-bold font-sans">{errors.mobile}</p>}
               </div>
             </div>
             
@@ -157,10 +207,14 @@ export default function ContactContent() {
                 required
                 type="email" 
                 placeholder="Enter Email"
-                className="w-full px-6 py-4 rounded-2xl bg-brand-bg border border-brand-gold focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none text-brand-text placeholder:text-brand-text/30"
+                className={cn(
+                  "w-full px-6 py-4 rounded-2xl bg-brand-bg border border-brand-gold focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none text-brand-text placeholder:text-brand-text/30",
+                  errors.email && "border-red-500"
+                )}
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
               />
+              {errors.email && <p className="text-red-500 text-[10px] mt-1 ml-2 uppercase tracking-widest font-bold font-sans">{errors.email}</p>}
             </div>
 
             <div className="space-y-2">
@@ -169,10 +223,14 @@ export default function ContactContent() {
                 required
                 rows={4}
                 placeholder="Enter Query"
-                className="w-full px-6 py-4 rounded-2xl bg-brand-bg border border-brand-gold focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none resize-none text-brand-text placeholder:text-brand-text/30"
+                className={cn(
+                  "w-full px-6 py-4 rounded-2xl bg-brand-bg border border-brand-gold focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none resize-none text-brand-text placeholder:text-brand-text/30",
+                  errors.message && "border-red-500"
+                )}
                 value={formData.message}
                 onChange={(e) => setFormData({...formData, message: e.target.value})}
               />
+              {errors.message && <p className="text-red-500 text-[10px] mt-1 ml-2 uppercase tracking-widest font-bold font-sans">{errors.message}</p>}
             </div>
 
             <button 
@@ -194,7 +252,7 @@ export default function ContactContent() {
 
       {/* SUCCESS POPUP */}
       {showPopup && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center px-6">
+        <div className="fixed inset-0 z-100 flex items-center justify-center px-6">
           <div className="absolute inset-0 bg-[#1c1816]/60 backdrop-blur-sm" onClick={() => setShowPopup(false)}></div>
           <div className="bg-white dark:bg-brand-white rounded-[40px] p-12 text-center max-w-sm w-full relative z-10 shadow-premium animate-in zoom-in-95 duration-300">
             <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
