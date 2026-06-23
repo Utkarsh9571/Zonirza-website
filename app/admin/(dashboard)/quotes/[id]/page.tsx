@@ -32,6 +32,7 @@ export default function QuoteDetail({ params }: { params: Promise<{ id: string }
   }, [id]);
 
   const handleSave = async () => {
+    if (!quote) return;
     setSaving(true);
     try {
       const res = await fetch(`/api/admin/quotes/${id}`, {
