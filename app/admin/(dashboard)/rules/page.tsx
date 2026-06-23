@@ -179,10 +179,10 @@ export default function RulesDashboard() {
               <div className="bg-slate-50 dark:bg-black/20 p-3 rounded-xl border border-brand-text/5">
                 <p className="text-[9px] uppercase tracking-widest font-bold text-brand-text/40 mb-1">Triggers If</p>
                 <div className="text-xs font-mono text-brand-text/80 space-y-1">
-                  {rule.trigger?.metals?.length > 0 && <p><span className="text-brand-text/40">Metal:</span> {rule.trigger.metals.join(', ')}</p>}
-                  {rule.trigger?.purities?.length > 0 && <p><span className="text-brand-text/40">Purity:</span> {rule.trigger.purities.join(', ')}</p>}
-                  {rule.trigger?.stones?.length > 0 && <p><span className="text-brand-text/40">Stone:</span> {rule.trigger.stones.join(', ')}</p>}
-                  {rule.trigger?.sizes?.length > 0 && <p><span className="text-brand-text/40">Size:</span> {rule.trigger.sizes.join(', ')}</p>}
+                  {rule.trigger?.metals && rule.trigger.metals.length > 0 && <p><span className="text-brand-text/40">Metal:</span> {rule.trigger.metals.join(', ')}</p>}
+                  {rule.trigger?.purities && rule.trigger.purities.length > 0 && <p><span className="text-brand-text/40">Purity:</span> {rule.trigger.purities.join(', ')}</p>}
+                  {rule.trigger?.stones && rule.trigger.stones.length > 0 && <p><span className="text-brand-text/40">Stone:</span> {rule.trigger.stones.join(', ')}</p>}
+                  {rule.trigger?.sizes && rule.trigger.sizes.length > 0 && <p><span className="text-brand-text/40">Size:</span> {rule.trigger.sizes.join(', ')}</p>}
                   {(!rule.trigger?.metals?.length && !rule.trigger?.purities?.length && !rule.trigger?.stones?.length && !rule.trigger?.sizes?.length) && <p className="text-brand-text/30 italic">No specific triggers set</p>}
                 </div>
               </div>
@@ -205,7 +205,7 @@ export default function RulesDashboard() {
                 <span className="text-brand-text/50">{rule.isActive ? 'Active' : 'Disabled'}</span>
               </div>
               <div className="text-[9px] uppercase tracking-widest font-bold text-brand-text/40">
-                {(rule.scope?.categories?.length > 0 || rule.scope?.productIds?.length > 0) ? 'Specific Scope' : 'Global Scope'}
+                {((rule.scope?.categories?.length ?? 0) > 0 || (rule.scope?.productIds?.length ?? 0) > 0) ? 'Specific Scope' : 'Global Scope'}
               </div>
             </div>
           </div>
