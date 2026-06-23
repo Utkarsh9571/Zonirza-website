@@ -70,7 +70,7 @@ export default function UserGiftCardsDashboard() {
 
   // Filter sent cards: senderUserId matches current user's ID
   const sentCards = allCards.filter(
-    (card: GiftCard) => card.senderUserId === (session?.user as { id?: string })?.id
+    (card: any) => card.senderUserId === (session?.user as { id?: string })?.id
   );
 
   let activeCardsList = activeSubTab === 'received' ? receivedCards : sentCards;
