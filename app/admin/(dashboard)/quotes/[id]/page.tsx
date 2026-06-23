@@ -94,7 +94,7 @@ export default function QuoteDetail({ params }: { params: Promise<{ id: string }
               &ldquo;{quote.customizationNotes}&rdquo;
             </div>
             
-            {(quote.inspirationImages?.length ?? 0) > 0 && (
+            {quote.inspirationImages && quote.inspirationImages.length > 0 && (
               <div className="space-y-4 pt-4 border-t border-brand-text/10">
                 <h3 className="text-[10px] uppercase tracking-widest font-bold text-brand-text/60 flex items-center">
                   <ImageIcon size={14} className="mr-2" /> Attached Inspirations ({quote.inspirationImages.length})
@@ -143,7 +143,7 @@ export default function QuoteDetail({ params }: { params: Promise<{ id: string }
                 </div>
               </div>
 
-              {(quote.productionInsights?.length ?? 0) > 0 && (
+              {quote.productionInsights && quote.productionInsights.length > 0 && (
                 <div className="space-y-3">
                   <h3 className="text-[10px] uppercase tracking-widest font-bold text-brand-text/60 mb-2">Production Insights</h3>
                   {quote.productionInsights.map((insight: string, idx: number) => (
