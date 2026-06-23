@@ -70,7 +70,7 @@ export default function AdminSettingsPage() {
     }
   };
 
-  if (loading) {
+  if (loading || !settings) {
     return (
       <div className="py-40 flex flex-col items-center justify-center space-y-4">
         <Loader2 className="text-brand-gold animate-spin" size={40} />
@@ -444,11 +444,11 @@ export default function AdminSettingsPage() {
                     type="text" 
                     placeholder="Enter broadcast message..."
                     value={settings?.announcement?.text || ''}
-                    onChange={(e) => setSettings({...settings, announcement: { ...settings.announcement, text: e.target.value }})}
+                    onChange={(e) => setSettings({...settings, announcement: { ...(settings?.announcement || {}), text: e.target.value }})}
                     className="flex-1 bg-white border border-brand-text/10 rounded-2xl py-4 px-6 text-[14px] font-bold"
                   />
                   <button 
-                    onClick={() => setSettings({...settings, announcement: { ...settings.announcement, isActive: !settings.announcement.isActive }})}
+                    onClick={() => setSettings({...settings, announcement: { ...(settings?.announcement || {}), isActive: !(settings?.announcement?.isActive) }})}
                     className={cn(
                       "w-16 h-16 rounded-2xl flex items-center justify-center transition-all shadow-sm",
                       settings?.announcement?.isActive ? "bg-emerald-500 text-white" : "bg-slate-200 text-slate-400"
@@ -464,7 +464,7 @@ export default function AdminSettingsPage() {
                       type="text" 
                       placeholder="Redirect URL (optional)"
                       value={settings?.announcement?.link || ''}
-                      onChange={(e) => setSettings({...settings, announcement: { ...settings.announcement, link: e.target.value }})}
+                      onChange={(e) => setSettings({...settings, announcement: { ...(settings?.announcement || {}), link: e.target.value }})}
                       className="w-full bg-white/50 border border-brand-text/10 rounded-2xl py-4 pl-12 pr-6 text-[12px]"
                     />
                   </div>
