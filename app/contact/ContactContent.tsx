@@ -24,12 +24,15 @@ export default function ContactContent() {
     name: '',
     mobile: '',
     email: '',
-    message: ''
+    message: '',
+    appointmentDate: '',
+    appointmentSlot: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [settings, setSettings] = useState<IContactSettings | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showTimeSlotNote, setShowTimeSlotNote] = useState(false);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -84,7 +87,7 @@ export default function ContactContent() {
       
       if (res.ok) {
         setShowPopup(true);
-        setFormData({ name: '', mobile: '', email: '', message: '' });
+        setFormData({ name: '', mobile: '', email: '', message: '', appointmentDate: '', appointmentSlot: '' });
       }
     } catch (error) {
       console.error('Submission failed', error);
@@ -215,6 +218,45 @@ export default function ContactContent() {
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
               />
               {errors.email && <p className="text-red-500 text-[10px] mt-1 ml-2 uppercase tracking-widest font-bold font-sans">{errors.email}</p>}
+            </div>
+
+            <div className="space-y-2 relative">
+              <label className="text-[11px] uppercase tracking-widest font-bold text-brand-text/60 ml-2">Book Appointment (Optional)</label>
+              <div className="flex space-x-4">
+                <input 
+                  type="date" 
+                  className="w-1/2 px-6 py-4 rounded-2xl bg-brand-bg border border-brand-gold focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none text-brand-text placeholder:text-brand-text/30"
+                  value={formData.appointmentDate}
+                  onChange={(e) => setFormData({...formData, appointmentDate: e.target.value})}
+                  onFocus={() => setShowTimeSlotNote(true)}
+                  onBlur={() => setShowTimeSlotNote(false)}
+                  onClick={() => setShowTimeSlotNote(true)}
+                />
+                <select
+                  className="w-1/2 px-6 py-4 rounded-2xl bg-brand-bg border border-brand-gold focus:border-brand-gold focus:ring-0 transition-all text-sm outline-none text-brand-text placeholder:text-brand-text/30"
+                  value={formData.appointmentSlot}
+                  onChange={(e) => setFormData({...formData, appointmentSlot: e.target.value})}
+                  onFocus={() => setShowTimeSlotNote(true)}
+                  onBlur={() => setShowTimeSlotNote(false)}
+                  onClick={() => setShowTimeSlotNote(true)}
+                >
+                  <option value="">Select Time</option>
+                  <option value="10:00 AM">10:00 AM</option>
+                  <option value="11:00 AM">11:00 AM</option>
+                  <option value="12:00 PM">12:00 PM</option>
+                  <option value="01:00 PM">01:00 PM</option>
+                  <option value="02:00 PM">02:00 PM</option>
+                  <option value="03:00 PM">03:00 PM</option>
+                  <option value="04:00 PM">04:00 PM</option>
+                  <option value="05:00 PM">05:00 PM</option>
+                  <option value="06:00 PM">06:00 PM</option>
+                </select>
+              </div>
+              {showTimeSlotNote && (
+                <p className="text-brand-gold text-[10px] mt-1 ml-2 uppercase tracking-widest font-bold font-sans animate-in fade-in">
+                  Select timeslot if want to take an appointment.
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">

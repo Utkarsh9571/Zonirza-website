@@ -36,7 +36,7 @@ const floatingCards = [
     title: 'Book Appointment',
     subtitle: 'In-Store Valuation',
     icon: CalendarCheck,
-    href: '/exchange?tab=sell',
+    href: '/contact',
     delay: 0.4
   }
 ];
