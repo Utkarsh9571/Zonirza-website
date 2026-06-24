@@ -41,6 +41,25 @@ export interface IProduct extends Document {
   legacyConfigurableOptions?: any;
   legacySpecs?: any;
   readyToShipVariants?: string[];
+  categoryOverrides?: {
+    variantVisibility?: Record<string, boolean>;
+    pricingRules?: {
+      diamondQualityAdjustments?: Record<string, number>;
+      goldPurityAdjustments?: Record<string, number>;
+      stoneQualityAdjustments?: Record<string, number>;
+    };
+    weightRules?: {
+      baseSize?: number;
+      sizeIncrementWeight?: number;
+      baseLength?: number;
+      lengthIncrementWeight?: number;
+    };
+    makingCharges?: {
+      type: 'fixed' | 'percentage';
+      value: number;
+    };
+  };
+  categoryConfig?: any; // Hydrated by API
 }
 
 const ProductSchema: Schema = new Schema({
@@ -83,7 +102,8 @@ const ProductSchema: Schema = new Schema({
     stonePrices: { type: Map, of: Number },
     makingCharges: { type: Number },
     sizeWeightOffset: { type: Number }
-  }
+  },
+  categoryOverrides: { type: Schema.Types.Mixed, default: {} }
 }, { timestamps: true });
 
 // Explicit Indexes for Performance

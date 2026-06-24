@@ -63,37 +63,37 @@ const GEMSTONE_RATES: Record<string, number> = {
 export function calculateEstimatedWeight(
   baseWeight: number,
   size: string | undefined,
-  category: string,
-  providedRates?: any
+  product: { category: string; categoryConfig?: any; categoryOverrides?: any; }
 ): number {
   if (!size) return baseWeight;
 
-  const rates = providedRates || {};
-  const cat = (category || '').toLowerCase();
+  const overrides = product.categoryOverrides?.weightRules || {};
+  const config = product.categoryConfig?.weightRules || {};
+
+  const sizeIncrementWeight = overrides.sizeIncrementWeight ?? config.sizeIncrementWeight;
+  const lengthIncrementWeight = overrides.lengthIncrementWeight ?? config.lengthIncrementWeight;
+
   const sizeStr = size.trim().toLowerCase();
 
-  // Load offsets from rates or fallbacks
-  const ringsOffset = rates.ringsOffset !== undefined ? rates.ringsOffset : 0.12;
-  const chainsOffset = rates.chainsOffset !== undefined ? rates.chainsOffset : 0.25;
-  const braceletsOffset = rates.braceletsOffset !== undefined ? rates.braceletsOffset : 0.15;
-  const banglesOffset = rates.banglesOffset !== undefined ? rates.banglesOffset : 0.15;
-
-  if (cat.includes('ring')) {
+  if (sizeIncrementWeight !== undefined) {
+    const baseSize = overrides.baseSize ?? config.baseSize ?? 12;
     const sizeNum = parseFloat(sizeStr.replace(/[^\d.]/g, ''));
     if (isNaN(sizeNum)) return baseWeight;
-    const diff = sizeNum - 12; // Base size for rings is 12
-    return Math.max(0.1, baseWeight + (diff * ringsOffset));
+    
+    let diff = sizeNum - baseSize;
+    // Special handling for Bangle step sizes which increment by 0.2
+    if ((product.category || '').toLowerCase().includes('bangle')) {
+      diff = diff / 0.2; 
+    }
+    
+    return Math.max(0.1, baseWeight + (diff * sizeIncrementWeight));
   }
 
-  if (cat.includes('chain') || cat.includes('necklace') || cat.includes('mangalsutra')) {
-    const sizeNum = parseFloat(sizeStr.replace(/[^\d.]/g, ''));
-    if (isNaN(sizeNum)) return baseWeight;
-    const diff = sizeNum - 20; // Base size for chains/necklaces is 20 inches
-    return Math.max(0.1, baseWeight + (diff * chainsOffset));
-  }
-
-  if (cat.includes('bracelet') || cat.includes('anklet')) {
+  if (lengthIncrementWeight !== undefined) {
+    const baseLength = overrides.baseLength ?? config.baseLength ?? 20;
     let offset = 0;
+    
+    // Handle S/M/L/XL text sizes for bracelets
     if (['s', 'small'].includes(sizeStr)) offset = -1;
     else if (['m', 'medium'].includes(sizeStr)) offset = 0;
     else if (['l', 'large'].includes(sizeStr)) offset = 1;
@@ -101,19 +101,11 @@ export function calculateEstimatedWeight(
     else {
       const sizeNum = parseFloat(sizeStr.replace(/[^\d.]/g, ''));
       if (!isNaN(sizeNum)) {
-        // If numeric, treat 7 inches as default M size
-        offset = (sizeNum - 7);
+        offset = sizeNum - baseLength;
       }
     }
-    return Math.max(0.1, baseWeight + (offset * braceletsOffset));
-  }
-
-  if (cat.includes('bangle')) {
-    const sizeNum = parseFloat(sizeStr.replace(/[^\d.]/g, ''));
-    if (isNaN(sizeNum)) return baseWeight;
-    // Step sizes are typically 2.2, 2.4, 2.6, 2.8. Default is 2.4
-    const diff = (sizeNum - 2.4) / 0.2;
-    return Math.max(0.1, baseWeight + (diff * banglesOffset));
+    
+    return Math.max(0.1, baseWeight + (offset * lengthIncrementWeight));
   }
 
   return baseWeight;
@@ -122,7 +114,7 @@ export function calculateEstimatedWeight(
 /**
  * Calculate the metal price based on weight and purity
  */
-function calculateMetalPrice(weight: number, metal: string, purity: string, rates: any): number {
+function calculateMetalPrice(weight: number, metal: string, purity: string, rates: any, product: { categoryConfig?: any; categoryOverrides?: any; }): number {
   const metalRates = rates?.metalRates || rates || { gold24k: 6500, silver: 100, platinum: 4000 };
   let rate = metalRates.gold24k || rates.goldRate24K || 6500;
   
@@ -137,8 +129,20 @@ function calculateMetalPrice(weight: number, metal: string, purity: string, rate
   }
   
   const multipliers = rates?.purityMultipliers || PURITY_MULTIPLIERS;
-  const multiplier = multipliers[purity] || multipliers['18K'] || 0.750;
-  return weight * rate * multiplier;
+  const baseMultiplier = multipliers[purity] || multipliers['18K'] || 0.750;
+  
+  let metalPrice = weight * rate * baseMultiplier;
+
+  // Apply Purity Adjustment from Config/Overrides
+  const pOverrides = product.categoryOverrides?.pricingRules?.goldPurityAdjustments || {};
+  const pConfig = product.categoryConfig?.pricingRules?.goldPurityAdjustments || {};
+  const adjustmentPercentage = pOverrides[purity] ?? pConfig[purity];
+
+  if (adjustmentPercentage) {
+    metalPrice = metalPrice * (1 + (adjustmentPercentage / 100));
+  }
+
+  return metalPrice;
 }
 
 /**
@@ -155,6 +159,8 @@ export function calculatePricing(
     stoneType?: string;
     specs?: any;
     pricingOverrides?: any;
+    categoryConfig?: any;
+    categoryOverrides?: any;
   },
   config: ProductConfiguration,
   providedRates?: any
@@ -164,10 +170,10 @@ export function calculatePricing(
   
   // Calculate dynamic gold weight using category specific rules
   const baseWeightVal = product.baseWeight || product.price || 5.0;
-  const estimatedGoldWeight = calculateEstimatedWeight(baseWeightVal, config.size, product.category, rates);
+  const estimatedGoldWeight = calculateEstimatedWeight(baseWeightVal, config.size, product);
   
   // Metal pricing
-  const metalPrice = calculateMetalPrice(estimatedGoldWeight, config.metal, config.purity, rates);
+  const metalPrice = calculateMetalPrice(estimatedGoldWeight, config.metal, config.purity, rates, product);
   
   // Stone pricing (weight-driven or spec-driven)
   let stonePrice = 0;
@@ -189,6 +195,14 @@ export function calculatePricing(
       const ratePerCarat = DIAMOND_RATES[grade] || DIAMOND_RATES['Diamond-Standard'];
       stonePrice = dWeight * ratePerCarat;
     }
+
+    // Apply Diamond Quality Adjustment
+    const dOverrides = product.categoryOverrides?.pricingRules?.diamondQualityAdjustments || {};
+    const dConfig = product.categoryConfig?.pricingRules?.diamondQualityAdjustments || {};
+    const adjustmentPercentage = dOverrides[grade] ?? dConfig[grade];
+    if (adjustmentPercentage) {
+      stonePrice = stonePrice * (1 + (adjustmentPercentage / 100));
+    }
     
     let activeWeight = parseFloat(specsObj.diamondWeight || specsObj.stoneWeight || '0') || 0;
     const weightMatch = grade.match(/([\d.-]+)\s*ct/i);
@@ -209,6 +223,15 @@ export function calculatePricing(
       const ratePerCarat = GEMSTONE_RATES[sType] || GEMSTONE_RATES['default'];
       stonePrice = sWeight * ratePerCarat;
     }
+
+    // Apply Stone Quality Adjustment
+    const sOverrides = product.categoryOverrides?.pricingRules?.stoneQualityAdjustments || {};
+    const sConfig = product.categoryConfig?.pricingRules?.stoneQualityAdjustments || {};
+    const stoneGrade = config.stone || '';
+    const adjustmentPercentage = sOverrides[stoneGrade] ?? sConfig[stoneGrade];
+    if (adjustmentPercentage) {
+      stonePrice = stonePrice * (1 + (adjustmentPercentage / 100));
+    }
     
     let activeWeight = parseFloat(specsObj.stoneWeight || specsObj.diamondWeight || '0') || 0;
     const weightMatch = (config.stone || '').match(/([\d.-]+)\s*ct/i);
@@ -218,10 +241,24 @@ export function calculatePricing(
     estimatedStoneWeightGrams = activeWeight * 0.2;
   }
 
-  // Making charges: Use product override, then product default, then fallback to 15% of gold value
-  const makingCharges = overrides.makingCharges !== undefined 
-    ? overrides.makingCharges 
-    : (product.makingCharges || (metalPrice * 0.15));
+  // Making charges: Check Category Overrides, then Category Config, then Product Fallback
+  let makingCharges = 0;
+  const mcOverride = product.categoryOverrides?.makingCharges;
+  const mcConfig = product.categoryConfig?.makingCharges;
+  const mcEffective = mcOverride ?? mcConfig;
+
+  if (mcEffective) {
+    if (mcEffective.type === 'percentage') {
+      makingCharges = metalPrice * (mcEffective.value / 100);
+    } else if (mcEffective.type === 'fixed') {
+      makingCharges = mcEffective.value;
+    }
+  } else {
+    // Legacy fallback
+    makingCharges = overrides.makingCharges !== undefined 
+      ? overrides.makingCharges 
+      : (product.makingCharges || (metalPrice * 0.15));
+  }
   
   const subTotal = metalPrice + makingCharges + stonePrice;
   const gstRate = (rates.gstPercentage !== undefined ? rates.gstPercentage : 3) / 100;

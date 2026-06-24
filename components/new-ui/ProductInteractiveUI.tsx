@@ -143,6 +143,20 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
     return initialConfig;
   };
   
+  // Dynamic Visibility Helper
+  const isVisible = (variantKey: string, fallback: boolean = true) => {
+    // 1. Product Override
+    if (product.categoryOverrides?.variantVisibility?.[variantKey] !== undefined) {
+      return product.categoryOverrides.variantVisibility[variantKey];
+    }
+    // 2. Category Config
+    if (product.categoryConfig?.variantVisibility?.[variantKey] !== undefined) {
+      return product.categoryConfig.variantVisibility[variantKey];
+    }
+    // 3. System Fallback
+    return fallback;
+  };
+
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
@@ -563,6 +577,7 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
             <div className="space-y-8 pr-0 lg:pr-8 lg:border-r lg:border-brand-text/10">
               
               {/* Metal Selector */}
+              {isVisible('metal', true) && (
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Select Metal / Color</span>
@@ -690,8 +705,10 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
                   </div>
                 )}
               </div>
+              )}
 
               {/* Purity Selector */}
+              {isVisible('purity', true) && (
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Select Purity</span>
@@ -724,14 +741,16 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
                   })}
                 </div>
               </div>
+              )}
 
               {/* Category-aware Size/Length Selector */}
-              {['rings', 'bangles', 'chains', 'bracelets', 'mangalsutras', 'anklets', 'necklaces'].includes(product.category?.toLowerCase() || '') && (
+              {(isVisible('size', ['rings', 'bangles', 'bracelets', 'anklets'].includes(product.category?.toLowerCase() || '')) || 
+                isVisible('length', ['chains', 'mangalsutras', 'necklaces', 'bracelets', 'anklets'].includes(product.category?.toLowerCase() || ''))) && (
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center">
                      <div className="flex items-center space-x-2">
                       <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">
-                        {(product.category?.toLowerCase() || '') === 'rings' ? 'Ring Size' : (product.category?.toLowerCase() || '') === 'bangles' ? 'Bangle Size' : 'Length'}
+                        {isVisible('size', false) ? (product.category?.toLowerCase() === 'rings' ? 'Ring Size' : product.category?.toLowerCase() === 'bangles' ? 'Bangle Size' : 'Size') : 'Length'}
                       </span>
                       {showValidation && isFieldMissing('size', validation.missingFields) && (
                         <span className="text-[9px] text-red-500 font-bold uppercase tracking-widest flex items-center animate-pulse">
@@ -781,7 +800,7 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
               )}
 
               {/* Diamond Quality Selector */}
-              {product.jewelryType === 'diamond' && (
+              {isVisible('diamondQuality', product.jewelryType === 'diamond') && (
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Diamond Clarity</span>
@@ -805,6 +824,31 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
                             ? "bg-brand-gold text-white border-brand-gold shadow-premium" 
                             : "bg-white dark:bg-[#1a1614] text-brand-muted border-brand-gold/10 dark:border-white/5 hover:border-brand-gold",
                           showValidation && isFieldMissing('stone', validation.missingFields) && "border-red-200"
+                        )}
+                      >
+                        {q.replace('-', ' ')}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Additional Stone Selectors could be conditionally rendered here based on isVisible('stone') */}
+              {isVisible('stone', product.jewelryType === 'stone') && stones.length > 0 && product.jewelryType !== 'diamond' && (
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-text">Stone Selection</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {stones.map((q: string) => (
+                      <button
+                        key={q}
+                        onClick={() => setConfig({ ...config, stone: q })}
+                        className={cn(
+                          "px-4 py-2.5 rounded-xl text-[9px] uppercase tracking-widest font-bold border transition-all duration-300",
+                          config.stone === q
+                            ? "bg-brand-gold text-white border-brand-gold shadow-premium" 
+                            : "bg-white dark:bg-[#1a1614] text-brand-muted border-brand-gold/10 dark:border-white/5 hover:border-brand-gold"
                         )}
                       >
                         {q.replace('-', ' ')}

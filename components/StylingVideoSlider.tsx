@@ -6,11 +6,11 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 const videos = [
-  { id: 1, url: 'https://youtube.com/shorts/DIdvAeTcR3o?si=SGv3jksUslEbteXV', title: 'Adele - Skyfall', thumbnail: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600', link: '/products?tag=featured' },
-  { id: 2, url: 'https://youtu.be/DeumyOzKqgI?si=iannnhz9RK-gtcz3', title: 'The Solitaire Look', thumbnail: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600', link: '/products?tag=solitaire' },
-  { id: 3, url: 'https://youtu.be/DeumyOzKqgI?si=iannnhz9RK-gtcz3', title: 'Minimalist Magic', thumbnail: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=600', link: '/products?style=minimalist' },
-  { id: 4, url: 'https://youtu.be/DeumyOzKqgI?si=iannnhz9RK-gtcz3', title: 'Bridal Brilliance', thumbnail: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=600', link: '/products?tag=wedding' },
-  { id: 5, url: 'https://youtu.be/DeumyOzKqgI?si=iannnhz9RK-gtcz3', title: 'Heritage Elegance', thumbnail: 'https://images.unsplash.com/photo-1588444837495-c6bfcceebce7?auto=format&fit=crop&q=80&w=600', link: '/products?collection=heritage' }
+  { id: 1, url: 'https://youtube.com/shorts/siNBYmnznR8?si=3RU0yqgmMOi5YdXz', title: 'Adele - Skyfall', thumbnail: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600', link: '/products?tag=featured' },
+  { id: 2, url: 'https://youtube.com/shorts/gf7Nwtc3XPQ?si=o3Ewvy5tqL-oTz2a', title: 'The Solitaire Look', thumbnail: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600', link: '/products?tag=solitaire' },
+  { id: 3, url: 'https://youtube.com/shorts/O2iFzHObLQw?si=GdgsH8VtkH5WeTjL', title: 'Minimalist Magic', thumbnail: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=600', link: '/products?style=minimalist' },
+  { id: 4, url: 'https://youtube.com/shorts/d57em3y3MXQ?si=_DZMkeczYy_T153f', title: 'Bridal Brilliance', thumbnail: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=600', link: '/products?tag=wedding' },
+  { id: 5, url: 'https://youtube.com/shorts/bxAAw8o-AxM?si=rMkxddJgDK5g6C41', title: 'Heritage Elegance', thumbnail: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=600', link: '/products?collection=heritage' }
 ];
 
 const getYoutubeEmbedUrl = (url: string) => {

@@ -9,10 +9,18 @@ export async function GET(
   try {
     await dbConnect();
     const { slug } = await params;
-    const product = await Product.findOne({ slug, isActive: { $ne: false } });
+    const product = await Product.findOne({ slug, isActive: { $ne: false } }).lean();
     
     if (!product) {
       return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
+    }
+
+    // Hydrate Category Config
+    const Category = (await import('@/models/Category')).default;
+    const category = await Category.findOne({ slug: product.category }).lean();
+    
+    if (category && category.config) {
+      product.categoryConfig = category.config;
     }
     
     return NextResponse.json({ success: true, data: product });
