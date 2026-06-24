@@ -456,7 +456,7 @@ export default function HomeContent() {
               </div>
               <h3 className="text-4xl font-serif text-brand-text max-w-62.5 leading-tight">Exchange your Old Gold for 100% Value!</h3>
               <p className="text-brand-text/60 dark:text-brand-text/80 text-xs leading-relaxed max-w-62.5">Unlock full value for your old gold today with our <span className="font-bold text-brand-text">Exchange Program!</span></p>
-              <Link href="/exchange" className="w-full sm:w-max px-6 py-3 border border-brand-gold bg-white rounded-full text-[10px] uppercase tracking-widest font-bold text-brand-text hover:bg-brand-gold hover:text-white transition-all flex items-center justify-center space-x-2">
+              <Link href="/exchange" className="w-full sm:w-max px-6 py-3 border border-brand-gold bg-brand-gold text-white rounded-full text-[10px] uppercase tracking-widest font-bold hover:bg-[#B38B36] transition-all flex items-center justify-center space-x-2">
                 <span>Know more</span>
                 <ArrowRight size={10} />
               </Link>

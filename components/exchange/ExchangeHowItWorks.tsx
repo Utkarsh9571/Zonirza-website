@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Minus, Search } from 'lucide-react';
+import { Plus, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 
 const steps = [
   { id: 'step1', title: 'Bring your old gold purchased from any jeweller.' },
@@ -46,7 +45,7 @@ export default function ExchangeHowItWorks() {
                 <h5 className="text-xl font-bold text-[#8c3a3a] dark:text-[#e08686] mb-2">Zoniraz Alwar</h5>
                 <p className="text-sm text-brand-text/70 dark:text-white/70 mb-6">
                   SHOP NO. 7, HANUMAN BURJ,<br />
-                  ALWAR, Alwar, Rajasthan, 301001
+                  Alwar, Rajasthan, 301001
                 </p>
                 
                 <button 
@@ -75,7 +74,7 @@ export default function ExchangeHowItWorks() {
                       onClick={() => setExpandedId(isExpanded ? null : step.id)}
                       className={cn(
                         "w-full py-4 px-6 flex items-center justify-between text-left transition-colors",
-                        isExpanded ? "bg-gradient-to-r from-brand-gold/10 to-transparent" : "hover:bg-brand-gold/5"
+                        isExpanded ? "bg-linear-to-r from-brand-gold/10 to-transparent" : "hover:bg-brand-gold/5"
                       )}
                     >
                       <div className="flex items-center space-x-3">

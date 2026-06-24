@@ -72,7 +72,6 @@ export default function BlogClientPage() {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-linear-to-r from-brand-text/70 via-brand-text/40 to-transparent" />
         </div>
 
         <div className="relative z-10 h-full max-w-7xl mx-auto px-6 sm:px-12 flex flex-col justify-end pb-16">

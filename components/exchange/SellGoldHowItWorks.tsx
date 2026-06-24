@@ -48,7 +48,7 @@ export default function SellGoldHowItWorks() {
               <div className="bg-[#FAF9F6] dark:bg-white/5 border border-brand-text/10 dark:border-white/10 rounded-2xl p-6 w-full max-w-sm mx-auto shadow-sm">
                 <p className="text-sm font-medium text-brand-text/80 dark:text-white/80">
                   SHOP NO. 7, HANUMAN BURJ,<br />
-                  ALWAR, Alwar, Rajasthan, 301001
+                  Alwar, Rajasthan, 301001
                 </p>
               </div>
 
@@ -70,7 +70,7 @@ export default function SellGoldHowItWorks() {
                       onClick={() => setExpandedId(isExpanded ? null : step.id)}
                       className={cn(
                         "w-full py-5 px-6 flex items-center justify-between text-left transition-colors",
-                        isExpanded ? "bg-gradient-to-r from-brand-gold/10 to-transparent" : "hover:bg-brand-gold/5"
+                        isExpanded ? "bg-linear-to-r from-brand-gold/10 to-transparent" : "hover:bg-brand-gold/5"
                       )}
                     >
                       <div className="flex items-center space-x-3">

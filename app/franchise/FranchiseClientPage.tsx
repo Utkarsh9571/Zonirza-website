@@ -138,14 +138,14 @@ export default function FranchiseClientPage() {
               <div className="flex items-start space-x-6">
                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0"><Briefcase size={18} /></div>
                 <div>
-                  <h4 className="text-sm font-bold uppercase tracking-widest mb-2">Expansion Model</h4>
+                  <h4 className="text-sm font-bold text-white uppercase tracking-widest mb-2">Expansion Model</h4>
                   <p className="text-xs text-[#EAE1D5]/50">FOCO & FOFO Models available for Tier 1 & Tier 2 cities.</p>
                 </div>
               </div>
               <div className="flex items-start space-x-6">
                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0"><Award size={18} /></div>
                 <div>
-                  <h4 className="text-sm font-bold uppercase tracking-widest mb-2">Brand Value</h4>
+                  <h4 className="text-sm font-bold text-white uppercase tracking-widest mb-2">Brand Value</h4>
                   <p className="text-xs text-[#EAE1D5]/50">Access to exclusive collections and established customer loyalty.</p>
                 </div>
               </div>
