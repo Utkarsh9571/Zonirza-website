@@ -7,7 +7,6 @@ import {
   Filter, 
   X, 
   Search, 
-  List,
   ShoppingBag,
   ArrowRight
 } from 'lucide-react';

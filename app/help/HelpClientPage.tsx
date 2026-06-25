@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Plus, Minus, ChevronRight, MessageCircle, Phone, Mail, Clock } from 'lucide-react';
+import { Plus, Minus, ChevronRight, Phone, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -463,7 +463,7 @@ function HelpContent() {
           </nav>
 
           {/* QUICK CONTACT BOX */}
-          <div className="mt-12 p-8 bg-[#1a1614] dark:bg-white/5 rounded-[32px] text-white space-y-6 border border-transparent dark:border-white/10 shadow-lg">
+          <div className="mt-12 p-8 bg-[#1a1614] dark:bg-white/5 rounded-4xl text-white space-y-6 border border-transparent dark:border-white/10 shadow-lg">
             <h3 className="font-serif text-white/80 text-xl">Need more help?</h3>
             <div className="space-y-4">
               <a href="tel:9784836060" className="flex items-center space-x-3 text-white/80 hover:text-white transition-colors">
@@ -491,7 +491,7 @@ function HelpContent() {
         <div className="mb-12">
           <div className="flex items-center space-x-3 text-[10px] uppercase tracking-[0.3em] font-bold text-brand-gold mb-4">
             <span>Zoniraz Help Center</span>
-            <span className="w-8 h-[1px] bg-brand-gold/30"></span>
+            <span className="w-8 h-px bg-brand-gold/30"></span>
             <span>{activeCategory?.name}</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-serif text-brand-text leading-tight">
@@ -504,7 +504,7 @@ function HelpContent() {
             <div
               key={idx}
               className={cn(
-                "border rounded-[24px] transition-all duration-500 overflow-hidden",
+                "border rounded-3xl transition-all duration-500 overflow-hidden",
                 openIndex === idx ? "border-brand-gold/40 bg-[#FDF9F6] dark:bg-zinc-900" : "border-brand-text/5 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:border-brand-gold/20"
               )}
             >
