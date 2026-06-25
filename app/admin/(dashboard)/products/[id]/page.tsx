@@ -3,9 +3,10 @@
 import { useState, useEffect, use, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import AdminImageUploader from '@/components/admin/AdminImageUploader';
 import { 
   Save, 
-  ArrowLeft, 
+  ArrowLeft,
   Plus, 
   X, 
   Image as ImageIcon, 
@@ -286,13 +287,13 @@ function ProductEditorContent({ params }: ProductEditorProps) {
 
       {/* Error/Success Messages */}
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 p-6 rounded-[32px] flex items-center space-x-4 text-red-500 animate-in fade-in slide-in-from-top-4">
+        <div className="bg-red-500/10 border border-red-500/20 p-6 rounded-4xl flex items-center space-x-4 text-red-500 animate-in fade-in slide-in-from-top-4">
           <AlertCircle size={20} />
           <p className="text-[12px] font-bold uppercase tracking-widest">{error}</p>
         </div>
       )}
       {success && (
-        <div className="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-[32px] flex items-center space-x-4 text-emerald-500 animate-in fade-in slide-in-from-top-4">
+        <div className="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-4xl flex items-center space-x-4 text-emerald-500 animate-in fade-in slide-in-from-top-4">
           <CheckCircle2 size={20} />
           <p className="text-[12px] font-bold uppercase tracking-widest">{success}</p>
         </div>
@@ -371,7 +372,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
               </div>
               <div className="space-y-4">
                 <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Visibility</label>
-                <div className="flex items-center space-x-6 h-[60px]">
+                <div className="flex items-center space-x-6 h-15">
                   <button 
                     onClick={() => setFormData({...formData, isActive: true})}
                     className={cn(
@@ -401,7 +402,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
                 rows={6}
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
-                className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/20 dark:border-white/20 rounded-[32px] py-6 px-8 text-[14px] leading-relaxed text-brand-text dark:text-white focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
+                className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/20 dark:border-white/20 rounded-4xl py-6 px-8 text-[14px] leading-relaxed text-brand-text dark:text-white focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
               />
             </div>
 
@@ -544,7 +545,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
             </div>
             <div className="space-y-4">
               <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Inventory Lifecycle</label>
-              <div className="flex items-center space-x-6 h-[60px]">
+              <div className="flex items-center space-x-6 h-15">
                 <button 
                   onClick={() => setFormData({...formData, stockStatus: 'in-stock'})}
                   className={cn(
@@ -610,69 +611,11 @@ function ProductEditorContent({ params }: ProductEditorProps) {
         {activeTab === 'media' && (
           <div className="bg-white dark:bg-white/10 rounded-[40px] border border-brand-text/15 dark:border-white/15 p-10 space-y-10 animate-in fade-in duration-700 shadow-md">
             <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Image Assets</label>
-                <button 
-                  onClick={() => setFormData({...formData, images: [...formData.images, '']})}
-                  className="text-[10px] font-bold text-brand-gold uppercase tracking-widest flex items-center space-x-2"
-                >
-                  <Plus size={14} />
-                  <span>Add Filename</span>
-                </button>
-              </div>
-              <div className="grid grid-cols-1 gap-4">
-                {formData.images.map((img: string, idx: number) => (
-                  <div key={idx} className="flex items-center space-x-4 p-4 bg-slate-50 dark:bg-white/5 rounded-2xl group border border-brand-text/10 hover:border-brand-gold/20 transition-all shadow-sm">
-                    <div className="w-12 h-12 rounded-lg bg-white dark:bg-black/20 flex items-center justify-center overflow-hidden">
-                      <img src={resolveProductImage(img)} className="w-full h-full object-contain p-1" />
-                    </div>
-                    <input 
-                      type="text" 
-                      value={img}
-                      onChange={(e) => {
-                        const newImages = [...formData.images];
-                        newImages[idx] = e.target.value;
-                        setFormData({...formData, images: newImages});
-                      }}
-                      placeholder="e.g. yellow-gold-product-01.jpg"
-                      className="flex-1 bg-transparent border-none text-[13px] text-brand-text dark:text-white focus:ring-0"
-                    />
-                    <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button 
-                        onClick={() => {
-                          if (idx === 0) return;
-                          const newImages = [...formData.images];
-                          [newImages[idx-1], newImages[idx]] = [newImages[idx], newImages[idx-1]];
-                          setFormData({...formData, images: newImages});
-                        }}
-                        className="p-2 hover:text-brand-gold transition-colors"
-                      >
-                        <MoveUp size={14} />
-                      </button>
-                      <button 
-                        onClick={() => {
-                          if (idx === formData.images.length - 1) return;
-                          const newImages = [...formData.images];
-                          [newImages[idx+1], newImages[idx]] = [newImages[idx], newImages[idx+1]];
-                          setFormData({...formData, images: newImages});
-                        }}
-                        className="p-2 hover:text-brand-gold transition-colors"
-                      >
-                        <MoveDown size={14} />
-                      </button>
-                      <button 
-                        onClick={() => {
-                          const newImages = formData.images.filter((_:any, i:number) => i !== idx);
-                          setFormData({...formData, images: newImages});
-                        }}
-                        className="p-2 hover:text-red-500 transition-colors"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <AdminImageUploader 
+                images={formData.images} 
+                onChange={(newImages) => setFormData({...formData, images: newImages})} 
+                category={formData.category} 
+              />
             </div>
 
             {/* Video Assets Section */}
@@ -727,7 +670,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
                 <p className="text-[9px] text-brand-text/40 italic">Enable cinematic video preview when user hovers or scrolls to the product card.</p>
               </div>
 
-              <div className="flex items-center space-x-6 h-[60px]">
+              <div className="flex items-center space-x-6 h-15">
                 <button 
                   onClick={() => setFormData({...formData, enableCardVideoPreview: true})}
                   className={cn(
@@ -841,7 +784,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
                           }
                         }
                       }}
-                      className="bg-transparent border-none text-[13px] text-brand-text dark:text-white focus:ring-0 min-w-[200px]"
+                      className="bg-transparent border-none text-[13px] text-brand-text dark:text-white focus:ring-0 min-w-50"
                     />
                   </div>
                 </div>
@@ -900,7 +843,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
               </p>
               <div className="grid grid-cols-1 gap-6">
                 {formData.configurableOptions.metals.map((metal: string) => (
-                  <div key={metal} className="grid grid-cols-1 md:grid-cols-3 items-center gap-6 p-6 bg-slate-50 dark:bg-white/5 rounded-[32px] border border-brand-text/15 dark:border-white/10 shadow-sm">
+                  <div key={metal} className="grid grid-cols-1 md:grid-cols-3 items-center gap-6 p-6 bg-slate-50 dark:bg-white/5 rounded-4xl border border-brand-text/15 dark:border-white/10 shadow-sm">
                     <span className="text-[13px] font-bold text-brand-text dark:text-white">{metal}</span>
                     <select 
                       value={formData.variantImages[metal.toLowerCase().replace(/ /g, '-')] || ''}

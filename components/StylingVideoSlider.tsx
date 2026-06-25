@@ -193,10 +193,10 @@ export default function StylingVideoSlider() {
   return (
     <div 
       ref={containerRef}
-      className="relative w-full h-[600px] sm:h-[700px] flex items-center justify-center overflow-hidden touch-pan-y"
+      className="relative w-full h-150 sm:h-175 flex items-center justify-center overflow-hidden touch-pan-y"
     >
       <div 
-        className="relative w-[260px] sm:w-[340px] aspect-[9/16] flex items-center justify-center z-0 touch-none pointer-events-none"
+        className="relative w-65 sm:w-85 aspect-9/16 flex items-center justify-center z-0 touch-none pointer-events-none"
       >
         {videos.map((video, i) => {
           const isCurrentCard = i === current;
@@ -209,7 +209,7 @@ export default function StylingVideoSlider() {
               onPointerLeave={isCurrentCard ? onPointerUp : undefined}
               onPointerCancel={isCurrentCard ? onPointerUp : undefined}
               className={cn(
-                "absolute inset-0 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] rounded-[32px] overflow-hidden shadow-2xl border border-white/10 bg-brand-text",
+                "absolute inset-0 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] rounded-4xl overflow-hidden shadow-2xl border border-white/10 bg-brand-text",
                 isCurrentCard ? "pointer-events-auto cursor-grab active:cursor-grabbing" : "pointer-events-none"
               )}
               style={getCardStyle(i) as any}
@@ -217,12 +217,12 @@ export default function StylingVideoSlider() {
               <div className="relative w-full h-full">
                 {renderContent(video, isCurrentCard)}
                 <div className={cn(
-                  "absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10 pointer-events-none transition-opacity duration-500",
+                  "absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent z-10 pointer-events-none transition-opacity duration-500",
                   isCurrentCard ? "opacity-100" : "opacity-0"
                 )} />
                 {isCurrentCard && (
                   <div className="absolute top-6 left-0 right-0 px-6 flex justify-between items-center z-50 pointer-events-auto">
-                    <p className="text-[10px] text-white/80 font-medium tracking-tight truncate max-w-[150px]">
+                    <p className="text-[10px] text-white/80 font-medium tracking-tight truncate max-w-37.5">
                       Find the perfect diam...
                     </p>
                     <div className="flex items-center space-x-3">
@@ -245,7 +245,7 @@ export default function StylingVideoSlider() {
                   </div>
                 )}
                 <div className={cn(
-                  "absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/90 to-transparent text-white transition-all duration-700 z-20",
+                  "absolute bottom-0 left-0 right-0 p-8 bg-linear-to-t from-black/90 to-transparent text-white transition-all duration-700 z-20",
                   isCurrentCard ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                 )}>
                   <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-brand-gold mb-2">Styling 101</p>
@@ -264,7 +264,7 @@ export default function StylingVideoSlider() {
         })}
       </div>
 
-      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 sm:px-24 z-[200] pointer-events-none">
+      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 sm:px-24 z-200 pointer-events-none">
         <button 
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); prev(); }}
           className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/40 backdrop-blur-md text-brand-text flex items-center justify-center hover:bg-brand-gold hover:text-white transition-all shadow-premium border border-white/60 active:scale-90 pointer-events-auto cursor-pointer touch-safe-hit"

@@ -23,16 +23,26 @@ export const resolveProductImage = (imageName: any): string => {
     return trimmed;
   }
 
-  // 2. Handle already resolved paths (starting with /)
+  // 2. Handle new VPS storage paths that are already correct (V2 Architecture)
+  if (
+    trimmed.startsWith('/images/products/') || 
+    trimmed.startsWith('/images/blogs/') || 
+    trimmed.startsWith('/images/misc/') ||
+    trimmed.startsWith('/videos/')
+  ) {
+    return trimmed;
+  }
+
+  // 3. Handle already resolved paths (starting with /)
   if (trimmed.startsWith('/')) {
-    // If it's already a full path like /images/images/product/xxx, return it
+    // If it's already a full legacy path like /images/images/product/xxx, return it
     if (trimmed.includes(PRODUCT_IMAGE_PATH)) return trimmed;
     
     // If it's just /filename.jpg, prepend our base path
     return `${PRODUCT_IMAGE_PATH}${trimmed}`;
   }
 
-  // 3. Handle filename-only mapping (most common for legacy migration)
+  // 4. Handle filename-only mapping (most common for legacy migration)
   // Normalize: handle spaces, inconsistent extensions if needed
   const normalizedName = trimmed.replace(/\s+/g, '-');
 
