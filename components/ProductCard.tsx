@@ -27,6 +27,7 @@ interface ProductCardProps {
   enableCardVideoPreview?: boolean;
   cardPreviewVideo?: string;
   cardPreviewThumbnail?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   product?: any;
 }
 
@@ -44,9 +45,31 @@ const ProductCard = ({
   cardPreviewThumbnail,
   product
 }: ProductCardProps) => {
-  const selectedMetal = product ? resolveDefaultMetal(product, context) : null;
-  const computedContext = selectedMetal ? { ...context, metal: selectedMetal } : context;
-  const selectedImage = getProductThumbnail({ images, variantImages }, computedContext) || image;
+  let displayMetal = context?.metal;
+  if (!displayMetal && product) {
+    displayMetal = resolveDefaultMetal(product, context);
+  }
+  
+  let selectedImage: string | undefined = image;
+  if (product && product.variantImages) {
+    const normalizedVariantImages: Record<string, string> = {};
+    Object.keys(product.variantImages).forEach(k => {
+      normalizedVariantImages[k.toLowerCase().replace(/\s+/g, '-')] = product.variantImages[k];
+    });
+    selectedImage = (displayMetal && normalizedVariantImages[displayMetal]) || undefined;
+    if (!selectedImage && displayMetal && product.images?.length) {
+      const metalStr = displayMetal.toLowerCase().replace(/\s+/g, '-');
+      selectedImage = product.images.find((img: string) => img.toLowerCase().includes(metalStr));
+    }
+    if (!selectedImage) {
+      selectedImage = product.images?.[0] || image;
+    }
+  } else {
+    // Fallback for cards without product object
+    const computedContext = displayMetal ? { ...context, metal: displayMetal } : context;
+    selectedImage = getProductThumbnail({ images, variantImages }, computedContext) || image;
+  }
+
   const imageUrl = resolveProductImage(selectedImage);
   const { currentCurrency, rates } = useCurrencyStore();
   const { status } = useSession();
@@ -56,14 +79,14 @@ const ProductCard = ({
   let displayPriceValue = price;
   if (product) {
     const config = {
-      metal: selectedMetal || 'yellow-gold',
+      metal: displayMetal || 'yellow-gold',
       purity: product.goldPurityOptions?.[0] || '18K',
       stone: product.configurableOptions?.stones?.[0] || 'None',
     };
     try {
       const pricing = calculatePricing(product, config, rates);
       displayPriceValue = pricing.totalPrice;
-    } catch (e) {
+    } catch {
       // fallback
     }
   }
@@ -133,7 +156,7 @@ const ProductCard = ({
           alt={name}
           fill
           className={cn(
-            "product-card-img object-cover p-4 sm:p-4 transition-transform transition-opacity duration-700 rounded-[50px]",
+            "product-card-img object-cover p-4 sm:p-4 transition-all duration-700 rounded-[50px]",
             (enableCardVideoPreview && cardPreviewVideo && (isVisible || isHovered)) ? "opacity-0" : "opacity-100"
           )}
           sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"

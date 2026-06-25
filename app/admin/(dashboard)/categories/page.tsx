@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { 
   Plus, 
   Edit2, 
@@ -18,6 +19,7 @@ export default function AdminCategoriesPage() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [formData, setFormData] = useState<any>({ name: '', slug: '', image: '', description: '', config: {} });
   const [modalTab, setModalTab] = useState<'basic' | 'visibility' | 'weight' | 'charges'>('basic');
 
@@ -36,7 +38,6 @@ export default function AdminCategoriesPage() {
 
   useEffect(() => {
     fetchCategories();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -95,7 +96,7 @@ export default function AdminCategoriesPage() {
           <div key={cat._id} className="bg-white dark:bg-white/10 rounded-[40px] border border-brand-text/15 dark:border-white/15 overflow-hidden shadow-md group">
             <div className="relative h-48 bg-slate-100 flex items-center justify-center overflow-hidden">
               {cat.image ? (
-                <img src={cat.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt={cat.name} />
+                <Image src={cat.image} alt={cat.name} fill className="object-cover group-hover:scale-110 transition-transform duration-1000" />
               ) : (
                 <ImageIcon size={40} className="text-brand-text/10" />
               )}
@@ -108,6 +109,7 @@ export default function AdminCategoriesPage() {
                       slug: cat.slug, 
                       image: cat.image, 
                       description: cat.description || '',
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       config: (cat as any).config || {} 
                     });
                     setModalTab('basic');
@@ -159,7 +161,7 @@ export default function AdminCategoriesPage() {
                 <button
                   key={tab.id}
                   type="button"
-                  onClick={() => setModalTab(tab.id as any)}
+                  onClick={() => setModalTab(tab.id as 'basic' | 'visibility' | 'weight' | 'charges')}
                   className={`px-4 py-2 text-[10px] uppercase tracking-widest font-bold whitespace-nowrap border-b-2 transition-colors ${
                     modalTab === tab.id 
                       ? 'border-brand-gold text-brand-gold' 
@@ -191,6 +193,7 @@ export default function AdminCategoriesPage() {
                       <select
                         onChange={(e) => {
                           const t = e.target.value;
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
                           let newConfig: any = {};
                           if (t === 'ring') {
                             newConfig = { variantVisibility: { size: true, metal: true, purity: true, diamondQuality: true }, weightRules: { baseSize: 12, sizeIncrementWeight: 0.12 }, makingCharges: { type: 'percentage', value: 15 } };
@@ -379,3 +382,5 @@ export default function AdminCategoriesPage() {
     </div>
   );
 }
+
+

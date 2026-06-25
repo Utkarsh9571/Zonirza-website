@@ -18,8 +18,14 @@ export interface ImageContext {
 export const getProductThumbnail = (product: any, context?: ImageContext): string => {
   if (!product) return '';
   
-  const variantImages = product.variantImages || {};
+  const variantImagesRaw = product.variantImages || {};
   const images = product.images || [];
+
+  // Normalize variantImage keys safely
+  const variantImages: Record<string, string> = {};
+  Object.keys(variantImagesRaw).forEach(k => {
+    variantImages[k.toLowerCase().replace(/\s+/g, '-')] = variantImagesRaw[k];
+  });
 
   // 1. Explicit Metal Context (from filters)
   if (context?.metal) {

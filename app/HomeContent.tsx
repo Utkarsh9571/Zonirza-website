@@ -136,7 +136,7 @@ export default function HomeContent() {
 
               <div className="relative w-full aspect-4/5 rounded-[40px] overflow-hidden group shadow-soft">
                 <Image
-                  src="/images/images/product/rose-gold-16017058153130.jpg"
+                  src="/images/images/product/yellow-gold-16516404131671.jpg"
                   alt="Solitaire Dream"
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 400px"
@@ -210,7 +210,7 @@ export default function HomeContent() {
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             {((homeContent?.trendingCollections && homeContent.trendingCollections.length > 0) ? homeContent.trendingCollections : [
-              { title: 'The Solitaire Promise', imageUrl: '/images/images/product/rose-gold-16010347432265.jpg', link: '/products?collection=solitaire' },
+              { title: 'The Solitaire Promise', imageUrl: '/images/images/product/yellow-gold-1651640118723.jpg', link: '/products?collection=solitaire' },
               { title: 'Vintage Heirloom', imageUrl: '/images/images/product/yellow-gold-16010959532807.jpg', link: '/products?collection=heritage' },
               { title: 'Modern Minimalism', imageUrl: '/images/images/product/default-16345640053092.jpg', link: '/products?collection=minimal' }
             ]).map((trend: ITrendingCollection, i: number) => (
@@ -235,7 +235,7 @@ export default function HomeContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-auto md:h-125">
             <div className="grid grid-rows-2 gap-4 h-100 md:h-full">
               <Link href="/products?tag=featured" className="relative rounded-4xl overflow-hidden shadow-soft group block border border-brand-gold">
-                <Image src="/images/images/product/rose-gold-16017081121080.jpg" alt="Featured World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
+                <Image src="/images/images/product/yellow-gold-1657457300506.jpg" alt="Featured World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               </Link>
               <Link href="/products?collection=heritage" className="relative rounded-4xl overflow-hidden shadow-soft group block border border-brand-gold">
                 <Image src="/images/images/product/yellow-gold-16010972111558.jpg" alt="Heritage World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
@@ -327,7 +327,7 @@ export default function HomeContent() {
               designation: "Verified Buyer",
               rating: 5,
               product: "1ct Solitaire Ring",
-              image: "/images/images/product/rose-gold-16010347432265.jpg"
+              image: "/images/images/product/yellow-gold-1651640118723.jpg"
             },
             {
               quote: "Zoniraz completely redefined my expectation of luxury jewelry. Their styling advice helped me choose the perfect heritage necklace for my wedding. Exceptional service!",

@@ -234,4 +234,5 @@ export const authOptions: NextAuthOptions = {
     verifyRequest: '/signin?step=verify', // Custom path for "Check Email" state
   },
   secret: process.env.NEXTAUTH_SECRET,
+  debug: true,
 };

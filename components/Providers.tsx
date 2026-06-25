@@ -7,7 +7,7 @@ import { ThemeManager } from "./ThemeManager";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider>
+    <SessionProvider refetchOnWindowFocus={false}>
       <ThemeManager />
       <CartSync />
       <WishlistSync />

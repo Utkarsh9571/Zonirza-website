@@ -515,7 +515,7 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
         </div>
 
         {/* 3. MASSIVE FULL-WIDTH DUAL IMAGE GALLERY */}
-        <div className="w-full relative bg-white dark:bg-[#1a1614] rounded-[40px] overflow-hidden mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150">
+        <div className="w-full relative bg-white dark:bg-[#1a1614] rounded-[48px] overflow-hidden mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150">
           <div className="flex w-full aspect-4/5 lg:aspect-2.5/1 gap-4">
              {/* Media 1 */}
              <div className="w-full lg:w-1/2 relative h-full">
@@ -670,7 +670,7 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
                       <div className="flex flex-wrap gap-3">
                         {config.inspirationImages?.map((img, idx) => (
                           <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-brand-gold/20">
-                            <img src={img} className="w-full h-full object-cover" />
+                            <Image src={img} alt="Inspiration" fill className="object-cover" />
                             <button 
                               onClick={() => {
                                 const newImages = [...(config.inspirationImages || [])];

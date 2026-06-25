@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { PLACEHOLDER_IMAGE, getValidImageUrl } from '@/lib/constants';
 import { useCurrencyStore } from '@/store/currencyStore';
 import { displayPrice } from '@/lib/currency';
 import { getProductThumbnail } from '@/lib/productImage';
@@ -23,16 +22,38 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({ name, price, image, slug, oldPrice, className, variantImages, images, context, product }: ProductCardProps) => {
-  const selectedMetal = product ? resolveDefaultMetal(product, context) : null;
-  const computedContext = selectedMetal ? { ...context, metal: selectedMetal } : context;
-  const selectedImage = getProductThumbnail({ images, variantImages }, computedContext) || image;
+  let displayMetal = context?.metal;
+  if (!displayMetal && product) {
+    displayMetal = resolveDefaultMetal(product, context);
+  }
+  
+  let selectedImage: string | undefined = image;
+  if (product && product.variantImages) {
+    const normalizedVariantImages: Record<string, string> = {};
+    Object.keys(product.variantImages).forEach(k => {
+      normalizedVariantImages[k.toLowerCase().replace(/\s+/g, '-')] = product.variantImages[k];
+    });
+    selectedImage = (displayMetal && normalizedVariantImages[displayMetal]) || undefined;
+    if (!selectedImage && displayMetal && product.images?.length) {
+      const metalStr = displayMetal.toLowerCase().replace(/\s+/g, '-');
+      selectedImage = product.images.find((img: string) => img.toLowerCase().includes(metalStr));
+    }
+    if (!selectedImage) {
+      selectedImage = product.images?.[0] || image;
+    }
+  } else {
+    // Fallback for cards without product object
+    const computedContext = displayMetal ? { ...context, metal: displayMetal } : context;
+    selectedImage = getProductThumbnail({ images, variantImages }, computedContext) || image;
+  }
+
   const imageUrl = resolveProductImage(selectedImage);
   const { currentCurrency, rates } = useCurrencyStore();
 
   let displayPriceValue = price;
   if (product) {
     const config = {
-      metal: selectedMetal || 'yellow-gold',
+      metal: displayMetal || 'yellow-gold',
       purity: product.goldPurityOptions?.[0] || '18K',
       stone: product.configurableOptions?.stones?.[0] || 'None',
     };
@@ -49,7 +70,7 @@ export const ProductCard = ({ name, price, image, slug, oldPrice, className, var
       href={`/product/${slug}`} 
       className={cn('group block w-full touch-safe-hit', className)}
     >
-      <div className="relative aspect-[4/5] w-full rounded-[40px] overflow-hidden bg-white border border-brand-gold shadow-soft transition-all duration-1000 group-hover:shadow-premium lg:group-hover:-translate-y-3">
+      <div className="relative aspect-4/5 w-full rounded-4xl overflow-hidden bg-white border border-brand-gold shadow-soft transition-all duration-1000 group-hover:shadow-premium lg:group-hover:-translate-y-3">
         <Image
           src={imageUrl}
           alt={name}

@@ -277,7 +277,7 @@ function ProductsContent() {
 
             <div className="flex items-center justify-between py-4 border-y border-brand-text/5 dark:border-white/10 transition-colors">
               <div className="flex items-center space-x-6">
-                <div className="hidden md:flex items-center space-x-4">
+                <div className="hidden lg:flex items-center space-x-4">
                   <span className="text-[10px] font-black uppercase tracking-widest text-brand-text/40 dark:text-brand-text/60 transition-colors">View:</span>
                   <div className="flex items-center bg-brand-bg dark:bg-brand-white/10 rounded-full p-1 border border-brand-text/5 dark:border-white/5 transition-colors">
                     {[2, 3, 4].map((cols) => (

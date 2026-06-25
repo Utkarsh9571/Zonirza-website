@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Section } from './Section';
 import { ProductCard } from './ProductCard';
 import { IProduct } from '@/models/Product';
@@ -11,11 +11,9 @@ export const ProductRecommendations = ({ productSlug }: { productSlug: string })
   const [recommendations, setRecommendations] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchRecommendations();
-  }, [productSlug]);
 
-  const fetchRecommendations = async () => {
+
+  const fetchRecommendations = useCallback(async () => {
     try {
       const res = await fetch(`/api/products/${productSlug}/recommendations`);
       const json = await res.json();
@@ -27,15 +25,19 @@ export const ProductRecommendations = ({ productSlug }: { productSlug: string })
     } finally {
       setLoading(false);
     }
-  };
+  }, [productSlug]);
+
+  useEffect(() => {
+    fetchRecommendations();
+  }, [productSlug, fetchRecommendations]);
 
   if (loading || recommendations.length === 0) {
     return null;
   }
 
   return (
-    <Section className="!py-20 bg-brand-bg dark:bg-[#1a1614] transition-colors border-t border-brand-text/5 dark:border-white/5">
-      <div className="max-w-[1440px] mx-auto space-y-12 px-6">
+    <Section className="py-20! bg-brand-bg dark:bg-[#1a1614] transition-colors border-t border-brand-text/5 dark:border-white/5">
+      <div className="max-w-360 mx-auto space-y-12 px-6">
         <div className="flex justify-between items-end">
           <div className="space-y-4">
             <h2 className="text-3xl md:text-4xl font-serif text-brand-text">You May Also Like</h2>
