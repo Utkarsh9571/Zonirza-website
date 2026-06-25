@@ -371,6 +371,20 @@ function ProductEditorContent({ params }: ProductEditorProps) {
                 </select>
               </div>
               <div className="space-y-4">
+                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Default Metal</label>
+                <select 
+                  value={formData.defaultMetal || ''}
+                  onChange={(e) => setFormData({...formData, defaultMetal: e.target.value})}
+                  className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/20 dark:border-white/20 rounded-2xl py-4 px-6 text-[14px] text-brand-text dark:text-white focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
+                >
+                  <option value="">System Default (Yellow Gold)</option>
+                  <option value="yellow-gold">Yellow Gold</option>
+                  <option value="rose-gold">Rose Gold</option>
+                  <option value="white-gold">White Gold</option>
+                  <option value="platinum">Platinum</option>
+                </select>
+              </div>
+              <div className="space-y-4">
                 <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Visibility</label>
                 <div className="flex items-center space-x-6 h-15">
                   <button 

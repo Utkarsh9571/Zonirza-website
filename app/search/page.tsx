@@ -185,6 +185,7 @@ function SearchResultsContent() {
                     slug={product.slug}
                     variantImages={product.variantImages}
                     images={product.images}
+                    product={product}
                     context={{ 
                       search: query,
                       metal: searchParams.get('metal') || undefined

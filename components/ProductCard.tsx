@@ -12,6 +12,8 @@ import { useAuthModalStore } from '@/store/authModalStore';
 import { cn } from '@/lib/utils';
 import { getProductThumbnail } from '@/lib/productImage';
 import { useRef, useEffect, useState } from 'react';
+import { resolveDefaultMetal } from '@/lib/ecommerce';
+import { calculatePricing } from '@/lib/pricing';
 
 interface ProductCardProps {
   name: string;
@@ -25,6 +27,7 @@ interface ProductCardProps {
   enableCardVideoPreview?: boolean;
   cardPreviewVideo?: string;
   cardPreviewThumbnail?: string;
+  product?: any;
 }
 
 const ProductCard = ({
@@ -38,14 +41,32 @@ const ProductCard = ({
   context,
   enableCardVideoPreview,
   cardPreviewVideo,
-  cardPreviewThumbnail
+  cardPreviewThumbnail,
+  product
 }: ProductCardProps) => {
-  const selectedImage = getProductThumbnail({ images, variantImages }, context) || image;
+  const selectedMetal = product ? resolveDefaultMetal(product, context) : null;
+  const computedContext = selectedMetal ? { ...context, metal: selectedMetal } : context;
+  const selectedImage = getProductThumbnail({ images, variantImages }, computedContext) || image;
   const imageUrl = resolveProductImage(selectedImage);
   const { currentCurrency, rates } = useCurrencyStore();
   const { status } = useSession();
   const openAuthModal = useAuthModalStore(state => state.openAuthModal);
   const { toggleItem, isInWishlist } = useWishlistStore();
+
+  let displayPriceValue = price;
+  if (product) {
+    const config = {
+      metal: selectedMetal || 'yellow-gold',
+      purity: product.goldPurityOptions?.[0] || '18K',
+      stone: product.configurableOptions?.stones?.[0] || 'None',
+    };
+    try {
+      const pricing = calculatePricing(product, config, rates);
+      displayPriceValue = pricing.totalPrice;
+    } catch (e) {
+      // fallback
+    }
+  }
 
   const isWishlisted = isInWishlist(slug);
 
@@ -112,7 +133,7 @@ const ProductCard = ({
           alt={name}
           fill
           className={cn(
-            "product-card-img object-cover p-6 sm:p-8 transition-transform transition-opacity duration-700 rounded-[50px]",
+            "product-card-img object-cover p-4 sm:p-4 transition-transform transition-opacity duration-700 rounded-[50px]",
             (enableCardVideoPreview && cardPreviewVideo && (isVisible || isHovered)) ? "opacity-0" : "opacity-100"
           )}
           sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
@@ -166,9 +187,9 @@ const ProductCard = ({
         </h3>
         <div className="flex items-center justify-center space-x-2 sm:space-x-3">
           <p className="text-brand-gold text-[11px] sm:text-[12px] font-bold tracking-wider">
-            {displayPrice(price, currentCurrency, rates)}
+            {displayPrice(displayPriceValue, currentCurrency, rates)}
           </p>
-          {oldPrice && (
+          {oldPrice && oldPrice > displayPriceValue && (
             <p className="text-brand-muted/40 dark:text-brand-muted/60 text-[9px] sm:text-[10px] line-through font-medium italic transition-colors">
               {displayPrice(oldPrice, currentCurrency, rates)}
             </p>

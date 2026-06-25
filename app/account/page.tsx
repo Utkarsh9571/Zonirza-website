@@ -45,7 +45,7 @@ interface Address {
 
 type OrderHistory = { _id: string; createdAt: string; orderStatus?: string; paymentStatus?: string; items: { name: string; image?: string; quantity: number }[] };
 type UserQuote = { _id: string; createdAt: string; status: string; quotedPrice?: number; estimation?: { estimatedPriceMin: number; estimatedPriceMax: number }; complexity?: string; customizationNotes?: string; configuration: { metal: string; purity: string }; product?: { name?: string; images?: string[] } };
-type WishlistProduct = { slug: string; name: string; basePrice: number; images?: string[] };
+type WishlistProduct = { slug: string; name: string; basePrice: number; images?: string[]; variantImages?: Record<string, string> };
 type Tab = { id: string; label: string; icon: React.ReactNode; href?: string; hidden?: boolean };
 
 function AccountContent() {
@@ -554,6 +554,9 @@ function AccountContent() {
                           price={product.basePrice}
                           image={product.images?.[0] || ''}
                           slug={product.slug}
+                          variantImages={product.variantImages}
+                          images={product.images}
+                          product={product}
                         />
                       </div>
                     ))}

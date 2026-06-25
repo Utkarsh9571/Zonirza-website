@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 import { useSession } from 'next-auth/react';
 import { useAuthModalStore } from '@/store/authModalStore';
@@ -15,7 +16,7 @@ import { calculatePricing, ProductConfiguration } from '@/lib/pricing';
 import { useCurrencyStore } from '@/store/currencyStore';
 import { displayPrice } from '@/lib/currency';
 import { useWishlistStore } from '@/store/wishlistStore';
-import { validateProductConfiguration, isFieldMissing } from '@/lib/ecommerce';
+import { validateProductConfiguration, isFieldMissing, resolveDefaultMetal } from '@/lib/ecommerce';
 import { ProductKnowledgeGuide } from '@/components/product/guides/ProductKnowledgeGuide';
 import { useRulesEngine } from '@/hooks/useRulesEngine';
 import { MonthlyPlanButton } from '@/components/finance/MonthlyPlanButton';
@@ -97,6 +98,9 @@ function ProductImageZoom({ image, name }: { image: string, name: string }) {
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export function ProductInteractiveUI({ product }: { product: IProduct & { price?: number } }) {
+  const searchParams = useSearchParams();
+  const metalFilter = searchParams.get('metal');
+
   // 1. Initial State Calculation Logic
   const configOptions = product.configurableOptions || {};
   
@@ -120,7 +124,7 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
   // HELPER: Generate sensible defaults for every required option group
   const getInitialConfiguration = () => {
     const initialConfig: ProductConfiguration = {
-      metal: product.defaultColor || metals[0] || 'Yellow Gold', 
+      metal: resolveDefaultMetal(product, metalFilter ? { metal: metalFilter } : null),
       purity: purities.includes('18K') ? '18K' : (purities[0] || '18K'),
       size: product.defaultSize || '',
       stone: (product.jewelryType === 'gold' || stones.length === 0) ? 'None' : stones[0],

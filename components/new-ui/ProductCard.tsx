@@ -6,6 +6,8 @@ import { useCurrencyStore } from '@/store/currencyStore';
 import { displayPrice } from '@/lib/currency';
 import { getProductThumbnail } from '@/lib/productImage';
 import { resolveProductImage } from '@/lib/imageResolver';
+import { resolveDefaultMetal } from '@/lib/ecommerce';
+import { calculatePricing } from '@/lib/pricing';
 
 interface ProductCardProps {
   name: string;
@@ -17,12 +19,30 @@ interface ProductCardProps {
   variantImages?: Record<string, string>;
   images?: string[];
   context?: { search?: string; metal?: string };
+  product?: any;
 }
 
-export const ProductCard = ({ name, price, image, slug, oldPrice, className, variantImages, images, context }: ProductCardProps) => {
-  const selectedImage = getProductThumbnail({ images, variantImages }, context) || image;
+export const ProductCard = ({ name, price, image, slug, oldPrice, className, variantImages, images, context, product }: ProductCardProps) => {
+  const selectedMetal = product ? resolveDefaultMetal(product, context) : null;
+  const computedContext = selectedMetal ? { ...context, metal: selectedMetal } : context;
+  const selectedImage = getProductThumbnail({ images, variantImages }, computedContext) || image;
   const imageUrl = resolveProductImage(selectedImage);
   const { currentCurrency, rates } = useCurrencyStore();
+
+  let displayPriceValue = price;
+  if (product) {
+    const config = {
+      metal: selectedMetal || 'yellow-gold',
+      purity: product.goldPurityOptions?.[0] || '18K',
+      stone: product.configurableOptions?.stones?.[0] || 'None',
+    };
+    try {
+      const pricing = calculatePricing(product, config, rates);
+      displayPriceValue = pricing.totalPrice;
+    } catch (e) {
+      // fallback
+    }
+  }
   
   return (
     <Link 
@@ -60,11 +80,11 @@ export const ProductCard = ({ name, price, image, slug, oldPrice, className, var
         <h3 className="text-[14px] md:text-[16px] font-serif font-medium text-brand-text/90 group-hover:text-brand-gold transition-colors">
           {name}
         </h3>
-        <div className="flex items-center justify-center space-x-3">
-          <span className="text-brand-gold text-[13px] font-bold tracking-widest">
-            {displayPrice(price, currentCurrency, rates)}
-          </span>
-          {oldPrice && (
+        <div className="flex items-center justify-center gap-3">
+          <p className="text-[16px] md:text-[18px] font-semibold text-brand-text tracking-wide group-hover:text-brand-gold transition-colors">
+            {displayPrice(displayPriceValue, currentCurrency, rates)}
+          </p>
+          {oldPrice && oldPrice > displayPriceValue && (
             <span className="text-brand-text/20 text-[11px] line-through font-medium">
               {displayPrice(oldPrice, currentCurrency, rates)}
             </span>

@@ -37,6 +37,7 @@ export interface IProduct extends Document {
   goldPurityOptions: string[];
   jewelryType: 'diamond' | 'stone' | 'gold';
   defaultColor?: string;
+  defaultMetal?: string;
   defaultSize?: string;
   legacyConfigurableOptions?: any;
   legacySpecs?: any;
@@ -87,6 +88,7 @@ const ProductSchema: Schema = new Schema({
   goldPurityOptions: { type: [String], default: [] },
   jewelryType: { type: String, enum: ['diamond', 'stone', 'gold'], default: 'gold' },
   defaultColor: { type: String, default: 'Yellow Gold' },
+  defaultMetal: { type: String, default: 'yellow-gold' },
   defaultSize: { type: String },
   legacyConfigurableOptions: { type: Schema.Types.Mixed },
   legacySpecs: { type: Schema.Types.Mixed },

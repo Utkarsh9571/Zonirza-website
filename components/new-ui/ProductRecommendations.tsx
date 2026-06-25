@@ -57,6 +57,7 @@ export const ProductRecommendations = ({ productSlug }: { productSlug: string })
               image={product.images?.[0] || ''} 
               images={product.images}
               variantImages={product.variantImages}
+              product={product}
             />
           ))}
         </div>

@@ -106,6 +106,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                 slug={product.slug}
                 variantImages={product.variantImages}
                 images={product.images}
+                product={product}
                 className="animate-in fade-in slide-in-from-bottom-12 duration-1000"
               />
             ))}
@@ -138,6 +139,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                   slug={product.slug}
                   variantImages={product.variantImages}
                   images={product.images}
+                  product={product}
                   className="animate-in fade-in slide-in-from-bottom-12 duration-1000"
                 />
               ))}

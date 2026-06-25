@@ -29,9 +29,9 @@ export const formatPrice = (amount: number, currencyCode: CurrencyCode): string 
 export const convertPrice = (
   amountInINR: number,
   targetCurrency: CurrencyCode,
-  rates: Record<CurrencyCode, number>
+  rates: Record<CurrencyCode, number> = { INR: 1, USD: 0.012, AED: 0.044, EUR: 0.011 }
 ): number => {
-  const rate = rates[targetCurrency] || 1;
+  const rate = (rates && rates[targetCurrency]) || 1;
   return amountInINR * rate;
 };
 
@@ -41,7 +41,7 @@ export const convertPrice = (
 export const displayPrice = (
   amountInINR: number,
   targetCurrency: CurrencyCode,
-  rates: Record<CurrencyCode, number>
+  rates: Record<CurrencyCode, number> = { INR: 1, USD: 0.012, AED: 0.044, EUR: 0.011 }
 ): string => {
   const converted = convertPrice(amountInINR, targetCurrency, rates);
   return formatPrice(converted, targetCurrency);
