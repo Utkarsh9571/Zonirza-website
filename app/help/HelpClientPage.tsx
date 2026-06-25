@@ -463,8 +463,8 @@ function HelpContent() {
           </nav>
 
           {/* QUICK CONTACT BOX */}
-          <div className="mt-12 p-8 bg-brand-text rounded-[32px] text-white space-y-6">
-            <h3 className="font-serif text-xl">Need more help?</h3>
+          <div className="mt-12 p-8 bg-[#1a1614] dark:bg-white/5 rounded-[32px] text-white space-y-6 border border-transparent dark:border-white/10 shadow-lg">
+            <h3 className="font-serif text-white/80 text-xl">Need more help?</h3>
             <div className="space-y-4">
               <a href="tel:9784836060" className="flex items-center space-x-3 text-white/80 hover:text-white transition-colors">
                 <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
@@ -479,7 +479,7 @@ function HelpContent() {
                 <span className="text-xs tracking-wide">10 AM - 8 PM (Mon-Sat)</span>
               </div>
             </div>
-            <Link href="/contact" className="block text-center w-full py-4 bg-brand-gold text-brand-text rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-colors">
+            <Link href="/contact" className="block text-center w-full py-4 bg-brand-gold text-[#1a1614] rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-colors">
               Contact Us
             </Link>
           </div>

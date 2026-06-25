@@ -293,16 +293,6 @@ function ProductsContent() {
                         <span className="text-[10px] font-bold">{cols}</span>
                       </button>
                     ))}
-                    <div className="w-px h-4 bg-brand-text/10 dark:bg-white/10 mx-1 transition-colors" />
-                    <button
-                      className={cn(
-                        "w-8 h-8 flex items-center justify-center rounded-full text-brand-text/30",
-                        "cursor-not-allowed opacity-50"
-                      )}
-                      disabled
-                    >
-                      <List size={14} />
-                    </button>
                   </div>
                 </div>
               </div>
