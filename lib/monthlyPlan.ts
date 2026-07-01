@@ -28,6 +28,8 @@ export function calculateMonthlyPlan(
       stoneType: product.stoneType,
       specs: product.specs,
       pricingOverrides: product.pricingOverrides || {},
+      categoryConfig: product.categoryConfig,
+      categoryOverrides: product.categoryOverrides
     },
     config,
     rates

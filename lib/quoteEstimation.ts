@@ -36,7 +36,9 @@ export async function generateQuoteEstimation(input: QuoteEstimationInput): Prom
     jewelryType: product.jewelryType,
     stoneType: product.stoneType,
     specs: product.specs,
-    pricingOverrides: product.pricingOverrides || {}
+    pricingOverrides: product.pricingOverrides || {},
+    categoryConfig: product.categoryConfig,
+    categoryOverrides: product.categoryOverrides
   }, configuration, rates);
 
   // 2. Fetch Rules to calculate Surcharges & Triggers

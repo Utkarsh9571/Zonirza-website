@@ -3,6 +3,7 @@
 import { useState, useEffect, use, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import AdminImageUploader from '@/components/admin/AdminImageUploader';
 import { 
   Save, 
@@ -18,8 +19,6 @@ import {
   AlertCircle,
   CheckCircle2,
   Trash2,
-  MoveUp,
-  MoveDown,
   Eye,
   EyeOff,
   ExternalLink,
@@ -31,6 +30,45 @@ import { resolveProductImage } from '@/lib/imageResolver';
 
 interface ProductEditorProps {
   params: Promise<{ id: string }>;
+}
+
+interface ProductFormData {
+  _id?: string;
+  name: string;
+  slug: string;
+  description: string;
+  category: string;
+  tags: string[];
+  basePrice: number;
+  makingCharges: number;
+  baseWeight: number;
+  stockStatus: string;
+  isActive: boolean;
+  images: string[];
+  productVideos: string[];
+  enableCardVideoPreview: boolean;
+  cardPreviewVideo: string;
+  cardPreviewThumbnail: string;
+  variantImages: Record<string, string>;
+  specs: Record<string, string>;
+  readyToShipVariants?: string[];
+  configurableOptions: {
+    metals: string[];
+    purities: string[];
+    stones: string[];
+    sizes: string[];
+    customizations: string[];
+    [key: string]: string[];
+  };
+  pricingOverrides: {
+    makingCharges: number | string;
+    sizeWeightOffset: number | string;
+    stonePrices: Record<string, number>;
+  };
+  jewelryType?: string;
+  defaultMetal?: string;
+  stoneType?: string;
+  [key: string]: unknown; // to allow dynamic properties from server safely
 }
 
 function ProductEditorContent({ params }: ProductEditorProps) {
@@ -49,7 +87,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
   const [success, setSuccess] = useState('');
 
   // Form State
-  const [formData, setFormData] = useState<any>({
+  const [formData, setFormData] = useState<ProductFormData>({
     name: '',
     slug: '',
     description: '',
@@ -82,49 +120,49 @@ function ProductEditorContent({ params }: ProductEditorProps) {
   });
 
   useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await fetch(`/api/admin/products/${id}`);
+        const data = await res.json();
+        if (data.success) {
+          // Ensure all fields exist for the form
+          const product = data.data;
+          setFormData({
+            ...product,
+            productVideos: product.productVideos || [],
+            enableCardVideoPreview: product.enableCardVideoPreview || false,
+            cardPreviewVideo: product.cardPreviewVideo || '',
+            cardPreviewThumbnail: product.cardPreviewThumbnail || '',
+            variantImages: product.variantImages || {},
+            specs: product.specs || {},
+            readyToShipVariants: product.readyToShipVariants || [],
+            configurableOptions: {
+              metals: product.configurableOptions?.metals || [],
+              purities: product.configurableOptions?.purities || [],
+              stones: product.configurableOptions?.stones || [],
+              sizes: product.configurableOptions?.sizes || [],
+              customizations: product.configurableOptions?.customizations || []
+            },
+            pricingOverrides: {
+              makingCharges: product.pricingOverrides?.makingCharges ?? '',
+              sizeWeightOffset: product.pricingOverrides?.sizeWeightOffset ?? '',
+              stonePrices: product.pricingOverrides?.stonePrices || {}
+            }
+          });
+        } else {
+          setError('Failed to load product data.');
+        }
+      } catch {
+        setError('An error occurred while fetching the product.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (!isNew) {
       fetchProduct();
     }
-  }, [id]);
-
-  const fetchProduct = async () => {
-    try {
-      const res = await fetch(`/api/admin/products/${id}`);
-      const data = await res.json();
-      if (data.success) {
-        // Ensure all fields exist for the form
-        const product = data.data;
-        setFormData({
-          ...product,
-          productVideos: product.productVideos || [],
-          enableCardVideoPreview: product.enableCardVideoPreview || false,
-          cardPreviewVideo: product.cardPreviewVideo || '',
-          cardPreviewThumbnail: product.cardPreviewThumbnail || '',
-          variantImages: product.variantImages || {},
-          specs: product.specs || {},
-          readyToShipVariants: product.readyToShipVariants || [],
-          configurableOptions: {
-            metals: product.configurableOptions?.metals || [],
-            purities: product.configurableOptions?.purities || [],
-            stones: product.configurableOptions?.stones || [],
-            sizes: product.configurableOptions?.sizes || [],
-            customizations: product.configurableOptions?.customizations || []
-          },
-          pricingOverrides: {
-            makingCharges: product.pricingOverrides?.makingCharges ?? '',
-            sizeWeightOffset: product.pricingOverrides?.sizeWeightOffset ?? '',
-            stonePrices: product.pricingOverrides?.stonePrices || {}
-          }
-        });
-      } else {
-        setError('Failed to load product data.');
-      }
-    } catch (err) {
-      setError('An error occurred while fetching the product.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [id, isNew]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -221,7 +259,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
       } else {
         setError(data.message || 'The vault rejected the update.');
       }
-    } catch (err) {
+    } catch {
       setError('A secure connection could not be established.');
     } finally {
       setSaving(false);
@@ -229,7 +267,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
   };
 
   const updateConfigOption = (key: string, value: string[]) => {
-    setFormData((prev: any) => ({
+    setFormData((prev: ProductFormData) => ({
       ...prev,
       configurableOptions: {
         ...prev.configurableOptions,
@@ -665,7 +703,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
                     />
                     <button 
                       onClick={() => {
-                        const newVideos = formData.productVideos.filter((_:any, i:number) => i !== idx);
+                        const newVideos = formData.productVideos.filter((_: string, i: number) => i !== idx);
                         setFormData({...formData, productVideos: newVideos});
                       }}
                       className="p-2 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
@@ -780,7 +818,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
                       <div key={idx} className="flex items-center space-x-2 px-4 py-2 bg-brand-gold/10 rounded-full border border-brand-gold/20">
                         <span className="text-[11px] font-bold text-brand-gold">{opt}</span>
                         <button onClick={() => {
-                          const newOpts = formData.configurableOptions[section.id].filter((_:any, i:number) => i !== idx);
+                          const newOpts = formData.configurableOptions[section.id].filter((_: string, i: number) => i !== idx);
                           updateConfigOption(section.id, newOpts);
                         }}><X size={12} /></button>
                       </div>
@@ -879,9 +917,12 @@ function ProductEditorContent({ params }: ProductEditorProps) {
                       ))}
                     </select>
                     {formData.variantImages[metal.toLowerCase().replace(/ /g, '-')] && (
-                      <div className="w-12 h-12 rounded-lg overflow-hidden border border-brand-gold/20 shadow-premium">
-                        <img 
+                      <div className="w-12 h-12 rounded-lg overflow-hidden border border-brand-gold/20 shadow-premium relative">
+                        <Image 
                           src={resolveProductImage(formData.variantImages[metal.toLowerCase().replace(/ /g, '-')])} 
+                          alt={`${metal} variant preview`}
+                          width={48}
+                          height={48}
                           className="w-full h-full object-contain"
                         />
                       </div>

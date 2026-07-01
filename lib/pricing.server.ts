@@ -49,6 +49,11 @@ export async function secureCalculateOrderTotal(
       throw new Error(`Product ${item.name} is no longer available.`);
     }
 
+    // Hydrate Category Config
+    const Category = (await import('@/models/Category')).default;
+    const categoryDoc = await Category.findOne({ slug: product.category }).lean();
+    const categoryConfig = categoryDoc?.config || undefined;
+
     // Recalculate item price based on config
     const breakdown = calculatePricing(
       { 
@@ -59,7 +64,9 @@ export async function secureCalculateOrderTotal(
         jewelryType: product.jewelryType,
         stoneType: product.stoneType,
         specs: product.specs,
-        pricingOverrides: product.pricingOverrides
+        pricingOverrides: product.pricingOverrides,
+        categoryConfig: categoryConfig,
+        categoryOverrides: product.categoryOverrides
       },
       item.configuration,
       settings?.pricingFactors

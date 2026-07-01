@@ -1,6 +1,5 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import nodemailer from "nodemailer";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "./mongodb";
 import dbConnect from "./db";
@@ -9,17 +8,8 @@ import { verifyAdminCredentials, hashPassword } from "./adminAuth";
 import { verifyPassword as verifyUserPassword } from "./userAuth";
 import { otpService, normalizePhoneNumber } from "./otpService";
 
-// Custom transporter for Gmail
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_SERVER_USER,
-    pass: process.env.EMAIL_SERVER_PASSWORD,
-  },
-});
-
 export const authOptions: NextAuthOptions = {
-  adapter: MongoDBAdapter(clientPromise) as any,
+  adapter: MongoDBAdapter(clientPromise) as NextAuthOptions["adapter"],
   providers: [
     CredentialsProvider({
       id: "otp",
@@ -110,7 +100,7 @@ export const authOptions: NextAuthOptions = {
         
         const inputHash = hashPassword(credentials.password);
         const isValid = verifyAdminCredentials(credentials.email, inputHash);
-
+ 
         if (isValid) {
           return {
             id: "admin-user",
@@ -133,32 +123,32 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Email and password are required");
         }
-
+ 
         await dbConnect();
         const emailLower = credentials.email.toLowerCase();
         const user = await User.findOne({ email: emailLower });
-
+ 
         if (!user) {
           throw new Error("No user found with this email");
         }
-
+ 
         if (!user.password) {
           throw new Error("This account does not have a password set. Please use password recovery.");
         }
-
+ 
         const isPasswordValid = verifyUserPassword(credentials.password, user.password);
         if (!isPasswordValid) {
           throw new Error("Incorrect password");
         }
-
+ 
         if (!user.isActive || user.status !== 'active') {
           throw new Error("Your account has been suspended or banned");
         }
-
+ 
         // Update last login
         user.lastLogin = new Date();
         await user.save();
-
+ 
         return {
           id: user._id.toString(),
           email: user.email,
@@ -198,23 +188,22 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       await dbConnect();
       
-      // @ts-ignore
+      // @ts-expect-error: Custom role is not defined on default session user type
       session.user.role = token.role;
       
       if (token.role === "admin") {
         return session;
       }
-
+ 
       const dbUser = await User.findById(token.id || token.sub);
       if (dbUser && session.user) {
         session.user.name = dbUser.name;
-        // @ts-ignore
+        // @ts-expect-error: Custom id is not defined on default session user type
         session.user.id = dbUser._id.toString();
-        // @ts-ignore
         session.user.email = dbUser.email;
-        // @ts-ignore
+        // @ts-expect-error: Custom mobileNumber is not defined on default session user type
         session.user.mobileNumber = dbUser.mobileNumber;
-        // @ts-ignore
+        // @ts-expect-error: Custom onboardingCompleted is not defined on default session user type
         session.user.onboardingCompleted = dbUser.onboardingCompleted;
       }
       
@@ -222,7 +211,7 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user }) {
       if (user) {
-        // @ts-ignore
+        // @ts-expect-error: Custom role is not defined on default token type
         token.role = user.role || "user";
         token.id = user.id;
       }

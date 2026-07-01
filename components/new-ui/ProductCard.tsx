@@ -18,7 +18,25 @@ interface ProductCardProps {
   variantImages?: Record<string, string>;
   images?: string[];
   context?: { search?: string; metal?: string };
-  product?: any;
+  product?: {
+    basePrice?: number;
+    price?: number;
+    baseWeight?: number;
+    makingCharges?: number;
+    category?: string;
+    jewelryType?: string;
+    stoneType?: string;
+    specs?: Record<string, unknown>;
+    pricingOverrides?: Record<string, unknown>;
+    categoryConfig?: Record<string, unknown>;
+    categoryOverrides?: Record<string, unknown>;
+    variantImages?: Record<string, string>;
+    images?: string[];
+    goldPurityOptions?: string[];
+    configurableOptions?: {
+      stones?: string[];
+    };
+  };
 }
 
 export const ProductCard = ({ name, price, image, slug, oldPrice, className, variantImages, images, context, product }: ProductCardProps) => {
@@ -29,9 +47,10 @@ export const ProductCard = ({ name, price, image, slug, oldPrice, className, var
   
   let selectedImage: string | undefined = image;
   if (product && product.variantImages) {
+    const vImages = product.variantImages;
     const normalizedVariantImages: Record<string, string> = {};
-    Object.keys(product.variantImages).forEach(k => {
-      normalizedVariantImages[k.toLowerCase().replace(/\s+/g, '-')] = product.variantImages[k];
+    Object.keys(vImages).forEach(k => {
+      normalizedVariantImages[k.toLowerCase().replace(/\s+/g, '-')] = vImages[k];
     });
     selectedImage = (displayMetal && normalizedVariantImages[displayMetal]) || undefined;
     if (!selectedImage && displayMetal && product.images?.length) {
@@ -58,9 +77,10 @@ export const ProductCard = ({ name, price, image, slug, oldPrice, className, var
       stone: product.configurableOptions?.stones?.[0] || 'None',
     };
     try {
-      const pricing = calculatePricing(product, config, rates);
+      // Cast the minimal typed product to the expected type of calculatePricing
+      const pricing = calculatePricing(product as Parameters<typeof calculatePricing>[0], config, rates);
       displayPriceValue = pricing.totalPrice;
-    } catch (e) {
+    } catch {
       // fallback
     }
   }

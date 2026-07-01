@@ -1,12 +1,10 @@
-import { CurrencyCode, CURRENCIES } from '@/store/currencyStore';
+import { CurrencyCode } from '@/store/currencyStore';
 
 /**
  * Formats a numeric price into a localized luxury currency string.
  * Uses Intl.NumberFormat for precision and localized symbols.
  */
 export const formatPrice = (amount: number, currencyCode: CurrencyCode): string => {
-  const currencyInfo = CURRENCIES[currencyCode];
-  
   // Custom formatting for AED since standard Intl can be inconsistent across browsers
   if (currencyCode === 'AED') {
     return `AED ${new Intl.NumberFormat('en-AE', {

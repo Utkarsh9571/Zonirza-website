@@ -148,7 +148,6 @@ function AccountContent() {
     } else if (status === 'authenticated') {
       fetchUserProfile();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, router]);
 
   const fetchWishlistDetails = async () => {

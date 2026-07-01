@@ -202,7 +202,9 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
       jewelryType: product.jewelryType,
       stoneType: product.stoneType,
       specs: product.specs,
-      pricingOverrides: product.pricingOverrides || {}
+      pricingOverrides: product.pricingOverrides || {},
+      categoryConfig: product.categoryConfig,
+      categoryOverrides: product.categoryOverrides
     }, config, pricingFactors);
     
     // Inject rule-based surcharges

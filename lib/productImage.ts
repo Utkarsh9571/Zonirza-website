@@ -8,6 +8,11 @@ export interface ImageContext {
   metal?: string;
 }
 
+export interface ProductImageInput {
+  images?: string[];
+  variantImages?: Record<string, string>;
+}
+
 /**
  * Returns the best thumbnail filename for a product given a user context.
  * 
@@ -15,7 +20,7 @@ export interface ImageContext {
  * @param context Optional context containing search query or active metal filter
  * @returns The selected image filename
  */
-export const getProductThumbnail = (product: any, context?: ImageContext): string => {
+export const getProductThumbnail = (product: ProductImageInput, context?: ImageContext): string => {
   if (!product) return '';
   
   const variantImagesRaw = product.variantImages || {};

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Share2, Volume2, Video, Play, Pause, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const videos = [
   { id: 1, url: 'https://youtube.com/shorts/siNBYmnznR8?si=3RU0yqgmMOi5YdXz', title: 'Adele - Skyfall', thumbnail: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600', link: '/products?tag=featured' },
@@ -102,7 +103,7 @@ export default function StylingVideoSlider() {
     setIsUserPaused(prev => !prev);
   };
 
-  const getCardStyle = (index: number) => {
+  const getCardStyle = (index: number): React.CSSProperties => {
     const diff = (index - current + videos.length) % videos.length;
     let normalizedDiff = diff;
     if (diff > videos.length / 2) normalizedDiff = diff - videos.length;
@@ -119,8 +120,8 @@ export default function StylingVideoSlider() {
         : `translateX(${translateX}%) scale(${scale})`,
       zIndex,
       opacity: absDiff > (isMobile ? 1 : 2) ? 0 : opacity,
-      pointerEvents: normalizedDiff === 0 ? 'auto' : 'none' as const, 
-      visibility: absDiff > (isMobile ? 1 : 2) ? 'hidden' : 'visible' as const,
+      pointerEvents: normalizedDiff === 0 ? 'auto' : 'none', 
+      visibility: absDiff > (isMobile ? 1 : 2) ? 'hidden' : 'visible',
     };
   };
 
@@ -128,10 +129,12 @@ export default function StylingVideoSlider() {
     if (!isCurrent) {
       return (
         <div className="relative w-full h-full bg-brand-bg">
-          <img 
+          <Image 
             src={video.thumbnail} 
             alt={video.title}
-            className="w-full h-full object-cover"
+            fill
+            sizes="(max-width: 768px) 100vw, 400px"
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-black/20" />
         </div>
@@ -212,7 +215,7 @@ export default function StylingVideoSlider() {
                 "absolute inset-0 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] rounded-4xl overflow-hidden shadow-2xl border border-white/10 bg-brand-text",
                 isCurrentCard ? "pointer-events-auto cursor-grab active:cursor-grabbing" : "pointer-events-none"
               )}
-              style={getCardStyle(i) as any}
+              style={getCardStyle(i)}
             >
               <div className="relative w-full h-full">
                 {renderContent(video, isCurrentCard)}
