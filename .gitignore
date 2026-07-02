@@ -43,15 +43,6 @@ next-env.d.ts
 # large assets — product images (thousands of files, not for git)
 /public/images/images/
 
-# site images — large binary assets, deploy via CDN/storage instead
-/public/images/site/
-/public/images/*.png
-/public/images/*.jpg
-/public/images/*.jpeg
-/public/images/*.webp
-/public/images/*.avif
-/public/images/*.svg
-
 # backup image directories
 /backup-original-silver-images/
 /silver-products/
