@@ -40,9 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# large assets — product images (thousands of files, not for git)
-/public/images/images/
-
 # backup image directories
 /backup-original-silver-images/
 /silver-products/
