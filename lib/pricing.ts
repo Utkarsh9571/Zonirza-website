@@ -222,11 +222,6 @@ export function calculatePricing(
   const overrides = product.pricingOverrides || {};
   const rates = providedRates || {};
   
-  if (!product.baseWeight) {
-    console.warn(`Missing baseWeight for product! Using 0 as fallback.`);
-  }
-  
-  // Calculate dynamic gold weight using category specific rules
   const baseWeightVal = product.baseWeight || 0;
   const estimatedGoldWeight = calculateEstimatedWeight(baseWeightVal, config.size, product);
   
