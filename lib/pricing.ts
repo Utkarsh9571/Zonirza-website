@@ -4,7 +4,7 @@
  */
 
 /** Loose shape of category config / category overrides objects hydrated from MongoDB */
-interface CategoryRules {
+export interface CategoryRules {
   variantVisibility?: Record<string, boolean>;
   makingCharges?: { type: 'fixed' | 'percentage'; value: number };
   weightRules?: {
@@ -21,7 +21,7 @@ interface CategoryRules {
 }
 
 /** Loose shape of pricing rate objects returned by /api/rules/public */
-interface PricingRates {
+export interface PricingRates {
   metalRates?: {
     gold24k?: number;
     silver?: number;
@@ -37,6 +37,8 @@ interface PricingRates {
   gemstoneRates?: Record<string, number>;
   diamondPrices?: Record<string, number>;
   gemstonePrices?: Record<string, number>;
+  ringsOffset?: number;
+  banglesOffset?: number;
   [key: string]: unknown;
 }
 
@@ -44,8 +46,8 @@ interface PricingRates {
 type ProductSpecs = Record<string, string>;
 
 /** Shape of product-level pricingOverrides */
-interface PricingOverrides {
-  makingCharges?: number | string | null;
+export interface PricingOverrides {
+  makingCharges?: Record<string, unknown> | number | string | null;
   sizeWeightOffset?: number | string | null;
   stonePrices?: Record<string, number> | Map<string, number>;
 }
@@ -322,7 +324,7 @@ export function calculatePricing(
   if (overrides.makingCharges !== undefined && overrides.makingCharges !== null && overrides.makingCharges !== '') {
     makingChargesSource = 'Product Override';
     if (typeof overrides.makingCharges === 'object' && overrides.makingCharges !== null) {
-      const mc = overrides.makingCharges as any;
+      const mc = overrides.makingCharges as { type: string; value: number | string };
       if (mc.type === 'percentage') {
         makingCharges = metalPrice * (Number(mc.value) / 100);
         makingChargesFormula = `${mc.value}% × Gold Price`;

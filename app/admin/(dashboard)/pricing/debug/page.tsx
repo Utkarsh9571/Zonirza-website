@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { calculatePricing } from '@/lib/pricing';
+import { calculatePricing, PricingRates, PricingOverrides, CategoryRules } from '@/lib/pricing';
 import { sharedDefaultProductConfiguration } from '@/lib/ecommerce';
 import { 
   Loader2, 
@@ -11,20 +11,41 @@ import {
   Sliders, 
   Search,
   Sparkles,
-  Info,
   Layers,
   Coins
 } from 'lucide-react';
 
+interface ClientProduct {
+  _id: string;
+  name: string;
+  category: string;
+  slug: string;
+  baseWeight: number;
+  makingCharges: number;
+  diamondWeightCarats?: number;
+  jewelryType?: string;
+  stoneType?: string;
+  specs?: Record<string, string>;
+  pricingOverrides?: PricingOverrides;
+  configurableOptions?: {
+    metals?: string[];
+    purities?: string[];
+    sizes?: string[];
+    stones?: string[];
+  };
+  categoryConfig?: CategoryRules;
+  categoryOverrides?: CategoryRules;
+}
+
 export default function PricingDebugPage() {
-  const [products, setProducts] = useState<any[]>([]);
-  const [pricingFactors, setPricingFactors] = useState<any>(null);
+  const [products, setProducts] = useState<ClientProduct[]>([]);
+  const [pricingFactors, setPricingFactors] = useState<PricingRates | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Search and Select Product
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ClientProduct | null>(null);
 
   // Custom configuration inputs for Sandbox Debugging
   const [metal, setMetal] = useState('yellow-gold');
@@ -82,7 +103,7 @@ export default function PricingDebugPage() {
   const filteredProducts = useMemo(() => {
     if (!searchTerm.trim()) return products.slice(0, 10);
     return products
-      .filter((p: any) => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      .filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
       .slice(0, 15);
   }, [products, searchTerm]);
 
@@ -178,7 +199,7 @@ export default function PricingDebugPage() {
 
               {/* Selected product card info */}
               {searchTerm.trim() && (
-                <div className="absolute z-10 w-[300px] mt-2 bg-white dark:bg-[#25201e] border rounded-2xl shadow-xl overflow-hidden max-h-60 overflow-y-auto">
+                <div className="absolute z-10 w-75 mt-2 bg-white dark:bg-[#25201e] border rounded-2xl shadow-xl overflow-hidden max-h-60 overflow-y-auto">
                   {filteredProducts.map((p) => (
                     <button
                       key={p._id}
@@ -245,8 +266,8 @@ export default function PricingDebugPage() {
                     onChange={(e) => setSize(e.target.value)}
                     className="w-full bg-slate-50 dark:bg-[#25201e] border border-brand-text/10 dark:border-white/10 rounded-xl py-3 px-4 text-xs font-bold"
                   >
-                    {(selectedProduct.configurableOptions?.sizes?.length > 0 
-                      ? selectedProduct.configurableOptions.sizes 
+                    {((selectedProduct?.configurableOptions?.sizes?.length ?? 0) > 0 
+                      ? (selectedProduct?.configurableOptions?.sizes ?? [])
                       : ['5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']
                     ).map((s: string) => (
                       <option key={s} value={s}>Size {s}</option>
@@ -304,7 +325,7 @@ export default function PricingDebugPage() {
                   </div>
                   <div className="flex justify-between">
                     <span>Selected Product</span>
-                    <span className="text-brand-gold font-black">{selectedProduct.name}</span>
+                    <span className="text-brand-gold font-black">{selectedProduct?.name}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Gold Weight</span>
