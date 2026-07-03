@@ -17,7 +17,8 @@ export interface ISettings extends Document {
       silver: number;
       platinum: number;
     };
-    stonePrices?: Record<string, number>;
+    diamondPrices?: Record<string, number>;
+    gemstonePrices?: Record<string, number>;
     purityMultipliers?: Record<string, number>;
     sizeWeightOffset?: number;
     ringsOffset?: number;
@@ -65,14 +66,22 @@ const SettingsSchema: Schema = new Schema({
       silver: { type: Number, default: 100 },
       platinum: { type: Number, default: 4000 }
     },
-    stonePrices: { type: Map, of: Number, default: {
-      'VVS1': 50000,
-      'VVS2': 40000,
-      'VS1': 30000,
-      'VS2': 25000,
-      'SI1': 20000,
-      'Diamond-Standard': 15000,
+    diamondPrices: { type: Map, of: Number, default: {
+      'EF-VVS': 85000,
+      'GH-VS': 65000,
+      'GHI-VS': 55000,
+      'FG-SI': 45000,
+      'IJ-SI': 35000,
+      'Diamond-Standard': 40000,
       'None': 0
+    }},
+    gemstonePrices: { type: Map, of: Number, default: {
+      'ruby': 15000,
+      'emerald': 18000,
+      'sapphire': 20000,
+      'moissanite': 8000,
+      'cz': 1000,
+      'default': 5000
     }},
     purityMultipliers: { type: Map, of: Number, default: {
       '24K': 1.0,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use, Suspense } from 'react';
+import { useState, useEffect, use, Suspense, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -23,10 +23,13 @@ import {
   EyeOff,
   ExternalLink,
   FileText,
-  Video
+  Video,
+  Ruler,
+  Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { resolveProductImage } from '@/lib/imageResolver';
+import { calculatePricing } from '@/lib/pricing';
 
 interface ProductEditorProps {
   params: Promise<{ id: string }>;
@@ -62,7 +65,7 @@ interface ProductFormData {
     [key: string]: string[];
   };
   pricingOverrides: {
-    makingCharges: number | string;
+    makingCharges: any;
     sizeWeightOffset: number | string;
     stonePrices: Record<string, number>;
   };
@@ -86,6 +89,26 @@ function ProductEditorContent({ params }: ProductEditorProps) {
   const [activeTab, setActiveTab] = useState('basic');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [pricingFactors, setPricingFactors] = useState<any>(null);
+
+  const [overrideEnabled, setOverrideEnabled] = useState(false);
+  const [overrideType, setOverrideType] = useState<'fixed' | 'percentage'>('fixed');
+  const [overrideValue, setOverrideValue] = useState<string>('');
+
+  useEffect(() => {
+    const fetchFactors = async () => {
+      try {
+        const res = await fetch('/api/settings/public');
+        const data = await res.json();
+        if (data.success) {
+          setPricingFactors(data.data?.pricingFactors);
+        }
+      } catch (err) {
+        console.error("Failed to load pricing factors", err);
+      }
+    };
+    fetchFactors();
+  }, []);
 
   // Form State
   const [formData, setFormData] = useState<ProductFormData>({
@@ -115,11 +138,66 @@ function ProductEditorContent({ params }: ProductEditorProps) {
       customizations: []
     },
     pricingOverrides: {
-      makingCharges: '',
+      makingCharges: null,
       sizeWeightOffset: '',
       stonePrices: {}
     }
   });
+
+  const livePricePreview = useMemo(() => {
+    if (!pricingFactors) return null;
+    try {
+      const config = {
+        metal: formData.defaultMetal || 'yellow-gold',
+        purity: '18K',
+        size: formData.configurableOptions?.sizes?.[0] || '12',
+        stone: formData.configurableOptions?.stones?.[0] || 'EF-VVS',
+      };
+      
+      const previewObj = {
+        basePrice: formData.basePrice,
+        baseWeight: formData.baseWeight || 0,
+        diamondWeightCarats: formData.diamondWeightCarats || 0,
+        makingCharges: formData.makingCharges || 0,
+        category: formData.category,
+        jewelryType: formData.jewelryType,
+        stoneType: formData.stoneType,
+        specs: formData.specs || {},
+        pricingOverrides: {
+          makingCharges: overrideEnabled 
+            ? { type: overrideType, value: Number(overrideValue) || 0 } 
+            : null,
+          sizeWeightOffset: formData.pricingOverrides?.sizeWeightOffset,
+          stonePrices: formData.pricingOverrides?.stonePrices
+        },
+        categoryConfig: formData.categoryConfig,
+        categoryOverrides: formData.categoryOverrides
+      };
+      
+      return calculatePricing(previewObj as any, config, pricingFactors);
+    } catch (e) {
+      console.error("Preview calculation error", e);
+      return null;
+    }
+  }, [formData, pricingFactors, overrideEnabled, overrideType, overrideValue]);
+
+  useEffect(() => {
+    const mc = formData.pricingOverrides?.makingCharges;
+    if (mc !== undefined && mc !== null && mc !== '') {
+      setOverrideEnabled(true);
+      if (typeof mc === 'object' && mc !== null) {
+        setOverrideType((mc.type as 'fixed' | 'percentage') || 'fixed');
+        setOverrideValue(String(mc.value || ''));
+      } else {
+        setOverrideType('fixed');
+        setOverrideValue(String(mc));
+      }
+    } else {
+      setOverrideEnabled(false);
+      setOverrideType('fixed');
+      setOverrideValue('');
+    }
+  }, [formData.pricingOverrides?.makingCharges]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -146,7 +224,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
               customizations: product.configurableOptions?.customizations || []
             },
             pricingOverrides: {
-              makingCharges: product.pricingOverrides?.makingCharges ?? '',
+              makingCharges: product.pricingOverrides?.makingCharges ?? null,
               sizeWeightOffset: product.pricingOverrides?.sizeWeightOffset ?? '',
               stonePrices: product.pricingOverrides?.stonePrices || {}
             },
@@ -179,9 +257,28 @@ function ProductEditorContent({ params }: ProductEditorProps) {
       return;
     }
 
+    const currentJType = formData.jewelryType || 'gold';
+    const diamondWeightVal = formData.diamondWeightCarats ?? parseFloat(formData.specs?.diamondWeight || '0');
+    if (currentJType === 'diamond' && (!diamondWeightVal || diamondWeightVal <= 0)) {
+      setError('Diamond products require diamond weight.');
+      setSaving(false);
+      return;
+    }
+
+    const sType = (formData.stoneType || formData.specs?.stoneName || '').toLowerCase();
+    if (['ruby', 'emerald', 'sapphire', 'moissanite', 'cz'].includes(sType) && currentJType === 'diamond') {
+      setError('Ruby/gemstone products must use jewelryType = stone or mixed.');
+      setSaving(false);
+      return;
+    }
+
+    let defaultMetalVal = formData.defaultMetal;
+    if (!defaultMetalVal || defaultMetalVal.trim() === '') {
+      defaultMetalVal = 'yellow-gold';
+    }
+
     // Auto-derive Gold Purity options based on jewelry composition
     let purityOptions = [];
-    const currentJType = formData.jewelryType || 'gold';
     if (currentJType === 'diamond') {
       purityOptions = ['9K', '14K', '18K'];
     } else if (currentJType === 'stone') {
@@ -209,13 +306,21 @@ function ProductEditorContent({ params }: ProductEditorProps) {
       delete cleanedSpecs.diamondQuality;
     }
 
+    const { basePrice, ...formDataRest } = formData;
     const payload = {
-      ...formData,
+      ...formDataRest,
+      defaultMetal: defaultMetalVal,
       specs: cleanedSpecs,
       goldPurityOptions: purityOptions,
       configurableOptions: {
         ...(formData.configurableOptions || {}),
         purities: purityOptions
+      },
+      pricingOverrides: {
+        ...(formData.pricingOverrides || {}),
+        makingCharges: overrideEnabled 
+          ? { type: overrideType, value: Number(overrideValue) || 0 } 
+          : null
       }
     };
 
@@ -253,7 +358,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
               customizations: data.data.configurableOptions?.customizations || []
             },
             pricingOverrides: {
-              makingCharges: data.data.pricingOverrides?.makingCharges ?? '',
+              makingCharges: data.data.pricingOverrides?.makingCharges ?? null,
               sizeWeightOffset: data.data.pricingOverrides?.sizeWeightOffset ?? '',
               stonePrices: data.data.pricingOverrides?.stonePrices || {}
             },
@@ -570,32 +675,16 @@ function ProductEditorContent({ params }: ProductEditorProps) {
 
         {activeTab === 'pricing' && (
           <div className="bg-white dark:bg-white/10 rounded-[40px] border border-brand-text/15 dark:border-white/15 p-10 space-y-10 animate-in fade-in duration-700 shadow-md">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-              <div className="space-y-4">
-                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Computed Base Price (₹)</label>
-                <input 
-                  type="number" 
-                  value={formData.basePrice}
-                  disabled
-                  className="w-full bg-slate-100 dark:bg-white/10 border border-brand-text/20 dark:border-white/20 rounded-2xl py-4 px-6 text-[14px] font-bold text-brand-text/60 transition-all shadow-inner cursor-not-allowed"
-                />
-              </div>
-              <div className="space-y-4">
-                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Making Charges (₹)</label>
-                <input 
-                  type="number" 
-                  value={formData.makingCharges}
-                  onChange={(e) => setFormData({...formData, makingCharges: parseFloat(e.target.value)})}
-                  className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/20 dark:border-white/20 rounded-2xl py-4 px-6 text-[14px] font-bold text-brand-text dark:text-white transition-all shadow-inner"
-                />
-              </div>
+            
+            {/* Base Weight and Diamond Weight inputs */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-4">
                 <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Base Weight (g)</label>
                 <input 
                   type="number" 
                   step="0.01"
                   value={formData.baseWeight}
-                  onChange={(e) => setFormData({...formData, baseWeight: parseFloat(e.target.value)})}
+                  onChange={(e) => setFormData({...formData, baseWeight: parseFloat(e.target.value) || 0})}
                   className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/20 dark:border-white/20 rounded-2xl py-4 px-6 text-[14px] font-bold text-brand-text dark:text-white transition-all shadow-inner"
                 />
               </div>
@@ -605,12 +694,14 @@ function ProductEditorContent({ params }: ProductEditorProps) {
                   type="number" 
                   step="0.01"
                   value={formData.diamondWeightCarats}
-                  onChange={(e) => setFormData({...formData, diamondWeightCarats: parseFloat(e.target.value)})}
+                  onChange={(e) => setFormData({...formData, diamondWeightCarats: parseFloat(e.target.value) || 0})}
                   className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/20 dark:border-white/20 rounded-2xl py-4 px-6 text-[14px] font-bold text-brand-text dark:text-white transition-all shadow-inner"
                 />
               </div>
             </div>
-            <div className="space-y-4">
+
+            {/* Inventory Lifecycle Section */}
+            <div className="space-y-4 border-t border-brand-text/5 pt-8">
               <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Inventory Lifecycle</label>
               <div className="flex items-center space-x-6 h-15">
                 <button 
@@ -636,42 +727,173 @@ function ProductEditorContent({ params }: ProductEditorProps) {
               </div>
             </div>
 
-            <div className="pt-8 border-t border-brand-text/5 mt-8 space-y-6">
+            {/* Making Charges Mode & UX Cleanups */}
+            <div className="pt-8 border-t border-brand-text/5 space-y-6">
               <div className="space-y-1">
-                <h4 className="text-[11px] font-black uppercase tracking-widest text-brand-text dark:text-white flex items-center"><Coins size={14} className="mr-2 text-brand-gold" /> Product-Level Pricing Overrides</h4>
-                <p className="text-[9px] text-brand-text/50 uppercase tracking-widest">Leave empty to use global pricing settings.</p>
+                <h4 className="text-[11px] font-black uppercase tracking-widest text-brand-text dark:text-white flex items-center">
+                  <Coins size={14} className="mr-2 text-brand-gold" /> 
+                  Making Charges Mode
+                </h4>
+                <p className="text-[9px] text-brand-text/50 uppercase tracking-widest">Select whether to use the category weight formulas or set a product-level override.</p>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2">Override Making Charges (₹)</label>
+
+              <div className="flex items-center space-x-6">
+                <label className="flex items-center space-x-2 text-xs font-bold text-brand-text cursor-pointer select-none">
                   <input 
-                    type="number" 
-                    placeholder="e.g. 5000"
-                    value={formData.pricingOverrides?.makingCharges ?? ''}
-                    onChange={(e) => setFormData({
-                      ...formData, 
-                      pricingOverrides: { ...(formData.pricingOverrides || {}), makingCharges: e.target.value ? parseFloat(e.target.value) : '' }
-                    })}
-                    className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/15 dark:border-white/15 rounded-2xl py-3 px-4 text-[13px] font-bold shadow-inner"
+                    type="radio" 
+                    checked={!overrideEnabled}
+                    onChange={() => setOverrideEnabled(false)}
+                    className="text-brand-gold focus:ring-brand-gold"
                   />
-                </div>
-                <div className="space-y-4">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2">Override Size-Weight Offset (g/size)</label>
+                  <span>Use Category Formula</span>
+                </label>
+                <label className="flex items-center space-x-2 text-xs font-bold text-brand-text cursor-pointer select-none">
                   <input 
-                    type="number" 
-                    step="0.01"
-                    placeholder="e.g. 0.2"
-                    value={formData.pricingOverrides?.sizeWeightOffset ?? ''}
-                    onChange={(e) => setFormData({
-                      ...formData, 
-                      pricingOverrides: { ...(formData.pricingOverrides || {}), sizeWeightOffset: e.target.value ? parseFloat(e.target.value) : '' }
-                    })}
-                    className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/15 dark:border-white/15 rounded-2xl py-3 px-4 text-[13px] font-bold shadow-inner"
+                    type="radio" 
+                    checked={overrideEnabled}
+                    onChange={() => setOverrideEnabled(true)}
+                    className="text-brand-gold focus:ring-brand-gold"
                   />
+                  <span>Use Product Override</span>
+                </label>
+              </div>
+
+              {!overrideEnabled ? (
+                <div className="bg-slate-50 dark:bg-white/5 border border-brand-text/10 rounded-2xl p-6 text-xs space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-brand-text/50">Current Category:</span>
+                    <span className="font-bold uppercase">{formData.category || 'N/A'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-brand-text/50">Category Formula:</span>
+                    <span className="font-bold text-brand-gold">
+                      {(formData.categoryConfig as any)?.makingCharges?.type === 'percentage' 
+                        ? `${(formData.categoryConfig as any).makingCharges.value}% of Gold Price` 
+                        : `₹${(formData.categoryConfig as any)?.makingCharges?.value ?? 0} Fixed`}
+                    </span>
+                  </div>
+                  {livePricePreview && (
+                    <div className="flex justify-between border-t border-brand-text/5 pt-2 mt-2 font-bold text-brand-gold">
+                      <span>Preview Making Charges:</span>
+                      <span>₹{livePricePreview.makingCharges.toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
                 </div>
+              ) : (
+                <div className="bg-slate-50 dark:bg-white/5 border border-brand-gold/30 rounded-2xl p-6 space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-[0.2em] font-black text-brand-gold">Override Type</label>
+                    <div className="flex space-x-6 text-xs font-bold">
+                      <label className="flex items-center space-x-2 cursor-pointer select-none">
+                        <input 
+                          type="radio"
+                          value="fixed"
+                          checked={overrideType === 'fixed'}
+                          onChange={() => setOverrideType('fixed')}
+                          className="text-brand-gold focus:ring-brand-gold"
+                        />
+                        <span>Fixed Amount</span>
+                      </label>
+                      <label className="flex items-center space-x-2 cursor-pointer select-none">
+                        <input 
+                          type="radio"
+                          value="percentage"
+                          checked={overrideType === 'percentage'}
+                          onChange={() => setOverrideType('percentage')}
+                          className="text-brand-gold focus:ring-brand-gold"
+                        />
+                        <span>Percentage of Gold Price</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-[0.2em] font-black text-brand-gold">
+                      {overrideType === 'fixed' ? 'Fixed Override Amount (₹)' : 'Override Percentage (%)'}
+                    </label>
+                    <div className="relative">
+                      {overrideType === 'fixed' && <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-brand-text/40">₹</span>}
+                      <input 
+                        type="number"
+                        placeholder={overrideType === 'fixed' ? 'e.g. 2500' : 'e.g. 12'}
+                        value={overrideValue}
+                        onChange={(e) => setOverrideValue(e.target.value)}
+                        className={`w-full bg-white dark:bg-[#1a1614] border border-brand-text/25 dark:border-white/20 rounded-xl py-3 px-4 ${overrideType === 'fixed' ? 'pl-8' : ''} text-xs font-bold`}
+                      />
+                      {overrideType === 'percentage' && <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-brand-text/40">%</span>}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Size weight offsets and overrides */}
+            <div className="pt-8 border-t border-brand-text/5 space-y-6">
+              <div className="space-y-1">
+                <h4 className="text-[11px] font-black uppercase tracking-widest text-brand-text dark:text-white flex items-center">
+                  <Ruler size={14} className="mr-2 text-brand-gold" /> 
+                  Size-Weight Offsets
+                </h4>
+              </div>
+              <div className="space-y-4">
+                <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2">Override Size-Weight Offset (g/size)</label>
+                <input 
+                  type="number" 
+                  step="0.01"
+                  placeholder="e.g. 0.2"
+                  value={formData.pricingOverrides?.sizeWeightOffset ?? ''}
+                  onChange={(e) => setFormData({
+                    ...formData, 
+                    pricingOverrides: { ...(formData.pricingOverrides || {}), sizeWeightOffset: e.target.value ? parseFloat(e.target.value) : '' }
+                  })}
+                  className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/15 dark:border-white/15 rounded-2xl py-3 px-4 text-[13px] font-bold shadow-inner"
+                />
               </div>
             </div>
+
+            {/* Read-Only Calculated Price card displaying formula breakdown */}
+            {livePricePreview && (
+              <div className="pt-8 border-t border-brand-text/10 mt-8 space-y-6">
+                <div className="space-y-1">
+                  <h4 className="text-[11px] font-black uppercase tracking-widest text-brand-gold flex items-center">
+                    <Sparkles size={14} className="mr-2 animate-pulse" /> 
+                    Calculated Price (Read Only)
+                  </h4>
+                  <p className="text-[9px] text-brand-text/50 uppercase tracking-widest">
+                    Live product price automatically derived from core formulas and global rates.
+                  </p>
+                </div>
+                
+                <div className="bg-slate-50 dark:bg-[#151210] border border-brand-gold/30 rounded-3xl p-8 space-y-6 max-w-2xl">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-bold uppercase tracking-wider text-brand-gold">Total Price</span>
+                    <span className="text-3xl font-serif font-black text-brand-gold">₹{livePricePreview.totalPrice.toLocaleString('en-IN')}</span>
+                  </div>
+
+                  <div className="border-t border-brand-text/5 pt-4 space-y-3 text-xs">
+                    <p className="text-[10px] uppercase font-bold tracking-widest text-brand-text/40 mb-2">Pricing Breakdown Explanation</p>
+                    <div className="flex justify-between">
+                      <span>✓ Gold weight:</span>
+                      <span className="font-bold">{livePricePreview.estimatedGoldWeight} g</span>
+                    </div>
+                    {(livePricePreview.stoneWeightCarats ?? 0) > 0 && (
+                      <div className="flex justify-between">
+                        <span>✓ Diamond / Gemstone Weight:</span>
+                        <span className="font-bold">{livePricePreview.stoneWeightCarats} ct</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span>✓ Making Charges Source:</span>
+                      <span className="font-bold text-brand-gold">{livePricePreview.makingChargesSource} ({livePricePreview.makingChargesFormula})</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>✓ GST Rate:</span>
+                      <span className="font-bold">{pricingFactors?.gstPercentage ?? 3}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

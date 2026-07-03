@@ -29,7 +29,7 @@ export interface IProduct extends Document {
   };
   pricingOverrides?: {
     stonePrices?: Record<string, number>;
-    makingCharges?: number;
+    makingCharges?: any;
     sizeWeightOffset?: number;
   };
   hasDiamond: boolean;
@@ -104,7 +104,7 @@ const ProductSchema: Schema = new Schema({
   },
   pricingOverrides: {
     stonePrices: { type: Map, of: Number },
-    makingCharges: { type: Number },
+    makingCharges: { type: Schema.Types.Mixed },
     sizeWeightOffset: { type: Number }
   },
   categoryOverrides: { type: Schema.Types.Mixed, default: {} }

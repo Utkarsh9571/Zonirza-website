@@ -1,5 +1,8 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { useCurrencyStore } from '@/store/currencyStore';
 import { displayPrice } from '@/lib/currency';
@@ -7,6 +10,7 @@ import { getProductThumbnail } from '@/lib/productImage';
 import { resolveProductImage } from '@/lib/imageResolver';
 import { resolveDefaultMetal, sharedDefaultProductConfiguration } from '@/lib/ecommerce';
 import { calculatePricing } from '@/lib/pricing';
+import { usePricingStore } from '@/store/pricingStore';
 
 interface ProductCardProps {
   name: string;
@@ -69,12 +73,18 @@ export const ProductCard = ({ name, price, image, slug, oldPrice, className, var
   const imageUrl = resolveProductImage(selectedImage);
   const { currentCurrency, rates } = useCurrencyStore();
 
+  const { pricingFactors, fetchPricingFactors } = usePricingStore();
+
+  useEffect(() => {
+    fetchPricingFactors();
+  }, [fetchPricingFactors]);
+
   let displayPriceValue = price;
   if (product) {
     const config = sharedDefaultProductConfiguration(product, context);
     try {
       // Cast the minimal typed product to the expected type of calculatePricing
-      const pricing = calculatePricing(product as Parameters<typeof calculatePricing>[0], config, rates);
+      const pricing = calculatePricing(product as Parameters<typeof calculatePricing>[0], config, pricingFactors || {});
       displayPriceValue = pricing.totalPrice;
     } catch {
       // fallback

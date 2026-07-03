@@ -35,6 +35,8 @@ interface PricingRates {
   gstPercentage?: number;
   diamondRates?: Record<string, number>;
   gemstoneRates?: Record<string, number>;
+  diamondPrices?: Record<string, number>;
+  gemstonePrices?: Record<string, number>;
   [key: string]: unknown;
 }
 
@@ -73,6 +75,8 @@ export interface PricingBreakdown {
   stoneWeightCarats?: number;
   isDiamond?: boolean;
   isStone?: boolean;
+  makingChargesSource?: string;
+  makingChargesFormula?: string;
 }
 
 const PURITY_MULTIPLIERS: Record<string, number> = {
@@ -251,7 +255,8 @@ export function calculatePricing(
       stonePrice = stoneOverriddenPrice;
     } else {
       const dWeight = product.diamondWeightCarats || parseFloat(specsObj.diamondWeight || specsObj.stoneWeight || '0') || 0;
-      const ratePerCarat = DIAMOND_RATES[grade] || DIAMOND_RATES['Diamond-Standard'];
+      const dbDiamondPrices = rates.diamondPrices || rates.diamondRates;
+      const ratePerCarat = (dbDiamondPrices && dbDiamondPrices[grade]) ?? DIAMOND_RATES[grade] ?? DIAMOND_RATES['Diamond-Standard'];
       stonePrice = dWeight * ratePerCarat;
     }
 
@@ -286,7 +291,8 @@ export function calculatePricing(
       stonePrice = stoneOverriddenPrice;
     } else {
       const sWeight = parseFloat(specsObj.stoneWeight || specsObj.diamondWeight || '0') || 0;
-      const ratePerCarat = GEMSTONE_RATES[sType] || GEMSTONE_RATES['default'];
+      const dbGemstonePrices = rates.gemstonePrices || rates.gemstoneRates;
+      const ratePerCarat = (dbGemstonePrices && dbGemstonePrices[sType]) ?? GEMSTONE_RATES[sType] ?? GEMSTONE_RATES['default'];
       stonePrice = sWeight * ratePerCarat;
     }
 
@@ -315,25 +321,49 @@ export function calculatePricing(
   // 4. product.makingCharges
   // 5. global fallback (15%)
   let makingCharges = 0;
+  let makingChargesSource = 'Global Fallback (15%)';
+  let makingChargesFormula = '15% × Gold Price';
   
   if (overrides.makingCharges !== undefined && overrides.makingCharges !== null && overrides.makingCharges !== '') {
-    makingCharges = Number(overrides.makingCharges);
+    makingChargesSource = 'Product Override';
+    if (typeof overrides.makingCharges === 'object' && overrides.makingCharges !== null) {
+      const mc = overrides.makingCharges as any;
+      if (mc.type === 'percentage') {
+        makingCharges = metalPrice * (Number(mc.value) / 100);
+        makingChargesFormula = `${mc.value}% × Gold Price`;
+      } else {
+        makingCharges = Number(mc.value);
+        makingChargesFormula = `₹${mc.value} Fixed`;
+      }
+    } else {
+      makingCharges = Number(overrides.makingCharges);
+      makingChargesFormula = `₹${overrides.makingCharges} Fixed`;
+    }
   } else if (product.categoryOverrides?.makingCharges) {
     const mc = product.categoryOverrides.makingCharges;
+    makingChargesSource = 'Category Override';
     if (mc.type === 'percentage') {
       makingCharges = metalPrice * (mc.value / 100);
+      makingChargesFormula = `${mc.value}% × Gold Price`;
     } else if (mc.type === 'fixed') {
       makingCharges = mc.value;
+      makingChargesFormula = `₹${mc.value} Fixed`;
     }
   } else if (product.categoryConfig?.makingCharges) {
     const mc = product.categoryConfig.makingCharges;
+    const catName = product.category ? (product.category.charAt(0).toUpperCase() + product.category.slice(1)) : 'Category';
+    makingChargesSource = `Category Formula (${catName})`;
     if (mc.type === 'percentage') {
       makingCharges = metalPrice * (mc.value / 100);
+      makingChargesFormula = `${mc.value}% × Gold Price`;
     } else if (mc.type === 'fixed') {
       makingCharges = mc.value;
+      makingChargesFormula = `₹${mc.value} Fixed`;
     }
   } else if (product.makingCharges !== undefined && product.makingCharges !== null && product.makingCharges !== 0) {
     makingCharges = Number(product.makingCharges);
+    makingChargesSource = 'Product Default';
+    makingChargesFormula = `₹${product.makingCharges} Fixed`;
   } else {
     makingCharges = metalPrice * 0.15;
   }
@@ -358,7 +388,9 @@ export function calculatePricing(
     stoneName,
     stoneWeightCarats,
     isDiamond,
-    isStone
+    isStone,
+    makingChargesSource,
+    makingChargesFormula
   };
 }
 

@@ -55,19 +55,14 @@ export async function secureCalculateOrderTotal(
     const categoryConfig = categoryDoc?.config || undefined;
 
     // Recalculate item price based on config
+    const plainProduct = JSON.parse(JSON.stringify(product));
+    const hydratedProduct = {
+      ...plainProduct,
+      categoryConfig
+    };
+
     const breakdown = calculatePricing(
-      { 
-        basePrice: product.basePrice, 
-        baseWeight: product.baseWeight, 
-        makingCharges: product.makingCharges,
-        category: product.category,
-        jewelryType: product.jewelryType,
-        stoneType: product.stoneType,
-        specs: product.specs,
-        pricingOverrides: product.pricingOverrides,
-        categoryConfig: categoryConfig,
-        categoryOverrides: product.categoryOverrides
-      },
+      hydratedProduct,
       item.configuration,
       settings?.pricingFactors
     );

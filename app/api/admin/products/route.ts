@@ -130,6 +130,22 @@ export async function POST(req: NextRequest) {
     await dbConnect();
     const body = await req.json();
 
+    // V3 Pricing Validations
+    const currentJType = body.jewelryType || 'gold';
+    const diamondWeightVal = body.diamondWeightCarats ?? parseFloat(body.specs?.diamondWeight || '0');
+    if (currentJType === 'diamond' && (!diamondWeightVal || diamondWeightVal <= 0)) {
+      return NextResponse.json({ success: false, message: "Diamond products require diamond weight." }, { status: 400 });
+    }
+
+    const sType = (body.stoneType || body.specs?.stoneName || '').toLowerCase();
+    if (['ruby', 'emerald', 'sapphire', 'moissanite', 'cz'].includes(sType) && currentJType === 'diamond') {
+      return NextResponse.json({ success: false, message: "Ruby/gemstone products must use jewelryType = stone or mixed." }, { status: 400 });
+    }
+
+    if (!body.defaultMetal || body.defaultMetal.trim() === '') {
+      body.defaultMetal = 'yellow-gold';
+    }
+
     const product = await Product.create(body);
 
     if (product) {

@@ -14,6 +14,7 @@ import { getProductThumbnail } from '@/lib/productImage';
 import { useRef, useEffect, useState } from 'react';
 import { resolveDefaultMetal, sharedDefaultProductConfiguration } from '@/lib/ecommerce';
 import { calculatePricing } from '@/lib/pricing';
+import { usePricingStore } from '@/store/pricingStore';
 
 interface ProductCardProps {
   name: string;
@@ -75,12 +76,17 @@ const ProductCard = ({
   const { status } = useSession();
   const openAuthModal = useAuthModalStore(state => state.openAuthModal);
   const { toggleItem, isInWishlist } = useWishlistStore();
+  const { pricingFactors, fetchPricingFactors } = usePricingStore();
+
+  useEffect(() => {
+    fetchPricingFactors();
+  }, [fetchPricingFactors]);
 
   let displayPriceValue = price;
   if (product) {
     const config = sharedDefaultProductConfiguration(product, context);
     try {
-      const pricing = calculatePricing(product, config, rates);
+      const pricing = calculatePricing(product, config, pricingFactors || {});
       displayPriceValue = pricing.totalPrice;
     } catch {
       // fallback
