@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import HeroSlide from '@/models/HeroSlide';
+import { revalidatePath } from 'next/cache';
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -11,6 +12,12 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     
     if (!updatedSlide) {
       return NextResponse.json({ success: false, error: 'Slide not found' }, { status: 404 });
+    }
+
+    try {
+      revalidatePath('/');
+    } catch (e) {
+      console.error("Revalidation error:", e);
     }
 
     return NextResponse.json({ success: true, data: updatedSlide });
@@ -28,6 +35,12 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     
     if (!deletedSlide) {
       return NextResponse.json({ success: false, error: 'Slide not found' }, { status: 404 });
+    }
+
+    try {
+      revalidatePath('/');
+    } catch (e) {
+      console.error("Revalidation error:", e);
     }
 
     return NextResponse.json({ success: true, data: {} });

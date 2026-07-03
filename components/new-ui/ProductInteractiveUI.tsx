@@ -16,7 +16,7 @@ import { calculatePricing, ProductConfiguration } from '@/lib/pricing';
 import { useCurrencyStore } from '@/store/currencyStore';
 import { displayPrice } from '@/lib/currency';
 import { useWishlistStore } from '@/store/wishlistStore';
-import { validateProductConfiguration, isFieldMissing, resolveDefaultMetal } from '@/lib/ecommerce';
+import { validateProductConfiguration, isFieldMissing, resolveDefaultMetal, sharedDefaultProductConfiguration } from '@/lib/ecommerce';
 import { ProductKnowledgeGuide } from '@/components/product/guides/ProductKnowledgeGuide';
 import { useRulesEngine } from '@/hooks/useRulesEngine';
 import { MonthlyPlanButton } from '@/components/finance/MonthlyPlanButton';
@@ -123,28 +123,7 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
 
   // HELPER: Generate sensible defaults for every required option group
   const getInitialConfiguration = () => {
-    const initialConfig: ProductConfiguration = {
-      metal: resolveDefaultMetal(product, metalFilter ? { metal: metalFilter } : null),
-      purity: purities.includes('18K') ? '18K' : (purities[0] || '18K'),
-      size: product.defaultSize || '',
-      stone: (product.jewelryType === 'gold' || stones.length === 0) ? 'None' : stones[0],
-    };
-
-    // Default Size for Rings/Bangles/Chains/Bracelets if not specified
-    if (!initialConfig.size) {
-      const category = product.category?.toLowerCase() || '';
-      if (category.includes('ring')) {
-        initialConfig.size = sizes.includes('12') ? '12' : (sizes.includes('7') ? '7' : sizes[0]); 
-      } else if (category.includes('chain') || category.includes('necklace') || category.includes('mangalsutra')) {
-        initialConfig.size = sizes.includes('20') ? '20' : sizes[0];
-      } else if (category.includes('bracelet') || category.includes('anklet')) {
-        initialConfig.size = sizes.includes('M') ? 'M' : (sizes.includes('Medium') ? 'Medium' : sizes[0]);
-      } else if (category.includes('bangle')) {
-        initialConfig.size = sizes.includes('2.4') ? '2.4' : sizes[0]; 
-      }
-    }
-
-    return initialConfig;
+    return sharedDefaultProductConfiguration(product, metalFilter ? { metal: metalFilter } : null);
   };
   
   // Dynamic Visibility Helper
@@ -1092,29 +1071,64 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
                     <div className="text-right">Value</div>
                   </div>
                   
-                  {/* Rows */}
+                  {/* Gold Weight & Price */}
                   <div className="grid grid-cols-2 items-center text-sm py-2">
                     <div className="flex items-center space-x-3">
                       <div className="w-6 h-6 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
                         <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
                       </div>
-                      <span className="font-bold text-brand-text">Gold Value ({config.purity})</span>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-brand-text">Gold Weight</span>
+                        <span className="text-[10px] text-brand-text/50 uppercase tracking-widest font-bold">Gold Price ({config.purity})</span>
+                      </div>
                     </div>
-                    <span className="text-right font-medium text-brand-text">{displayPrice(pricing.metalPrice, currentCurrency, rates)}</span>
+                    <div className="text-right flex flex-col">
+                      <span className="font-semibold text-brand-text">{pricing.estimatedGoldWeight}g</span>
+                      <span className="font-medium text-brand-text">{displayPrice(pricing.metalPrice, currentCurrency, rates)}</span>
+                    </div>
                   </div>
 
-                  {pricing.stonePrice > 0 && (
+                  {/* Diamond Weight & Price */}
+                  {pricing.isDiamond && ((pricing.stoneWeightCarats || 0) > 0 || pricing.stonePrice > 0) && (
                     <div className="grid grid-cols-2 items-center text-sm py-2">
                       <div className="flex items-center space-x-3">
                         <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                           <Sparkles size={12} className="text-blue-500" />
                         </div>
-                        <span className="font-bold text-brand-text">Diamond/Stone Value</span>
+                        <div className="flex flex-col">
+                          <span className="font-bold text-brand-text">Diamond Weight</span>
+                          <span className="text-[10px] text-brand-text/50 uppercase tracking-widest font-bold">Diamond Price ({config.stone || 'Standard'})</span>
+                        </div>
                       </div>
-                      <span className="text-right font-medium text-brand-text">{displayPrice(pricing.stonePrice, currentCurrency, rates)}</span>
+                      <div className="text-right flex flex-col">
+                        <span className="font-semibold text-brand-text">{(pricing.stoneWeightCarats || 0).toFixed(2)}ct</span>
+                        <span className="font-medium text-brand-text">{displayPrice(pricing.stonePrice, currentCurrency, rates)}</span>
+                      </div>
                     </div>
                   )}
 
+                  {/* Stone Name, Weight & Price */}
+                  {pricing.isStone && ((pricing.stoneWeightCarats || 0) > 0 || pricing.stonePrice > 0) && (
+                    <div className="grid grid-cols-2 items-center text-sm py-2">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                          <Sparkles size={12} className="text-emerald-500" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-bold text-brand-text">Stone: {pricing.stoneName || 'Gemstone'}</span>
+                          <span className="text-[10px] text-brand-text/50 uppercase tracking-widest font-bold">Stone Weight</span>
+                          <span className="text-[10px] text-brand-text/50 uppercase tracking-widest font-bold">Stone Price</span>
+                        </div>
+                      </div>
+                      <div className="text-right flex flex-col">
+                        <span className="font-semibold text-brand-text/0">&nbsp;</span>
+                        <span className="font-semibold text-brand-text">{(pricing.stoneWeightCarats || 0).toFixed(2)}ct</span>
+                        <span className="font-medium text-brand-text">{displayPrice(pricing.stonePrice, currentCurrency, rates)}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Making Charges */}
                   <div className="grid grid-cols-2 items-center text-sm py-2">
                     <div className="flex items-center space-x-3">
                       <div className="w-6 h-6 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold">
@@ -1125,6 +1139,7 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
                     <span className="text-right font-medium text-brand-text">{displayPrice(pricing.makingCharges, currentCurrency, rates)}</span>
                   </div>
 
+                  {/* GST */}
                   <div className="grid grid-cols-2 items-center text-sm py-2">
                     <div className="flex items-center space-x-3">
                       <div className="w-6 h-6 rounded-full bg-brand-text/5 dark:bg-white/5 flex items-center justify-center text-brand-text">

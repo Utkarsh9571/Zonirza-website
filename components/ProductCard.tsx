@@ -12,7 +12,7 @@ import { useAuthModalStore } from '@/store/authModalStore';
 import { cn } from '@/lib/utils';
 import { getProductThumbnail } from '@/lib/productImage';
 import { useRef, useEffect, useState } from 'react';
-import { resolveDefaultMetal } from '@/lib/ecommerce';
+import { resolveDefaultMetal, sharedDefaultProductConfiguration } from '@/lib/ecommerce';
 import { calculatePricing } from '@/lib/pricing';
 
 interface ProductCardProps {
@@ -78,11 +78,7 @@ const ProductCard = ({
 
   let displayPriceValue = price;
   if (product) {
-    const config = {
-      metal: displayMetal || 'yellow-gold',
-      purity: product.goldPurityOptions?.[0] || '18K',
-      stone: product.configurableOptions?.stones?.[0] || 'None',
-    };
+    const config = sharedDefaultProductConfiguration(product, context);
     try {
       const pricing = calculatePricing(product, config, rates);
       displayPriceValue = pricing.totalPrice;

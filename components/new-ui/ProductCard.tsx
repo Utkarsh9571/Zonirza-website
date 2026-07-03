@@ -5,7 +5,7 @@ import { useCurrencyStore } from '@/store/currencyStore';
 import { displayPrice } from '@/lib/currency';
 import { getProductThumbnail } from '@/lib/productImage';
 import { resolveProductImage } from '@/lib/imageResolver';
-import { resolveDefaultMetal } from '@/lib/ecommerce';
+import { resolveDefaultMetal, sharedDefaultProductConfiguration } from '@/lib/ecommerce';
 import { calculatePricing } from '@/lib/pricing';
 
 interface ProductCardProps {
@@ -71,11 +71,7 @@ export const ProductCard = ({ name, price, image, slug, oldPrice, className, var
 
   let displayPriceValue = price;
   if (product) {
-    const config = {
-      metal: displayMetal || 'yellow-gold',
-      purity: product.goldPurityOptions?.[0] || '18K',
-      stone: product.configurableOptions?.stones?.[0] || 'None',
-    };
+    const config = sharedDefaultProductConfiguration(product, context);
     try {
       // Cast the minimal typed product to the expected type of calculatePricing
       const pricing = calculatePricing(product as Parameters<typeof calculatePricing>[0], config, rates);

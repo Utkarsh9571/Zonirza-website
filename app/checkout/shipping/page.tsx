@@ -305,6 +305,35 @@ export default function ShippingPage() {
                         <span className="text-[10px] font-bold text-brand-text/40">Qty: {item.quantity}</span>
                         <span className="text-xs font-serif text-brand-text font-bold">{displayPrice(item.price, currentCurrency, rates)}</span>
                       </div>
+                      
+                      {item.pricingBreakdown && (
+                        <div className="mt-2 pt-2 border-t border-brand-text/5 text-[9px] text-brand-text/60 space-y-1 font-mono uppercase tracking-wider">
+                          <div className="flex justify-between">
+                            <span>Gold Weight: {item.pricingBreakdown.estimatedGoldWeight || item.pricingBreakdown.estimatedWeight || 0}g</span>
+                            <span>{displayPrice(item.pricingBreakdown.metalPrice, currentCurrency, rates)}</span>
+                          </div>
+                          {item.pricingBreakdown.isDiamond && ((item.pricingBreakdown.stoneWeightCarats || 0) > 0 || item.pricingBreakdown.stonePrice > 0) && (
+                            <div className="flex justify-between">
+                              <span>Diamond Wt: {(item.pricingBreakdown.stoneWeightCarats || 0).toFixed(2)}ct</span>
+                              <span>{displayPrice(item.pricingBreakdown.stonePrice, currentCurrency, rates)}</span>
+                            </div>
+                          )}
+                          {item.pricingBreakdown.isStone && ((item.pricingBreakdown.stoneWeightCarats || 0) > 0 || item.pricingBreakdown.stonePrice > 0) && (
+                            <div className="flex justify-between">
+                              <span>{item.pricingBreakdown.stoneName || 'Stone'} Wt: {(item.pricingBreakdown.stoneWeightCarats || 0).toFixed(2)}ct</span>
+                              <span>{displayPrice(item.pricingBreakdown.stonePrice, currentCurrency, rates)}</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between">
+                            <span>Making Charges</span>
+                            <span>{displayPrice(item.pricingBreakdown.makingCharges, currentCurrency, rates)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>GST (3%)</span>
+                            <span>{displayPrice(item.pricingBreakdown.gst, currentCurrency, rates)}</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import Collection from "@/models/Collection";
+import { revalidatePath } from "next/cache";
 
 export async function PATCH(
   req: NextRequest,
@@ -18,6 +19,16 @@ export async function PATCH(
     await dbConnect();
     const body = await req.json();
     const collection = await Collection.findByIdAndUpdate(id, body, { new: true });
+
+    if (collection) {
+      try {
+        revalidatePath('/');
+        revalidatePath('/products');
+      } catch (e) {
+        console.error("Revalidation error:", e);
+      }
+    }
+
     return NextResponse.json({ success: true, data: collection });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
@@ -36,7 +47,17 @@ export async function DELETE(
     }
 
     await dbConnect();
-    await Collection.findByIdAndDelete(id);
+    const collection = await Collection.findByIdAndDelete(id);
+
+    if (collection) {
+      try {
+        revalidatePath('/');
+        revalidatePath('/products');
+      } catch (e) {
+        console.error("Revalidation error:", e);
+      }
+    }
+
     return NextResponse.json({ success: true, message: "Collection deleted" });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });

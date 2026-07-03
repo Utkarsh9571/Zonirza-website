@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import Category from "@/models/Category";
+import { revalidatePath } from "next/cache";
 
 export async function PATCH(
   req: NextRequest,
@@ -18,6 +19,17 @@ export async function PATCH(
     await dbConnect();
     const body = await req.json();
     const category = await Category.findByIdAndUpdate(id, body, { new: true });
+
+    if (category) {
+      try {
+        revalidatePath('/');
+        revalidatePath('/products');
+        revalidatePath(`/category/${category.slug}`);
+      } catch (e) {
+        console.error("Revalidation error:", e);
+      }
+    }
+
     return NextResponse.json({ success: true, data: category });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
@@ -36,7 +48,18 @@ export async function DELETE(
     }
 
     await dbConnect();
-    await Category.findByIdAndDelete(id);
+    const category = await Category.findByIdAndDelete(id);
+
+    if (category) {
+      try {
+        revalidatePath('/');
+        revalidatePath('/products');
+        revalidatePath(`/category/${category.slug}`);
+      } catch (e) {
+        console.error("Revalidation error:", e);
+      }
+    }
+
     return NextResponse.json({ success: true, message: "Category deleted" });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });

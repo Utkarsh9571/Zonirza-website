@@ -269,12 +269,44 @@ export default function CartPage() {
                           {openBreakupIds.includes(item.cartItemId) && (
                             <div className="animate-in fade-in slide-in-from-top-2 duration-300 w-full rounded-2xl bg-brand-gold/5 border border-brand-gold/10 p-4 space-y-2 mb-4">
                               <div className="flex justify-between items-center text-[10px] uppercase tracking-widest font-bold text-brand-text/70">
-                                <span>Gold Value</span>
+                                <span>Gold Weight</span>
+                                <span>{item.pricingBreakdown.estimatedGoldWeight || item.pricingBreakdown.estimatedWeight || 0}g</span>
+                              </div>
+                              <div className="flex justify-between items-center text-[10px] uppercase tracking-widest font-bold text-brand-text/70">
+                                <span>Gold Price</span>
                                 <span>{displayPrice(item.pricingBreakdown.metalPrice, currentCurrency, rates)}</span>
                               </div>
-                              {item.pricingBreakdown.stonePrice > 0 && (
+                              {item.pricingBreakdown.isDiamond && ((item.pricingBreakdown.stoneWeightCarats || 0) > 0 || item.pricingBreakdown.stonePrice > 0) && (
+                                <>
+                                  <div className="flex justify-between items-center text-[10px] uppercase tracking-widest font-bold text-brand-text/70">
+                                    <span>Diamond Weight</span>
+                                    <span>{(item.pricingBreakdown.stoneWeightCarats || 0).toFixed(2)}ct</span>
+                                  </div>
+                                  <div className="flex justify-between items-center text-[10px] uppercase tracking-widest font-bold text-brand-text/70">
+                                    <span>Diamond Price</span>
+                                    <span>{displayPrice(item.pricingBreakdown.stonePrice, currentCurrency, rates)}</span>
+                                  </div>
+                                </>
+                              )}
+                              {item.pricingBreakdown.isStone && ((item.pricingBreakdown.stoneWeightCarats || 0) > 0 || item.pricingBreakdown.stonePrice > 0) && (
+                                <>
+                                  <div className="flex justify-between items-center text-[10px] uppercase tracking-widest font-bold text-brand-text/70">
+                                    <span>Stone: {item.pricingBreakdown.stoneName || 'Gemstone'}</span>
+                                    <span>&nbsp;</span>
+                                  </div>
+                                  <div className="flex justify-between items-center text-[10px] uppercase tracking-widest font-bold text-brand-text/70">
+                                    <span>Stone Weight</span>
+                                    <span>{(item.pricingBreakdown.stoneWeightCarats || 0).toFixed(2)}ct</span>
+                                  </div>
+                                  <div className="flex justify-between items-center text-[10px] uppercase tracking-widest font-bold text-brand-text/70">
+                                    <span>Stone Price</span>
+                                    <span>{displayPrice(item.pricingBreakdown.stonePrice, currentCurrency, rates)}</span>
+                                  </div>
+                                </>
+                              )}
+                              {!item.pricingBreakdown.hasOwnProperty('isDiamond') && item.pricingBreakdown.stonePrice > 0 && (
                                 <div className="flex justify-between items-center text-[10px] uppercase tracking-widest font-bold text-brand-text/70">
-                                  <span>Diamonds/Stones</span>
+                                  <span>Diamond/Stone Value</span>
                                   <span>{displayPrice(item.pricingBreakdown.stonePrice, currentCurrency, rates)}</span>
                                 </div>
                               )}

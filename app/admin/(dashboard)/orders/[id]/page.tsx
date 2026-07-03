@@ -1,14 +1,76 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback, use } from 'react';
 import { ArrowLeft, Save, Package, Truck, Calendar, MapPin, IndianRupee } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
+
+interface PricingBreakdown {
+  estimatedGoldWeight?: number;
+  estimatedWeight?: number;
+  metalPrice?: number;
+  isDiamond?: boolean;
+  isStone?: boolean;
+  stoneWeightCarats?: number;
+  stonePrice?: number;
+  stoneName?: string;
+  makingCharges?: number;
+  gst?: number;
+  totalPrice?: number;
+}
+
+interface OrderItem {
+  name: string;
+  quantity: number;
+  price: number;
+  image?: string;
+  configuration?: {
+    metal?: string;
+    purity?: string;
+    size?: string;
+    stone?: string;
+  };
+  pricingBreakdown?: PricingBreakdown;
+}
+
+interface TimelineEvent {
+  status: string;
+  date: string | Date;
+  notes?: string;
+}
+
+interface TrackingDetails {
+  courierPartner: string;
+  trackingId: string;
+  trackingUrl: string;
+  estimatedDeliveryDate: string;
+}
+
+interface Order {
+  _id: string;
+  createdAt: string | Date;
+  items?: OrderItem[];
+  totalAmount?: number;
+  discountAmount?: number;
+  razorpayOrderId?: string;
+  orderStatus: string;
+  paymentStatus: string;
+  trackingDetails?: TrackingDetails;
+  shippingAddress?: {
+    fullName?: string;
+    addressLine?: string;
+    city?: string;
+    state?: string;
+    pincode?: string;
+    country?: string;
+    phone?: string;
+  };
+  timeline?: TimelineEvent[];
+}
 
 export default function AdminOrderDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const router = useRouter();
-  const [order, setOrder] = useState<any>(null);
+  const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -23,14 +85,10 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
     estimatedDeliveryDate: ''
   });
 
-  useEffect(() => {
-    fetchOrder();
-  }, [id]);
-
-  const fetchOrder = async () => {
+  const fetchOrder = useCallback(async () => {
     try {
       const res = await fetch(`/api/admin/orders/${id}`);
-      const data = await res.json();
+      const data = await res.json() as { success: boolean; data: Order };
       if (data.success) {
         setOrder(data.data);
         setOrderStatus(data.data.orderStatus);
@@ -47,7 +105,11 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchOrder();
+  }, [fetchOrder]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -86,7 +148,7 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
     <div className="max-w-6xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-[#1a1614] p-6 rounded-[32px] border border-brand-text/10 shadow-sm">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-[#1a1614] p-6 rounded-4xl border border-brand-text/10 shadow-sm">
         <div className="flex items-center space-x-4">
           <Link href="/admin/orders" className="p-3 rounded-full hover:bg-slate-50 dark:hover:bg-white/5 transition-colors border border-transparent hover:border-brand-text/10">
             <ArrowLeft size={20} />
@@ -113,7 +175,7 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
         <div className="lg:col-span-1 space-y-8">
           
           {/* Status Control */}
-          <div className="bg-white dark:bg-white/5 rounded-[32px] border border-brand-text/10 p-8 space-y-6 shadow-sm">
+          <div className="bg-white dark:bg-white/5 rounded-4xl border border-brand-text/10 p-8 space-y-6 shadow-sm">
             <h2 className="text-[11px] font-black uppercase tracking-widest text-brand-gold">Workflow State</h2>
             <div className="space-y-4">
               <div>
@@ -162,7 +224,7 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
           </div>
 
           {/* Tracking Control */}
-          <div className="bg-white dark:bg-white/5 rounded-[32px] border border-brand-text/10 p-8 space-y-6 shadow-sm">
+          <div className="bg-white dark:bg-white/5 rounded-4xl border border-brand-text/10 p-8 space-y-6 shadow-sm">
             <h2 className="text-[11px] font-black uppercase tracking-widest text-brand-gold flex items-center">
               <Truck size={16} className="mr-2" /> Tracking Information
             </h2>
@@ -214,15 +276,15 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
         {/* Right Column: Order Info & Customer Details */}
         <div className="lg:col-span-2 space-y-8">
           
-          <div className="bg-white dark:bg-white/5 rounded-[32px] border border-brand-text/10 p-8 shadow-sm">
+          <div className="bg-white dark:bg-white/5 rounded-4xl border border-brand-text/10 p-8 shadow-sm">
             <h2 className="text-[11px] font-black uppercase tracking-widest text-brand-gold mb-6 flex items-center">
               <Package size={16} className="mr-2" /> Order Items ({order.items?.length})
             </h2>
             <div className="space-y-6">
-              {order.items?.map((item: any, idx: number) => (
+              {order.items?.map((item: OrderItem, idx: number) => (
                 <div key={idx} className="flex flex-col sm:flex-row items-start gap-6 p-4 rounded-2xl border border-brand-text/5 bg-slate-50/50 dark:bg-black/20">
-                  <div className="w-24 h-24 rounded-xl border border-brand-text/10 overflow-hidden bg-white shrink-0">
-                    <img src={item.image || '/placeholder.png'} className="w-full h-full object-cover" />
+                  <div className="w-24 h-24 rounded-xl border border-brand-text/10 overflow-hidden bg-white shrink-0 relative">
+                    <Image src={item.image || '/placeholder.png'} alt={item.name} fill className="object-cover" sizes="96px" />
                   </div>
                   <div className="flex-1 space-y-3">
                     <div className="flex justify-between items-start">
@@ -238,6 +300,39 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
                       {item.configuration?.size && <p><strong>Size:</strong> {item.configuration.size}</p>}
                       {item.configuration?.stone && <p><strong>Stone:</strong> {item.configuration.stone}</p>}
                     </div>
+                    {item.pricingBreakdown && (
+                      <div className="mt-3 pt-3 border-t border-brand-text/10 text-[10px] space-y-1 font-mono uppercase tracking-wider text-brand-text/80">
+                        <p className="font-bold text-brand-gold mb-1">Pricing Breakdown</p>
+                        <div className="flex justify-between">
+                          <span>Gold Weight: {item.pricingBreakdown.estimatedGoldWeight || item.pricingBreakdown.estimatedWeight || 0}g</span>
+                          <span>₹ {item.pricingBreakdown.metalPrice?.toLocaleString()}</span>
+                        </div>
+                        {item.pricingBreakdown.isDiamond && (item.pricingBreakdown.stoneWeightCarats > 0 || item.pricingBreakdown.stonePrice > 0) && (
+                          <div className="flex justify-between">
+                            <span>Diamond Weight: {(item.pricingBreakdown.stoneWeightCarats || 0).toFixed(2)}ct</span>
+                            <span>₹ {item.pricingBreakdown.stonePrice?.toLocaleString()}</span>
+                          </div>
+                        )}
+                        {item.pricingBreakdown.isStone && (item.pricingBreakdown.stoneWeightCarats > 0 || item.pricingBreakdown.stonePrice > 0) && (
+                          <div className="flex justify-between">
+                            <span>{item.pricingBreakdown.stoneName || 'Stone'} Weight: {(item.pricingBreakdown.stoneWeightCarats || 0).toFixed(2)}ct</span>
+                            <span>₹ {item.pricingBreakdown.stonePrice?.toLocaleString()}</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between">
+                          <span>Making Charges:</span>
+                          <span>₹ {item.pricingBreakdown.makingCharges?.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>GST (3%):</span>
+                          <span>₹ {item.pricingBreakdown.gst?.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between font-bold border-t border-brand-text/5 pt-1 mt-1 text-brand-gold">
+                          <span>Subtotal + Tax:</span>
+                          <span>₹ {(item.pricingBreakdown.totalPrice || item.price)?.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -263,7 +358,7 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white dark:bg-white/5 rounded-[32px] border border-brand-text/10 p-8 shadow-sm">
+            <div className="bg-white dark:bg-white/5 rounded-4xl border border-brand-text/10 p-8 shadow-sm">
               <h2 className="text-[11px] font-black uppercase tracking-widest text-brand-gold mb-4 flex items-center">
                 <MapPin size={16} className="mr-2" /> Shipping Address
               </h2>
@@ -276,12 +371,12 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
               </div>
             </div>
 
-            <div className="bg-white dark:bg-white/5 rounded-[32px] border border-brand-text/10 p-8 shadow-sm">
+            <div className="bg-white dark:bg-white/5 rounded-4xl border border-brand-text/10 p-8 shadow-sm">
               <h2 className="text-[11px] font-black uppercase tracking-widest text-brand-gold mb-4 flex items-center">
                 <Calendar size={16} className="mr-2" /> Lifecycle Timeline
               </h2>
-              <div className="space-y-4 relative before:absolute before:inset-0 before:ml-[5px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-brand-gold/20 before:to-transparent">
-                {order.timeline?.slice().reverse().map((event: any, idx: number) => (
+              <div className="space-y-4 relative before:absolute before:inset-0 before:ml-1.25 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-linear-to-b before:from-transparent before:via-brand-gold/20 before:to-transparent">
+                {order.timeline?.slice().reverse().map((event: TimelineEvent, idx: number) => (
                   <div key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                     <div className="flex items-center justify-center w-3 h-3 rounded-full border-2 border-white bg-brand-gold text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2" />
                     <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-slate-50 dark:bg-black/20 p-3 rounded-xl border border-brand-text/5 shadow-sm">

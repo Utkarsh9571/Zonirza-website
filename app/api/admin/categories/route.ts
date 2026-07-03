@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import Category from "@/models/Category";
+import { revalidatePath } from "next/cache";
 import Product from "@/models/Product";
 
 export async function GET(req: NextRequest) {
@@ -40,6 +41,17 @@ export async function POST(req: NextRequest) {
     await dbConnect();
     const body = await req.json();
     const category = await Category.create(body);
+
+    if (category) {
+      try {
+        revalidatePath('/');
+        revalidatePath('/products');
+        revalidatePath(`/category/${category.slug}`);
+      } catch (e) {
+        console.error("Revalidation error:", e);
+      }
+    }
+
     return NextResponse.json({ success: true, data: category });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });

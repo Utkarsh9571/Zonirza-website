@@ -428,6 +428,49 @@ export default function PaymentPage() {
               <div className="absolute top-4 right-8 px-2 py-1 bg-red-100 text-red-700 text-[8px] font-black uppercase tracking-widest rounded-md animate-pulse">Test Mode</div>
               <h2 className="text-2xl font-serif text-brand-text dark:text-brand-text/90 text-center">Order Summary</h2>
               
+              <div className="space-y-6 max-h-60 overflow-y-auto border-b border-brand-text/5 pb-6">
+                {items.map((item) => (
+                  <div key={item.cartItemId} className="flex space-x-4 text-left">
+                    <div className="flex-1 space-y-1">
+                      <p className="text-[11px] font-bold text-brand-text uppercase tracking-widest line-clamp-1">{item.name}</p>
+                      <p className="text-[9px] text-brand-text/40 uppercase tracking-widest">{item.configuration.purity} | Size: {item.configuration.size}</p>
+                      <div className="flex justify-between items-center pt-1 text-xs">
+                        <span className="text-[10px] text-brand-text/40">Qty: {item.quantity}</span>
+                        <span className="font-serif text-brand-text font-bold">{displayPrice(item.price * item.quantity, currentCurrency, rates)}</span>
+                      </div>
+                      {item.pricingBreakdown && (
+                        <div className="mt-2 pt-2 border-t border-brand-text/5 text-[9px] text-brand-text/60 space-y-1 font-mono uppercase tracking-wider">
+                          <div className="flex justify-between">
+                            <span>Gold Weight: {item.pricingBreakdown.estimatedGoldWeight || item.pricingBreakdown.estimatedWeight || 0}g</span>
+                            <span>{displayPrice(item.pricingBreakdown.metalPrice, currentCurrency, rates)}</span>
+                          </div>
+                          {item.pricingBreakdown.isDiamond && ((item.pricingBreakdown.stoneWeightCarats || 0) > 0 || item.pricingBreakdown.stonePrice > 0) && (
+                            <div className="flex justify-between">
+                              <span>Diamond Wt: {(item.pricingBreakdown.stoneWeightCarats || 0).toFixed(2)}ct</span>
+                              <span>{displayPrice(item.pricingBreakdown.stonePrice, currentCurrency, rates)}</span>
+                            </div>
+                          )}
+                          {item.pricingBreakdown.isStone && ((item.pricingBreakdown.stoneWeightCarats || 0) > 0 || item.pricingBreakdown.stonePrice > 0) && (
+                            <div className="flex justify-between">
+                              <span>{item.pricingBreakdown.stoneName || 'Stone'} Wt: {(item.pricingBreakdown.stoneWeightCarats || 0).toFixed(2)}ct</span>
+                              <span>{displayPrice(item.pricingBreakdown.stonePrice, currentCurrency, rates)}</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between">
+                            <span>Making Charges</span>
+                            <span>{displayPrice(item.pricingBreakdown.makingCharges, currentCurrency, rates)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>GST (3%)</span>
+                            <span>{displayPrice(item.pricingBreakdown.gst, currentCurrency, rates)}</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
               <div className="space-y-6">
                 <div className="flex justify-between items-end pb-4 border-b border-brand-text/5">
                   <span className="text-[11px] font-bold uppercase tracking-widest text-brand-text/60">Cart Total</span>

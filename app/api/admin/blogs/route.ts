@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import Blog from '@/models/Blog';
+import { revalidatePath } from 'next/cache';
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,6 +25,16 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     await dbConnect();
     const blog = await Blog.create(body);
+    
+    if (blog) {
+      try {
+        revalidatePath('/');
+        revalidatePath('/blog');
+        revalidatePath(`/blog/${blog.slug}`);
+      } catch (e) {
+        console.error("Revalidation error:", e);
+      }
+    }
     
     return NextResponse.json({ success: true, data: blog });
   } catch (error: any) {

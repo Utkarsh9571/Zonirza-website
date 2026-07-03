@@ -104,3 +104,68 @@ export function resolveDefaultMetal(
 
   return 'yellow-gold';
 }
+
+/**
+ * Shared Default Product Configuration Engine
+ * Single source of truth for default metal, purity, size, and stone selections.
+ */
+export function sharedDefaultProductConfiguration(
+  product: any,
+  activeFilters?: { metal?: string } | null
+): {
+  metal: string;
+  purity: string;
+  size: string;
+  stone: string;
+} {
+  if (!product) {
+    return { metal: 'yellow-gold', purity: '18K', size: '', stone: 'None' };
+  }
+
+  const configOptions = product.configurableOptions || {};
+  
+  // Resolve metals, purities, sizes, and stones
+  const metals: string[] = configOptions.metals?.length ? configOptions.metals : ['White Gold', 'Rose Gold', 'Yellow Gold'];
+  const purities: string[] = product.goldPurityOptions?.length 
+    ? product.goldPurityOptions 
+    : (configOptions.purities?.length ? configOptions.purities : ['18K', '14K', '9K']);
+  const sizes: string[] = configOptions.sizes?.length ? configOptions.sizes : ['7', '8', '9', '10', '11'];
+  
+  const mapLegacyStones = (stonesArr: string[]) => {
+    const mapping: Record<string, string> = {
+      'VVS1': 'EF-VVS',
+      'VS1': 'GH-VS',
+      'SI1': 'IJ-SI',
+      'DIAMOND STANDARD': 'Diamond-Standard',
+      'DIAMOND-STANDARD': 'Diamond-Standard',
+    };
+    return stonesArr.map((s: string) => mapping[s.toUpperCase()] || mapping[s] || s);
+  };
+  
+  const rawStones = configOptions.stones?.length ? configOptions.stones : ['EF-VVS', 'GH-VS', 'IJ-SI', 'Diamond-Standard'];
+  const stones = mapLegacyStones(rawStones);
+
+  // Initialize defaults
+  const initialConfig = {
+    metal: resolveDefaultMetal(product, activeFilters),
+    purity: purities.includes('18K') ? '18K' : (purities[0] || '18K'),
+    size: product.defaultSize || '',
+    stone: (product.jewelryType === 'gold' || stones.length === 0) ? 'None' : stones[0],
+  };
+
+  // Default Size for Rings/Bangles/Chains/Bracelets if not specified
+  if (!initialConfig.size) {
+    const category = (product.category || '').toLowerCase();
+    if (category.includes('ring')) {
+      initialConfig.size = sizes.includes('12') ? '12' : (sizes.includes('7') ? '7' : sizes[0]); 
+    } else if (category.includes('chain') || category.includes('necklace') || category.includes('mangalsutra')) {
+      initialConfig.size = sizes.includes('20') ? '20' : sizes[0];
+    } else if (category.includes('bracelet') || category.includes('anklet')) {
+      initialConfig.size = sizes.includes('M') ? 'M' : (sizes.includes('Medium') ? 'Medium' : sizes[0]);
+    } else if (category.includes('bangle')) {
+      initialConfig.size = sizes.includes('2.4') ? '2.4' : sizes[0]; 
+    }
+  }
+
+  return initialConfig;
+}

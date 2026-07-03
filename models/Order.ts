@@ -13,6 +13,21 @@ export interface IOrderItem {
     size?: string;
     stone?: string;
   };
+  pricingBreakdown?: {
+    metalPrice: number;
+    makingCharges: number;
+    stonePrice: number;
+    subTotal: number;
+    gst: number;
+    totalPrice: number;
+    estimatedWeight: number;
+    estimatedGoldWeight: number;
+    estimatedStoneWeight: number;
+    stoneName?: string;
+    stoneWeightCarats?: number;
+    isDiamond?: boolean;
+    isStone?: boolean;
+  };
 }
 
 export interface IOrder extends Document {
@@ -76,6 +91,21 @@ const OrderSchema: Schema = new Schema(
           purity: { type: String, required: true },
           size: { type: String },
           stone: { type: String },
+        },
+        pricingBreakdown: {
+          metalPrice: { type: Number },
+          makingCharges: { type: Number },
+          stonePrice: { type: Number },
+          subTotal: { type: Number },
+          gst: { type: Number },
+          totalPrice: { type: Number },
+          estimatedWeight: { type: Number },
+          estimatedGoldWeight: { type: Number },
+          estimatedStoneWeight: { type: Number },
+          stoneName: { type: String },
+          stoneWeightCarats: { type: Number },
+          isDiamond: { type: Boolean },
+          isStone: { type: Boolean },
         },
       },
     ],

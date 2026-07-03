@@ -39,6 +39,12 @@ export interface CartItem {
     gst: number;
     totalPrice: number;
     estimatedWeight: number;
+    estimatedGoldWeight?: number;
+    estimatedStoneWeight?: number;
+    stoneName?: string;
+    stoneWeightCarats?: number;
+    isDiamond?: boolean;
+    isStone?: boolean;
   };
 }
 
