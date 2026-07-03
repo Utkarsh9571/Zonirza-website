@@ -307,13 +307,13 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
                           <span>Gold Weight: {item.pricingBreakdown.estimatedGoldWeight || item.pricingBreakdown.estimatedWeight || 0}g</span>
                           <span>₹ {item.pricingBreakdown.metalPrice?.toLocaleString()}</span>
                         </div>
-                        {item.pricingBreakdown.isDiamond && (item.pricingBreakdown.stoneWeightCarats > 0 || item.pricingBreakdown.stonePrice > 0) && (
+                        {item.pricingBreakdown?.isDiamond && ((item.pricingBreakdown.stoneWeightCarats || 0) > 0 || (item.pricingBreakdown.stonePrice || 0) > 0) && (
                           <div className="flex justify-between">
                             <span>Diamond Weight: {(item.pricingBreakdown.stoneWeightCarats || 0).toFixed(2)}ct</span>
                             <span>₹ {item.pricingBreakdown.stonePrice?.toLocaleString()}</span>
                           </div>
                         )}
-                        {item.pricingBreakdown.isStone && (item.pricingBreakdown.stoneWeightCarats > 0 || item.pricingBreakdown.stonePrice > 0) && (
+                        {item.pricingBreakdown?.isStone && ((item.pricingBreakdown.stoneWeightCarats || 0) > 0 || (item.pricingBreakdown.stonePrice || 0) > 0) && (
                           <div className="flex justify-between">
                             <span>{item.pricingBreakdown.stoneName || 'Stone'} Weight: {(item.pricingBreakdown.stoneWeightCarats || 0).toFixed(2)}ct</span>
                             <span>₹ {item.pricingBreakdown.stonePrice?.toLocaleString()}</span>
@@ -348,10 +348,10 @@ export default function AdminOrderDetail({ params }: { params: Promise<{ id: str
                   </p>
                 )}
               </div>
-              {order.discountAmount > 0 && (
+              {order.discountAmount && order.discountAmount > 0 && (
                 <div className="text-right">
                   <p className="text-[10px] uppercase tracking-widest text-green-600 font-bold">Discount Applied</p>
-                  <p className="text-sm font-bold text-green-600 mt-1">- ₹ {order.discountAmount?.toLocaleString()}</p>
+                  <p className="text-sm font-bold text-green-600 mt-1">- ₹ {order.discountAmount.toLocaleString()}</p>
                 </div>
               )}
             </div>
