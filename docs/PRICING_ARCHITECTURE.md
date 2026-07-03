@@ -89,7 +89,7 @@ All storefront components (Product Card, PDP, Cart, Checkout) use `sharedDefault
 ---
 
 ## Migration
-To normalize existing products, run `node scripts/migrateLegacyPricingData.cjs`. This script populates:
+To normalize existing products, run `node scripts/archive/migrateLegacyPricingData.cjs`. This script populates:
 - `baseWeight` from `specs.Gold Weight`
 - `diamondWeightCarats` from `specs.Diamond Weight`
 - `jewelryType` inferred from product data
