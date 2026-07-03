@@ -202,6 +202,7 @@ export function calculatePricing(
     basePrice?: number; 
     price?: number;
     baseWeight: number; 
+    diamondWeightCarats?: number;
     makingCharges: number; 
     category: string;
     jewelryType?: string;
@@ -217,8 +218,12 @@ export function calculatePricing(
   const overrides = product.pricingOverrides || {};
   const rates = providedRates || {};
   
+  if (!product.baseWeight) {
+    console.warn(`Missing baseWeight for product! Using 0 as fallback.`);
+  }
+  
   // Calculate dynamic gold weight using category specific rules
-  const baseWeightVal = product.baseWeight || product.price || 5.0;
+  const baseWeightVal = product.baseWeight || 0;
   const estimatedGoldWeight = calculateEstimatedWeight(baseWeightVal, config.size, product);
   
   // Metal pricing
@@ -245,7 +250,7 @@ export function calculatePricing(
     if (stoneOverriddenPrice !== undefined && stoneOverriddenPrice !== null) {
       stonePrice = stoneOverriddenPrice;
     } else {
-      const dWeight = parseFloat(specsObj.diamondWeight || specsObj.stoneWeight || '0') || 0;
+      const dWeight = product.diamondWeightCarats || parseFloat(specsObj.diamondWeight || specsObj.stoneWeight || '0') || 0;
       const ratePerCarat = DIAMOND_RATES[grade] || DIAMOND_RATES['Diamond-Standard'];
       stonePrice = dWeight * ratePerCarat;
     }
@@ -258,7 +263,7 @@ export function calculatePricing(
       stonePrice = stonePrice * (1 + (adjustmentPercentage / 100));
     }
     
-    let activeWeight = parseFloat(specsObj.diamondWeight || specsObj.stoneWeight || '0') || 0;
+    let activeWeight = product.diamondWeightCarats || parseFloat(specsObj.diamondWeight || specsObj.stoneWeight || '0') || 0;
     const weightMatch = grade.match(/([\d.-]+)\s*ct/i);
     if (weightMatch) {
       activeWeight = parseFloat(weightMatch[1].replace('-', '.')) || activeWeight;

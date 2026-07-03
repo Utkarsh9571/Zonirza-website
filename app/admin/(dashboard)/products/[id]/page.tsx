@@ -42,6 +42,7 @@ interface ProductFormData {
   basePrice: number;
   makingCharges: number;
   baseWeight: number;
+  diamondWeightCarats?: number;
   stockStatus: string;
   isActive: boolean;
   images: string[];
@@ -96,6 +97,7 @@ function ProductEditorContent({ params }: ProductEditorProps) {
     basePrice: 0,
     makingCharges: 0,
     baseWeight: 0,
+    diamondWeightCarats: 0,
     stockStatus: 'in-stock',
     isActive: true,
     images: [],
@@ -147,7 +149,8 @@ function ProductEditorContent({ params }: ProductEditorProps) {
               makingCharges: product.pricingOverrides?.makingCharges ?? '',
               sizeWeightOffset: product.pricingOverrides?.sizeWeightOffset ?? '',
               stonePrices: product.pricingOverrides?.stonePrices || {}
-            }
+            },
+            diamondWeightCarats: product.diamondWeightCarats || 0
           });
         } else {
           setError('Failed to load product data.');
@@ -253,7 +256,8 @@ function ProductEditorContent({ params }: ProductEditorProps) {
               makingCharges: data.data.pricingOverrides?.makingCharges ?? '',
               sizeWeightOffset: data.data.pricingOverrides?.sizeWeightOffset ?? '',
               stonePrices: data.data.pricingOverrides?.stonePrices || {}
-            }
+            },
+            diamondWeightCarats: data.data.diamondWeightCarats || 0
           });
         }
       } else {
@@ -566,14 +570,14 @@ function ProductEditorContent({ params }: ProductEditorProps) {
 
         {activeTab === 'pricing' && (
           <div className="bg-white dark:bg-white/10 rounded-[40px] border border-brand-text/15 dark:border-white/15 p-10 space-y-10 animate-in fade-in duration-700 shadow-md">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
               <div className="space-y-4">
-                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Base Metal Price (₹)</label>
+                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Computed Base Price (₹)</label>
                 <input 
                   type="number" 
                   value={formData.basePrice}
-                  onChange={(e) => setFormData({...formData, basePrice: parseFloat(e.target.value)})}
-                  className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/20 dark:border-white/20 rounded-2xl py-4 px-6 text-[14px] font-bold text-brand-gold transition-all shadow-inner"
+                  disabled
+                  className="w-full bg-slate-100 dark:bg-white/10 border border-brand-text/20 dark:border-white/20 rounded-2xl py-4 px-6 text-[14px] font-bold text-brand-text/60 transition-all shadow-inner cursor-not-allowed"
                 />
               </div>
               <div className="space-y-4">
@@ -589,8 +593,19 @@ function ProductEditorContent({ params }: ProductEditorProps) {
                 <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Base Weight (g)</label>
                 <input 
                   type="number" 
+                  step="0.01"
                   value={formData.baseWeight}
                   onChange={(e) => setFormData({...formData, baseWeight: parseFloat(e.target.value)})}
+                  className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/20 dark:border-white/20 rounded-2xl py-4 px-6 text-[14px] font-bold text-brand-text dark:text-white transition-all shadow-inner"
+                />
+              </div>
+              <div className="space-y-4">
+                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold">Diamond Weight (ct)</label>
+                <input 
+                  type="number" 
+                  step="0.01"
+                  value={formData.diamondWeightCarats}
+                  onChange={(e) => setFormData({...formData, diamondWeightCarats: parseFloat(e.target.value)})}
                   className="w-full bg-slate-50 dark:bg-white/5 border border-brand-text/20 dark:border-white/20 rounded-2xl py-4 px-6 text-[14px] font-bold text-brand-text dark:text-white transition-all shadow-inner"
                 />
               </div>

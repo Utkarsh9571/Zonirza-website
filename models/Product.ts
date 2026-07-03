@@ -7,11 +7,12 @@ export interface IProduct extends Document {
   images: string[];
   videoUrl?: string;
   description: string;
-  basePrice: number;
+  basePrice: number; // Read-only computed
   makingCharges: number;
   stockStatus: 'in-stock' | 'out-of-stock';
   isActive: boolean;
   baseWeight: number;
+  diamondWeightCarats: number;
   tags: string[];
   specs: Record<string, string>;
   variantImages?: Record<string, string>;
@@ -73,7 +74,8 @@ const ProductSchema: Schema = new Schema({
   description: { type: String, required: true },
   basePrice: { type: Number, required: true, default: 0 },
   makingCharges: { type: Number, default: 0 },
-  baseWeight: { type: Number, default: 0 },
+  baseWeight: { type: Number },
+  diamondWeightCarats: { type: Number, default: 0 },
   stockStatus: { type: String, enum: ['in-stock', 'out-of-stock'], default: 'in-stock' },
   isActive: { type: Boolean, default: true },
   tags: { type: [String], default: [] },

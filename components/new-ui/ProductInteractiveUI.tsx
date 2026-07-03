@@ -175,7 +175,8 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
   const pricing = useMemo(() => {
     const basePricing = calculatePricing({
       basePrice: product.basePrice || product.price || 0,
-      baseWeight: product.baseWeight || 5.0,
+      baseWeight: product.baseWeight,
+      diamondWeightCarats: product.diamondWeightCarats,
       makingCharges: product.makingCharges || 0,
       category: product.category,
       jewelryType: product.jewelryType,
