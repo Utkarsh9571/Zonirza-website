@@ -154,16 +154,9 @@ const Navbar = () => {
         
         <div className="flex items-center space-x-4">
           <Link href="/" className="flex items-center group relative z-110 bg-transparent md:bg-white md:dark:bg-brand-white/80 backdrop-blur-none md:backdrop-blur-md px-2 py-2 md:px-6 md:py-4 rounded-full border-0 md:border-2 border-transparent md:border-brand-gold shadow-none md:shadow-premium transition-all duration-500">
-            <div className="relative w-32 md:w-40 h-10 md:h-12">
-              <Image 
-                src="/images/ZONIRAZ LOGO.png" 
-                alt="Zoniraz Logo" 
-                fill
-                sizes="(max-width: 768px) 128px, 160px"
-                className="object-contain"
-                priority
-              />
-            </div>
+            <span className="text-xl md:text-2xl font-serif font-bold tracking-widest text-brand-text group-hover:text-brand-gold transition-colors duration-500">
+              LUXURY STARTER
+            </span>
           </Link>
         </div>
   

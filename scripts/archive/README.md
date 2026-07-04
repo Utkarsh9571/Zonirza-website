@@ -1,6 +1,6 @@
 # Historical Archive Scripts
 
-The scripts in this directory represent one-time data migrations, catalog fixes, taxonomy recovery utilities, and seeding configurations from past iterations of the Zoniraz jewelry e-commerce platform.
+The scripts in this directory represent one-time data migrations, catalog fixes, taxonomy recovery utilities, and seeding configurations from past iterations of the Luxury Jewelry jewelry e-commerce platform.
 
 ## Archived Scripts Inventory
 

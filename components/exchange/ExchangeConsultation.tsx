@@ -150,7 +150,7 @@ export default function ExchangeConsultation() {
             
             {/* Logo overlay */}
             <div className="absolute top-16 right-6 flex flex-col items-center">
-              <span className="text-white font-serif font-bold text-xl tracking-wider">ZONIRAZ</span>
+              <span className="text-white font-serif font-bold text-xl tracking-wider">LUXURY STARTER</span>
               <span className="text-brand-gold text-[8px] uppercase tracking-[0.2em] mt-1 border border-brand-gold/50 px-2 py-0.5 rounded-full backdrop-blur-md">A Luxury Product</span>
             </div>
           </div>

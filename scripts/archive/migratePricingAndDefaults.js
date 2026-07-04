@@ -42,7 +42,7 @@ const Product = mongoose.models.Product || mongoose.model('Product', ProductSche
 
 // Settings Schema Definition for Script
 const SettingsSchema = new mongoose.Schema({
-  siteName: { type: String, default: 'Zoniraz Jewelers' },
+  siteName: { type: String, default: 'Luxury Jewelers' },
   pricingFactors: {
     gstPercentage: { type: Number, default: 3 },
     shippingBaseCharge: { type: Number, default: 0 },

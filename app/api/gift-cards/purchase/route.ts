@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       items: [
         {
           productId: 'giftcard_virtual',
-          name: `Zoniraz Gift Card — ₹${amount.toLocaleString()}`,
+          name: `Luxury Jewelry Gift Card — ₹${amount.toLocaleString()}`,
           slug: 'giftcard',
           price: amount,
           quantity: 1,

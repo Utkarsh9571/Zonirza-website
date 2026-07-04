@@ -9,7 +9,7 @@ import { constructMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = constructMetadata({
   title: 'Digi Gold',
-  description: 'Start your luxury digital gold savings journey with Zoniraz. Secure holdings, live rates, and easy redemption.',
+  description: 'Start your luxury digital gold savings journey with Luxury Jewelry. Secure holdings, live rates, and easy redemption.',
   path: '/digi-gold',
 });
 
@@ -29,14 +29,14 @@ export default function DigiGoldLandingPage() {
             <div className="flex-1 space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
               <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full border border-brand-gold/30 bg-brand-gold/5">
                 <Star size={14} className="text-brand-gold" />
-                <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-gold">Introducing Zoniraz Digi Gold</span>
+                <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-gold">Introducing Luxury Jewelry Digi Gold</span>
               </div>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif leading-[1.1]">
                 Own Gold <br />
                 <span className="italic text-brand-gold">Digitally.</span>
               </h1>
               <p className="text-lg text-brand-text/70 max-w-lg leading-relaxed">
-                A secure, luxury savings experience. Build your gold portfolio with as little as ₹100, and redeem it for exquisite Zoniraz jewellery whenever you desire.
+                A secure, luxury savings experience. Build your gold portfolio with as little as ₹100, and redeem it for exquisite Luxury Jewelry jewellery whenever you desire.
               </p>
               <div className="flex flex-wrap gap-4 pt-4">
                 <a href="#faq">
@@ -82,7 +82,7 @@ export default function DigiGoldLandingPage() {
               </div>
               <div>
                 <h3 className="text-xl font-bold uppercase tracking-widest mb-3">Store Securely</h3>
-                <p className="text-sm text-brand-text/60 leading-relaxed max-w-xs mx-auto">Your digital holdings are tracked in your secure Zoniraz luxury wallet.</p>
+                <p className="text-sm text-brand-text/60 leading-relaxed max-w-xs mx-auto">Your digital holdings are tracked in your secure Luxury Jewelry luxury wallet.</p>
               </div>
             </div>
 
@@ -107,7 +107,7 @@ export default function DigiGoldLandingPage() {
             <div className="space-y-8">
               <h2 className="text-3xl md:text-5xl font-serif text-brand-gold italic">Premium Finance <br/><span className="text-white not-italic">Meets Luxury.</span></h2>
               <p className="text-white/60 leading-relaxed text-lg max-w-lg">
-                Experience a modern approach to gold savings, designed exclusively for Zoniraz members.
+                Experience a modern approach to gold savings, designed exclusively for Luxury Jewelry members.
               </p>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-8">
@@ -139,7 +139,7 @@ export default function DigiGoldLandingPage() {
                 <div className="absolute inset-0 bg-gradient-to-tr from-brand-gold/40 to-transparent mix-blend-overlay z-10" />
                 <Image 
                   src="/images/images/product/yellow-gold-16010972111558.jpg" // Using an existing premium gold image
-                  alt="Zoniraz Luxury Gold"
+                  alt="Luxury Jewelry Luxury Gold"
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover scale-105 hover:scale-100 transition-transform duration-1000"
@@ -161,7 +161,7 @@ export default function DigiGoldLandingPage() {
           <div className="space-y-4">
             {/* Simple accordion mockups */}
             {[
-              { q: "Is this real physical gold?", a: "This is a digital representation of your savings linked to the live price of 24K gold. You can redeem this balance against any physical jewellery purchase at Zoniraz." },
+              { q: "Is this real physical gold?", a: "This is a digital representation of your savings linked to the live price of 24K gold. You can redeem this balance against any physical jewellery purchase at Luxury Jewelry." },
               { q: "What is the minimum amount to start?", a: "You can start your digital gold savings with as little as ₹100." },
               { q: "Are there any hidden charges?", a: "A standard 3% GST applies to your purchase, reflecting actual market conditions. There are no hidden storage fees." },
               { q: "How do I redeem my digital gold?", a: "At checkout, you will have the option to apply your Digi Gold wallet balance toward the purchase of any jewellery piece." }

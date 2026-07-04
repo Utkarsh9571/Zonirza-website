@@ -203,8 +203,8 @@ const solitaireProducts = [
 
 const goldCoinProducts = [
   {
-    name: "Zoniraz 24K Laxmi Gold Coin",
-    slug: "zoniraz-24k-laxmi-gold-coin",
+    name: "Luxury Jewelry 24K Laxmi Gold Coin",
+    slug: "luxury-jewelry-24k-laxmi-gold-coin",
     category: "gold-coins",
     images: ["/images/images/product/yellow-gold-16010972111558.jpg"],
     description: "Blessed 24K pure (999.9) gold coin embossed with Goddess Laxmi. Ideal for Diwali, Akshaya Tritiya, weddings, and family wealth savings. Protected by tamper-proof luxury certicard packing.",

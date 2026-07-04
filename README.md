@@ -1,6 +1,6 @@
-# Zoniraz Luxury Jewellery Store
+# Luxury Jewelry Commerce Starter
 
-A premier, light luxury jewellery e-commerce platform designed for an editorial-grade shopping experience. Built with a focus on timeless craftsmanship and modern elegance.
+A premier, light luxury jewelry e-commerce starter kit designed for an editorial-grade shopping experience. Built with a focus on timeless craftsmanship and modern elegance.
 
 ## ✨ Core Features
 
@@ -51,8 +51,8 @@ NEXTAUTH_URL=http://localhost:3000
 # Email (SMTP)
 EMAIL_SERVER_USER=your_smtp_user
 EMAIL_SERVER_PASSWORD=your_smtp_password
-EMAIL_FROM=noreply@zoniraz.com
-BUSINESS_EMAIL=concierge@zoniraz.com
+EMAIL_FROM=noreply@example.com
+BUSINESS_EMAIL=concierge@example.com
 ```
 
 ### 3. Development
@@ -76,4 +76,4 @@ npm run dev
 - **Spacing**: Generous whitespace to reflect luxury and exclusivity.
 
 ---
-© 2024 Zoniraz Masterpieces. All Rights Reserved.
+© 2026 Luxury Jewelry Commerce Starter. All Rights Reserved.

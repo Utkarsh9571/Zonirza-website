@@ -22,7 +22,7 @@ export default function AboutContent() {
           </div>
           <h1 className="text-6xl md:text-7xl font-serif text-brand-text mb-8">Our Heritage</h1>
           <p className="text-brand-text/60 max-w-3xl mx-auto leading-relaxed text-lg">
-            Zoniraz Jewel House Pvt Ltd is one of the leading jewellery manufacturer, wholesaler, retailer and exporter in the international Jewels market.
+            Luxury Jewel House Pvt Ltd is one of the leading jewellery manufacturer, wholesaler, retailer and exporter in the international Jewels market.
           </p>
         </motion.div>
 
@@ -36,7 +36,7 @@ export default function AboutContent() {
             <h2 className="text-4xl font-serif text-brand-text leading-tight">A Legacy of Trust and Craftsmanship</h2>
             <div className="space-y-6 text-brand-text/70 leading-relaxed">
               <p>From the last 50 Years we are serving for our loyal customers and delivering them not only a qualitative and best designs of Jewellery but also a trustful and responsible brand.</p>
-              <p>Zoniraz Jewel house believes in customer satisfaction because it’s your own brand and without your satisfaction we can’t win your trust, & customer trust is a part of our policy. This is the only reason we always keep customer satisfaction and trust above the price and profit of our product.</p>
+              <p>Luxury Jewelry Jewel house believes in customer satisfaction because it’s your own brand and without your satisfaction we can’t win your trust, & customer trust is a part of our policy. This is the only reason we always keep customer satisfaction and trust above the price and profit of our product.</p>
             </div>
             <div className="flex items-center space-x-6">
               <div className="flex flex-col">
@@ -111,7 +111,7 @@ export default function AboutContent() {
                </div>
                <div className="col-span-2 bg-brand-gold text-white p-8 rounded-3xl text-center space-y-4">
                   <p className="text-[10px] uppercase tracking-[0.3em] font-bold">Customer Helpline</p>
-                  <a href="tel:+919784836060" className="text-2xl font-serif block hover:underline tracking-widest">97848 36060</a>
+                  <a href="tel:+919999999999" className="text-2xl font-serif block hover:underline tracking-widest">99999 99999</a>
                </div>
             </div>
           </div>
@@ -123,7 +123,7 @@ export default function AboutContent() {
             <Target size={40} className="text-brand-gold mb-8 group-hover:rotate-45 transition-transform duration-500" />
             <h3 className="text-3xl font-serif text-brand-text mb-6">Our Mission</h3>
             <div className="space-y-4 text-sm text-brand-text/60 leading-relaxed">
-              <p>Zoniraz Jewelhouse was founded with the mission: <strong className="text-brand-text">&ldquo;Next Generation of Jewellery Industry for Customer Support and Satisfaction&rdquo;</strong>.</p>
+              <p>Luxury Jewelry Jewelhouse was founded with the mission: <strong className="text-brand-text">&ldquo;Next Generation of Jewellery Industry for Customer Support and Satisfaction&rdquo;</strong>.</p>
               <p>We dedicatedly begin our work at early stage and search for rough Diamonds in the most remote parts of the world, ensuring every client has a reason to smile.</p>
             </div>
           </div>

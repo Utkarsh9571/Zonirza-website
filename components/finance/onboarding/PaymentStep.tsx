@@ -63,9 +63,9 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: data.amount,
         currency: 'INR',
-        name: "Zoniraz Finance",
+        name: "Jewelry Starter Finance",
         description: `${planType} Enrollment`,
-        image: "/images/ZONIRAZ LOGO.png",
+        image: "/images/default-image.png",
         order_id: data.razorpayOrderId,
         handler: async function (response: any) {
           try {
@@ -131,7 +131,7 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
 
   if (isProcessing) {
     return (
-      <div className="bg-white dark:bg-[#1A1A1A] p-12 rounded-xl border border-brand-text/10 dark:border-white/10 shadow-soft text-center animate-in zoom-in-95 duration-500 min-h-[400px] flex flex-col items-center justify-center">
+      <div className="bg-white dark:bg-[#1A1A1A] p-12 rounded-xl border border-brand-text/10 dark:border-white/10 shadow-soft text-center animate-in zoom-in-95 duration-500 min-h-100 flex flex-col items-center justify-center">
         <div className="relative mb-8">
           <div className="absolute inset-0 bg-brand-gold/20 rounded-full animate-ping"></div>
           <div className="relative w-20 h-20 bg-[#F9F9F9] dark:bg-[#222] border border-brand-gold/30 rounded-full flex items-center justify-center">
@@ -224,7 +224,7 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
       </div>
 
       {/* Payment Details Form */}
-      <div className="w-full md:w-2/3 p-8 flex flex-col h-full min-h-[400px]">
+      <div className="w-full md:w-2/3 p-8 flex flex-col h-full min-h-100">
         <h2 className="text-xl font-bold text-brand-text dark:text-white mb-6">Payment Details</h2>
         
         <div className="flex-1">

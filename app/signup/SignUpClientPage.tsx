@@ -103,7 +103,7 @@ export default function SignUpClientPage() {
 
         <AuthCard 
           title="Create Account" 
-          subtitle="Join the world of Zoniraz luxury"
+          subtitle="Join the world of Luxury Jewelry luxury"
           className="max-w-xl"
         >
           {error && (

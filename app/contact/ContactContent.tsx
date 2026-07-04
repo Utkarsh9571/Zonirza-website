@@ -108,9 +108,9 @@ export default function ContactContent() {
         <h1 className="text-5xl md:text-6xl text-brand-text mb-12">Help & Contact</h1>
         
         <div className="max-w-4xl mx-auto text-left bg-[#FDF9F6] dark:bg-brand-accent p-8 md:p-12 rounded-[40px] border border-brand-gold/10 mb-20">
-          <h2 className="text-2xl mb-6 text-brand-text border-b border-brand-gold/20 pb-4 inline-block">About Zoniraz Jewellers</h2>
+          <h2 className="text-2xl mb-6 text-brand-text border-b border-brand-gold/20 pb-4 inline-block">About Luxury Jewelry Jewellers</h2>
           <p className="text-sm md:text-base leading-relaxed text-brand-text/80 mb-8 font-sans">
-            Zoniraz Jewel house Pvt LTD. is one of the leading Jewellery manufacturer, wholesaler, retailer and exporter in the international Jewels, Gems and Precious stones market. For the last 50 Years we have been serving our loyal customers and delivering them not only qualitative and best designs of Jewellery but also a trustful and responsible brand. Launching our new jewellery brand of real gold and diamond jewellery silver jewellery birthstones. We speak about quality, experience, customer satisfaction, trust, honesty, belief and relationship. Our product gives you royal life experience and a high lifestyle. We believe in trust and honesty in our relationships with our customers, that is why trust is part of our policy. Our strong and elegant designs of jewellery raise grace and build personality and also serve a royal look as most of our designs are derived from Indian culture. We have varied ranges of unique collections of our products to satisfy various demands of different customers.
+            Luxury Jewelry Jewel house Pvt LTD. is one of the leading Jewellery manufacturer, wholesaler, retailer and exporter in the international Jewels, Gems and Precious stones market. For the last 50 Years we have been serving our loyal customers and delivering them not only qualitative and best designs of Jewellery but also a trustful and responsible brand. Launching our new jewellery brand of real gold and diamond jewellery silver jewellery birthstones. We speak about quality, experience, customer satisfaction, trust, honesty, belief and relationship. Our product gives you royal life experience and a high lifestyle. We believe in trust and honesty in our relationships with our customers, that is why trust is part of our policy. Our strong and elegant designs of jewellery raise grace and build personality and also serve a royal look as most of our designs are derived from Indian culture. We have varied ranges of unique collections of our products to satisfy various demands of different customers.
           </p>
           
           <div className="grid md:grid-cols-2 gap-12">
@@ -123,7 +123,7 @@ export default function ContactContent() {
             <div>
               <h3 className="text-xl mb-4 text-brand-text">Our Vision</h3>
               <p className="text-sm leading-relaxed text-brand-text/70 font-sans">
-                Our vision is to grow and reach every customer and become one of the emerging jewellery chains with satisfied and delightful customers. We are consistently making efforts in the path of this vision as well as this is the reason that today 50 years old jewels house Zoniraz website has loyalty and dedication of delivering superior quality, distinctive designs to satisfy our customers.
+                Our vision is to grow and reach every customer and become one of the emerging jewellery chains with satisfied and delightful customers. We are consistently making efforts in the path of this vision as well as this is the reason that today 50 years old jewels house Luxury Jewelry website has loyalty and dedication of delivering superior quality, distinctive designs to satisfy our customers.
               </p>
             </div>
           </div>
@@ -141,7 +141,7 @@ export default function ContactContent() {
               <Phone size={28} strokeWidth={1} />
             </div>
             <h3 className="text-2xl text-brand-text mb-4">Call Us At</h3>
-            <p className="text-sm font-bold text-brand-gold tracking-widest mb-2 font-sans">{settings?.supportPhone || "97848 36060"}</p>
+            <p className="text-sm font-bold text-brand-gold tracking-widest mb-2 font-sans">{settings?.supportPhone || "+91 99999 99999"}</p>
             <p className="text-[10px] text-brand-text/40">{settings?.businessHours || "10 AM - 7 PM (Mon-Sat)"}</p>
           </div>
           
@@ -151,7 +151,7 @@ export default function ContactContent() {
               <Mail size={28} strokeWidth={1} />
             </div>
             <h3 className="text-2xl text-brand-text mb-4">Write to Us</h3>
-            <p className="text-sm font-bold text-brand-gold tracking-tighter font-sans">{settings?.supportEmail || "zonirazjewelhouse@gmail.com"}</p>
+            <p className="text-sm font-bold text-brand-gold tracking-tighter font-sans">{settings?.supportEmail || "support@example.com"}</p>
           </div>
         </div>
         
@@ -302,7 +302,7 @@ export default function ContactContent() {
             </div>
             <h3 className="text-2xl text-brand-text mb-4">Message Sent!</h3>
             <p className="text-sm text-brand-text/60 mb-8 leading-relaxed font-sans">
-              Thank you for contacting Zoniraz. Our team will review your query and respond shortly.
+              Thank you for contacting Luxury Jewelry. Our team will review your query and respond shortly.
             </p>
             <button 
               onClick={() => setShowPopup(false)}

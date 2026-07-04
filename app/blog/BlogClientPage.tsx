@@ -78,7 +78,7 @@ export default function BlogClientPage() {
         <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-black/10 z-0 pointer-events-none" />
 
         <div className="relative z-10 h-full max-w-7xl mx-auto px-6 sm:px-12 flex flex-col justify-end pb-16 drop-shadow-xl">
-          <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-brand-gold mb-3 drop-shadow-md">Zoniraz Journal</p>
+          <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-brand-gold mb-3 drop-shadow-md">Luxury Jewelry Journal</p>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif text-white leading-tight max-w-xl text-shadow-sm">
             {HERO_SLIDES[heroIndex].title}
           </h1>

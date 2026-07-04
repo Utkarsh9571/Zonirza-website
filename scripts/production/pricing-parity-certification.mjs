@@ -10,7 +10,7 @@ import { sharedDefaultProductConfiguration } from '../lib/ecommerce';
 import { secureCalculateOrderTotal } from '../lib/pricing.server';
 import mongoose from 'mongoose';
 
-const MONGODB_URI = 'mongodb+srv://zonirazjewelhouse_db_user:zyrCfjZ1wVDm2kdf@cluster0.dnlzvq8.mongodb.net/?appName=Cluster0';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/jewelry-starter';
 
 async function main() {
   // Setup Mongoose connection for server-side pricing logic (it uses Mongoose models)
@@ -24,7 +24,7 @@ async function main() {
   let db = client.db('test');
   let count = await db.collection('products').countDocuments();
   if (count === 0) {
-    db = client.db('zonirazjewelhouse');
+    db = client.db('luxury-jewelryjewelhouse');
   }
 
   console.log(`================================================================================`);

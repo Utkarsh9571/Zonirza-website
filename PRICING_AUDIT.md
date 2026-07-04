@@ -1,5 +1,5 @@
 
-# Zoniraz Pricing Architecture Audit
+# Luxury Jewelry Pricing Architecture Audit
 
 ## 1. Raw MongoDB Product Document
 From the audit, here's the relevant fields for the "Apex Stackable Double Row Diamond Ring":

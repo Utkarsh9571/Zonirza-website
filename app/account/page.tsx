@@ -281,7 +281,7 @@ function AccountContent() {
                 </div>
                 <div className="min-w-0">
                   <h1 className="text-lg md:text-xl font-serif text-brand-text truncate">{userData.name || 'Valued Guest'}</h1>
-                  <p className="text-[9px] uppercase tracking-widest text-brand-text/40 font-bold">Zoniraz Member</p>
+                  <p className="text-[9px] uppercase tracking-widest text-brand-text/40 font-bold">Luxury Jewelry Member</p>
                 </div>
               </div>
 

@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     const uploadedFiles: { url: string; name: string }[] = [];
 
     // Base storage path outside repo
-    const STORAGE_ROOT = process.env.STORAGE_ROOT || (process.platform === 'win32' ? 'C:/opt/zoniraz-storage' : '/opt/zoniraz-storage');
+    const STORAGE_ROOT = process.env.STORAGE_ROOT || (process.platform === 'win32' ? 'C:/opt/luxury-jewelry-storage' : '/opt/luxury-jewelry-storage');
 
     for (const file of files) {
       // 2. Validation

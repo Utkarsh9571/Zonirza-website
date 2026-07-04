@@ -29,7 +29,7 @@ export interface IHomepageContent extends Document {
 const HomepageContentSchema: Schema = new Schema({
   hero: {
     title: { type: String, default: 'Our Luxury Collections' },
-    subtitle: { type: String, default: 'Discover the artistry of fine jewellery at Zoniraz.' },
+    subtitle: { type: String, default: 'Discover the artistry of fine jewellery.' },
     buttonText: { type: String, default: "Let's Get Started" },
     buttonLink: { type: String, default: '/products' },
     imageUrl: { type: String, default: '/images/hero-bg.avif' }

@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
         senderName = sender.name;
       }
     } else if (giftCard.createdByAdmin) {
-      senderName = 'Zoniraz Curator';
+      senderName = 'Luxury Jewelry Curator';
     }
 
     return NextResponse.json({

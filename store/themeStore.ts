@@ -17,7 +17,7 @@ export const useThemeStore = create<ThemeState>()(
       toggleTheme: () => set((state) => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
     }),
     {
-      name: 'zoniraz-theme',
+      name: 'jewelry-starter-theme',
     }
   )
 );

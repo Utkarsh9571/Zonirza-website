@@ -10,10 +10,10 @@ export default function SellGoldHero() {
   };
 
   return (
-    <section className="relative w-full h-[90vh] min-h-[600px] flex items-center overflow-hidden bg-[#1f1512] pt-40 md:pt-48 border-b border-brand-gold/10">
+    <section className="relative w-full h-[90vh] min-h-150 flex items-center overflow-hidden bg-[#1f1512] pt-40 md:pt-48 border-b border-brand-gold/10">
       {/* Background Image / Overlay */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1f1512] via-[#1f1512]/90 to-[#1f1512]/40 z-10" />
+        <div className="absolute inset-0 bg-linear-to-r from-[#1f1512] via-[#1f1512]/80 to-transparent z-10" />
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1589674781759-c21c37956a44?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-50 mix-blend-overlay" />
       </div>
 
@@ -26,7 +26,7 @@ export default function SellGoldHero() {
             className="inline-flex items-center space-x-2 border border-brand-gold/30 rounded-full px-4 py-1.5 backdrop-blur-sm bg-black/20"
           >
             <span className="w-2 h-2 rounded-full bg-brand-gold animate-pulse" />
-            <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-gold">Zoniraz Sell Old Gold</span>
+            <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-gold">Sell Old Gold Program</span>
           </motion.div>
 
           <motion.h1
@@ -48,7 +48,7 @@ export default function SellGoldHero() {
               A trusted, secure, and fully transparent process. We assess your old gold's purity right in front of you for the highest market value.
             </p>
             <p className="text-[10px] uppercase tracking-widest font-bold text-[#e08686]">
-              * Currently available ONLY at our Alwar branch
+              * Currently available ONLY at our Flagship branch
             </p>
           </motion.div>
 

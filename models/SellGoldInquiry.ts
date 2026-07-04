@@ -43,7 +43,7 @@ const SellGoldInquirySchema: Schema = new Schema(
       enum: ['new', 'contacted', 'scheduled', 'visited', 'completed', 'closed'],
       default: 'new',
     },
-    branch: { type: String, default: 'Alwar' },
+    branch: { type: String, default: 'Flagship' },
     adminNotes: { type: String },
   },
   { timestamps: true }

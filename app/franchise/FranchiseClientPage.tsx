@@ -94,7 +94,7 @@ export default function FranchiseClientPage() {
             Business Expansion Opportunity
           </p>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif text-[#EAE1D5] leading-[1.1] animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-150">
-            Join the <span className="italic">Zoniraz</span> Legacy
+            Join the <span className="italic">Luxury Jewelry</span> Legacy
           </h1>
           <p className="text-[#EAE1D5]/70 text-lg md:text-xl font-light max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
             Partner with India&apos;s leading luxury jewelry house and bring timeless craftsmanship to your city.
@@ -130,7 +130,7 @@ export default function FranchiseClientPage() {
             <div className="space-y-6">
               <h2 className="text-4xl font-serif leading-tight text-gray-200">Start Your <br/><span className="italic">Journey With Us</span></h2>
               <p className="text-[#EAE1D5]/60 text-sm leading-relaxed">
-                We are looking for visionary partners who understand the language of luxury and are committed to maintaining the high standards of the Zoniraz brand.
+                We are looking for visionary partners who understand the language of luxury and are committed to maintaining the high standards of the Luxury Jewelry brand.
               </p>
             </div>
 
@@ -269,7 +269,7 @@ export default function FranchiseClientPage() {
                   <label className="text-[10px] uppercase tracking-widest font-black text-brand-text/40">Additional Details</label>
                   <textarea 
                     rows={4}
-                    placeholder="Tell us about your vision for a Zoniraz franchise..."
+                    placeholder="Tell us about your vision for a Luxury Jewelry franchise..."
                     className="w-full bg-brand-bg/50 border rounded-lg border-brand-gold py-3 px-4 focus:border-brand-gold outline-none transition-all text-sm resize-none text-brand-text placeholder:text-brand-text/30"
                     value={formData.message}
                     onChange={(e) => setFormData({...formData, message: e.target.value})}

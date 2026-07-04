@@ -1,5 +1,5 @@
 /**
- * Centralized Product Image Resolver for Zoniraz
+ * Centralized Product Image Resolver for Luxury Jewelry
  * Handles legacy image library paths, filename normalization, and fallback logic.
  */
 

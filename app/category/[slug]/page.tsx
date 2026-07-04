@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const categoryTitle = slug === 'all' ? 'All Collections' : slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' ');
   return constructMetadata({
     title: categoryTitle,
-    description: `Explore the exclusive ${categoryTitle} collection from Zoniraz. Handcrafted luxury designs with Timeless Elegance.`,
+    description: `Explore the exclusive ${categoryTitle} collection from Luxury Jewelry. Handcrafted luxury designs with Timeless Elegance.`,
     path: `/category/${slug}`,
   });
 }
@@ -46,13 +46,13 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://zoniraz.com"
+        "item": "https://example.com"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": categoryTitle,
-        "item": `https://zoniraz.com/category/${slug}`
+        "item": `https://example.com/category/${slug}`
       }
     ]
   };

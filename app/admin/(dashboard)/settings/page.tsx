@@ -301,7 +301,7 @@ export default function AdminSettingsPage() {
                     ...settings, 
                     socialLinks: { ...(settings?.socialLinks || {}), instagram: e.target.value }
                   })}
-                  placeholder="@zoniraz_jewels"
+                  placeholder="@luxury-jewelry_jewels"
                   className="flex-1 bg-transparent border-b border-brand-text/10 py-2 text-[13px] focus:border-brand-gold transition-colors"
                 />
               </div>
@@ -314,7 +314,7 @@ export default function AdminSettingsPage() {
                     ...settings, 
                     socialLinks: { ...(settings?.socialLinks || {}), facebook: e.target.value }
                   })}
-                  placeholder="ZonirazJewelersOfficial"
+                  placeholder="Luxury JewelryJewelersOfficial"
                   className="flex-1 bg-transparent border-b border-brand-text/10 py-2 text-[13px] focus:border-brand-gold transition-colors"
                 />
               </div>

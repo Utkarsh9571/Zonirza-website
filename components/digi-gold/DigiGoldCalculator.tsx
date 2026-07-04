@@ -86,9 +86,9 @@ export function DigiGoldCalculator() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: orderData.amount,
         currency: orderData.currency,
-        name: "Zoniraz Digi Gold",
+        name: "Digital Gold Savings",
         description: "Secure Digital Gold Savings",
-        image: "/images/ZONIRAZ LOGO.png",
+        image: "/images/default-image.png",
         order_id: orderData.id,
         handler: async function (response: any) {
           // After payment, verification handled by webhook, but we verify here for fast UI feedback
@@ -121,7 +121,7 @@ export function DigiGoldCalculator() {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-[40px] p-8 border border-brand-text/5 shadow-soft flex items-center justify-center min-h-[400px]">
+      <div className="bg-white rounded-[40px] p-8 border border-brand-text/5 shadow-soft flex items-center justify-center min-h-100">
         <Loader2 className="animate-spin text-brand-gold h-8 w-8" />
       </div>
     );
@@ -129,7 +129,7 @@ export function DigiGoldCalculator() {
 
   if (error || !rate) {
     return (
-      <div className="bg-white rounded-[40px] p-8 border border-brand-text/5 shadow-soft min-h-[400px] flex items-center justify-center text-red-500">
+      <div className="bg-white rounded-[40px] p-8 border border-brand-text/5 shadow-soft min-h-100 flex items-center justify-center text-red-500">
         Failed to load live rates.
       </div>
     );
@@ -216,7 +216,7 @@ export function DigiGoldCalculator() {
               <Coins size={24} />
             </div>
             <h3 className="text-xl font-serif text-brand-text">Coming Soon</h3>
-            <p className="text-xs text-brand-text/50 max-w-[200px]">
+            <p className="text-xs text-brand-text/50 max-w-50">
               {activeTab === 'sell' ? 'Selling digital gold' : 'Exchanging digital gold for jewellery'} will be available in the next update.
             </p>
           </div>

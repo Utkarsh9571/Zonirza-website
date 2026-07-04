@@ -353,7 +353,7 @@ export default function SpinWinContent() {
               <span>Exclusive Member Benefit</span>
             </div>
             <h1 className="text-3xl md:text-5xl font-serif tracking-tight text-white leading-tight">
-              The Zoniraz <br />
+              The Luxury Jewelry <br />
               <span className="text-[#D4AF37] font-normal italic">Fortune Wheel</span>
             </h1>
             <p className="text-sm text-[#9E8A75] leading-relaxed max-w-md mx-auto lg:mx-0">
@@ -402,7 +402,7 @@ export default function SpinWinContent() {
                       // Guest user is prompted to claim
                       <div className="space-y-3">
                         <p className="text-xs text-[#9E8A75] leading-relaxed">
-                          To claim and activate this coupon code, please log in or create a Zoniraz account now.
+                          To claim and activate this coupon code, please log in or create a Luxury Jewelry account now.
                         </p>
                         <button
                           onClick={openAuthModal}

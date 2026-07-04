@@ -74,7 +74,7 @@ export default function OnboardingFlow({ params }: { params: Promise<{ planType:
         
         {/* Header Strip */}
         <div className="flex justify-between items-center py-6 border-b border-brand-text/10 dark:border-white/10 mt-8 mb-8">
-          <h1 className="text-2xl font-serif text-brand-text dark:text-brand-gold">ZONIRAZ</h1>
+          <h1 className="text-2xl font-serif text-brand-text dark:text-brand-gold">LUXURY JEWELRY</h1>
           
           <div className="hidden md:block flex-1 max-w-2xl px-12">
             <StepIndicator currentStep={currentStep} />

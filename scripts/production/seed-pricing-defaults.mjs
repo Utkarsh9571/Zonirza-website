@@ -8,7 +8,7 @@
 
 import { MongoClient, ObjectId } from 'mongodb';
 
-const MONGODB_URI = 'mongodb+srv://zonirazjewelhouse_db_user:zyrCfjZ1wVDm2kdf@cluster0.dnlzvq8.mongodb.net/?appName=Cluster0';
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/jewelry-starter";
 
 async function main() {
   const client = new MongoClient(MONGODB_URI);
@@ -17,7 +17,7 @@ async function main() {
   let db = client.db('test');
   let count = await db.collection('products').countDocuments();
   if (count === 0) {
-    db = client.db('zonirazjewelhouse');
+    db = client.db('jewelry_starter_db');
     count = await db.collection('products').countDocuments();
   }
 
@@ -77,8 +77,8 @@ async function main() {
   } else {
     console.log('No Settings document found. Creating a default settings document...');
     await db.collection('settings').insertOne({
-      siteName: 'Zoniraz Jewelers',
-      supportEmail: 'support@zoniraz.com',
+      siteName: 'Luxury Jewelers',
+      supportEmail: 'support@example.com',
       supportPhone: '+91 99999 99999',
       address: '123 Luxury Lane, Jewelry District',
       businessHours: 'Mon-Sat: 10AM - 8PM, Sun: Closed',

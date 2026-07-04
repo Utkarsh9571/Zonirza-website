@@ -4,7 +4,7 @@ import { constructMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = constructMetadata({
   title: "Our Heritage & Legacy",
-  description: "Zoniraz Jewel House has 50 years of heritage in manufacturing, retailing, and exporting luxury jewellery. Explore our story and legacy of trust.",
+  description: "Luxury Jewel House has 50 years of heritage in manufacturing, retailing, and exporting luxury jewellery. Explore our story and legacy of trust.",
   path: "/about",
 });
 

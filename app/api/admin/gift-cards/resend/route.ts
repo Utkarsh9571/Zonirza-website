@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
         senderName = sender.name;
       }
     } else if (giftCard.createdByAdmin) {
-      senderName = 'Zoniraz Curator';
+      senderName = 'Luxury Jewelry Curator';
     }
 
     // Dispatch the email

@@ -55,23 +55,23 @@ export default function ExchangeCalculator({ purpose, onPurposeChange }: Exchang
           </p>
         </div>
 
-        <div className="max-w-5xl mx-auto rounded-[32px] overflow-hidden border border-brand-text/10 dark:border-white/10 shadow-lg flex flex-col xl:flex-row bg-white dark:bg-[#12100e]">
+        <div className="max-w-5xl mx-auto rounded-4xl overflow-hidden border border-brand-text/10 dark:border-white/10 shadow-lg flex flex-col xl:flex-row bg-white dark:bg-[#12100e]">
 
           {/* Left: Image Card */}
-          <div className="xl:w-1/2 relative min-h-[400px] bg-[url('https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center">
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+          <div className="xl:w-1/2 relative min-h-100 bg-[url('https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center">
+            <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/40 to-transparent" />
             <div className="absolute inset-0 p-10 flex flex-col justify-between">
               <div className="inline-flex items-center space-x-2 border border-brand-gold/30 rounded-full px-4 py-1.5 w-fit bg-black/20 backdrop-blur-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-brand-gold" />
-                <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-gold">A Zoniraz Promise</span>
+                <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-gold">Our Luxury Promise</span>
               </div>
 
               <div>
                 <h3 className="text-3xl font-serif font-bold text-white mb-2 leading-tight">
-                  Trusted by <span className="italic text-brand-gold">millions</span>,<br /> backed by legacy.
+                  Trusted by many,<br /> backed by legacy.
                 </h3>
                 <p className="text-white/80 italic text-sm">
-                  Join thousands of families who chose Zoniraz.
+                  Join thousands of families who chose our service.
                 </p>
               </div>
             </div>
@@ -186,7 +186,7 @@ export default function ExchangeCalculator({ purpose, onPurposeChange }: Exchang
                       </span>
                     ) : (
                       <span className="text-[10px] text-brand-text/50 uppercase tracking-widest font-bold mt-2">
-                        * Subject to physical verification at Alwar Branch
+                        * Subject to physical verification at Flagship Branch
                       </span>
                     )}
                   </div>

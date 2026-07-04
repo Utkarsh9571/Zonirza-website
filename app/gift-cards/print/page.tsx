@@ -144,7 +144,7 @@ function GiftCardPrintContent() {
   }
 
   const themeStyle = THEME_STYLES[giftCard.theme] || THEME_STYLES['Minimal Luxury'];
-  const redeemUrl = `${typeof window !== 'undefined' ? window.location.origin : 'https://zoniraz.in'}/gift-cards/redeem?code=${code}&pin=${pin}`;
+  const redeemUrl = `${typeof window !== 'undefined' ? window.location.origin : 'https://luxury-jewelry.in'}/gift-cards/redeem?code=${code}&pin=${pin}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(redeemUrl)}&color=${themeStyle.rawTextColor.replace('#', '')}`;
 
   return (
@@ -210,14 +210,14 @@ function GiftCardPrintContent() {
                }}>
             <div className="flex justify-between items-start">
               <div>
-                <span className="text-[6px] uppercase tracking-[0.3em] opacity-60">Zoniraz Gifting</span>
-                <h3 className="text-md font-serif italic tracking-wider font-bold">Zoniraz</h3>
+                <span className="text-[6px] uppercase tracking-[0.3em] opacity-60">Luxury Jewelry Gifting</span>
+                <h3 className="text-md font-serif italic tracking-wider font-bold">Luxury Jewelry</h3>
               </div>
               <Gift size={16} className={themeStyle.accentColor} />
             </div>
 
             <div className="text-center italic font-serif text-[10px] my-4 opacity-90 line-clamp-3">
-              &ldquo;{giftCard.personalMessage || 'Compliments of Zoniraz'}&rdquo;
+              &ldquo;{giftCard.personalMessage || 'Compliments of Luxury Jewelry'}&rdquo;
             </div>
 
             <div className="flex justify-between items-end border-t border-white/10 pt-3">
@@ -238,7 +238,7 @@ function GiftCardPrintContent() {
             {/* Header */}
             <div className="border-b pb-4" style={{ borderColor: `${themeStyle.rawTextColor}20` }}>
               <span className="text-[8px] uppercase tracking-[0.25em] font-bold text-gray-400">Official Luxury Voucher</span>
-              <h2 className="text-xl font-bold tracking-widest uppercase italic mt-0.5" style={{ color: themeStyle.rawTextColor }}>Zoniraz Jewel House</h2>
+              <h2 className="text-xl font-bold tracking-widest uppercase italic mt-0.5" style={{ color: themeStyle.rawTextColor }}>Luxury Jewel House</h2>
               <p className="text-[9px] uppercase tracking-widest text-gray-400 mt-0.5">{giftCard.theme} Theme</p>
             </div>
 
@@ -304,10 +304,10 @@ function GiftCardPrintContent() {
       <div className="no-print max-w-2xl w-full text-center mt-12 space-y-2 opacity-50">
         <div className="flex items-center justify-center space-x-2 text-[9px] uppercase tracking-[0.2em] font-bold">
           <Shield size={12} style={{ color: themeStyle.rawTextColor }} />
-          <span>Secured Zoniraz Gifting System</span>
+          <span>Secured Luxury Jewelry Gifting System</span>
         </div>
         <p className="text-[9px] uppercase font-bold tracking-wider leading-relaxed">
-          Zoniraz Gift Cards are non-transferable and subject to the Terms of Use.
+          Luxury Jewelry Gift Cards are non-transferable and subject to the Terms of Use.
         </p>
       </div>
 

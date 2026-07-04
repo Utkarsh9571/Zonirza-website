@@ -50,8 +50,8 @@ export interface ISettings extends Document {
 }
 
 const SettingsSchema: Schema = new Schema({
-  siteName: { type: String, default: 'Zoniraz Jewelers' },
-  supportEmail: { type: String, default: 'support@zoniraz.com' },
+  siteName: { type: String, default: 'Luxury Jewelry Commerce Starter' },
+  supportEmail: { type: String, default: 'support@example.com' },
   supportPhone: { type: String, default: '+91 99999 99999' },
   address: { type: String, default: '123 Luxury Lane, Jewelry District' },
   businessHours: { type: String, default: 'Mon-Sat: 10AM - 8PM, Sun: Closed' },
@@ -107,7 +107,7 @@ const SettingsSchema: Schema = new Schema({
     mapUrl: { type: String }
   },
   seo: {
-    defaultTitle: { type: String, default: 'Zoniraz - Premium Jewelry' },
+    defaultTitle: { type: String, default: 'Luxury Jewelry Commerce Starter' },
     defaultDescription: { type: String, default: 'Discover the artistry of fine jewellery.' },
     keywords: { type: [String], default: ['jewelry', 'luxury', 'diamonds'] }
   },

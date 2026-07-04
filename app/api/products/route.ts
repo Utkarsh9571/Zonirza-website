@@ -1,15 +1,95 @@
 import { NextResponse, NextRequest } from 'next/server';
-import dbConnect from '@/lib/db';
+import { tryDbConnect } from '@/lib/db';
 import Product from '@/models/Product';
 import { resolveCollectionMapping } from '@/lib/collectionMapper';
+import { MOCK_PRODUCTS } from '@/lib/mockData';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    await dbConnect();
     const { searchParams } = new URL(request.url);
-    
+    const connected = await tryDbConnect();
+    if (!connected) {
+      // 1. Support fetching specific slugs (for Wishlist)
+      const slugs = searchParams.get('slugs');
+      if (slugs) {
+        const slugList = slugs.split(',');
+        const products = MOCK_PRODUCTS.filter(p => slugList.includes(p.slug));
+        return NextResponse.json({ success: true, data: products, total: products.length, _demo: true });
+      }
+
+      let products = [...MOCK_PRODUCTS];
+
+      // Filters
+      const category = searchParams.get('category');
+      if (category) {
+        const cats = category.split(',').map(c => c.trim().toLowerCase());
+        products = products.filter(p => cats.includes(p.category.toLowerCase()));
+      }
+
+      const metal = searchParams.get('metal');
+      if (metal) {
+        const metals = metal.split(',').map(m => m.trim().toLowerCase());
+        products = products.filter(p => p.specs?.metal && metals.some(m => p.specs.metal.toLowerCase().includes(m)));
+      }
+
+      const stone = searchParams.get('stone');
+      if (stone) {
+        const stones = stone.split(',').map(s => s.trim().toLowerCase());
+        products = products.filter(p => p.specs?.stone && stones.some(s => p.specs.stone.toLowerCase().includes(s)));
+      }
+
+      const gender = searchParams.get('gender');
+      if (gender) {
+        const genders = gender.split(',').map(g => g.trim().toLowerCase());
+        products = products.filter(p => p.specs?.gender && genders.includes(p.specs.gender.toLowerCase()));
+      }
+
+      const collectionParam = searchParams.get('collection');
+      if (collectionParam) {
+        const collectionLower = collectionParam.toLowerCase();
+        products = products.filter(p => p.tags.some(t => t.toLowerCase() === collectionLower));
+      }
+
+      const priceMin = searchParams.get('price_min');
+      if (priceMin) {
+        products = products.filter(p => p.basePrice >= Number(priceMin));
+      }
+      const priceMax = searchParams.get('price_max');
+      if (priceMax) {
+        products = products.filter(p => p.basePrice <= Number(priceMax));
+      }
+
+      // Sort
+      const sortParam = searchParams.get('sort') || 'newest';
+      if (sortParam === 'price-low') {
+        products.sort((a, b) => a.basePrice - b.basePrice);
+      } else if (sortParam === 'price-high') {
+        products.sort((a, b) => b.basePrice - a.basePrice);
+      }
+
+      // Limit
+      const total = products.length;
+      const limit = parseInt(searchParams.get('limit') || '0');
+      if (limit > 0) {
+        products = products.slice(0, limit);
+      }
+
+      // Generate recommendation list
+      const matchedIds = products.map(p => p._id);
+      const recommendations = MOCK_PRODUCTS.filter(p => !matchedIds.includes(p._id)).slice(0, 12);
+
+      return NextResponse.json({
+        success: true,
+        count: products.length,
+        total,
+        data: products,
+        recommendations,
+        _demo: true
+      });
+    }
+
     console.log('--- Product Search Debug ---');
     console.log('Incoming Params:', Object.fromEntries(searchParams.entries()));
     
@@ -212,6 +292,7 @@ export async function GET(request: NextRequest) {
       recommendations
     });
   } catch (error) {
-    return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 });
+    const isDbError = (error as Error).message?.includes('ECONNREFUSED') || (error as Error).message?.includes('connect');
+    return NextResponse.json({ success: false, error: (error as Error).message }, { status: isDbError ? 503 : 400 });
   }
 }

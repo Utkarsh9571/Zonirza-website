@@ -224,11 +224,11 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 5. ZONIRAZ WORLD */}
+      {/* 5. LUXURY JEWELRY WORLD */}
       <section className="py-8 sm:py-12 bg-white dark:bg-brand-accent transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
           <div className="text-left mb-8 sm:mb-10 space-y-2">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Zoniraz World</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Luxury Jewelry World</h2>
             <div className="w-16 h-px bg-brand-gold"></div>
           </div>
 
@@ -322,7 +322,7 @@ export default function HomeContent() {
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12 mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
           {[
             {
-              quote: "The Solitaire Ring from Zoniraz is an absolute masterpiece. The craftsmanship is flawless, and it catches the light beautifully. I get compliments on it every single day!",
+              quote: "The Solitaire Ring from Luxury Jewelry is an absolute masterpiece. The craftsmanship is flawless, and it catches the light beautifully. I get compliments on it every single day!",
               author: "Ananya Sharma",
               designation: "Verified Buyer",
               rating: 5,
@@ -330,7 +330,7 @@ export default function HomeContent() {
               image: "/images/images/product/yellow-gold-1651640118723.jpg"
             },
             {
-              quote: "Zoniraz completely redefined my expectation of luxury jewelry. Their styling advice helped me choose the perfect heritage necklace for my wedding. Exceptional service!",
+              quote: "Luxury Jewelry completely redefined my expectation of luxury jewelry. Their styling advice helped me choose the perfect heritage necklace for my wedding. Exceptional service!",
               author: "Priya Patel",
               designation: "Bridal Client",
               rating: 5,
@@ -369,12 +369,12 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 9. ZONIRAZ ASSURANCE */}
+      {/* 9. LUXURY JEWELRY ASSURANCE */}
       <section className="py-16 bg-white dark:bg-brand-accent border-y border-brand-gold/10 transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
           <div className="flex flex-col md:flex-row items-center justify-between py-8 border-b border-brand-gold/10 gap-8">
             <div className="text-center md:text-left">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Zoniraz <span className="text-[#8B2332]">Assurance</span></h2>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Luxury Jewelry <span className="text-[#8B2332]">Assurance</span></h2>
               <p className="text-xs sm:text-sm text-brand-text/50 dark:text-brand-text/70 mt-2">Crafted by experts, cherished by you</p>
             </div>
             <div className="flex flex-wrap justify-center items-center gap-6 md:gap-16">
@@ -412,7 +412,7 @@ export default function HomeContent() {
 
             <div className="flex flex-wrap justify-center gap-12 mt-8">
               {[
-                { icon: RotateCcw, title: 'Zoniraz Exchange' },
+                { icon: RotateCcw, title: 'Luxury Jewelry Exchange' },
                 { icon: Diamond, title: 'The Purity Guarantee' },
                 { icon: ShieldCheck, title: 'Complete Transparency and Trust' },
                 { icon: Store, title: 'Lifetime Maintenance' },
@@ -437,7 +437,7 @@ export default function HomeContent() {
               </div>
               <h3 className="text-4xl font-serif text-brand-text dark:text-white max-w-62.5 leading-tight">Sell Your Old Gold</h3>
               <p className="text-brand-text/60 dark:text-white/60 text-xs leading-relaxed max-w-62.5">Turn your unused gold into instant value with our transparent in-store valuation process.</p>
-              <p className="text-[9px] uppercase tracking-widest font-bold text-[#8B2332] dark:text-[#e08686]">* Alwar Branch Only</p>
+              <p className="text-[9px] uppercase tracking-widest font-bold text-[#8B2332] dark:text-[#e08686]">* Flagship Branch Only</p>
               <Link href="/exchange?tab=sell" className="w-full sm:w-max px-6 py-3 border border-brand-gold bg-brand-gold text-white rounded-full text-[10px] uppercase tracking-widest font-bold hover:bg-[#B38B36] transition-all flex items-center justify-center space-x-2">
                 <span>Book Valuation</span>
                 <ArrowRight size={10} />
@@ -465,15 +465,15 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 11. ZONIRAZ EXPERIENCE */}
+      {/* 11. LUXURY JEWELRY EXPERIENCE */}
       <section className="py-8 sm:py-16 bg-white dark:bg-brand-accent border-t border-brand-gold/10 transition-colors">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-12">
           <div className="text-left mb-8 sm:mb-10 space-y-2">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Zoniraz Experience</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-brand-text tracking-tight">Luxury Jewelry Experience</h2>
             <div className="w-16 h-px bg-brand-gold mb-2"></div>
             <p className="text-[10px] sm:text-xs text-brand-text/60 dark:text-brand-text/80 uppercase tracking-widest">Find a Boutique or Book a Consultation</p>
           </div>
-          {/* Zoniraz Experience Grid */}
+          {/* Luxury Jewelry Experience Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-6">
             {[
               { img: '/images/site/visit_store.png', text: 'VISIT OUR STORE', hidden: true },

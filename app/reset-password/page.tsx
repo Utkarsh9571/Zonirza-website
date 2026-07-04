@@ -3,8 +3,8 @@ import ResetPasswordClientPage from './ResetPasswordClientPage';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Reset Password | Zoniraz Luxury',
-  description: 'Reset your Zoniraz customer account password securely.',
+  title: 'Reset Password | Luxury Jewelry Luxury',
+  description: 'Reset your Luxury Jewelry customer account password securely.',
 };
 
 export default function ResetPasswordPage() {

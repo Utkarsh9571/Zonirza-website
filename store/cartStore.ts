@@ -155,7 +155,7 @@ export const useCartStore = create<CartStore>()(
       setLastSync: (lastSync) => set({ lastSync }),
     }),
     {
-      name: 'zoniraz-cart',
+      name: 'jewelry-starter-cart',
     }
   )
 );

@@ -24,7 +24,7 @@ export const BLOG_POSTS: BlogPost[] = [
     id: 1,
     slug: 'why-akshaya-tritiya-is-best-time-to-buy-gold',
     title: 'Why Is Akshaya Tritiya the Most Auspicious Time to Buy Gold Jewellery?',
-    excerpt: 'At Zoniraz, we have always believed that certain days carry a special energy. Akshaya Tritiya is one of those rare occasions when tradition and beauty converge.',
+    excerpt: 'At Luxury Jewelry, we have always believed that certain days carry a special energy. Akshaya Tritiya is one of those rare occasions when tradition and beauty converge.',
     image: '/images/site/blog/post-1.png',
     tags: ['Festive', 'Gold'],
     date: 'May 5, 2026',
@@ -106,7 +106,7 @@ export const BLOG_POSTS: BlogPost[] = [
     tags: ['Diamond', 'Rings'],
     date: 'April 12, 2026',
     readTime: '7 min read',
-    author: 'Zoniraz Gemologist',
+    author: 'Luxury Jewelry Gemologist',
     featured: false,
     content: 'A diamond is forever, but the right setting makes it yours...',
     sections: [
@@ -118,7 +118,7 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         type: 'text-image',
         title: 'Understanding the 4Cs',
-        text: 'Cut, Color, Clarity, and Carat weight are the universal standards for grading diamonds. At Zoniraz, we prioritize Cut above all else for maximum brilliance.',
+        text: 'Cut, Color, Clarity, and Carat weight are the universal standards for grading diamonds. At Luxury Jewelry, we prioritize Cut above all else for maximum brilliance.',
         image: '/images/site/blog/post-3.png'
       }
     ]

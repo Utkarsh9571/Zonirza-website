@@ -50,7 +50,7 @@ export class WhatsAppDeliveryAdapter implements DeliveryChannelAdapter {
     console.log(`To: ${recipientContact}`);
     console.log(`Sender: ${senderName}`);
     console.log(`Code: ${giftCard.code}, Amount: ₹${giftCard.initialAmount}`);
-    console.log(`Link: https://zoniraz.com/gift-cards/redeem?code=${giftCard.code}&pin=${giftCard.pin}`);
+    console.log(`Link: https://example.com/gift-cards/redeem?code=${giftCard.code}&pin=${giftCard.pin}`);
     
     // Future integration code snippet for MSG91:
     /*
@@ -62,7 +62,7 @@ export class WhatsAppDeliveryAdapter implements DeliveryChannelAdapter {
         mobiles: recipientContact,
         sender_name: senderName,
         card_amount: giftCard.initialAmount,
-        redeem_link: `https://zoniraz.com/gift-cards/redeem?code=${giftCard.code}&pin=${giftCard.pin}`
+        redeem_link: `https://example.com/gift-cards/redeem?code=${giftCard.code}&pin=${giftCard.pin}`
       }]
     };
     await fetch(url, {
@@ -84,13 +84,13 @@ export class SMSDeliveryAdapter implements DeliveryChannelAdapter {
     console.log(`[SMSDeliveryAdapter] [STUB] Preparing SMS gift voucher dispatch...`);
     console.log(`To: ${recipientContact}`);
     console.log(`Sender: ${senderName}`);
-    console.log(`Content: Hello ${giftCard.recipientName}, ${senderName} sent you a ₹${giftCard.initialAmount} Zoniraz Gift Card! Redeem here: https://zoniraz.com/gift-cards/redeem?code=${giftCard.code}`);
+    console.log(`Content: Hello ${giftCard.recipientName}, ${senderName} sent you a ₹${giftCard.initialAmount} Luxury Jewelry Gift Card! Redeem here: https://example.com/gift-cards/redeem?code=${giftCard.code}`);
     
     // Future integration code snippet for Twilio:
     /*
     const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
     const msg = await client.messages.create({
-       body: `Hello ${giftCard.recipientName}, ${senderName} has sent you a ₹${giftCard.initialAmount} Zoniraz Gift Card. Reveal your gift here: https://zoniraz.com/gift-cards/redeem?code=${giftCard.code}&pin=${giftCard.pin}`,
+       body: `Hello ${giftCard.recipientName}, ${senderName} has sent you a ₹${giftCard.initialAmount} Luxury Jewelry Gift Card. Reveal your gift here: https://example.com/gift-cards/redeem?code=${giftCard.code}&pin=${giftCard.pin}`,
        from: process.env.TWILIO_PHONE_NUMBER,
        to: recipientContact
      });

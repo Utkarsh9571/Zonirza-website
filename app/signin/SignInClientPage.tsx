@@ -95,7 +95,7 @@ function SignInContent() {
         "Check Your Inbox"
       } 
       subtitle={
-        step === 'login' ? "Access the world of Zoniraz" : 
+        step === 'login' ? "Access the world of Luxury Jewelry" : 
         step === 'forgot-password' ? "Request a password recovery link" : 
         "We've sent recovery instructions"
       }
@@ -228,7 +228,7 @@ function SignInContent() {
 
       <div className="pt-8 text-center border-t border-brand-text/5 dark:border-white/5 mt-8">
         <p className="text-[12px] text-brand-text/60 dark:text-brand-text/80 uppercase tracking-widest">
-          New to Zoniraz?{' '}
+          New to Luxury Jewelry?{' '}
           <Link 
             href="/signup" 
             className="text-brand-gold font-bold hover:text-brand-text transition-colors ml-2"

@@ -21,7 +21,7 @@ export default function TermsClientPage() {
           </div>
           <h1 className="text-5xl md:text-6xl font-serif text-brand-text mb-8">Terms & Guidelines</h1>
           <p className="text-brand-text/60 max-w-2xl mx-auto leading-relaxed">
-            Everything you need to know about our products, certification standards, and policies to ensure a secure and confident shopping experience at Zoniraz.
+            Everything you need to know about our products, certification standards, and policies to ensure a secure and confident shopping experience at Luxury Jewelry.
           </p>
         </motion.div>
 
@@ -37,12 +37,12 @@ export default function TermsClientPage() {
               <h2 className="text-3xl font-serif text-brand-text">Terms & Conditions</h2>
             </div>
             <div className="bg-white dark:bg-zinc-900 rounded-[40px] p-8 md:p-12 border border-brand-text/5 dark:border-zinc-800 shadow-premium space-y-8 text-brand-text/80 leading-relaxed transition-colors">
-              <p className="font-bold text-brand-text">All the terms and conditions mention here will be applicable on the buyer at the time of buying any type of product from Zoniraz.com</p>
+              <p className="font-bold text-brand-text">All the terms and conditions mention here will be applicable on the buyer at the time of buying any type of product from example.com</p>
               
               <div className="space-y-4">
                 <h3 className="font-serif text-xl text-brand-text">Use of the website</h3>
                 <p>The customer agrees and acknowledge that this website can be used only by individual who are 18 year and above. Minor are not eligible to use this website and buy any product. At the time of purchase, seller will consider buyer age is 18 year and above.</p>
-                <p>By using Zoniraz.com, you are eligible to buy any product at the given price only. Seller reserves all the rights to terminate Customer’s access, refuse to deliver the product in case of conflict and refund the money after deducting all expenditure bear by seller during the sale-purchase agreement between seller and buyer.</p>
+                <p>By using example.com, you are eligible to buy any product at the given price only. Seller reserves all the rights to terminate Customer’s access, refuse to deliver the product in case of conflict and refund the money after deducting all expenditure bear by seller during the sale-purchase agreement between seller and buyer.</p>
               </div>
 
               <div className="space-y-4">
@@ -53,11 +53,11 @@ export default function TermsClientPage() {
               <div className="space-y-4">
                 <h3 className="font-serif text-xl text-brand-text">Warranties & Pricing</h3>
                 <p>Through representing products, their information and selling them to the customer not bound seller and his product in any kind of warranty and guarantees towards customer.</p>
-                <p>Products Price given on the website are calculated using precious metal and gem prices in the market to provide you the best value. Price of Zoniraz.com can change without notice due to precious metal and gems market fluctuation.</p>
+                <p>Products Price given on the website are calculated using precious metal and gem prices in the market to provide you the best value. Price of example.com can change without notice due to precious metal and gems market fluctuation.</p>
               </div>
 
               <div className="p-6 bg-brand-bg dark:bg-zinc-950 rounded-3xl border border-brand-text/5 dark:border-zinc-800 italic text-sm transition-colors">
-                &ldquo;Zoniraz.com owner will not be liable and responsible for any loss, damage, personal injury of buyer and third party, whatsoever is the cause.&rdquo;
+                &ldquo;example.com owner will not be liable and responsible for any loss, damage, personal injury of buyer and third party, whatsoever is the cause.&rdquo;
               </div>
             </div>
           </section>
@@ -163,7 +163,7 @@ export default function TermsClientPage() {
             </div>
             <div className="bg-white dark:bg-zinc-900 rounded-[40px] overflow-hidden border border-brand-text/5 dark:border-zinc-800 shadow-premium transition-colors">
               <div className="p-8 border-b border-brand-text/5 dark:border-zinc-800 bg-[#FDF9F6]/50 dark:bg-zinc-950/50">
-                <p className="text-sm text-brand-text/70 italic">Zoniraz offers 100% gold exchange value with a strict 0% deduction policy for upgrades. Buy backs are calculated at prevailing market rates after standard processing fees.</p>
+                <p className="text-sm text-brand-text/70 italic">Luxury Jewelry offers 100% gold exchange value with a strict 0% deduction policy for upgrades. Buy backs are calculated at prevailing market rates after standard processing fees.</p>
               </div>
               <table className="w-full text-left">
                 <thead>
@@ -207,7 +207,7 @@ export default function TermsClientPage() {
               <CreditCard size={32} className="text-brand-gold" />
               <h3 className="text-2xl font-serif text-brand-text">Payment Policy</h3>
               <p className="text-sm text-brand-text/60 leading-relaxed">
-                Zoniraz encourages online payment and provides a secure, hassle-free payment gateway. We do not provide Cash on Delivery (COD) for security reasons.
+                Luxury Jewelry encourages online payment and provides a secure, hassle-free payment gateway. We do not provide Cash on Delivery (COD) for security reasons.
               </p>
             </div>
           </section>
@@ -218,8 +218,8 @@ export default function TermsClientPage() {
               <h3 className="text-4xl font-serif">Customer Delight</h3>
               <p className="text-white/60 max-w-xl mx-auto italic">&ldquo;Our goal is customer satisfaction, not just profit. You can trust in our 50 years of expertise.&rdquo;</p>
               <div className="flex flex-col items-center space-y-4">
-                <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-brand-gold">Get in touch with Shantnu</span>
-                <a href="tel:9784836060" className="text-3xl font-serif hover:text-brand-gold transition-colors tracking-widest">97848 36060</a>
+                <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-brand-gold">Get in touch with Customer Support</span>
+                <a href="tel:9999999999" className="text-3xl font-serif hover:text-brand-gold transition-colors tracking-widest">99999 99999</a>
               </div>
             </div>
             {/* Decorative element */}

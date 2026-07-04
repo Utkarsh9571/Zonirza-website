@@ -1,1 +1,1 @@
-﻿require('mongoose').connect('mongodb://127.0.0.1:27017/zoniraz').then(async () => { const Product = require('./models/Product').default; const p = await Product.findOne({}); console.log(p.variantImages); process.exit(0); })
+require('mongoose').connect('mongodb://127.0.0.1:27017/jewelry-starter').then(async () => { const Product = require('./models/Product').default; const p = await Product.findOne({}); console.log(p?.variantImages); process.exit(0); })

@@ -50,8 +50,8 @@ const pillars = [
     title: 'Legacy',
     icon: Gem,
     imageClass: "bg-[url('https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?q=80&w=2126&auto=format&fit=crop')]",
-    subtitle: 'A name India trusts.',
-    description: 'Zoniraz — built on years of integrity, craftsmanship, and unyielding quality.',
+    subtitle: 'A name you can trust.',
+    description: 'Built on years of integrity, craftsmanship, and unyielding quality.',
     points: [
       { title: 'Uncompromising Quality', desc: 'Every new piece you exchange for meets our rigorous global standards.' },
       { title: 'Ethical Sourcing', desc: 'We ensure all materials are responsibly and ethically sourced.' },
@@ -68,9 +68,9 @@ export default function ExchangeTrustPillars() {
       <div className="container mx-auto px-6 lg:px-12 py-24 border-t border-brand-text/10 dark:border-white/10">
         
         <div className="text-center max-w-3xl mx-auto space-y-6 mb-20">
-          <p className="text-brand-gold text-[10px] uppercase tracking-[0.4em] font-black">Why Zoniraz Exchange</p>
+          <p className="text-brand-gold text-[10px] uppercase tracking-[0.4em] font-black">Why Exchange With Us</p>
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-brand-text dark:text-white leading-[1.2]">
-            The Zoniraz Gold Exchange <span className="italic text-brand-gold">Advantage</span>
+            The Gold Exchange <span className="italic text-brand-gold">Advantage</span>
           </h2>
           <div className="flex items-center justify-center space-x-4">
             <div className="w-12 h-px bg-brand-text/20 dark:bg-white/20" />
@@ -82,7 +82,7 @@ export default function ExchangeTrustPillars() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-16 border border-brand-text/10 dark:border-white/10 rounded-[40px] overflow-hidden bg-[#FAF9F6] dark:bg-[#12100e]">
           
           {/* Left: Dynamic Image Display */}
-          <div className="relative h-[400px] lg:h-auto overflow-hidden">
+          <div className="relative h-100 lg:h-auto overflow-hidden">
             <AnimatePresence mode="wait">
               {pillars.map((pillar) => (
                 activePillar === pillar.id && (
@@ -94,7 +94,7 @@ export default function ExchangeTrustPillars() {
                     transition={{ duration: 0.8 }}
                     className={cn("absolute inset-0 bg-cover bg-center", pillar.imageClass)}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-black/10" />
                     
                     <div className="absolute bottom-0 left-0 w-full p-10 lg:p-16">
                       <p className="text-brand-gold font-bold text-[10px] uppercase tracking-[0.2em] mb-4">

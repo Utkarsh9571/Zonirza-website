@@ -23,7 +23,7 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
             Exclusive Collection
           </p>
           <h1 className="text-6xl md:text-8xl font-serif text-white font-light tracking-tight mb-8">
-            ZONIRAZ <span className="italic">{countryName}</span>
+            LUXURY JEWELRY <span className="italic">{countryName}</span>
           </h1>
           <div className="w-24 h-[1px] bg-brand-gold mx-auto"></div>
         </div>
@@ -36,7 +36,7 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
             Experience the finest artisanal jewelry, <br /> now available in {countryName}.
           </h2>
           <p className="text-brand-beige/50 text-[13px] leading-[2] uppercase tracking-[0.15em] max-w-2xl mx-auto">
-            From the bustling streets of Paris to the vibrant markets of Dubai, ZONIRAZ brings its legacy of exquisite craftsmanship and timeless design to the heart of {countryName}. Our curated collection reflects the unique spirit of every woman who wears it.
+            From the bustling streets of Paris to the vibrant markets of Dubai, LUXURY JEWELRY brings its legacy of exquisite craftsmanship and timeless design to the heart of {countryName}. Our curated collection reflects the unique spirit of every woman who wears it.
           </p>
         </div>
       </section>

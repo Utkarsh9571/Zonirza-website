@@ -44,7 +44,7 @@ export default function StatementReport() {
         {/* Header */}
         <div className="flex justify-between items-start border-b-2 border-brand-gold pb-8 mb-8">
           <div>
-            <h1 className="text-4xl font-serif text-brand-text uppercase tracking-widest">Zoniraz</h1>
+            <h1 className="text-4xl font-serif text-brand-text uppercase tracking-widest">Luxury Jewelry</h1>
             <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-brand-gold mt-1">Digi Gold Wealth</p>
           </div>
           <div className="text-right">
@@ -57,7 +57,7 @@ export default function StatementReport() {
         <div className="grid grid-cols-2 gap-12 mb-12">
           <div>
             <p className="text-[9px] uppercase tracking-widest font-bold text-gray-400 mb-1">Account Holder</p>
-            <p className="font-bold text-brand-text text-lg">{wallet.userId?.name || 'Zoniraz Member'}</p>
+            <p className="font-bold text-brand-text text-lg">{wallet.userId?.name || 'Luxury Jewelry Member'}</p>
             <p className="text-xs text-gray-600">{wallet.userId?.email || ''}</p>
           </div>
           <div className="bg-brand-bg/30 p-6 rounded-lg border border-brand-gold/20">
@@ -130,7 +130,7 @@ export default function StatementReport() {
         {/* Footer */}
         <div className="mt-16 pt-8 border-t border-gray-200 text-center text-[9px] text-gray-400 uppercase tracking-widest leading-relaxed">
           <p>This is a computer generated statement and does not require a signature.</p>
-          <p>Zoniraz Jewelers • www.zoniraz.com</p>
+          <p>Luxury Jewelers • www.example.com</p>
         </div>
       </div>
 

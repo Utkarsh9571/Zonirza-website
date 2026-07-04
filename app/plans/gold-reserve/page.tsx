@@ -6,7 +6,7 @@ import { ShieldCheck, Target, TrendingUp, Scale, CheckCircle2 } from 'lucide-rea
 import { GoldReserveCalculator } from '@/components/finance/GoldReserveCalculator';
 
 export const metadata: Metadata = {
-  title: 'Gold Reserve Investment Plan | Zoniraz',
+  title: 'Gold Reserve Investment Plan | Luxury Jewelry',
   description: 'Reigning Gold? Take shelter here. Every month you pay, you receive gold units at live value. Protect your wealth and shop for luxury jewelry.',
 };
 
@@ -128,7 +128,7 @@ export default function GoldReservePage() {
                     <h4 className="text-xl font-bold text-brand-text dark:text-white mb-2 flex items-center gap-2">
                        Monthly Payments
                     </h4>
-                    <p className="text-brand-text/60 dark:text-white/60 text-sm">Pay 10 monthly instalments to accumulate gold units safely with Zoniraz.</p>
+                    <p className="text-brand-text/60 dark:text-white/60 text-sm">Pay 10 monthly instalments to accumulate gold units safely with Luxury Jewelry.</p>
                   </div>
                </div>
 

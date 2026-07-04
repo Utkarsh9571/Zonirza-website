@@ -68,7 +68,7 @@ export default function UserDigiGold() {
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
           amount: data.amount,
           currency: 'INR',
-          name: 'Zoniraz',
+          name: 'Luxury Jewelry',
           description: 'SIP Installment Payment',
           order_id: data.razorpayOrderId,
           handler: function (response: any) {

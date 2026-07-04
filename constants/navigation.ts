@@ -149,7 +149,7 @@ const RAW_NAVIGATION_DATA: TopCategory[] = [
       }
     ],
     bottomBanner: {
-      title: 'Zoniraz Signature Collections',
+      title: 'Luxury Jewelry Signature Collections',
       description: 'Find jewelry suited for every event.',
       image: '/images/site/jewellery_guide.png',
       href: '/products'

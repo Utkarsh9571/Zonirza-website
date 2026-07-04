@@ -202,8 +202,8 @@ function GiftCardRedeemContent() {
                 )}>
                   <div className="flex justify-between items-start">
                     <div className="space-y-0.5">
-                      <span className="text-[7px] uppercase tracking-[0.2em] opacity-60">Zoniraz Luxury</span>
-                      <h5 className="text-sm uppercase tracking-widest font-serif font-black">Zoniraz</h5>
+                      <span className="text-[7px] uppercase tracking-[0.2em] opacity-60">Luxury Jewelry Luxury</span>
+                      <h5 className="text-sm uppercase tracking-widest font-serif font-black">Luxury Jewelry</h5>
                     </div>
                     <Gift size={16} className={themeStyle.accentColor} />
                   </div>
@@ -245,7 +245,7 @@ function GiftCardRedeemContent() {
                   backfaceVisibility: 'hidden'
                 }}>
                   <p className="text-[#EAE1D5]/60 font-serif italic text-xs tracking-wider mt-2 select-none">
-                    Compliments of Zoniraz
+                    Compliments of Luxury Jewelry
                   </p>
                 </div>
 
@@ -304,8 +304,8 @@ function GiftCardRedeemContent() {
               
               <div className="flex justify-between items-start">
                 <div className="space-y-1 text-left">
-                  <span className="text-[8px] uppercase tracking-[0.3em] font-black opacity-60">Zoniraz Luxury Gifting</span>
-                  <h4 className="text-2xl font-serif font-black tracking-widest uppercase italic">Zoniraz</h4>
+                  <span className="text-[8px] uppercase tracking-[0.3em] font-black opacity-60">Luxury Jewelry Luxury Gifting</span>
+                  <h4 className="text-2xl font-serif font-black tracking-widest uppercase italic">Luxury Jewelry</h4>
                 </div>
                 <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10">
                   <Sparkles className={themeStyle.accentColor} size={18} />
@@ -397,7 +397,7 @@ function GiftCardRedeemContent() {
                 /* Unauthenticated */
                 <div className="bg-brand-gold/5 border border-brand-gold/15 p-6 rounded-[30px] space-y-4 text-center">
                   <p className="text-[10px] uppercase tracking-widest leading-relaxed text-[#EAE1D5]/80">
-                    Don&apos;t have a Zoniraz account? Sign up or Log In with OTP using the recipient email <strong>{giftCard.recipientEmail}</strong> to link this card and check transaction history.
+                    Don&apos;t have a Luxury Jewelry account? Sign up or Log In with OTP using the recipient email <strong>{giftCard.recipientEmail}</strong> to link this card and check transaction history.
                   </p>
                   <button 
                     onClick={openAuthModal}

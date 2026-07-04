@@ -420,8 +420,8 @@ export function ProductInteractiveUI({ product }: { product: IProduct & { price?
 
   const handleShare = async () => {
     const shareData = {
-      title: `${product.name} | Zoniraz`,
-      text: `Check out this ${product.name} on Zoniraz.`,
+      title: `${product.name} | Luxury Starter`,
+      text: `Check out this ${product.name} on our luxury collection.`,
       url: window.location.href,
     };
     

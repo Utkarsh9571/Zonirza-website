@@ -1,7 +1,7 @@
-# Zoniraz Luxury Jewelry
+# Luxury Jewelry Luxury Jewelry
 ## Technical Architecture Report
 
-This document serves as the master engineering reference for the Zoniraz configurable jewelry platform, detailing the underlying architecture, systems, and data flow.
+This document serves as the master engineering reference for the Luxury Jewelry configurable jewelry platform, detailing the underlying architecture, systems, and data flow.
 
 ---
 
@@ -16,7 +16,7 @@ The platform is built on a modern, decoupled JavaScript stack optimized for high
 ---
 
 ### SECTION 2 — Commerce Engine
-Zoniraz abandons rigid SKUs in favor of a dynamic, variant-based commerce engine.
+Luxury Jewelry abandons rigid SKUs in favor of a dynamic, variant-based commerce engine.
 - **Configurable Variants**: Products define base geometries and acceptable options (e.g., metals, purities, sizes). The frontend (`ProductInteractiveUI.tsx`) reacts to state changes dynamically.
 - **Dynamic Pricing & Weight (`lib/pricing.ts`)**: Base prices are modified in real-time by multiplying global purity constants (e.g., 22K = 0.916 base), adding specific stone grade prices, and offset by ring size weight additions.
 - **Variant Imaging**: The `resolveProductImage` and `imageResolver` utilities automatically swap the primary hero image to match the currently selected metal color, ensuring visual consistency.

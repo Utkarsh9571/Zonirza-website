@@ -2,7 +2,7 @@
 const mongoose = require("mongoose");
 const path = require("path");
 
-const MONGODB_URI = "mongodb+srv://zonirazjewelhouse_db_user:zyrCfjZ1wVDm2kdf@cluster0.dnlzvq8.mongodb.net/?appName=Cluster0";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/jewelry-starter";
 
 const ProductSchema = new mongoose.Schema({}, { strict: false });
 const Product = mongoose.models.Product || mongoose.model("Product", ProductSchema);

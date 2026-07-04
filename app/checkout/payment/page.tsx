@@ -164,9 +164,9 @@ export default function PaymentPage() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: orderData.amount, // amount from backend in paise
         currency: currentCurrency || 'INR', // Note: backend defaults to INR
-        name: "Zoniraz Jewellery",
+        name: "Luxury Jewelry",
         description: "Exquisite Luxury & Timeless Elegance",
-        image: "/images/ZONIRAZ LOGO.png",
+        image: "/images/hero-bg.avif",
         order_id: orderData.razorpayOrderId,
         handler: async function (response: IRazorpayResponse) {
           try {

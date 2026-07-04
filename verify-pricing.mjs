@@ -375,7 +375,7 @@ async function test4() {
 // ============================================================
 async function main() {
   console.log('╔══════════════════════════════════════════════════════════╗');
-  console.log('║   ZONIRAZ PRODUCTION VERIFICATION SUITE                 ║');
+  console.log('║   LUXURY JEWELRY PRODUCTION VERIFICATION SUITE                 ║');
   console.log('║   Testing against localhost:3000 with production DB     ║');
   console.log('╚══════════════════════════════════════════════════════════╝');
   

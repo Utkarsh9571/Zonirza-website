@@ -171,9 +171,9 @@ export default function GiftCardsClientPage() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: orderData.amount,
         currency: 'INR',
-        name: "Zoniraz Gifting",
+        name: "Luxury Jewelry Gifting",
         description: `Luxury Gift Card for ${recipientName}`,
-        image: "/images/ZONIRAZ LOGO.png",
+        image: "/images/hero-bg.avif",
         order_id: orderData.razorpayOrderId,
         handler: async function (response: {
           razorpay_payment_id: string;
@@ -261,7 +261,7 @@ export default function GiftCardsClientPage() {
         <div className="relative z-10 max-w-2xl mx-auto space-y-6">
           <span className="text-brand-gold text-[11px] uppercase tracking-[0.4em] font-black">The Art of Giving</span>
           <h1 className="text-4xl text-white md:text-6xl font-serif font-bold italic tracking-wide">
-            Zoniraz <span className="not-italic text-white">Gift Cards</span>
+            Luxury Jewelry <span className="not-italic text-white">Gift Cards</span>
           </h1>
           <p className="text-xs md:text-sm uppercase tracking-[0.2em] font-light leading-relaxed max-w-lg mx-auto text-[#EAE1D5]/80">
             Share the gift of choosing from our timeless, handcrafted masterpieces. An elegant expression of affection and luxury.
@@ -498,7 +498,7 @@ export default function GiftCardsClientPage() {
                   <div className="flex justify-between items-start">
                     <div className="space-y-1">
                       <span className="text-[8px] uppercase tracking-[0.3em] font-black opacity-60">Luxury Gift Card</span>
-                      <h4 className={cn("text-xl tracking-widest uppercase italic font-bold text-white", currentTheme.fontClass)}>Zoniraz</h4>
+                      <h4 className={cn("text-xl tracking-widest uppercase italic font-bold text-white", currentTheme.fontClass)}>Luxury Jewelry</h4>
                     </div>
                     <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10">
                       <Gift size={20} className={currentTheme.accentColor} />

@@ -92,7 +92,7 @@ export default function SellGoldConsultation() {
             </div>
             <h3 className="text-3xl font-serif font-bold text-brand-text dark:text-white mb-4">Inquiry Received</h3>
             <p className="text-brand-text/70 dark:text-white/70 mb-8">
-              Thank you for choosing Zoniraz. One of our experts will contact you shortly to schedule your physical evaluation at our Alwar branch.
+              Thank you for choosing us. One of our experts will contact you shortly to schedule your physical evaluation at our boutique.
             </p>
             <button 
               onClick={() => setSuccess(false)}
@@ -128,9 +128,9 @@ export default function SellGoldConsultation() {
               <div className="flex items-start space-x-4">
                 <MapPin className="text-[#8B1D2F] shrink-0 mt-1" size={24} />
                 <div className="space-y-2">
-                  <h4 className="font-bold text-[#8B1D2F] uppercase tracking-widest text-xs">Alwar Branch Only</h4>
+                  <h4 className="font-bold text-[#8B1D2F] uppercase tracking-widest text-xs">Flagship Boutique Only</h4>
                   <p className="text-sm text-brand-text/60 dark:text-white/60">
-                    Selling gold requires a physical purity check. This service is exclusively available at our Alwar boutique. We do not offer online buybacks or courier pickups.
+                    Selling gold requires a physical purity check. This service is exclusively available at our Flagship boutique. We do not offer online buybacks or courier pickups.
                   </p>
                 </div>
               </div>

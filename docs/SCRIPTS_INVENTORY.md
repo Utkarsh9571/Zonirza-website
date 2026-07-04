@@ -1,6 +1,6 @@
 # Scripts Inventory and Classification
 
-This document provides a comprehensive audit, classification inventory, and operational guide for all command-line scripts in the Zoniraz repository.
+This document provides a comprehensive audit, classification inventory, and operational guide for all command-line scripts in the starter repository.
 
 ---
 

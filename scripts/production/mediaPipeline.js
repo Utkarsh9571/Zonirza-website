@@ -3,13 +3,13 @@ const fs = require('fs');
 const path = require('path');
 
 /**
- * Zoniraz Production-Grade Variant Pipeline
+ * Luxury Jewelry Production-Grade Variant Pipeline
  * 1. Maps metal variants to specific images in MongoDB.
  * 2. Extracts ONLY Silver/Default variants for visual editing.
  * 3. Preserves original filenames for database compatibility.
  */
 
-const MONGODB_URI = "mongodb+srv://zonirazjewelhouse_db_user:zyrCfjZ1wVDm2kdf@cluster0.dnlzvq8.mongodb.net/test?appName=Cluster0";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/jewelry-starter";
 const IMAGE_DIR = path.join(__dirname, '../public/images/images/product');
 const EXPORT_DIR = path.join(__dirname, '../exports/silver-products');
 

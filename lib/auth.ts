@@ -105,7 +105,7 @@ export const authOptions: NextAuthOptions = {
           return {
             id: "admin-user",
             email: credentials.email,
-            name: "Zoniraz Admin",
+            name: "Luxury Jewelry Admin",
             role: "admin"
           };
         }

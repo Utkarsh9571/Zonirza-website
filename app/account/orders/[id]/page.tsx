@@ -82,7 +82,7 @@ export default function CustomerOrderDetail({ params }: { params: Promise<{ id: 
 
         {/* Print Header - Visible only on Print */}
         <div className="hidden print:block text-center border-b pb-8 mb-8 border-brand-text/20">
-          <h1 className="text-3xl font-serif text-brand-gold uppercase tracking-[0.2em] mb-4">Zoniraz</h1>
+          <h1 className="text-3xl font-serif text-brand-gold uppercase tracking-[0.2em] mb-4">Luxury Jewelry</h1>
           <p className="text-sm font-bold uppercase tracking-widest text-brand-text">Luxury Order Summary</p>
           <p className="text-xs text-brand-text/60 mt-2">Order Reference: #{order._id}</p>
           <p className="text-xs text-brand-text/60">Date: {new Date(order.createdAt).toLocaleDateString()}</p>

@@ -11,11 +11,11 @@ export default function ExchangeHero() {
   };
 
   return (
-    <section className="relative w-full h-[90vh] min-h-[600px] flex items-center overflow-hidden bg-[#1f1512] pt-40 md:pt-48">
+    <section className="relative w-full h-[90vh] min-h-150 flex items-center overflow-hidden bg-[#1f1512] pt-40 md:pt-48">
       {/* Background Image / Overlay */}
       <div className="absolute inset-0 z-0">
         {/* We would use a real image here, but for now we use a gradient to simulate a cinematic background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1f1512] via-[#1f1512]/80 to-transparent z-10" />
+        <div className="absolute inset-0 bg-linear-to-r from-[#1f1512] via-[#1f1512]/80 to-transparent z-10" />
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-60 mix-blend-overlay" />
       </div>
 
@@ -28,7 +28,7 @@ export default function ExchangeHero() {
             className="inline-flex items-center space-x-2 border border-brand-gold/30 rounded-full px-4 py-1.5 backdrop-blur-sm bg-black/10"
           >
             <span className="w-2 h-2 rounded-full bg-brand-gold animate-pulse" />
-            <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-gold">The Zoniraz Exchange Program</span>
+            <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-brand-gold">Gold Exchange Program</span>
           </motion.div>
 
           <motion.h1
@@ -74,7 +74,7 @@ export default function ExchangeHero() {
       </div>
 
       {/* Decorative Elements */}
-      <div className=" bg-gradient-to-t from-white dark:from-[#0a0a0a] to-transparent z-10" />
+      <div className=" bg-linear-to-t from-white dark:from-[#0a0a0a] to-transparent z-10" />
     </section>
   );
 }

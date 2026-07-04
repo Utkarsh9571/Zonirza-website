@@ -133,7 +133,7 @@ export async function POST(req: NextRequest) {
     // 4. Send email if not scheduled in future
     if (!isFutureScheduled) {
       try {
-        await sendGiftCardEmail(giftCard, 'Zoniraz Curator');
+        await sendGiftCardEmail(giftCard, 'Luxury Jewelry Curator');
       } catch (mailErr) {
         console.error('[ADMIN] Failed to send email for manual gift card:', mailErr);
       }

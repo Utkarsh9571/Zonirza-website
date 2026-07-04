@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     });
   }
 
-  const ogImage = product.images?.[0] || 'https://zoniraz.com/images/og-image.jpg';
+  const ogImage = product.images?.[0] || 'https://example.com/images/og-image.jpg';
   return constructMetadata({
     title: product.name,
     description: product.description.substring(0, 160),
@@ -47,7 +47,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     notFound();
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zoniraz.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://example.com';
 
   // Generate Product JSON-LD Structured Data
   const productJsonLd = {
@@ -59,7 +59,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     sku: product.slug,
     brand: {
       '@type': 'Brand',
-      name: 'Zoniraz',
+      name: 'Luxury Jewelry',
     },
     offers: {
       '@type': 'Offer',

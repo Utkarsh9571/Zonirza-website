@@ -4,7 +4,7 @@ import SignUpClientPage from './SignUpClientPage';
 
 export const metadata: Metadata = constructMetadata({
   title: 'Create Account',
-  description: 'Register for a secure Zoniraz customer account.',
+  description: 'Register for a secure Luxury Jewelry customer account.',
   path: '/signup',
   noIndex: true,
 });

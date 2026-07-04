@@ -45,7 +45,7 @@ async function handleCron() {
             senderName = sender.name;
           }
         } else if (giftCard.createdByAdmin) {
-          senderName = 'Zoniraz Curator';
+          senderName = 'Luxury Jewelry Curator';
         }
 
         // Deliver via the manager

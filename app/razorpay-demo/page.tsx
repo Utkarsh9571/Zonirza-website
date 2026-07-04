@@ -55,12 +55,12 @@ export default function RazorpayDemoPage() {
 
       // 3. Open Razorpay Standard Checkout
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_T3pf0I0eHULONX',
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
         amount: orderData.amount,
         currency: orderData.currency,
-        name: 'Zoniraz Jewelers',
+        name: 'Luxury Jewelers',
         description: 'Standard Checkout Integration Demo',
-        image: '/images/ZONIRAZ LOGO.png',
+        image: '/images/hero-bg.avif',
         order_id: orderData.order_id,
         handler: async function (response: any) {
           setIsLoading(true);

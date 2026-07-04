@@ -1,14 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/db";
+import { tryDbConnect } from "@/lib/db";
 import Settings from "@/models/Settings";
+import { MOCK_SETTINGS } from "@/lib/mockData";
 
 export async function GET(req: NextRequest) {
   try {
-    await dbConnect();
+    const connected = await tryDbConnect();
+    if (!connected) {
+      return NextResponse.json({ success: true, data: MOCK_SETTINGS, _demo: true });
+    }
+
     const settings = await Settings.findOne();
-    
     if (!settings) {
-      return NextResponse.json({ success: true, data: {} });
+      return NextResponse.json({ success: true, data: MOCK_SETTINGS });
     }
 
     // Only return public fields
@@ -43,6 +47,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, data: publicSettings });
   } catch (error: any) {
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    return NextResponse.json({ success: true, data: MOCK_SETTINGS, _demo: true });
   }
 }
+

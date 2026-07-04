@@ -53,7 +53,7 @@ export default function AdminLoginPage() {
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-gold to-[#B4925A] flex items-center justify-center shadow-premium mx-auto mb-6">
             <Sparkles className="text-[#12100e]" size={32} />
           </div>
-          <h1 className="text-4xl font-serif text-white tracking-[0.2em] uppercase italic mb-2">Zoniraz</h1>
+          <h1 className="text-4xl font-serif text-white tracking-[0.2em] uppercase italic mb-2">Luxury Jewelry</h1>
           <p className="text-brand-gold text-[10px] uppercase tracking-[0.5em] font-black">Management Gateway</p>
         </div>
 
@@ -75,7 +75,7 @@ export default function AdminLoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  placeholder="admin@zoniraz.com"
+                  placeholder="admin@example.com"
                   className="w-full bg-white/5 border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white text-sm focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold/50 transition-all placeholder:text-white/10"
                 />
               </div>
@@ -118,7 +118,7 @@ export default function AdminLoginPage() {
 
         {/* Footer */}
         <p className="text-center mt-8 text-brand-text/20 text-[10px] uppercase tracking-widest font-medium">
-          Protected by Zoniraz Security Architecture
+          Protected by Luxury Jewelry Security Architecture
         </p>
       </div>
     </div>

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
-import { sendZonirazMail, getLuxuryEmailTemplate } from "@/lib/mail";
+import { sendLuxuryMail, getLuxuryEmailTemplate } from "@/lib/mail";
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,15 +30,15 @@ export async function POST(req: NextRequest) {
     user.passwordResetExpires = new Date(Date.now() + 3600000); // 1 hour from now
     await user.save();
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_URL || process.env.NEXTAUTH_URL || "https://zoniraz.in";
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_URL || process.env.NEXTAUTH_URL || "http://localhost:3000";
     const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
     const content = `
       <h2 style="font-size: 28px; font-weight: normal; font-style: italic; margin-bottom: 20px; text-align: center;">Reset Your Password</h2>
-      <p style="text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: 0.2em; color: rgba(58, 28, 22, 0.4); margin-bottom: 40px;">Zoniraz Security Portal</p>
+      <p style="text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: 0.2em; color: rgba(58, 28, 22, 0.4); margin-bottom: 40px;">Security Portal</p>
       
       <p>Dear ${user.name || "Valued Customer"},</p>
-      <p>We received a request to reset the password for your Zoniraz account. If you did not make this request, you can safely ignore this email.</p>
+      <p>We received a request to reset the password for your account. If you did not make this request, you can safely ignore this email.</p>
       
       <div style="text-align: center; margin: 50px 0;">
         <a href="${resetUrl}" style="background-color: #3A1C16; color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3em; font-weight: bold; display: inline-block;">Reset Password</a>
@@ -47,9 +47,9 @@ export async function POST(req: NextRequest) {
       <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: rgba(58, 28, 22, 0.4); text-align: center;">This link will expire in 60 minutes.</p>
     `;
 
-    const emailResult = await sendZonirazMail({
+    const emailResult = await sendLuxuryMail({
       to: emailLower,
-      subject: "Zoniraz Password Reset Request",
+      subject: "Password Reset Request",
       html: getLuxuryEmailTemplate(content),
     });
 

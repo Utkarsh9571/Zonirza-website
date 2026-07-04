@@ -6,9 +6,13 @@ import Category from '@/models/Category';
 import { BLOG_POSTS } from '@/lib/blog/posts';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  await dbConnect();
+  try {
+    await dbConnect();
+  } catch (err) {
+    console.error('Sitemap DB connection error, proceeding with static and blog routes only:', err);
+  }
   
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://zoniraz.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://example.com';
 
   // 1. Fetch Dynamic Products
   let productUrls: any[] = [];

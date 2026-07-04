@@ -97,7 +97,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-12 overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 z-200 flex items-center justify-center p-4 md:p-12 overflow-hidden pointer-events-none">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-brand-text/40 backdrop-blur-md animate-in fade-in duration-500 pointer-events-auto" 
@@ -107,7 +107,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
       />
 
       {/* Modal Container */}
-      <div className="relative w-full max-w-5xl h-full max-h-[700px] bg-[#fdfaf5] dark:bg-brand-bg rounded-[40px] shadow-premium flex flex-col md:flex-row overflow-hidden animate-in zoom-in slide-in-from-bottom-8 duration-700 pointer-events-auto z-10 transition-colors">
+      <div className="relative w-full max-w-5xl h-full max-h-175 bg-[#fdfaf5] dark:bg-brand-bg rounded-[40px] shadow-premium flex flex-col md:flex-row overflow-hidden animate-in zoom-in slide-in-from-bottom-8 duration-700 pointer-events-auto z-10 transition-colors">
         
         {/* Close Button */}
         <button 
@@ -116,7 +116,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             e.stopPropagation();
             onClose();
           }}
-          className="absolute top-6 right-6 md:top-8 md:right-8 z-[60] w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-[#1a1614] shadow-soft text-brand-text/40 hover:text-brand-gold hover:rotate-90 transition-all duration-500 active:scale-90 touch-safe-hit border border-transparent dark:border-white/10"
+          className="absolute top-6 right-6 md:top-8 md:right-8 z-60 w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-[#1a1614] shadow-soft text-brand-text/40 hover:text-brand-gold hover:rotate-90 transition-all duration-500 active:scale-90 touch-safe-hit border border-transparent dark:border-white/10"
         >
           <X size={24} />
         </button>
@@ -136,7 +136,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
               <h2 className="text-4xl font-serif text-brand-text italic leading-tight">
                 Personalized <br /> <span className="not-italic font-bold text-brand-gold">Curations</span>
               </h2>
-              <p className="text-[12px] uppercase tracking-[0.3em] font-bold text-brand-text/50 dark:text-brand-text/70 max-w-[250px] mx-auto leading-relaxed">
+              <p className="text-[12px] uppercase tracking-[0.3em] font-bold text-brand-text/50 dark:text-brand-text/70 max-w-62.5 mx-auto leading-relaxed">
                 Explore masterpieces tailored to your exquisite taste
               </p>
             </div>
@@ -164,7 +164,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             {step === 'login' && (
               <div className="space-y-8">
                 <div className="space-y-3">
-                  <h3 className="text-3xl font-serif text-brand-text">Welcome to Zoniraz</h3>
+                  <h3 className="text-3xl font-serif text-brand-text">Welcome Back</h3>
                   <p className="text-sm text-brand-text/60 dark:text-brand-text/80 transition-colors">
                     Access your account using your email and password.
                   </p>
@@ -182,7 +182,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                       className="pl-12"
                       disabled={isLoading}
                     />
-                    <Mail size={18} className="absolute left-4 top-[46px] text-brand-gold/60" />
+                    <Mail size={18} className="absolute left-4 top-11.5 text-brand-gold/60" />
                   </div>
 
                   <div className="relative">
@@ -214,7 +214,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                       type="submit" 
                       variant="primary" 
                       size="full" 
-                      className="shadow-premium !py-6 text-[12px] tracking-[0.4em]"
+                      className="shadow-premium py-6! text-[12px] tracking-[0.4em]"
                       disabled={isLoading}
                     >
                       {isLoading ? "Signing In..." : "Sign In"} <ArrowRight size={18} className="ml-3" />
@@ -269,7 +269,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                       className="pl-12"
                       disabled={isLoading}
                     />
-                    <Mail size={18} className="absolute left-4 top-[46px] text-brand-gold/60" />
+                    <Mail size={18} className="absolute left-4 top-11.5 text-brand-gold/60" />
                   </div>
 
                   <div className="space-y-6">
@@ -277,7 +277,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                       type="submit" 
                       variant="primary" 
                       size="full" 
-                      className="shadow-premium !py-6 text-[12px] tracking-[0.4em]"
+                      className="shadow-premium py-6! text-[12px] tracking-[0.4em]"
                       disabled={isLoading || !email}
                     >
                       {isLoading ? "Sending Link..." : "Request Reset Link"} <ArrowRight size={18} className="ml-3" />

@@ -737,7 +737,7 @@ function AdminGiftCardsPageContent() {
               <div className="space-y-2">
                 <label className="text-[10px] uppercase tracking-widest font-black text-brand-text/40">Personal Message (Optional)</label>
                 <textarea 
-                  placeholder="Compliments from Zoniraz Curator..."
+                  placeholder="Compliments from Luxury Jewelry Curator..."
                   rows={2}
                   value={formData.personalMessage}
                   onChange={(e) => setFormData({...formData, personalMessage: e.target.value})}

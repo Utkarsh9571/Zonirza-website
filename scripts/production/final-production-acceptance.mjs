@@ -10,7 +10,7 @@ import { sharedDefaultProductConfiguration } from '../lib/ecommerce';
 import { secureCalculateOrderTotal } from '../lib/pricing.server';
 import mongoose from 'mongoose';
 
-const MONGODB_URI = 'mongodb+srv://zonirazjewelhouse_db_user:zyrCfjZ1wVDm2kdf@cluster0.dnlzvq8.mongodb.net/?appName=Cluster0';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/jewelry-starter';
 
 async function main() {
   if (mongoose.connection.readyState === 0) {
@@ -23,14 +23,14 @@ async function main() {
   let db = client.db('test');
   let count = await db.collection('products').countDocuments();
   if (count === 0) {
-    db = client.db('zonirazjewelhouse');
+    db = client.db('luxury-jewelryjewelhouse');
   }
 
   const passMatrix = [];
   const failures = [];
 
   console.log(`================================================================================`);
-  console.log(`ZONIRAZ PRICING V3.1 - FINAL PRODUCTION ACCEPTANCE TESTS`);
+  console.log(`LUXURY JEWELRY PRICING V3.1 - FINAL PRODUCTION ACCEPTANCE TESTS`);
   console.log(`Database target: "${db.databaseName}"`);
   console.log(`================================================================================\n`);
 

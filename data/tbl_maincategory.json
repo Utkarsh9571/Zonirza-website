@@ -1,7 +1,7 @@
 [
 {"type":"header","version":"5.2.2","comment":"Export to JSON plugin for PHPMyAdmin"},
-{"type":"database","name":"zoniraz_admin_zoniraznew"},
-{"type":"table","name":"tbl_maincategory","database":"zoniraz_admin_zoniraznew","data":
+{"type":"database","name":"jewelry_starter_db"},
+{"type":"table","name":"tbl_maincategory","database":"jewelry_starter_db","data":
 [
 {"maincategory_id":"1","maincategory_name":"Diamond","maincategory_slug":"diamond","meta_title":"Diamond","meta_keyword":"Diamond","meta_description":"Diamond","maincategory_image":"","status":"1","create_date":"2023-02-02 14:22:16","modify_date":"2023-04-29 06:26:46"},
 {"maincategory_id":"2","maincategory_name":"Solitaire","maincategory_slug":"solitaire","meta_title":"Solitaire","meta_keyword":"Solitaire","meta_description":"Solitaire","maincategory_image":"","status":"1","create_date":"2023-02-02 14:25:58","modify_date":"2023-04-29 06:26:46"},

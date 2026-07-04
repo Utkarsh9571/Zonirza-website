@@ -62,7 +62,7 @@ const FAQ_DATA: Record<string, { question: string; answer: string | React.ReactN
     { 
       question: "Do we need a pan card?", 
       answer: `<div class="space-y-4">
-        <p>For purchase above Rs. 2 lakhs, PAN card Number must be provided upon placing the order in the manner specified by Zoniraz. Failure to provide the same shall result in cancellation of the order.</p>
+        <p>For purchase above Rs. 2 lakhs, PAN card Number must be provided upon placing the order in the manner specified by Luxury Jewelry. Failure to provide the same shall result in cancellation of the order.</p>
         <p>For all domestic shipments, if the order value exceeds Rs 2 lakhs, the customer will need to enter the PAN card number and click on verify Pan card. Only upon PAN card verification the order will proceed ahead to the payment page. The billing name is supposed to be the same as the PAN card else the PAN card will not get verified and the customer will not be able to proceed ahead with the order.</p>
       </div>` 
     }
@@ -243,7 +243,7 @@ const FAQ_DATA: Record<string, { question: string; answer: string | React.ReactN
     },
     { 
       question: "What do I do if I receive the wrong product?", 
-      answer: `You can call us on 97848 36060 and write to zonirazjewelhouse@gmail.com to report the incident and cancel the order. If you want to return the product, please do not use it. We will arrange for the pick-up of the unused wrong item from the provided address through our logistic partner and arrange for the refund. For more details, refer to the Return Policy section.
+      answer: `You can call us on 99999 99999 and write to support@example.com to report the incident and cancel the order. If you want to return the product, please do not use it. We will arrange for the pick-up of the unused wrong item from the provided address through our logistic partner and arrange for the refund. For more details, refer to the Return Policy section.
 
       For international orders, please check the International Order section under Return Policy.` 
     },
@@ -251,7 +251,7 @@ const FAQ_DATA: Record<string, { question: string; answer: string | React.ReactN
       question: "The product that I received was damaged and I want to return it. what do I do?", 
       answer: `In the unlikely event that the product delivered is in damaged condition, you can return the product unused and in the same condition as you received it, in its original packaging, along with the invoice for a refund. We will arrange for the order to be collected from the provided address through our logistic partner and returned to us. Please refer to Return policy for details.
 
-      Call us on 97848 36060 or write to zonirazjewelhouse@gmail.com within 7 days of receipt for Zoniraz products and 30 days of receipt for Zoniraz signature products to report the incident.
+      Call us on 99999 99999 or write to support@example.com within 7 days of receipt for Luxury Jewelry products and 30 days of receipt for Luxury Jewelry signature products to report the incident.
 
       For international orders, please check the International Order section under Return Policy.` 
     },
@@ -263,7 +263,7 @@ const FAQ_DATA: Record<string, { question: string; answer: string | React.ReactN
     },
     { 
       question: "Do I need to pay for the return shipment if I return my order?", 
-      answer: `We at Zoniraz Jewelers will arrange for the return shipment to be collected and you do not need to make any payment for the courier.
+      answer: `We at Luxury Jewelers will arrange for the return shipment to be collected and you do not need to make any payment for the courier.
 
       For International Orders, please check the International Order section under Return policy.` 
     },
@@ -274,10 +274,10 @@ const FAQ_DATA: Record<string, { question: string; answer: string | React.ReactN
     { 
       question: "How do I return my order?", 
       answer: `<div class="space-y-4">
-        <p>The order can be returned within 7 days for Zoniraz products and 30 days for Zoniraz signature products from the date you received the product. You need to call the customer care on 97848 36060 or email us at zonirazjewelhouse@gmail.com stating that you want to return the product. The contact details of our logistic partner will be shared with you. You need to co-ordinate with them for return shipping. Take the following step:</p>
+        <p>The order can be returned within 7 days for Luxury Jewelry products and 30 days for Luxury Jewelry signature products from the date you received the product. You need to call the customer care on 99999 99999 or email us at support@example.com stating that you want to return the product. The contact details of our logistic partner will be shared with you. You need to co-ordinate with them for return shipping. Take the following step:</p>
         
         <div class="bg-brand-gold/5 p-6 rounded-2xl border border-brand-gold/10 space-y-4 text-sm">
-          <p><strong>a)</strong> Fill the ‘Return Form’ which you must have received with the product or download the Return Form from www.zoniraz.com & fill the details in it.</p>
+          <p><strong>a)</strong> Fill the ‘Return Form’ which you must have received with the product or download the Return Form from www.example.com & fill the details in it.</p>
           <p><strong>b)</strong> Pack your order in original packaging and mention your name, order number and mobile number.</p>
           <p><strong>c)</strong> Enclose the original invoice, guaranty/warranty card & other tag, if any.</p>
           <p><strong>d)</strong> Our logistic partner will pick this package from you.</p>
@@ -466,11 +466,11 @@ function HelpContent() {
           <div className="mt-12 p-8 bg-[#1a1614] dark:bg-white/5 rounded-4xl text-white space-y-6 border border-transparent dark:border-white/10 shadow-lg">
             <h3 className="font-serif text-white/80 text-xl">Need more help?</h3>
             <div className="space-y-4">
-              <a href="tel:9784836060" className="flex items-center space-x-3 text-white/80 hover:text-white transition-colors">
+              <a href="tel:9999999999" className="flex items-center space-x-3 text-white/80 hover:text-white transition-colors">
                 <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
                   <Phone size={14} />
                 </div>
-                <span className="text-xs font-bold tracking-widest">97848 36060</span>
+                <span className="text-xs font-bold tracking-widest">99999 99999</span>
               </a>
               <div className="flex items-center space-x-3 text-white/80">
                 <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
@@ -490,7 +490,7 @@ function HelpContent() {
       <main className="flex-1">
         <div className="mb-12">
           <div className="flex items-center space-x-3 text-[10px] uppercase tracking-[0.3em] font-bold text-brand-gold mb-4">
-            <span>Zoniraz Help Center</span>
+            <span>Luxury Jewelry Help Center</span>
             <span className="w-8 h-px bg-brand-gold/30"></span>
             <span>{activeCategory?.name}</span>
           </div>

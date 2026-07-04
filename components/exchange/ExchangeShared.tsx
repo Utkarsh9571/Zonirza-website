@@ -10,9 +10,9 @@ export function ExchangeStats() {
   };
 
   return (
-    <section className="py-32 bg-[#4a1c1c] dark:bg-[#2c1010] relative overflow-hidden flex items-center justify-center min-h-[600px]">
+    <section className="py-32 bg-[#4a1c1c] dark:bg-[#2c1010] relative overflow-hidden flex items-center justify-center min-h-150">
       {/* Subtle radial gradient to match design */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#5e2323] via-[#4a1c1c] to-[#361313] dark:from-[#3a1515] dark:via-[#2c1010] dark:to-[#1a0808]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-[#5e2323] via-[#4a1c1c] to-[#361313] dark:from-[#3a1515] dark:via-[#2c1010] dark:to-[#1a0808]" />
       
       <div className="container mx-auto px-6 relative z-10 text-center">
         <motion.div 
@@ -29,7 +29,7 @@ export function ExchangeStats() {
           </h3>
           
           <p className="text-[#f4e0c4]/70 text-sm md:text-base max-w-xl mx-auto leading-relaxed pt-2">
-            Every hour over 100 Indians join Zoniraz's Exchange community to upgrade their old gold at a better value.
+            Every hour, customers join our Exchange community to upgrade their old gold at a better value.
           </p>
 
           <div className="pt-8">

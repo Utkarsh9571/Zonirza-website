@@ -35,7 +35,7 @@ export const sendEmail = async (
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const info = await transporter.sendMail({
-        from: process.env.EMAIL_FROM || `"Zoniraz Luxury" <${process.env.EMAIL_SERVER_USER || process.env.SMTP_USER || 'no-reply@zoniraz.com'}>`,
+        from: process.env.EMAIL_FROM || `"Luxury Jewelry Commerce Starter" <${process.env.EMAIL_SERVER_USER || process.env.SMTP_USER || 'no-reply@example.com'}>`,
         to,
         subject,
         html,

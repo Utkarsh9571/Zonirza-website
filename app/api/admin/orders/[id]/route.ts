@@ -53,17 +53,17 @@ export async function PATCH(
       const customerEmail = order.shippingAddress?.email || 'customer@example.com'; // Using fallback if email not in schema directly
       await sendEmail({
         to: customerEmail,
-        subject: `Your Zoniraz Masterpiece Update: ${orderStatus}`,
+        subject: `Your Luxury Jewelry Masterpiece Update: ${orderStatus}`,
         html: `
           <div style="font-family: serif; color: #333; max-width: 600px; margin: 0 auto; text-align: center;">
-            <h1 style="color: #cda434; font-size: 24px; letter-spacing: 2px; text-transform: uppercase;">Zoniraz Luxury</h1>
+            <h1 style="color: #cda434; font-size: 24px; letter-spacing: 2px; text-transform: uppercase;">Luxury Jewelry Luxury</h1>
             <div style="margin: 30px 0; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
               <p style="font-size: 16px;">Dear ${order.shippingAddress?.fullName},</p>
               <p style="font-size: 14px; line-height: 1.6;">Your masterpiece has reached a new stage in its journey.</p>
               <h2 style="font-size: 20px; margin: 20px 0; color: #111;">Status Update: <strong>${orderStatus}</strong></h2>
               <p style="font-size: 12px; color: #666;">Order Reference: #${order._id.toString().slice(-8).toUpperCase()}</p>
             </div>
-            <p style="font-size: 12px; color: #999; margin-top: 40px;">Zoniraz Concierge Services</p>
+            <p style="font-size: 12px; color: #999; margin-top: 40px;">Luxury Jewelry Concierge Services</p>
           </div>
         `
       });

@@ -55,7 +55,7 @@ export const useWishlistStore = create<WishlistState>()(
       }
     }),
     {
-      name: 'zoniraz-wishlist',
+      name: 'jewelry-starter-wishlist',
     }
   )
 );

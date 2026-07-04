@@ -230,7 +230,7 @@ export default function ShippingPage() {
                         value={formData.city}
                         onChange={handleInputChange}
                         className="w-full h-16 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl px-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 dark:text-brand-text/90"
-                        placeholder="ALWAR"
+                        placeholder="MUMBAI"
                       />
                     </div>
                     <div className="space-y-3">
@@ -241,7 +241,7 @@ export default function ShippingPage() {
                         value={formData.state}
                         onChange={handleInputChange}
                         className="w-full h-16 bg-brand-bg/50 dark:bg-brand-bg border border-brand-text/5 dark:border-white/5 rounded-2xl px-6 text-sm font-bold tracking-widest focus:outline-none focus:border-brand-gold/30 dark:text-brand-text/90"
-                        placeholder="RAJASTHAN"
+                        placeholder="MAHARASHTRA"
                       />
                     </div>
                     <div className="space-y-3">

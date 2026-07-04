@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import dbConnect from '@/lib/db';
 import FranchiseLead from '@/models/FranchiseLead';
-import { sendZonirazMail, getLuxuryEmailTemplate } from '@/lib/mail';
+import { sendLuxuryMail, getLuxuryEmailTemplate } from '@/lib/mail';
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,16 +14,16 @@ export async function POST(request: NextRequest) {
     // 1. Send Confirmation to User
     const userHtml = getLuxuryEmailTemplate(`
       <h2 style="font-weight: normal; font-style: italic;">Greetings ${name},</h2>
-      <p>Thank you for your interest in joining the <strong>Zoniraz Legacy</strong>. We have received your franchise inquiry and our business development team is currently reviewing your application.</p>
-      <p>At Zoniraz, we value partners who share our vision for timeless craftsmanship and luxury. You can expect a response from one of our expansion experts within 3-5 business days.</p>
+      <p>Thank you for your interest in joining our franchise network. We have received your franchise inquiry and our business development team is currently reviewing your application.</p>
+      <p>At our brand, we value partners who share our vision for timeless craftsmanship and luxury. You can expect a response from one of our expansion experts within 3-5 business days.</p>
       <div style="margin-top: 40px; border-top: 1px solid #f2ede4; pt: 20px;">
-        <p style="font-size: 14px; font-style: italic;">Warm regards,<br/>The Zoniraz Expansion Team</p>
+        <p style="font-size: 14px; font-style: italic;">Warm regards,<br/>The Expansion Team</p>
       </div>
     `);
 
-    await sendZonirazMail({
+    await sendLuxuryMail({
       to: email,
-      subject: "Your Franchise Inquiry with Zoniraz Luxury",
+      subject: "Your Franchise Inquiry",
       html: userHtml
     });
 
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       </table>
     `);
 
-    await sendZonirazMail({
+    await sendLuxuryMail({
       to: process.env.EMAIL_FROM || process.env.EMAIL_SERVER_USER || "",
       subject: `FRANCHISE INQUIRY: ${name} - ${city}`,
       html: businessHtml

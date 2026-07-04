@@ -60,7 +60,7 @@ export function AdminSidebar() {
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#1a1614] border-b border-white/5 z-40 flex items-center justify-between px-6">
         <Link href="/admin" className="flex items-center space-x-2">
           <Sparkles className="text-brand-gold" size={16} />
-          <span className="text-white font-serif tracking-widest uppercase italic text-sm">Zoniraz Admin</span>
+          <span className="text-white font-serif tracking-widest uppercase italic text-sm">Starter Admin</span>
         </Link>
         <button 
           onClick={() => setIsOpen(!isOpen)} 
@@ -86,11 +86,11 @@ export function AdminSidebar() {
       {/* Brand Header */}
       <div className="p-8 border-b border-white/5">
         <Link href="/admin" className="flex items-center space-x-3 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-gold to-[#B4925A] flex items-center justify-center shadow-premium group-hover:scale-105 transition-transform duration-500">
+          <div className="w-10 h-10 rounded-xl bg-linear-to-br from-brand-gold to-[#B4925A] flex items-center justify-center shadow-premium group-hover:scale-105 transition-transform duration-500">
             <Sparkles className="text-[#1a1614]" size={20} />
           </div>
           <div className="flex flex-col">
-            <span className="text-white font-serif text-lg tracking-widest uppercase italic">Zoniraz</span>
+            <span className="text-white font-serif text-lg tracking-widest uppercase italic">Starter</span>
             <span className="text-brand-gold text-[10px] uppercase tracking-[0.3em] font-bold">Admin Portal</span>
           </div>
         </Link>

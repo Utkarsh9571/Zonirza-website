@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 const steps = [
   { id: 'step1', title: '1. Submit an inquiry online.' },
   { id: 'step2', title: '2. Speak with our luxury gold expert.' },
-  { id: 'step3', title: '3. Visit our Alwar branch with your gold.' },
+  { id: 'step3', title: '3. Visit our flagship branch with your gold.' },
   { id: 'step4', title: '4. Non-destructive purity verification.' },
   { id: 'step5', title: '5. Accurate weight assessment.' },
   { id: 'step6', title: '6. Final transparent price offer.' },
@@ -30,7 +30,7 @@ export default function SellGoldHowItWorks() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           
-          {/* Left: Store Locator / Alwar Focus */}
+          {/* Left: Store Locator / Flagship Focus */}
           <div className="space-y-6 h-full flex flex-col justify-center">
             <div className="bg-white dark:bg-[#12100e] rounded-3xl p-10 border border-brand-text/10 dark:border-white/10 shadow-sm text-center relative overflow-hidden">
               <div className="absolute top-0 right-0 p-4">
@@ -40,15 +40,15 @@ export default function SellGoldHowItWorks() {
               </div>
               
               <span className="text-6xl mb-6 block mt-4">🏛️</span>
-              <h4 className="text-3xl font-serif font-bold text-brand-text dark:text-white mb-4">Zoniraz Alwar</h4>
+              <h4 className="text-3xl font-serif font-bold text-brand-text dark:text-white mb-4">Flagship Boutique</h4>
               <p className="text-brand-text/60 dark:text-white/60 text-sm mb-8 leading-relaxed">
-                For the highest level of security and transparency, our gold buying service is conducted exclusively in person at our flagship Alwar boutique.
+                For the highest level of security and transparency, our old gold evaluation service is conducted exclusively in person at our flagship boutique.
               </p>
               
               <div className="bg-[#FAF9F6] dark:bg-white/5 border border-brand-text/10 dark:border-white/10 rounded-2xl p-6 w-full max-w-sm mx-auto shadow-sm">
                 <p className="text-sm font-medium text-brand-text/80 dark:text-white/80">
-                  SHOP NO. 7, HANUMAN BURJ,<br />
-                  Alwar, Rajasthan, 301001
+                  123 LUXURY LANE,<br />
+                  Jewelry Zone, Mumbai, 400001
                 </p>
               </div>
 
@@ -102,7 +102,7 @@ export default function SellGoldHowItWorks() {
                           <div className="py-4 px-10 text-brand-text/70 dark:text-white/70 text-sm">
                             {index === 0 && "Fill out the consultation form below with details about the gold you wish to sell."}
                             {index === 1 && "One of our specialists will contact you to discuss your requirements and schedule your visit."}
-                            {index === 2 && "Bring your gold to our Alwar branch for a secure, private evaluation."}
+                            {index === 2 && "Bring your gold to our flagship branch for a secure, private evaluation."}
                             {index === 3 && "We use advanced Karatmeter technology to determine exact purity without damaging your items."}
                             {index === 4 && "If purity is confirmed, items are melted and weighed in front of you for 100% transparency."}
                             {index === 5 && "You receive our best market offer based on live gold rates and verified purity."}

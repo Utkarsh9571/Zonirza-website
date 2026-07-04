@@ -6,7 +6,7 @@ import { Wallet, Tag, ShoppingBag, ShieldCheck, CheckCircle2 } from 'lucide-reac
 import { GoldMineCalculator } from '@/components/finance/GoldMineCalculator';
 
 export const metadata: Metadata = {
-  title: 'Gold Mine 10+1 Monthly Savings Plan | Zoniraz',
+  title: 'Gold Mine 10+1 Monthly Savings Plan | Luxury Jewelry',
   description: 'Pay for 10 months and get a 100% discount on the 11th installment. Start saving today for your luxury jewelry purchase.',
 };
 
@@ -33,7 +33,7 @@ export default function GoldMinePage() {
               <span className="text-brand-gold">10+1 Monthly Plan</span>
             </h1>
             <p className="text-lg text-white/80 mb-8 max-w-lg leading-relaxed">
-              Plan ahead for your special moments. Pay 10 monthly installments and get 100% off on your 11th installment. Redeemable towards any Zoniraz jewelry.
+              Plan ahead for your special moments. Pay 10 monthly installments and get 100% off on your 11th installment. Redeemable towards any Luxury Jewelry jewelry.
             </p>
             <div className="flex items-center gap-4">
               <Link 

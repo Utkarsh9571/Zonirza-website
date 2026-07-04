@@ -1,0 +1,35 @@
+{
+  "name": "Classic Diamond Solitaire Ring",
+  "slug": "classic-diamond-solitaire-ring",
+  "category": "rings",
+  "images": [
+    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600"
+  ],
+  "description": "A classic four-prong solitaire engagement ring featuring a sparkling high-grade round brilliant cut diamond on a polished gold band.",
+  "basePrice": 45000,
+  "makingCharges": 12,
+  "baseWeight": 3.5,
+  "diamondWeightCarats": 0.25,
+  "stockStatus": "in-stock",
+  "isActive": true,
+  "tags": ["diamond", "ring", "solitaire", "engagement"],
+  "specs": {
+    "Metal": "Yellow Gold",
+    "Purity": "18K",
+    "Diamond Quality": "EF-VVS",
+    "Setting": "Prong"
+  },
+  "hasDiamond": true,
+  "hasStone": false,
+  "jewelryType": "diamond",
+  "defaultMetal": "yellow-gold",
+  "defaultColor": "Yellow Gold",
+  "goldPurityOptions": ["18K", "14K"],
+  "configurableOptions": {
+    "metals": ["yellow-gold", "rose-gold", "white-gold"],
+    "purities": ["18K", "14K"],
+    "sizes": ["10", "11", "12", "13", "14", "15"],
+    "stones": ["EF-VVS", "GH-VS"],
+    "customizations": ["Engraving"]
+  }
+}

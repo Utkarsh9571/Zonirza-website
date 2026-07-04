@@ -2,10 +2,6 @@ import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI || '';
 
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
-}
-
 /**
  * Global is used here to maintain a cached connection across hot reloads
  * in development. This prevents connections growing exponentially
@@ -27,7 +23,15 @@ if (!cached) {
   cached = global.mongoose = { conn: null, promise: null };
 }
 
+/**
+ * Connects to MongoDB. Throws if the connection fails.
+ * Use for routes that REQUIRE a database (auth, orders, admin writes).
+ */
 async function dbConnect() {
+  if (!MONGODB_URI) {
+    throw new Error('MONGODB_URI is not set. Please define it in .env.local');
+  }
+
   if (cached!.conn) {
     return cached!.conn;
   }
@@ -66,4 +70,30 @@ async function dbConnect() {
   return cached!.conn;
 }
 
+/**
+ * Attempts to connect to MongoDB gracefully.
+ * Returns true if connected, false if MONGODB_URI is missing or the server is unreachable.
+ * Use this for public-facing read routes that can fall back to demo/mock data.
+ */
+export async function tryDbConnect(): Promise<boolean> {
+  if (!MONGODB_URI) {
+    return false;
+  }
+
+  // Already connected
+  if (cached!.conn) {
+    return true;
+  }
+
+  try {
+    await dbConnect();
+    return true;
+  } catch {
+    // Reset promise so the next request retries rather than hanging forever
+    cached!.promise = null;
+    return false;
+  }
+}
+
 export default dbConnect;
+

@@ -4,7 +4,7 @@ import ProductsClientPage from './ProductsClientPage';
 
 export const metadata: Metadata = constructMetadata({
   title: 'Fine Luxury Jewellery Collections',
-  description: 'Explore the exquisite collections of gold, diamond, solitaire, and platinum jewellery at Zoniraz. Handcrafted masterpieces tailored for luxury.',
+  description: 'Explore the exquisite collections of gold, diamond, solitaire, and platinum jewellery at Luxury Jewelry. Handcrafted masterpieces tailored for luxury.',
   path: '/products',
 });
 

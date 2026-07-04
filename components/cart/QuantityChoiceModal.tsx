@@ -14,7 +14,7 @@ export function QuantityChoiceModal({ isOpen, onClose, onSelect, itemName }: Qua
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-300 flex items-center justify-center p-4">
       <div 
         className="absolute inset-0 bg-brand-text/40 backdrop-blur-md animate-in fade-in duration-500" 
         onClick={onClose} 
@@ -64,7 +64,7 @@ export function QuantityChoiceModal({ isOpen, onClose, onSelect, itemName }: Qua
           </div>
 
           <p className="text-[9px] text-brand-text/30 font-medium italic">
-            Each Zoniraz masterpiece is crafted with individual attention.
+            Each luxury masterpiece is crafted with individual attention.
           </p>
         </div>
       </div>

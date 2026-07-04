@@ -124,8 +124,12 @@ export default function CinematicHero() {
                 className="absolute inset-0 object-cover w-full h-full scale-105"
                 style={{ transform: "scale(1.05)" }}
               >
-                {hasMobileVideo && <source src={slide.videoMobile} media="(max-width: 767px)" type="video/mp4" />}
-                <source src={slide.videoDesktop} type="video/mp4" />
+                {hasMobileVideo && slide.videoMobile ? (
+                  <source src={slide.videoMobile} media="(max-width: 767px)" type="video/mp4" />
+                ) : null}
+                {slide.videoDesktop ? (
+                  <source src={slide.videoDesktop} type="video/mp4" />
+                ) : null}
               </video>
             );
           })()}

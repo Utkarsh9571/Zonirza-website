@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Contact from '@/models/Contact';
-import { sendZonirazMail, getLuxuryEmailTemplate } from '@/lib/mail';
+import { sendLuxuryMail, getLuxuryEmailTemplate } from '@/lib/mail';
 
 export async function POST(req: Request) {
   try {
@@ -14,17 +14,17 @@ export async function POST(req: Request) {
     // 1. Send Confirmation to User
     const userHtml = getLuxuryEmailTemplate(`
       <h2 style="font-weight: normal; font-style: italic;">Dear ${name},</h2>
-      <p>Thank you for reaching out to <strong>Zoniraz Luxury</strong>. We have received your inquiry and our concierge team is already looking into your request.</p>
+      <p>Thank you for reaching out to us. We have received your inquiry and our concierge team is already looking into your request.</p>
       ${appointmentDate ? `<p>We have also noted your preferred appointment time on <strong>${appointmentDate}</strong> at <strong>${appointmentSlot || 'Any Time'}</strong>. Our team will contact you shortly to confirm the appointment.</p>` : ''}
       <p>Providing exceptional service is at the heart of what we do. You can expect a personalized response from us within 24-48 hours.</p>
       <div style="margin-top: 40px; border-top: 1px solid #f2ede4; pt: 20px;">
-        <p style="font-size: 14px; font-style: italic;">Sincerely,<br/>The Zoniraz Concierge Team</p>
+        <p style="font-size: 14px; font-style: italic;">Sincerely,<br/>The Concierge Team</p>
       </div>
     `);
 
-    await sendZonirazMail({
+    await sendLuxuryMail({
       to: email,
-      subject: "We've Received Your Inquiry - Zoniraz Luxury",
+      subject: "We've Received Your Inquiry",
       html: userHtml
     });
 
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       </table>
     `);
 
-    await sendZonirazMail({
+    await sendLuxuryMail({
       to: process.env.EMAIL_FROM || process.env.EMAIL_SERVER_USER || "",
       subject: `CONTACT INQUIRY: ${name}`,
       html: businessHtml

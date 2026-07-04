@@ -16,12 +16,12 @@ export interface MailOptions {
 }
 
 /**
- * Centralized mail utility for Zoniraz Luxury Branding
+ * Centralized mail utility for Luxury Commerce Starter Branding
  */
-export async function sendZonirazMail({ to, subject, html }: MailOptions) {
+export async function sendLuxuryMail({ to, subject, html }: MailOptions) {
   try {
     const info = await transporter.sendMail({
-      from: `"Zoniraz Luxury" <${process.env.EMAIL_FROM || process.env.EMAIL_SERVER_USER}>`,
+      from: `"Luxury Jewelry Commerce Starter" <${process.env.EMAIL_FROM || process.env.EMAIL_SERVER_USER}>`,
       to,
       subject,
       html,
@@ -32,6 +32,9 @@ export async function sendZonirazMail({ to, subject, html }: MailOptions) {
     return { success: false, error };
   }
 }
+
+// Export compatibility alias
+export const sendLuxuryJewelryMail = sendLuxuryMail;
 
 export interface ThemeStyle {
   primaryColor: string;
@@ -131,7 +134,7 @@ export const THEME_STYLES: Record<string, ThemeStyle> = {
 /**
  * Generates a premium luxury-themed email wrapper
  */
-export function getLuxuryEmailTemplate(content: string, previewText: string = "Zoniraz Luxury Branding", themeName: string = "Minimal Luxury") {
+export function getLuxuryEmailTemplate(content: string, previewText: string = "Luxury Jewelry Commerce Starter", themeName: string = "Minimal Luxury") {
   const style = THEME_STYLES[themeName] || THEME_STYLES['Minimal Luxury'];
   return `
     <!DOCTYPE html>
@@ -151,7 +154,7 @@ export function getLuxuryEmailTemplate(content: string, previewText: string = "Z
                 <!-- Header -->
                 <tr>
                   <td align="center" style="padding: 60px 40px 40px 40px; background-color: ${style.headerBg};">
-                    <img src="https://zoniraz.com/images/ZONIRAZ%20LOGO.png" alt="Zoniraz Logo" width="200" style="display: block; filter: ${style.logoInvert};" />
+                    <div style="font-size: 24px; font-weight: bold; color: ${style.accentColor}; letter-spacing: 0.15em; text-transform: uppercase;">Luxury Starter</div>
                     <p style="color: ${style.accentColor}; opacity: 0.6; margin: 15px 0 0 0; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4em;">Timeless Luxury & Craftsmanship</p>
                   </td>
                 </tr>
@@ -165,10 +168,10 @@ export function getLuxuryEmailTemplate(content: string, previewText: string = "Z
                 <tr>
                   <td align="center" style="padding: 40px; background-color: #fdfaf5; border-top: 1px solid #f2ede4;">
                     <p style="margin: 0; font-size: 12px; color: rgba(58, 28, 22, 0.4); text-transform: uppercase; letter-spacing: 0.2em;">
-                      © 2026 Zoniraz Jewel House Pvt LTD.
+                      © 2026 Luxury Jewelry Commerce Starter. All Rights Reserved.
                     </p>
                     <p style="margin: 10px 0 0 0; font-size: 10px; color: rgba(58, 28, 22, 0.3);">
-                      Leading Luxury Jewellery Manufacturer & Exporter
+                      Premium Luxury Jewellery Starter Platform
                     </p>
                   </td>
                 </tr>
@@ -202,7 +205,7 @@ export async function sendOrderConfirmationEmail(order: any, customerEmail: stri
     <p style="text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: 0.2em; color: rgba(58, 28, 22, 0.4); margin-bottom: 40px;">Order Reference: #${order._id.toString().slice(-8).toUpperCase()}</p>
     
     <p>Dear ${order.shippingAddress.fullName},</p>
-    <p>Thank you for choosing Zoniraz. Your selection of our handcrafted masterpieces has been secured and our artisans have been notified to begin their final inspection.</p>
+    <p>Thank you for choosing us. Your selection of our handcrafted masterpieces has been secured and our artisans have been notified to begin their final inspection.</p>
     
     <div style="background-color: #fdfaf5; border: 1px solid #f2ede4; border-radius: 20px; padding: 30px; margin: 40px 0;">
       <h4 style="margin: 0 0 20px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.2em; color: #3A1C16; border-bottom: 1px solid #f2ede4; padding-bottom: 10px;">Order Summary</h4>
@@ -222,13 +225,13 @@ export async function sendOrderConfirmationEmail(order: any, customerEmail: stri
     </div>
 
     <div style="text-align: center; margin-top: 50px;">
-      <a href="https://zoniraz.com/account/orders/${order._id}" style="background-color: #3A1C16; color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3em; font-weight: bold; display: inline-block;">Track Your Journey</a>
+      <a href="${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/account/orders/${order._id}" style="background-color: #3A1C16; color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3em; font-weight: bold; display: inline-block;">Track Your Journey</a>
     </div>
   `;
 
-  return sendZonirazMail({
+  return sendLuxuryMail({
     to: customerEmail,
-    subject: `Your Zoniraz Masterpiece is Reserved: #${order._id.toString().slice(-8).toUpperCase()}`,
+    subject: `Your Masterpiece is Reserved: #${order._id.toString().slice(-8).toUpperCase()}`,
     html: getLuxuryEmailTemplate(content)
   });
 }
@@ -244,12 +247,12 @@ export async function sendAdminNewOrderEmail(order: any) {
     <p><strong>Total Amount:</strong> ${order.currency} ${order.totalAmount.toLocaleString()}</p>
     <p><strong>Items:</strong> ${order.items.length} unique pieces</p>
     <div style="margin-top: 30px;">
-      <a href="https://zoniraz.com/admin/orders/${order._id}" style="background-color: #3A1C16; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 12px; font-weight: bold; display: inline-block;">View in Dashboard</a>
+      <a href="${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/admin/orders/${order._id}" style="background-color: #3A1C16; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 12px; font-weight: bold; display: inline-block;">View in Dashboard</a>
     </div>
   `;
 
-  return sendZonirazMail({
-    to: process.env.BUSINESS_EMAIL || process.env.EMAIL_SERVER_USER || "zonirazjewelhouse@gmail.com",
+  return sendLuxuryMail({
+    to: process.env.BUSINESS_EMAIL || process.env.EMAIL_SERVER_USER || "admin@example.com",
     subject: `New Order Alert: ${order.shippingAddress.fullName} - ${order.currency} ${order.totalAmount.toLocaleString()}`,
     html: getLuxuryEmailTemplate(content)
   });
@@ -263,7 +266,7 @@ export async function sendExchangeInquiryCustomerEmail(inquiry: any) {
     <h2 style="font-size: 24px; font-weight: normal; font-style: italic; margin-bottom: 20px; text-align: center;">Thank You for Your Inquiry</h2>
     
     <p>Dear ${inquiry.fullName},</p>
-    <p>Thank you for showing interest in the Zoniraz Gold Exchange Program. We have successfully received your inquiry.</p>
+    <p>Thank you for showing interest in our Gold Exchange Program. We have successfully received your inquiry.</p>
     
     <p>Our luxury jewellery experts are currently reviewing your details and will get in touch with you shortly at <strong>${inquiry.phone}</strong> to guide you through the next steps of your exchange journey.</p>
 
@@ -271,13 +274,13 @@ export async function sendExchangeInquiryCustomerEmail(inquiry: any) {
       <p style="margin: 0; font-size: 14px; font-style: italic; color: #3A1C16;">"Transform your cherished memories into timeless new masterpieces."</p>
     </div>
 
-    <p>We look forward to welcoming you to our Alwar boutique.</p>
-    <p>Warm regards,<br>The Zoniraz Team</p>
+    <p>We look forward to welcoming you to our boutique.</p>
+    <p>Warm regards,<br>The Luxury Starter Team</p>
   `;
 
-  return sendZonirazMail({
+  return sendLuxuryMail({
     to: inquiry.email,
-    subject: "Zoniraz Exchange Program - Inquiry Received",
+    subject: "Exchange Program - Inquiry Received",
     html: getLuxuryEmailTemplate(content)
   });
 }
@@ -297,12 +300,12 @@ export async function sendExchangeInquiryAdminEmail(inquiry: any) {
     </div>
     
     <div style="margin-top: 30px;">
-      <a href="https://zoniraz.com/admin/exchange" style="background-color: #3A1C16; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 12px; font-weight: bold; display: inline-block;">View in Admin Panel</a>
+      <a href="${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/admin/exchange" style="background-color: #3A1C16; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 12px; font-weight: bold; display: inline-block;">View in Admin Panel</a>
     </div>
   `;
 
-  return sendZonirazMail({
-    to: process.env.BUSINESS_EMAIL || process.env.EMAIL_SERVER_USER || "zonirazjewelhouse@gmail.com",
+  return sendLuxuryMail({
+    to: process.env.BUSINESS_EMAIL || process.env.EMAIL_SERVER_USER || "admin@example.com",
     subject: `New Exchange Lead: ${inquiry.fullName}`,
     html: getLuxuryEmailTemplate(content)
   });
@@ -316,24 +319,24 @@ export async function sendSellGoldInquiryCustomerEmail(inquiry: any) {
     <h2 style="font-size: 24px; font-weight: normal; font-style: italic; margin-bottom: 20px; text-align: center;">Sell Old Gold - Inquiry Received</h2>
     
     <p>Dear ${inquiry.fullName},</p>
-    <p>Thank you for showing interest in selling your old gold to Zoniraz. We have successfully received your inquiry.</p>
+    <p>Thank you for showing interest in selling your old gold. We have successfully received your inquiry.</p>
     
     <p>Our luxury jewellery experts are currently reviewing your details and will get in touch with you shortly via your preferred contact method (<strong>${inquiry.preferredContactMethod.toUpperCase()}</strong>) at <strong>${inquiry.preferredContactMethod === 'email' ? inquiry.email : inquiry.phone}</strong> to guide you through the next steps.</p>
 
     <div style="background-color: #fdfaf5; border: 1px solid #f2ede4; border-radius: 12px; padding: 25px; margin: 30px 0; text-align: center;">
       <p style="margin: 0; font-size: 14px; font-style: italic; color: #3A1C16;">"Unlock the true value of your gold with our transparent, scientific evaluation process."</p>
-      <p style="margin: 15px 0 0 0; font-size: 11px; font-weight: bold; color: #8B1D2F; text-transform: uppercase;">Please note: Physical valuation at our Alwar branch is mandatory for final pricing.</p>
+      <p style="margin: 15px 0 0 0; font-size: 11px; font-weight: bold; color: #8B1D2F; text-transform: uppercase;">Please note: Physical valuation at our boutique is mandatory for final pricing.</p>
     </div>
 
-    <p>We look forward to welcoming you to our Alwar boutique.</p>
-    <p>Warm regards,<br>The Zoniraz Team</p>
+    <p>We look forward to welcoming you to our boutique.</p>
+    <p>Warm regards,<br>The Luxury Starter Team</p>
   `;
 
   if (!inquiry.email) return { success: true, skipped: true };
 
-  return sendZonirazMail({
+  return sendLuxuryMail({
     to: inquiry.email,
-    subject: "Zoniraz - Sell Gold Inquiry Received",
+    subject: "Sell Gold Inquiry Received",
     html: getLuxuryEmailTemplate(content)
   });
 }
@@ -356,12 +359,12 @@ export async function sendSellGoldInquiryAdminEmail(inquiry: any) {
     </div>
     
     <div style="margin-top: 30px;">
-      <a href="https://zoniraz.com/admin/sell-gold" style="background-color: #3A1C16; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 12px; font-weight: bold; display: inline-block;">View in Admin Panel</a>
+      <a href="${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/admin/sell-gold" style="background-color: #3A1C16; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 12px; font-weight: bold; display: inline-block;">View in Admin Panel</a>
     </div>
   `;
 
-  return sendZonirazMail({
-    to: process.env.BUSINESS_EMAIL || process.env.EMAIL_SERVER_USER || "zonirazjewelhouse@gmail.com",
+  return sendLuxuryMail({
+    to: process.env.BUSINESS_EMAIL || process.env.EMAIL_SERVER_USER || "admin@example.com",
     subject: `New Sell Gold Lead: ${inquiry.fullName}`,
     html: getLuxuryEmailTemplate(content)
   });
@@ -370,14 +373,14 @@ export async function sendSellGoldInquiryAdminEmail(inquiry: any) {
 export async function sendGiftCardEmail(giftCard: any, senderName: string) {
   const themeName = giftCard.theme || 'Minimal Luxury';
   const style = THEME_STYLES[themeName] || THEME_STYLES['Minimal Luxury'];
-  const trackingUrl = `${process.env.NEXTAUTH_URL || 'https://zoniraz.com'}/api/gift-cards/track/open?id=${giftCard._id}`;
+  const trackingUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/gift-cards/track/open?id=${giftCard._id}`;
 
   const content = `
     <h2 style="font-size: 28px; font-weight: normal; font-style: italic; margin-bottom: 20px; text-align: center; color: ${style.textColor};">${style.title}</h2>
-    <p style="text-align: center; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3em; color: ${style.textColor}; opacity: 0.6; margin-bottom: 40px;">Zoniraz Luxury Gift Card</p>
+    <p style="text-align: center; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3em; color: ${style.textColor}; opacity: 0.6; margin-bottom: 40px;">Luxury Gift Card</p>
     
     <p>Dear <strong>${giftCard.recipientName}</strong>,</p>
-    <p>We are delighted to inform you that <strong>${senderName}</strong> has sent you a Zoniraz Luxury Gift Card, reserving a piece of our handcrafted masterpieces for your collection.</p>
+    <p>We are delighted to inform you that <strong>${senderName}</strong> has sent you a Luxury Gift Card, reserving a piece of our handcrafted masterpieces for your collection.</p>
     
     ${giftCard.personalMessage ? `
       <div style="background-color: ${style.bgColor}; border: 1px solid #f2ede4; border-radius: 20px; padding: 25px; margin: 35px 0; font-style: italic; text-align: center; color: ${style.textColor}; font-size: 15px; line-height: 1.6;">
@@ -404,10 +407,10 @@ export async function sendGiftCardEmail(giftCard: any, senderName: string) {
         To reveal your interactive virtual envelope and claim this gift card to your account, click the button below:
       </p>
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${process.env.NEXTAUTH_URL || 'https://zoniraz.com'}/gift-cards/redeem?code=${giftCard.code}&pin=${giftCard.pin}" style="background-color: ${style.primaryColor}; color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3em; font-weight: bold; display: inline-block; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">Reveal Your Gift</a>
+        <a href="${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/gift-cards/redeem?code=${giftCard.code}&pin=${giftCard.pin}" style="background-color: ${style.primaryColor}; color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3em; font-weight: bold; display: inline-block; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">Reveal Your Gift</a>
       </div>
       <ol style="margin: 0; padding-left: 20px; font-size: 13px; color: ${style.textColor}; opacity: 0.8; line-height: 1.8;">
-        <li>Alternatively, explore our collections at <a href="${process.env.NEXTAUTH_URL || 'https://zoniraz.com'}" style="color: ${style.textColor}; font-weight: bold; text-decoration: underline;">zoniraz.com</a>.</li>
+        <li>Alternatively, explore our collections at <a href="${process.env.NEXTAUTH_URL || 'http://localhost:3000'}" style="color: ${style.textColor}; font-weight: bold; text-decoration: underline;">example.com</a>.</li>
         <li>On the checkout payment page, apply your **Gift Card Code** and **Security PIN**.</li>
         <li>The card value will be applied to your order instantly. Any remaining balance will be saved.</li>
       </ol>
@@ -421,10 +424,10 @@ export async function sendGiftCardEmail(giftCard: any, senderName: string) {
     <img src="${trackingUrl}" width="1" height="1" style="display:none !important;" />
   `;
 
-  return sendZonirazMail({
+  return sendLuxuryMail({
     to: giftCard.recipientEmail,
-    subject: `${senderName} has sent you a Zoniraz Luxury Gift Card!`,
-    html: getLuxuryEmailTemplate(content, "Zoniraz Luxury Gift Card", themeName)
+    subject: `${senderName} has sent you a Luxury Gift Card!`,
+    html: getLuxuryEmailTemplate(content, "Luxury Gift Card", themeName)
   });
 }
 

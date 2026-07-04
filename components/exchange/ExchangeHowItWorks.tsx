@@ -24,7 +24,7 @@ export default function ExchangeHowItWorks() {
       <div className="container mx-auto px-6 lg:px-12">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-serif font-bold text-brand-text dark:text-white leading-tight">
-            Watch How Easily You Can Exchange Your <br /> Jewellery at Zoniraz
+            Watch How Easily You Can Exchange Your <br /> Jewellery
           </h2>
         </div>
 
@@ -37,15 +37,15 @@ export default function ExchangeHowItWorks() {
             </h3>
             
             <div className="bg-[#FAF9F6] dark:bg-[#12100e] rounded-3xl border border-brand-text/10 dark:border-white/10 shadow-sm h-full flex flex-col justify-center items-center text-center">
-              <h4 className="text-2xl font-serif font-bold text-brand-text dark:text-white mb-2">Visit Our Alwar Branch</h4>
+              <h4 className="text-2xl font-serif font-bold text-brand-text dark:text-white mb-2">Visit Our Flagship Boutique</h4>
               <p className="text-brand-text/60 dark:text-white/60 text-sm mb-8 max-w-sm">Experience our premium exchange service in person at our flagship store.</p>
               
               <div className="bg-white dark:bg-white/5 border border-brand-text/10 dark:border-white/10 rounded-2xl w-full max-w-sm hover:border-brand-gold transition-colors shadow-sm">
                 <span className="text-5xl mb-4 block">🏛️</span>
-                <h5 className="text-xl font-bold text-[#8c3a3a] dark:text-[#e08686] mb-2">Zoniraz Alwar</h5>
+                <h5 className="text-xl font-bold text-[#8c3a3a] dark:text-[#e08686] mb-2">Flagship Boutique</h5>
                 <p className="text-sm text-brand-text/70 dark:text-white/70 mb-6">
-                  SHOP NO. 7, HANUMAN BURJ,<br />
-                  Alwar, Rajasthan, 301001
+                  123 LUXURY LANE,<br />
+                  Jewelry Zone, Mumbai, 400001
                 </p>
                 
                 <button 
@@ -61,7 +61,7 @@ export default function ExchangeHowItWorks() {
           {/* Right: Accordion */}
           <div className="space-y-6">
             <h3 className="text-xl font-serif font-bold text-brand-text dark:text-white text-center">
-              2. How It Works: Zoniraz Jewellery Exchange Explained
+              2. How It Works: Jewellery Exchange Explained
             </h3>
             
             <div className="bg-white dark:bg-[#12100e] border border-brand-text/10 dark:border-white/10 rounded-lg overflow-hidden">

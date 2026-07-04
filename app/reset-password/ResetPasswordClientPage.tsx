@@ -93,7 +93,7 @@ export default function ResetPasswordClientPage() {
 
         <AuthCard 
           title="Create New Password" 
-          subtitle="Secure your access to the Zoniraz collection"
+          subtitle="Secure your access to the Luxury Jewelry collection"
           className="max-w-md"
         >
           {error && (

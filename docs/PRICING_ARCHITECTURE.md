@@ -1,8 +1,8 @@
-# Zoniraz Pricing Architecture
+# Starter Pricing Architecture
 
 ## Overview
 
-The Zoniraz pricing engine is formula-driven and calculates prices dynamically based on product configuration and material costs.
+The dynamic pricing engine is formula-driven and calculates prices dynamically based on product configuration and material costs.
 
 ## Formula Breakdown
 

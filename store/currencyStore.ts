@@ -42,7 +42,7 @@ export const useCurrencyStore = create<CurrencyStore>()(
       getCurrencyInfo: () => CURRENCIES[get().currentCurrency],
     }),
     {
-      name: 'zoniraz-currency',
+      name: 'jewelry-starter-currency',
     }
   )
 );

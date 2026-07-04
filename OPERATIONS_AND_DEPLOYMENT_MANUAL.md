@@ -1,7 +1,7 @@
-# Zoniraz Luxury Jewelry
+# Luxury Jewelry Luxury Jewelry
 ## Operations & Deployment Manual
 
-This document acts as the master operations handbook for DevOps teams, system administrators, and commerce managers tasked with deploying, monitoring, and managing the Zoniraz production platform.
+This document acts as the master operations handbook for DevOps teams, system administrators, and commerce managers tasked with deploying, monitoring, and managing the Luxury Jewelry production platform.
 
 ---
 
@@ -12,7 +12,7 @@ Before initiating any deployment to a production environment (such as Vercel, AW
 - **Environment Variables (`.env`)**:
   - `MONGODB_URI`: Must point to the production replica set. Ensure database IP access lists allow connections from the hosting provider.
   - `NEXTAUTH_SECRET`: A 32+ character cryptographically secure random string.
-  - `NEXTAUTH_URL`: The canonical production domain (e.g., `https://zoniraz.com`).
+  - `NEXTAUTH_URL`: The canonical production domain (e.g., `https://example.com`).
   - `ADMIN_PASSWORD`: Secure seed password for initial admin creation.
   - `SMTP_*`: Valid host, port, user, and password for transactional emails.
   - `NEXT_PUBLIC_RAZORPAY_KEY_ID` & `RAZORPAY_KEY_SECRET`: Live production payment keys.
