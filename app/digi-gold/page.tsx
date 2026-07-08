@@ -1,6 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import Image from 'next/image';
+import { resolveProductImage } from '@/lib/imageResolver';
 import { Section } from '@/components/new-ui/Section';
 import { Button } from '@/components/new-ui/Button';
 import { ShieldCheck, TrendingUp, RefreshCw, Lock, Star, ChevronDown } from 'lucide-react';
@@ -19,12 +20,12 @@ export default function DigiGoldLandingPage() {
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-brand-bg via-brand-bg/80 to-brand-bg z-10" />
+          <div className="absolute inset-0 bg-linear-to-b from-brand-bg via-brand-bg/80 to-brand-bg z-10" />
           {/* Subtle background element instead of full image for cleaner look */}
-          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-brand-gold/10 via-transparent to-transparent" />
+          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-stops))] from-brand-gold/10 via-transparent to-transparent" />
         </div>
 
-        <Section className="relative z-10 max-w-[1400px] mx-auto px-6">
+        <Section className="relative z-10 max-w-350 mx-auto px-6">
           <div className="flex flex-col lg:flex-row items-center gap-16">
             <div className="flex-1 space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
               <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full border border-brand-gold/30 bg-brand-gold/5">
@@ -55,14 +56,14 @@ export default function DigiGoldLandingPage() {
 
       {/* How It Works */}
       <section className="py-24 bg-white border-y border-brand-text/5">
-        <Section className="max-w-[1400px] mx-auto px-6">
+        <Section className="max-w-350 mx-auto px-6">
           <div className="text-center mb-16 space-y-4">
             <h2 className="text-3xl md:text-5xl font-serif">How It Works</h2>
             <p className="text-brand-text/60 uppercase tracking-widest text-[11px] font-bold">Three steps to luxury savings</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
-            <div className="hidden md:block absolute top-12 left-[15%] right-[15%] h-[1px] bg-brand-gold/20" />
+            <div className="hidden md:block absolute top-12 left-[15%] right-[15%] h-px bg-brand-gold/20" />
             
             <div className="relative flex flex-col items-center text-center space-y-6">
               <div className="w-24 h-24 rounded-full bg-brand-bg border border-brand-gold/30 flex items-center justify-center shadow-soft z-10 relative">
@@ -102,7 +103,7 @@ export default function DigiGoldLandingPage() {
 
       {/* Key Features */}
       <section className="py-24 bg-[#1a1614] text-white">
-        <Section className="max-w-[1400px] mx-auto px-6">
+        <Section className="max-w-350 mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
               <h2 className="text-3xl md:text-5xl font-serif text-brand-gold italic">Premium Finance <br/><span className="text-white not-italic">Meets Luxury.</span></h2>
@@ -135,10 +136,10 @@ export default function DigiGoldLandingPage() {
             </div>
             
             <div className="relative">
-              <div className="aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl border border-white/10 relative">
-                <div className="absolute inset-0 bg-gradient-to-tr from-brand-gold/40 to-transparent mix-blend-overlay z-10" />
+              <div className="aspect-4/5 rounded-[40px] overflow-hidden shadow-2xl border border-white/10 relative">
+                <div className="absolute inset-0 bg-linear-to-tr from-brand-gold/40 to-transparent mix-blend-overlay z-10" />
                 <Image 
-                  src="/images/images/product/yellow-gold-16010972111558.jpg" // Using an existing premium gold image
+                  src={resolveProductImage("yellow-gold-16010972111558.jpg")} // Using an existing premium gold image
                   alt="Luxury Jewelry Luxury Gold"
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"

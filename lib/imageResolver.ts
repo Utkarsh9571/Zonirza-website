@@ -6,6 +6,17 @@
 export const PRODUCT_IMAGE_PATH = '/images/images/product';
 export const FALLBACK_IMAGE = '/images/images/default-image.png';
 
+// High-quality Unsplash placeholders to resolve when legacy local files are missing
+export const UNSPLASH_PLACEHOLDERS = [
+  'https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=800', // Gold ring
+  'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=800', // Diamond ring
+  'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=800', // Pendant/Necklace
+  'https://images.unsplash.com/photo-1611652022419-a9419f74343d?q=80&w=800', // Bangles
+  'https://images.unsplash.com/photo-1630019852942-f89202989a59?q=80&w=800', // Earrings
+  'https://images.unsplash.com/photo-1573408301185-9519f94616b2?q=80&w=800', // Bracelet
+  'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=800', // Gemstone pendant
+];
+
 /**
  * Resolves a product image filename to its local static path.
  * 
@@ -33,21 +44,36 @@ export const resolveProductImage = (imageName: any): string => {
     return trimmed;
   }
 
-  // 3. Handle already resolved paths (starting with /)
+  // 3. Resolve path representation
+  let resolvedPath = trimmed;
   if (trimmed.startsWith('/')) {
-    // If it's already a full legacy path like /images/images/product/xxx, return it
-    if (trimmed.includes(PRODUCT_IMAGE_PATH)) return trimmed;
-    
-    // If it's just /filename.jpg, prepend our base path
-    return `${PRODUCT_IMAGE_PATH}${trimmed}`;
+    if (!trimmed.includes(PRODUCT_IMAGE_PATH)) {
+      resolvedPath = `${PRODUCT_IMAGE_PATH}${trimmed}`;
+    }
+  } else {
+    resolvedPath = `${PRODUCT_IMAGE_PATH}/${trimmed.replace(/\s+/g, '-')}`;
   }
 
-  // 4. Handle filename-only mapping (most common for legacy migration)
-  // Normalize: handle spaces, inconsistent extensions if needed
-  const normalizedName = trimmed.replace(/\s+/g, '-');
+  // 4. Map legacy local product path requests to high-quality online placeholders
+  // Since legacy product images are not committed to Git, this prevents 400 errors on Vercel
+  if (resolvedPath.includes(PRODUCT_IMAGE_PATH)) {
+    const filename = resolvedPath.split('/').pop() || '';
+    
+    // Fallback to default image if there's no filename
+    if (!filename || filename === 'default-image.png' || filename === 'product_not_found.jpg') {
+      return FALLBACK_IMAGE;
+    }
 
-  // Logic: Return the normalized path
-  return `${PRODUCT_IMAGE_PATH}/${normalizedName}`;
+    // Deterministically hash the filename to select an Unsplash placeholder image
+    let hash = 0;
+    for (let i = 0; i < filename.length; i++) {
+      hash = filename.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % UNSPLASH_PLACEHOLDERS.length;
+    return UNSPLASH_PLACEHOLDERS[index];
+  }
+
+  return resolvedPath;
 };
 
 /**

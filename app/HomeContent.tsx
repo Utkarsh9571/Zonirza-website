@@ -119,7 +119,7 @@ export default function HomeContent() {
               </div>
               <div className="relative w-full aspect-4/5 rounded-[40px] overflow-hidden group shadow-soft">
                 <Image
-                  src="/images/images/product/default-16345643112830.jpg"
+                  src={resolveProductImage("default-16345643112830.jpg")}
                   alt="Men's Edit"
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 400px"
@@ -136,7 +136,7 @@ export default function HomeContent() {
 
               <div className="relative w-full aspect-4/5 rounded-[40px] overflow-hidden group shadow-soft">
                 <Image
-                  src="/images/images/product/yellow-gold-16516404131671.jpg"
+                  src={resolveProductImage("yellow-gold-16516404131671.jpg")}
                   alt="Solitaire Dream"
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 400px"
@@ -152,7 +152,7 @@ export default function HomeContent() {
               </div>
               <div className="relative w-full aspect-4/5 rounded-[40px] overflow-hidden group shadow-soft">
                 <Image
-                  src="/images/images/product/yellow-gold-16010271191566.jpg"
+                  src={resolveProductImage("yellow-gold-16010271191566.jpg")}
                   alt="Heritage Gold"
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 400px"
@@ -210,9 +210,9 @@ export default function HomeContent() {
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             {((homeContent?.trendingCollections && homeContent.trendingCollections.length > 0) ? homeContent.trendingCollections : [
-              { title: 'The Solitaire Promise', imageUrl: '/images/images/product/yellow-gold-1651640118723.jpg', link: '/products?collection=solitaire' },
-              { title: 'Vintage Heirloom', imageUrl: '/images/images/product/yellow-gold-16010959532807.jpg', link: '/products?collection=heritage' },
-              { title: 'Modern Minimalism', imageUrl: '/images/images/product/default-16345640053092.jpg', link: '/products?collection=minimal' }
+              { title: 'The Solitaire Promise', imageUrl: resolveProductImage('yellow-gold-1651640118723.jpg'), link: '/products?collection=solitaire' },
+              { title: 'Vintage Heirloom', imageUrl: resolveProductImage('yellow-gold-16010959532807.jpg'), link: '/products?collection=heritage' },
+              { title: 'Modern Minimalism', imageUrl: resolveProductImage('default-16345640053092.jpg'), link: '/products?collection=minimal' }
             ]).map((trend: ITrendingCollection, i: number) => (
               <Link href={trend.link} key={i} className="group relative aspect-3/4 rounded-4xl overflow-hidden shadow-soft cursor-pointer block">
                 <Image src={trend.imageUrl} alt={trend.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-1000 group-hover:scale-110" />
@@ -235,14 +235,14 @@ export default function HomeContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-auto md:h-125">
             <div className="grid grid-rows-2 gap-4 h-100 md:h-full">
               <Link href="/products?tag=featured" className="relative rounded-4xl overflow-hidden shadow-soft group block border border-brand-gold">
-                <Image src="/images/images/product/yellow-gold-1657457300506.jpg" alt="Featured World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
+                <Image src={resolveProductImage("yellow-gold-1657457300506.jpg")} alt="Featured World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               </Link>
               <Link href="/products?collection=heritage" className="relative rounded-4xl overflow-hidden shadow-soft group block border border-brand-gold">
-                <Image src="/images/images/product/yellow-gold-16010972111558.jpg" alt="Heritage World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
+                <Image src={resolveProductImage("yellow-gold-16010972111558.jpg")} alt="Heritage World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               </Link>
             </div>
             <Link href="/products?collection=heritage" className="relative rounded-4xl overflow-hidden shadow-soft group h-full min-h-100 block">
-              <Image src="/images/images/product/default-16345651242469.jpg" alt="Heritage World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
+              <Image src={resolveProductImage("default-16345651242469.jpg")} alt="Heritage World" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-transform group-hover:scale-105 duration-1000" />
               <div className="absolute inset-0 bg-[#1c1816]/30 flex flex-col items-center justify-center text-center p-8 rounded-4xl border border-brand-gold">
                 <h3 className="text-5xl font-serif text-white mb-4 italic">The Heritage</h3>
                 <p className="text-white/90 text-sm max-w-sm uppercase tracking-widest">Crafting brilliance for generations.</p>
@@ -327,7 +327,7 @@ export default function HomeContent() {
               designation: "Verified Buyer",
               rating: 5,
               product: "1ct Solitaire Ring",
-              image: "/images/images/product/yellow-gold-1651640118723.jpg"
+              image: resolveProductImage("yellow-gold-1651640118723.jpg")
             },
             {
               quote: "Luxury Jewelry completely redefined my expectation of luxury jewelry. Their styling advice helped me choose the perfect heritage necklace for my wedding. Exceptional service!",
@@ -335,7 +335,7 @@ export default function HomeContent() {
               designation: "Bridal Client",
               rating: 5,
               product: "Vintage Gold Choker",
-              image: "/images/images/product/yellow-gold-16010959532807.jpg"
+              image: resolveProductImage("yellow-gold-16010959532807.jpg")
             },
             {
               quote: "Ethically sourced diamonds and complete transparency. The lifetime maintenance package gives me total peace of mind. Truly a brand built on trust and heritage.",
@@ -343,7 +343,7 @@ export default function HomeContent() {
               designation: "Collector",
               rating: 5,
               product: "Men's Diamond Band",
-              image: "/images/images/product/default-16345640053092.jpg"
+              image: resolveProductImage("default-16345640053092.jpg")
             }
           ].map((item, i) => (
             <div key={i} className="bg-white dark:bg-[#1a1614] border border-brand-gold/10 p-8 rounded-[40px] shadow-soft flex flex-col justify-between space-y-6 hover:shadow-premium transition-all duration-300">
